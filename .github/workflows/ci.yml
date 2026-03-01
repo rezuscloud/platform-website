@@ -109,3 +109,68 @@ jobs:
             "https://api.github.com/user/packages/container/platform-website" \
             -d '{"visibility":"public"}' \
           || echo "Warning: Could not set package visibility to public. Please set it manually in GitHub Package Settings."
+
+  visual-tests:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Playwright dependencies
+        working-directory: tests
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Build and run container (PR)
+        if: github.event_name == 'pull_request'
+        run: |
+          docker build -t platform-website-test .
+          docker run -d --name platform-website -p 3000:3000 platform-website-test
+          sleep 5
+          curl --retry 10 --retry-delay 2 --retry-connrefused http://localhost:3000
+
+      - name: Log in to Container Registry (master)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull and run container (master)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker run -d --name platform-website -p 3000:3000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          sleep 5
+          curl --retry 10 --retry-delay 2 --retry-connrefused http://localhost:3000
+
+      - name: Run visual regression tests
+        working-directory: tests
+        run: npx playwright test --project=visual
+        continue-on-error: true
+
+      - name: Run functional tests
+        working-directory: tests
+        run: npx playwright test --project=functional
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: tests/playwright-report/
+          retention-days: 30
+
+      - name: Stop container
+        if: always()
+        run: docker stop platform-website && docker rm platform-website

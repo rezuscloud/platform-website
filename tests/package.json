@@ -1,0 +1,16 @@
+{
+  "name": "platform-website-tests",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:visual": "playwright test --project=visual",
+    "test:functional": "playwright test --project=functional",
+    "test:update": "playwright test --update-snapshots",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "typescript": "^5.6.0"
+  }
+}
