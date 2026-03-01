@@ -35,9 +35,9 @@ func main() {
 		port = "3000"
 	}
 
-	addr := "[::]:" + port
+	addr := ":3000"
 	log.Printf("Starting server on %s", addr)
-	ln, err := net.Listen("tcp6", addr)
+	ln, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("Failed to create listener: %v", err)
 	}
