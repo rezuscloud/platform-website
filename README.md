@@ -29,69 +29,71 @@ This is a single-page marketing website that showcases the RezusCloud Kubernetes
 
 ### Application Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      Pod: platform-website                   │
-│  ┌──────────────────────┐    ┌──────────────────────────┐   │
-│  │   platform-website   │    │       daprd sidecar      │   │
-│  │   (Go Fiber app)     │◄──►│   (Dapr runtime)         │   │
-│  │   Port: 3000         │    │   Built-in components:   │   │
-│  │   Listens: tcp       │    │   - Kubernetes secrets   │   │
-│  │   (IPv4 + IPv6)      │    │   - Service invocation   │   │
-│  └──────────────────────┘    └──────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph Pod["Pod: platform-website"]
+        App["platform-website<br/>(Go Fiber app)<br/>Port: 3000<br/>Listens: tcp (IPv4 + IPv6)"]
+        Dapr["daprd sidecar<br/>(Dapr runtime)<br/>Built-in components:<br/>- Kubernetes secrets<br/>- Service invocation"]
+        App <--> Dapr
+    end
 ```
 
 ### Request Flow
 
-```
-Browser ──► Gateway API (Cilium) ──► HTTPRoute ──► Service ──► Pod
-                                                        │
-                                                        ▼
-                                              Dapr sidecar (optional)
-                                                        │
-                                                        ▼
-                                              Dapr components (state, pub/sub)
+```mermaid
+flowchart LR
+    Browser["Browser"] --> Gateway["Gateway API (Cilium)"]
+    Gateway --> HTTPRoute["HTTPRoute"]
+    HTTPRoute --> Service["Service"]
+    Service --> Pod["Pod"]
+    Pod --> DaprSidecar["Dapr sidecar (optional)"]
+    DaprSidecar --> DaprComponents["Dapr components (state, pub/sub)"]
 ```
 
 ### Project Structure
 
-```
-platform-website/
-├── main.go                    # Application entry point
-├── go.mod                     # Go module definition
-├── go.sum                     # Go dependencies lock
-├── input.css                  # Tailwind CSS entry point
-├── package.json               # npm scripts for Tailwind CLI
-├── Dockerfile                 # Multi-stage container build
-├── README.md                  # This file
-├── .github/
-│   └── workflows/
-│       └── ci.yml             # GitHub Actions CI/CD
-├── handlers/
-│   └── pages.go               # HTTP handlers (Home, Section)
-├── views/
-│   ├── layout.templ           # Base HTML layout, Nav, Footer
-│   ├── layout_templ.go        # Generated Go code
-│   ├── pages/
-│   │   ├── home.templ         # Home page composition
-│   │   └── home_templ.go      # Generated Go code
-│   └── sections/
-│       ├── hero.templ         # Hero section with CTA
-│       ├── challenge.templ    # Problem statement
-│       ├── architecture.templ # Platform architecture
-│       ├── features.templ     # Key features grid
-│       ├── networking.templ   # Networking capabilities
-│       ├── edge.templ         # Edge computing section
-│       ├── services.templ     # Managed services
-│       ├── comparison.templ   # Pricing comparison
-│       ├── usecases.templ     # Use case examples
-│       ├── techstack.templ    # Technology stack
-│       └── getstarted.templ   # Getting started guide
-└── assets/
-    ├── js/
-    │   └── htmx.min.js        # Vendored HTMX 2.0.6
-    └── styles.css             # Generated Tailwind CSS (gitignored)
+```mermaid
+graph TB
+    Root["platform-website/"]
+
+    Root --> Main["main.go<br/><i>Application entry point</i>"]
+    Root --> GoMod["go.mod<br/><i>Go module definition</i>"]
+    Root --> GoSum["go.sum<br/><i>Go dependencies lock</i>"]
+    Root --> InputCSS["input.css<br/><i>Tailwind CSS entry point</i>"]
+    Root --> PackageJSON["package.json<br/><i>npm scripts for Tailwind CLI</i>"]
+    Root --> Dockerfile["Dockerfile<br/><i>Multi-stage container build</i>"]
+    Root --> README["README.md<br/><i>This file</i>"]
+
+    Root --> Github[".github/"]
+    Github --> Workflows["workflows/"]
+    Workflows --> CI["ci.yml<br/><i>GitHub Actions CI/CD</i>"]
+
+    Root --> Handlers["handlers/"]
+    Handlers --> PagesGo["pages.go<br/><i>HTTP handlers (Home, Section)</i>"]
+
+    Root --> Views["views/"]
+    Views --> LayoutTempl["layout.templ<br/><i>Base HTML layout, Nav, Footer</i>"]
+    Views --> LayoutGen["layout_templ.go<br/><i>Generated Go code</i>"]
+    Views --> PagesDir["pages/"]
+    PagesDir --> HomeTempl["home.templ<br/><i>Home page composition</i>"]
+    PagesDir --> HomeGen["home_templ.go<br/><i>Generated Go code</i>"]
+    Views --> SectionsDir["sections/"]
+    SectionsDir --> Hero["hero.templ"]
+    SectionsDir --> Challenge["challenge.templ"]
+    SectionsDir --> Architecture["architecture.templ"]
+    SectionsDir --> Features["features.templ"]
+    SectionsDir --> Networking["networking.templ"]
+    SectionsDir --> Edge["edge.templ"]
+    SectionsDir --> Services["services.templ"]
+    SectionsDir --> Comparison["comparison.templ"]
+    SectionsDir --> Usecases["usecases.templ"]
+    SectionsDir --> Techstack["techstack.templ"]
+    SectionsDir --> Getstarted["getstarted.templ"]
+
+    Root --> Assets["assets/"]
+    Assets --> JSDir["js/"]
+    JSDir --> HTMX["htmx.min.js<br/><i>Vendored HTMX 2.0.6</i>"]
+    Assets --> Styles["styles.css<br/><i>Generated Tailwind CSS (gitignored)</i>"]
 ```
 
 ## Design Decisions
