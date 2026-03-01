@@ -217,7 +217,7 @@ func benefitItem(title string, description string) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/edge.templ`, Line: 119, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/edge.templ`, Line: 119, Col: 71}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
