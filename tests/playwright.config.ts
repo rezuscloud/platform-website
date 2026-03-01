@@ -33,6 +33,6 @@ export default defineConfig({
   webServer: {
     command: 'echo "Server should be running"',
     url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
   },
 });
