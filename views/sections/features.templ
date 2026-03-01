@@ -1,0 +1,128 @@
+package sections
+
+templ Features() {
+	<section id="features" class="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="text-center mb-12">
+				<h2 class="text-3xl sm:text-4xl font-bold mb-4">Key Differentiators</h2>
+				<p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+					Enterprise-grade capabilities without the enterprise price tag.
+				</p>
+			</div>
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				@featureCard(
+					"Cost Efficiency",
+					"Save $1,600+/month with open-source alternatives to commercial platforms. Flux CD, Cilium, Prometheus, Grafana, and cert-manager -- all free.",
+					costIcon(),
+				)
+				@featureCard(
+					"True Hybrid Architecture",
+					"Single control plane for all nodes. Automatic encrypted tunnels between cloud and edge. Schedule workloads anywhere. Zero edge compute costs.",
+					hybridIcon(),
+				)
+				@featureCard(
+					"Enterprise Security",
+					"Immutable Talos Linux with API-only management. WireGuard encryption, L3-L7 network policies, UEFI Secure Boot, and LUKS2 disk encryption.",
+					securityIcon(),
+				)
+				@featureCard(
+					"Consumer Hardware Ready",
+					"Run on anything from Raspberry Pi to enterprise servers. 200MB memory footprint. Full production capabilities on commodity hardware.",
+					hardwareIcon(),
+				)
+				@featureCard(
+					"Developer Experience",
+					"Type-safe CUE configuration eliminates YAML errors. GitOps automation with Flux CD. Automatic rollbacks and drift detection.",
+					devexpIcon(),
+				)
+				@featureCard(
+					"Multi-Architecture",
+					"Full ARM64 and AMD64 support. Heterogeneous clusters mixing architectures. OCI Ampere, Raspberry Pi, and standard servers in one cluster.",
+					multiarchIcon(),
+				)
+			</div>
+			<!-- Cost Breakdown -->
+			<div class="mt-16 max-w-4xl mx-auto">
+				<h3 class="text-2xl font-bold text-center mb-8">Estimated Monthly Infrastructure Costs</h3>
+				<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+					<table class="w-full text-left">
+						<thead>
+							<tr class="bg-gray-50 dark:bg-gray-900">
+								<th class="py-3 px-6 text-sm font-semibold text-gray-500 dark:text-gray-400">Resource</th>
+								<th class="py-3 px-6 text-sm font-semibold text-gray-500 dark:text-gray-400">Specification</th>
+								<th class="py-3 px-6 text-sm font-semibold text-gray-500 dark:text-gray-400">Monthly Cost</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+							<tr>
+								<td class="py-3 px-6 font-medium">Control Plane (ARM64)</td>
+								<td class="py-3 px-6 text-gray-600 dark:text-gray-400">4 OCPU, 24GB RAM</td>
+								<td class="py-3 px-6 text-cyan-600 dark:text-cyan-400 font-semibold">~$50-70</td>
+							</tr>
+							<tr>
+								<td class="py-3 px-6 font-medium">Block Storage</td>
+								<td class="py-3 px-6 text-gray-600 dark:text-gray-400">150GB</td>
+								<td class="py-3 px-6 text-cyan-600 dark:text-cyan-400 font-semibold">~$3</td>
+							</tr>
+							<tr>
+								<td class="py-3 px-6 font-medium">Network Load Balancer</td>
+								<td class="py-3 px-6 text-gray-600 dark:text-gray-400">L4, Dual-stack</td>
+								<td class="py-3 px-6 text-cyan-600 dark:text-cyan-400 font-semibold">~$20</td>
+							</tr>
+							<tr class="bg-cyan-50 dark:bg-cyan-950/30">
+								<td class="py-3 px-6 font-bold" colspan="2">Base Cluster Total</td>
+								<td class="py-3 px-6 text-cyan-600 dark:text-cyan-400 font-bold text-lg">~$73-93/month</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</section>
+}
+
+templ featureCard(title string, description string, icon templ.Component) {
+	<div class="group bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:border-cyan-300 dark:hover:border-cyan-700 transition-all hover:shadow-lg">
+		<div class="w-12 h-12 bg-cyan-50 dark:bg-cyan-950 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+			@icon
+		</div>
+		<h3 class="text-lg font-bold mb-2">{ title }</h3>
+		<p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{ description }</p>
+	</div>
+}
+
+templ costIcon() {
+	<svg class="w-6 h-6 text-cyan-600 dark:text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+		<path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+	</svg>
+}
+
+templ hybridIcon() {
+	<svg class="w-6 h-6 text-cyan-600 dark:text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+		<path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+	</svg>
+}
+
+templ securityIcon() {
+	<svg class="w-6 h-6 text-cyan-600 dark:text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+		<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+	</svg>
+}
+
+templ hardwareIcon() {
+	<svg class="w-6 h-6 text-cyan-600 dark:text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+		<path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+	</svg>
+}
+
+templ devexpIcon() {
+	<svg class="w-6 h-6 text-cyan-600 dark:text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+		<path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+	</svg>
+}
+
+templ multiarchIcon() {
+	<svg class="w-6 h-6 text-cyan-600 dark:text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+		<path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
+	</svg>
+}

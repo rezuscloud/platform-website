@@ -1,0 +1,51 @@
+package sections
+
+templ Comparison() {
+	<section id="comparison" class="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="text-center mb-12">
+				<h2 class="text-3xl sm:text-4xl font-bold mb-4">Platform Comparison</h2>
+				<p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+					See how our platform stacks up against traditional enterprise Kubernetes solutions.
+				</p>
+			</div>
+			<div class="max-w-4xl mx-auto">
+				<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+					<table class="w-full text-left text-sm">
+						<thead>
+							<tr class="bg-gray-50 dark:bg-gray-900">
+								<th class="py-4 px-6 font-semibold text-gray-500 dark:text-gray-400">Capability</th>
+								<th class="py-4 px-6 font-semibold text-gray-500 dark:text-gray-400">Traditional Enterprise</th>
+								<th class="py-4 px-6 font-semibold text-cyan-600 dark:text-cyan-400">Our Platform</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+							@compRow("Monthly Cost", "$2,000-5,000+", "<$100", true)
+							@compRow("Setup Time", "2-4 weeks", "2-4 hours", true)
+							@compRow("Cloud Lock-in", "Single vendor", "Multi-cloud ready", true)
+							@compRow("Edge Support", "Separate clusters", "Unified cluster", true)
+							@compRow("Architecture", "Homogeneous", "Heterogeneous", false)
+							@compRow("Networking", "Basic CNI", "eBPF + eBGP + Gateway API", true)
+							@compRow("Hardware", "Enterprise servers only", "Consumer-grade supported", true)
+							@compRow("Control Plane HA", "Self-managed (expensive)", "Cloud SLA guaranteed", true)
+							@compRow("Edge Compute Cost", "Cloud rates everywhere", "Zero (use own hardware)", true)
+							@compRow("Security", "Add-on cost", "Built-in", true)
+							@compRow("GitOps", "Manual/expensive", "Automated (Flux)", true)
+							@compRow("IPv6", "Optional", "Native-first", false)
+							@compRow("Operating System", "General purpose", "Immutable (Talos)", true)
+							@compRow("Memory Overhead", "1-2 GB per node", "~200 MB per node", true)
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</section>
+}
+
+templ compRow(capability string, traditional string, ours string, highlight bool) {
+	<tr class={ templ.KV("bg-cyan-50/50 dark:bg-cyan-950/20", highlight) }>
+		<td class="py-3 px-6 font-medium">{ capability }</td>
+		<td class="py-3 px-6 text-gray-500 dark:text-gray-400">{ traditional }</td>
+		<td class="py-3 px-6 text-cyan-600 dark:text-cyan-400 font-semibold">{ ours }</td>
+	</tr>
+}

@@ -1,0 +1,32 @@
+# Build artifacts
+/bin/
+/tmp/
+/dist/
+
+# Generated CSS (rebuild from source)
+assets/styles.css
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Node
+node_modules/
+package-lock.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Air live reload
+tmp/

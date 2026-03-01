@@ -1,0 +1,22 @@
+package pages
+
+import (
+	"github.com/rezuscloud/platform-website/views"
+	"github.com/rezuscloud/platform-website/views/sections"
+)
+
+templ Home() {
+	@views.Layout("Enterprise Kubernetes Platform | RezusCloud") {
+		@sections.Hero()
+		@sections.Challenge()
+		@sections.Architecture()
+		@sections.Features()
+		@sections.Networking()
+		@sections.Edge()
+		@sections.Services()
+		@sections.Comparison()
+		@sections.UseCases()
+		@sections.TechStack()
+		@sections.GetStarted()
+	}
+}

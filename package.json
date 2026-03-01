@@ -1,0 +1,12 @@
+{
+  "name": "platform-website",
+  "private": true,
+  "scripts": {
+    "build:css": "npx @tailwindcss/cli -i input.css -o assets/styles.css --minify",
+    "watch:css": "npx @tailwindcss/cli -i input.css -o assets/styles.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.0",
+    "tailwindcss": "^4.1.0"
+  }
+}

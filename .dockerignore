@@ -1,0 +1,8 @@
+bin/
+tmp/
+node_modules/
+.git/
+*.md
+Makefile
+.gitignore
+.github/

@@ -1,0 +1,63 @@
+package sections
+
+templ Services() {
+	<section id="services" class="py-16 sm:py-24">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="text-center mb-12">
+				<h2 class="text-3xl sm:text-4xl font-bold mb-4">Platform Services</h2>
+				<p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+					A complete, production-ready stack built entirely on open-source technologies.
+				</p>
+			</div>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+				@serviceCategory("Core Infrastructure", []ServiceItem{
+					{"Cilium 1.18.x", "Container Networking", "CNI with eBPF"},
+					{"Cilium + Envoy", "Service Mesh", "L7 routing"},
+					{"External DNS + Cloudflare", "DNS Management", "Automated records"},
+					{"cert-manager + Let's Encrypt", "Certificate Authority", "TLS automation"},
+				})
+				@serviceCategory("Observability Stack", []ServiceItem{
+					{"Prometheus", "Metrics", "Time-series collection"},
+					{"Grafana", "Visualization", "Dashboard and alerts"},
+					{"Loki", "Logging", "Log aggregation"},
+					{"Hubble", "Network", "Cilium observability"},
+				})
+				@serviceCategory("Application Platform", []ServiceItem{
+					{"KubeVela", "App Delivery", "Component-based deployments"},
+					{"Helm", "Package Manager", "Chart-based installation"},
+					{"Kustomize", "Config Management", "Overlay-based customization"},
+				})
+				@serviceCategory("Storage Solutions", []ServiceItem{
+					{"local-path-provisioner", "Local Storage", "High-performance local volumes"},
+					{"JuiceFS + TiKV", "Distributed", "Shared storage across nodes"},
+					{"OCI Block Volumes", "Block Storage", "Cloud persistent storage"},
+				})
+			</div>
+		</div>
+	</section>
+}
+
+type ServiceItem struct {
+	Technology  string
+	Service     string
+	Description string
+}
+
+templ serviceCategory(title string, items []ServiceItem) {
+	<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+		<div class="px-6 py-4 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950/30 dark:to-blue-950/30 border-b border-gray-200 dark:border-gray-700">
+			<h3 class="text-lg font-bold">{ title }</h3>
+		</div>
+		<div class="divide-y divide-gray-200 dark:divide-gray-700">
+			for _, item := range items {
+				<div class="px-6 py-3 flex items-center justify-between">
+					<div>
+						<div class="font-medium text-sm">{ item.Service }</div>
+						<div class="text-xs text-gray-500 dark:text-gray-400">{ item.Description }</div>
+					</div>
+					<code class="text-xs bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded text-cyan-600 dark:text-cyan-400">{ item.Technology }</code>
+				</div>
+			}
+		</div>
+	</div>
+}
