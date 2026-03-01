@@ -35,5 +35,5 @@ func main() {
 	}
 
 	log.Printf("Starting server on :%s", port)
-	log.Fatal(app.Listen(":" + port))
+	log.Fatal(app.Listen("[::]:" + port))
 }
