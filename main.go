@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -34,6 +35,11 @@ func main() {
 		port = "3000"
 	}
 
-	log.Printf("Starting server on :%s", port)
-	log.Fatal(app.Listen("[::]:" + port))
+	addr := "[::]:" + port
+	log.Printf("Starting server on %s", addr)
+	ln, err := net.Listen("tcp6", addr)
+	if err != nil {
+		log.Fatalf("Failed to create listener: %v", err)
+	}
+	log.Fatal(app.Listener(ln))
 }
