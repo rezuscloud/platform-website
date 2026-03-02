@@ -1,0 +1,12 @@
+mode: Mainline
+branches:
+  master:
+    regex: ^master$
+    mode: Mainline
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    source-branches: []
+ignore:
+  sha: []
+merge-message-formats: {}
