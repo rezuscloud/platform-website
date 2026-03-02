@@ -33,6 +33,7 @@ func main() {
 
 	app.Get("/", handlers.Home)
 	app.Get("/sections/:name", handlers.Section)
+	app.Get("/api/version", handlers.APIVersion)
 
 	port := os.Getenv("PORT")
 	if port == "" {
