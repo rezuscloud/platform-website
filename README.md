@@ -54,48 +54,42 @@ flowchart LR
 
 ### Project Structure
 
-```mermaid
-graph TB
-    Root["platform-website/"]
-
-    Root --> Main["main.go<br/><i>Application entry point</i>"]
-    Root --> GoMod["go.mod<br/><i>Go module definition</i>"]
-    Root --> GoSum["go.sum<br/><i>Go dependencies lock</i>"]
-    Root --> InputCSS["input.css<br/><i>Tailwind CSS entry point</i>"]
-    Root --> PackageJSON["package.json<br/><i>npm scripts for Tailwind CLI</i>"]
-    Root --> Dockerfile["Dockerfile<br/><i>Multi-stage container build</i>"]
-    Root --> README["README.md<br/><i>This file</i>"]
-
-    Root --> Github[".github/"]
-    Github --> Workflows["workflows/"]
-    Workflows --> CI["ci.yml<br/><i>GitHub Actions CI/CD</i>"]
-
-    Root --> Handlers["handlers/"]
-    Handlers --> PagesGo["pages.go<br/><i>HTTP handlers (Home, Section)</i>"]
-
-    Root --> Views["views/"]
-    Views --> LayoutTempl["layout.templ<br/><i>Base HTML layout, Nav, Footer</i>"]
-    Views --> LayoutGen["layout_templ.go<br/><i>Generated Go code</i>"]
-    Views --> PagesDir["pages/"]
-    PagesDir --> HomeTempl["home.templ<br/><i>Home page composition</i>"]
-    PagesDir --> HomeGen["home_templ.go<br/><i>Generated Go code</i>"]
-    Views --> SectionsDir["sections/"]
-    SectionsDir --> Hero["hero.templ"]
-    SectionsDir --> Challenge["challenge.templ"]
-    SectionsDir --> Architecture["architecture.templ"]
-    SectionsDir --> Features["features.templ"]
-    SectionsDir --> Networking["networking.templ"]
-    SectionsDir --> Edge["edge.templ"]
-    SectionsDir --> Services["services.templ"]
-    SectionsDir --> Comparison["comparison.templ"]
-    SectionsDir --> Usecases["usecases.templ"]
-    SectionsDir --> Techstack["techstack.templ"]
-    SectionsDir --> Getstarted["getstarted.templ"]
-
-    Root --> Assets["assets/"]
-    Assets --> JSDir["js/"]
-    JSDir --> HTMX["htmx.min.js<br/><i>Vendored HTMX 2.0.6</i>"]
-    Assets --> Styles["styles.css<br/><i>Generated Tailwind CSS (gitignored)</i>"]
+```
+platform-website/
+├── main.go                 # Application entry point
+├── go.mod                  # Go module definition
+├── go.sum                  # Go dependencies lock
+├── input.css               # Tailwind CSS entry point
+├── package.json            # npm scripts for Tailwind CLI
+├── Dockerfile              # Multi-stage container build
+├── README.md               # This file
+├── .github/
+│   └── workflows/
+│       └── ci.yml          # GitHub Actions CI/CD
+├── handlers/
+│   └── pages.go            # HTTP handlers (Home, Section)
+├── views/
+│   ├── layout.templ        # Base HTML layout, Nav, Footer
+│   ├── layout_templ.go     # Generated Go code
+│   ├── pages/
+│   │   ├── home.templ      # Home page composition
+│   │   └── home_templ.go   # Generated Go code
+│   └── sections/
+│       ├── hero.templ
+│       ├── challenge.templ
+│       ├── architecture.templ
+│       ├── features.templ
+│       ├── networking.templ
+│       ├── edge.templ
+│       ├── services.templ
+│       ├── comparison.templ
+│       ├── usecases.templ
+│       ├── techstack.templ
+│       └── getstarted.templ
+└── assets/
+    ├── js/
+    │   └── htmx.min.js     # Vendored HTMX 2.0.6
+    └── styles.css          # Generated Tailwind CSS (gitignored)
 ```
 
 ## Design Decisions
