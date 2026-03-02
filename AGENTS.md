@@ -9,7 +9,7 @@ This is a marketing website for RezusCloud Enterprise Kubernetes Platform, built
 - **Templating**: templ (type-safe HTML templates that generate Go code)
 - **CSS**: Tailwind CSS v4 with class-based dark mode
 - **Frontend**: HTMX 2.0.6 for progressive enhancement
-- **Tests**: Playwright for visual regression and functional tests
+- **Tests**: Go (httptest, goquery, chromedp) - layered testing strategy
 
 ## Build Commands
 
@@ -66,38 +66,27 @@ go vet ./...
 
 ## Test Commands
 
-Tests are located in the `tests/` directory using Playwright.
+Tests use a layered Go testing strategy:
 
 ```bash
-# Run all tests
-cd tests && npm test
+# Layer 1: Unit tests (httptest) - 70% of tests
+go test -v ./handlers/...
 
-# Run visual regression tests only
-cd tests && npm run test:visual
+# Layer 2: Integration tests (goquery) - 20% of tests
+go test -v ./tests/... -run "Integration|HTML|Section|Navigation|Footer|Accessibility|HTMX|Responsive|DarkMode"
 
-# Run functional tests only
-cd tests && npm run test:functional
+# Layer 3: E2E tests (chromedp) - 10% of tests
+# Requires running server on http://localhost:3000
+go test -v -tags=e2e ./tests/... -run "E2E"
 
-# Run a single test file
-cd tests && npx playwright test visual.spec.ts
+# Run all non-E2E tests
+go test -v ./...
 
-# Run a single test by name
-cd tests && npx playwright test -g "loads successfully"
-
-# Run specific project
-cd tests && npx playwright test --project=functional
-
-# Update visual snapshots
-cd tests && npm run test:update
-
-# Open Playwright UI
-cd tests && npm run test:ui
-
-# View test report
-cd tests && npm run report
+# Run all tests including E2E (requires server running)
+go test -v -tags=e2e ./...
 ```
 
-**Note**: The server must be running on `http://localhost:3000` before running tests.
+**Note**: E2E tests require Chrome/Chromium and a running server on `http://localhost:3000`.
 
 ## Code Style Guidelines
 
@@ -133,13 +122,13 @@ cd tests && npm run report
 - **Responsive**: Use `sm:`, `md:`, `lg:` prefixes for breakpoints
 - **Do not edit**: `assets/styles.css` is generated, edit `input.css` instead
 
-### TypeScript/Playwright Tests
+### Go Tests
 
-- **Imports**: Use `import { test, expect, Page } from '@playwright/test';`
-- **Constants**: Define at top of file (e.g., `BASE_URL`, `SECTIONS`)
-- **Helper functions**: Mark as `async` and accept `Page` parameter
-- **Test structure**: Group related tests with `test.describe()`
-- **Snapshot naming**: `{section}-{viewport}-{theme}.png` format
+- **Layer 1 (httptest)**: Fast unit tests for handlers in `handlers/*_test.go`
+- **Layer 2 (goquery)**: Integration tests for HTML structure in `tests/integration_test.go`
+- **Layer 3 (chromedp)**: E2E browser tests in `tests/e2e_test.go` (build tag: `e2e`)
+- **Test structure**: Use `t.Run()` for subtests, `testify/assert` for assertions
+- **Setup functions**: Create helper functions like `setupApp()` for test isolation
 
 ## Project Structure
 
@@ -160,10 +149,11 @@ platform-website/
 │   ├── js/htmx.min.js   # Vendored HTMX
 │   └── styles.css       # Generated CSS (gitignored)
 ├── input.css            # Tailwind entry point
-├── tests/               # Playwright tests
-│   ├── playwright.config.ts
-│   ├── visual.spec.ts
-│   └── functional.spec.ts
+├── tests/               # Go tests
+│   ├── integration_test.go  # Layer 2: goquery tests
+│   └── e2e_test.go          # Layer 3: chromedp tests
+├── handlers/
+│   └── handlers_test.go     # Layer 1: httptest tests
 └── Makefile             # Build automation
 ```
 
@@ -174,7 +164,7 @@ platform-website/
 1. Create `views/sections/newsection.templ`
 2. Add `@templ Kids()` call in `views/pages/home.templ`
 3. Add section to the `sectionMap` in `handlers/pages.go`
-4. Add section ID to `SECTIONS` array in test files
+4. Add section ID to test files (`handlers/handlers_test.go`, `tests/integration_test.go`)
 5. Run `templ generate`
 
 ### HTTP Handlers
@@ -188,7 +178,7 @@ func HandlerName(c *fiber.Ctx) error {
 
 ### Theme Management
 
-Theme is managed client-side via localStorage and the `dark` class on `<html>`. The `setTheme` helper in tests handles this.
+Theme is managed client-side via localStorage and the `dark` class on `<html>`. E2E tests use chromedp to toggle and verify theme state.
 
 ## Pre-commit Checklist
 
