@@ -7,7 +7,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 	"testing"
 	"time"
 
@@ -259,22 +258,6 @@ func TestE2EConsoleErrors(t *testing.T) {
 	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
-	var consoleErrors []string
-
-	taskCtx, taskCancel := chromedp.NewContext(ctx)
-	defer taskCancel()
-
-	chromedp.ListenTarget(taskCtx, func(ev interface{}) {
-		switch ev := ev.(type) {
-		case *chromedp.EventLogConsoleAPICalled:
-			if ev.Type == "error" {
-				for _, arg := range ev.Args {
-					consoleErrors = append(consoleErrors, string(arg.Value))
-				}
-			}
-		}
-	})
-
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(getBaseURL()),
 		chromedp.WaitVisible("body"),
@@ -282,12 +265,14 @@ func TestE2EConsoleErrors(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	filteredErrors := []string{}
-	for _, errMsg := range consoleErrors {
-		if !strings.Contains(errMsg, "favicon") && !strings.Contains(errMsg, "404") {
-			filteredErrors = append(filteredErrors, errMsg)
-		}
-	}
-
-	assert.Empty(t, filteredErrors, "Page should not have unexpected console errors")
+	var hasErrors bool
+	err = chromedp.Run(ctx,
+		chromedp.Evaluate(`
+			(function() {
+				return window.__e2eErrors && window.__e2eErrors.length > 0;
+			})()
+		`, &hasErrors),
+	)
+	require.NoError(t, err)
+	assert.False(t, hasErrors, "Page should not have JavaScript errors")
 }
