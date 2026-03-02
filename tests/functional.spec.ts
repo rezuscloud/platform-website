@@ -193,14 +193,20 @@ test.describe('Mobile Menu', () => {
     await expect(menuBtn).toBeVisible();
   });
 
- test('mobile menu opens on click', async ({ page }) => {
+  test('mobile menu toggles on click', async ({ page }) => {
     await page.goto(BASE_URL);
     await page.waitForLoadState('networkidle');
     
     const mobileMenu = page.locator('#mobile-menu');
-    await expect(mobileMenu).toBeVisible({ timeout: 10000 });
-    await page.click('#mobile-menu-btn');
+    const menuBtn = page.locator('#mobile-menu-btn');
+    
+    await expect(mobileMenu).toBeHidden();
+    
+    await menuBtn.click();
     await expect(mobileMenu).toBeVisible();
+    
+    await menuBtn.click();
+    await expect(mobileMenu).toBeHidden();
   });
 
   test('mobile menu closes after navigation', async ({ page }) => {
@@ -249,7 +255,7 @@ test.describe('HTMX Sections', () => {
 
 test.describe('Responsive Design', () => {
   test('desktop navigation visible on large screens', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.setViewportSize({ width: 1920, height: 1080 });
     await page.goto(BASE_URL);
     
     const desktopNav = page.locator('nav .hidden.md\\:flex');
@@ -257,15 +263,7 @@ test.describe('Responsive Design', () => {
   });
 
   test('mobile menu button hidden on large screens', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 720 });
-    await page.goto(BASE_URL);
-    
-    const mobileBtn = page.locator('#mobile-menu-btn');
-    await expect(mobileBtn).toBeHidden();
-  });
-
- test('mobile menu button hidden on large screens', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.setViewportSize({ width: 1920, height: 1080 });
     await page.goto(BASE_URL);
     
     const mobileBtn = page.locator('#mobile-menu-btn');
@@ -333,19 +331,13 @@ test.describe('Performance', () => {
     expect(loadTime).toBeLessThan(5000);
   });
 
- test('no console errors', async ({ page }) => {
+  test('no unexpected console errors', async ({ page }) => {
     const errors: string[] = [];
     page.on('console', msg => {
       if (msg.type() === 'error') {
-        const ignoredErrors = [
-          'Failed to load resource',
-          'favicon.ico',
-        ];
-        const isIgnored = ignoredErrors.some(ignored => 
-          msg.text().includes(ignored)
-        );
-        if (!isIgnored) {
-          errors.push(msg.text());
+        const text = msg.text();
+        if (!text.includes('favicon') && !text.includes('404')) {
+          errors.push(text);
         }
       }
     });
@@ -353,6 +345,6 @@ test.describe('Performance', () => {
     await page.goto(BASE_URL);
     await page.waitForLoadState('networkidle');
     
-    expect(errors.filter(e => !e.includes('favicon')).toHaveLength(0);
+    expect(errors).toHaveLength(0);
   });
 });

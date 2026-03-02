@@ -20,6 +20,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /bin/server .
 
 # Stage 3: Production image
 FROM gcr.io/distroless/static-debian12:nonroot
+WORKDIR /
 COPY --from=builder /bin/server /server
 COPY --from=builder /app/assets/ /assets/
 EXPOSE 3000
