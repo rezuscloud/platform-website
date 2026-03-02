@@ -328,8 +328,55 @@ func TestResponsiveClasses(t *testing.T) {
 		assert.Contains(t, html, "hidden")
 	})
 
-	t.Run("has mobile menu button", func(t *testing.T) {
-		assert.Contains(t, html, "mobile-menu-btn")
+	t.Run("has mobile menu button with Alpine.js", func(t *testing.T) {
+		assert.Contains(t, html, "@click")
+		assert.Contains(t, html, "mobileOpen")
+	})
+
+	t.Run("has mobile menu transitions", func(t *testing.T) {
+		assert.Contains(t, html, "x-transition")
+	})
+}
+
+func TestAlpineJSIntegration(t *testing.T) {
+	app := setupIntegrationApp()
+	doc := getHTMLDoc(t, app, "/")
+
+	t.Run("alpine script loaded", func(t *testing.T) {
+		script := doc.Find("script[src*='alpine']")
+		assert.Equal(t, 1, script.Length(), "Alpine.js script should be included")
+	})
+
+	t.Run("alpine script has defer", func(t *testing.T) {
+		deferred, exists := doc.Find("script[src*='alpine']").Attr("defer")
+		assert.True(t, exists)
+		assert.True(t, deferred == "" || deferred == "defer" || deferred == "true")
+	})
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	html := string(body)
+
+	t.Run("html has x-data for theme", func(t *testing.T) {
+		assert.Contains(t, html, `x-data`)
+		assert.Contains(t, html, "dark")
+	})
+
+	t.Run("theme toggle uses Alpine", func(t *testing.T) {
+		assert.Contains(t, html, "$root.dark")
+	})
+
+	t.Run("x-cloak style defined", func(t *testing.T) {
+		assert.Contains(t, html, "x-cloak")
+	})
+
+	t.Run("mobile nav uses Alpine state", func(t *testing.T) {
+		assert.Contains(t, html, "x-show")
+		assert.Contains(t, html, "x-cloak")
 	})
 }
 
@@ -343,11 +390,84 @@ func TestDarkModeSupport(t *testing.T) {
 	body, _ := io.ReadAll(resp.Body)
 	html := string(body)
 
-	t.Run("has theme toggle script", func(t *testing.T) {
-		assert.Contains(t, html, "theme")
-	})
-
 	t.Run("supports dark class", func(t *testing.T) {
 		assert.Contains(t, html, "dark:")
+	})
+
+	t.Run("theme persisted to localStorage", func(t *testing.T) {
+		assert.Contains(t, html, "localStorage")
+	})
+
+	t.Run("respects prefers-color-scheme", func(t *testing.T) {
+		assert.Contains(t, html, "prefers-color-scheme")
+	})
+}
+
+func TestProgressiveEnhancement(t *testing.T) {
+	app := setupIntegrationApp()
+	doc := getHTMLDoc(t, app, "/")
+
+	t.Run("page works without JavaScript - all content present", func(t *testing.T) {
+		sections := []string{"hero", "challenge", "architecture", "features", "networking", "edge", "services", "comparison", "usecases", "techstack", "getstarted"}
+		for _, section := range sections {
+			assert.Equal(t, 1, doc.Find("#"+section).Length(), "Section %s should exist server-side", section)
+		}
+	})
+
+	t.Run("navigation links work without JavaScript", func(t *testing.T) {
+		navLinks := doc.Find("nav a[href^='#']")
+		assert.GreaterOrEqual(t, navLinks.Length(), 5, "Should have navigation links")
+	})
+
+	t.Run("forms and buttons have fallback behavior", func(t *testing.T) {
+		links := doc.Find("a[href]")
+		links.Each(func(i int, s *goquery.Selection) {
+			href, _ := s.Attr("href")
+			assert.NotEmpty(t, href, "Links should have href attributes")
+		})
+	})
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	html := string(body)
+
+	t.Run("content visible before JavaScript loads", func(t *testing.T) {
+		assert.Contains(t, html, "Enterprise Kubernetes")
+		assert.Contains(t, html, "RezusCloud")
+	})
+}
+
+func TestAlpineHTMXSeparation(t *testing.T) {
+	app := setupIntegrationApp()
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	html := string(body)
+
+	t.Run("Alpine handles client-side state (theme, mobile menu)", func(t *testing.T) {
+		assert.Contains(t, html, "x-data", "Alpine x-data for state")
+		assert.Contains(t, html, "x-show", "Alpine x-show for visibility")
+		assert.Contains(t, html, "@click", "Alpine @click for events")
+		assert.Contains(t, html, "mobileOpen", "Alpine state for mobile menu")
+		assert.Contains(t, html, "$root.dark", "Alpine state for theme")
+	})
+
+	t.Run("HTMX ready for server-side interactions", func(t *testing.T) {
+		assert.Contains(t, html, "htmx.min.js", "HTMX script loaded")
+	})
+
+	t.Run("Alpine deferred for progressive enhancement", func(t *testing.T) {
+		assert.Contains(t, html, `defer src="/assets/js/alpine.min.js"`, "Alpine loaded with defer")
+	})
+
+	t.Run("x-cloak prevents flash of unstyled content", func(t *testing.T) {
+		assert.Contains(t, html, "x-cloak", "x-cloak attribute present")
 	})
 }

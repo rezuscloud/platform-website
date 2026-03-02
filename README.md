@@ -8,8 +8,9 @@ This is a single-page marketing website that showcases the RezusCloud Kubernetes
 
 - **Single-page scrolling layout** with 11 content sections
 - **Dark/light theme toggle** with localStorage persistence
-- **Responsive design** for mobile, tablet, and desktop
-- **HTMX-ready architecture** for partial section updates
+- **Alpine.js** focuses on client-side interactivity (theme, mobile menu)
+- **HTMX** focuses on server-side interactivity (section updates)
+- **Progressive enhancement** - works without JavaScript, enhanced with it
 - **Dapr sidecar integration** for microservices building blocks
 - **Multi-architecture container images** (amd64/arm64)
 
@@ -21,7 +22,8 @@ This is a single-page marketing website that showcases the RezusCloud Kubernetes
 | Web Framework | Fiber v2 | 2.52.6 |
 | Templating | templ | 0.3.1001 |
 | CSS Framework | Tailwind CSS | 4.1.0 |
-| Frontend Interactivity | HTMX | 2.0.6 |
+| Server Interactivity | HTMX | 2.0.6 |
+| Client State | Alpine.js | 3.x |
 | Container Runtime | Dapr | 1.15.3 |
 | Base Image | distroless/static-debian12 | nonroot |
 
