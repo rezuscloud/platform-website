@@ -27,6 +27,10 @@ func main() {
 		CacheDuration: -1,
 	})
 
+	app.Get("/manifest.webmanifest", func(c *fiber.Ctx) error {
+		return c.SendFile("./assets/manifest.webmanifest")
+	})
+
 	app.Get("/", handlers.Home)
 	app.Get("/sections/:name", handlers.Section)
 

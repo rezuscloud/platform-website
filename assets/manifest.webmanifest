@@ -1,0 +1,26 @@
+{
+  "name": "RezusCloud - Enterprise Kubernetes Platform",
+  "short_name": "RezusCloud",
+  "description": "Enterprise Kubernetes Platform for hybrid cloud and edge computing",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#06b6d4",
+  "icons": [
+    {
+      "src": "/assets/img/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/assets/img/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/assets/img/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ]
+}
