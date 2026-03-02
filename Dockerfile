@@ -11,12 +11,21 @@ RUN npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
 FROM golang:1.24-alpine AS builder
 RUN go install github.com/a-h/templ/cmd/templ@latest
 WORKDIR /app
+
+ARG VERSION=dev
+ARG GIT_COMMIT=unknown
+ARG BUILD_TIME=unknown
+
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 RUN templ generate
 COPY --from=tailwind /app/assets/styles.css ./assets/styles.css
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /bin/server .
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -ldflags="-s -w -X github.com/rezuscloud/platform-website/version.Version=${VERSION} \
+    -X github.com/rezuscloud/platform-website/version.GitCommit=${GIT_COMMIT} \
+    -X github.com/rezuscloud/platform-website/version.BuildTime=${BUILD_TIME}" \
+    -o /bin/server .
 
 # Stage 3: Production image
 FROM gcr.io/distroless/static-debian12:nonroot

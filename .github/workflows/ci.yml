@@ -210,6 +210,10 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           no-cache: true
           platforms: linux/amd64,linux/arm64
+          build-args: |
+            VERSION=${{ steps.gitversion.outputs.SemVer }}
+            GIT_COMMIT=${{ github.sha }}
+            BUILD_TIME=${{ github.event.head_commit.timestamp }}
 
       - name: Make package public
         env:
