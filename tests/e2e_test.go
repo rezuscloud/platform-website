@@ -34,7 +34,7 @@ func newChromedpContext() (context.Context, context.CancelFunc) {
 	}
 }
 
-func TestE2EHomePageLoads(t *testing.T) {
+func TestE2EPageLoad(t *testing.T) {
 	ctx, cancel := newChromedpContext()
 	defer cancel()
 
@@ -42,13 +42,17 @@ func TestE2EHomePageLoads(t *testing.T) {
 	defer cancel()
 
 	var title string
+	var h1Text string
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(getBaseURL()),
+		chromedp.Sleep(2*time.Second),
 		chromedp.WaitVisible("body"),
 		chromedp.Title(&title),
+		chromedp.Text("h1", &h1Text),
 	)
 	require.NoError(t, err)
 	assert.Contains(t, title, "RezusCloud")
+	assert.Contains(t, h1Text, "Enterprise Kubernetes")
 }
 
 func TestE2EThemeToggle(t *testing.T) {
