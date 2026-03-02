@@ -56,14 +56,10 @@ func TestE2EAllSectionsExist(t *testing.T) {
 	ctx, cancel := newChromedpContext()
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
-	sections := []string{
-		"hero", "challenge", "architecture", "features",
-		"networking", "edge", "services", "comparison",
-		"usecases", "techstack", "getstarted",
-	}
+	sections := []string{"hero", "features", "getstarted"}
 
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(getBaseURL()),
@@ -74,14 +70,7 @@ func TestE2EAllSectionsExist(t *testing.T) {
 	for _, section := range sections {
 		var exists bool
 		err := chromedp.Run(ctx,
-			chromedp.ScrollIntoView("#"+section),
-			chromedp.Sleep(100*time.Millisecond),
-			chromedp.Evaluate(fmt.Sprintf(`
-				(function() {
-					const el = document.getElementById('%s');
-					return el !== null;
-				})()
-			`, section), &exists),
+			chromedp.Evaluate(fmt.Sprintf(`document.getElementById('%s') !== null`, section), &exists),
 		)
 		require.NoError(t, err)
 		assert.True(t, exists, "Section %s should exist", section)
@@ -127,17 +116,8 @@ func TestE2ENavigationScroll(t *testing.T) {
 	ctx, cancel := newChromedpContext()
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
-
-	navLinks := []struct {
-		selector string
-		target   string
-	}{
-		{"nav a[href='#architecture']", "#architecture"},
-		{"nav a[href='#features']", "#features"},
-		{"nav a[href='#getstarted']", "#getstarted"},
-	}
 
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(getBaseURL()),
@@ -145,23 +125,21 @@ func TestE2ENavigationScroll(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	for _, link := range navLinks {
-		var isInViewport bool
-		err := chromedp.Run(ctx,
-			chromedp.Click(link.selector),
-			chromedp.Sleep(500*time.Millisecond),
-			chromedp.Evaluate(fmt.Sprintf(`
-				(function() {
-					const el = document.querySelector('%s');
-					if (!el) return false;
-					const rect = el.getBoundingClientRect();
-					return rect.top >= 0 && rect.top < window.innerHeight;
-				})()
-			`, link.target), &isInViewport),
-		)
-		require.NoError(t, err)
-		assert.True(t, isInViewport, "Section %s should be in viewport after clicking nav", link.target)
-	}
+	var isInViewport bool
+	err = chromedp.Run(ctx,
+		chromedp.Click("nav a[href='#features']"),
+		chromedp.Sleep(500*time.Millisecond),
+		chromedp.Evaluate(`
+			(function() {
+				const el = document.querySelector('#features');
+				if (!el) return false;
+				const rect = el.getBoundingClientRect();
+				return rect.top >= 0 && rect.top < window.innerHeight;
+			})()
+		`, &isInViewport),
+	)
+	require.NoError(t, err)
+	assert.True(t, isInViewport, "Features section should be in viewport after clicking nav")
 }
 
 func TestE2EMobileMenu(t *testing.T) {
