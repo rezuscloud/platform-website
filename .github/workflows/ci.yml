@@ -52,8 +52,107 @@ jobs:
       - name: Build binary
         run: CGO_ENABLED=0 go build -o bin/server .
 
+  unit-tests:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - name: Install templ
+        run: go install github.com/a-h/templ/cmd/templ@latest
+
+      - name: Generate templ
+        run: templ generate
+
+      - name: Build CSS
+        run: |
+          npm install
+          npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
+
+      - name: Run unit tests (Layer 1 - httptest)
+        run: go test -v -count=1 ./handlers/...
+
+  integration-tests:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - name: Install templ
+        run: go install github.com/a-h/templ/cmd/templ@latest
+
+      - name: Generate templ
+        run: templ generate
+
+      - name: Build CSS
+        run: |
+          npm install
+          npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
+
+      - name: Run integration tests (Layer 2 - goquery)
+        run: go test -v -count=1 ./tests/... -run "Integration|HTML|Section|Navigation|Footer|Accessibility|HTMX|Responsive|DarkMode"
+
+  e2e-tests:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - name: Install templ
+        run: go install github.com/a-h/templ/cmd/templ@latest
+
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Generate templ
+        run: templ generate
+
+      - name: Build CSS
+        run: |
+          npm install
+          npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
+
+      - name: Build container
+        run: docker build -t platform-website-test .
+
+      - name: Run container
+        run: |
+          docker run -d --name platform-website -p 3000:3000 platform-website-test
+          sleep 5
+          curl --retry 10 --retry-delay 2 --retry-connrefused http://localhost:3000
+
+      - name: Run E2E tests (Layer 3 - chromedp)
+        run: go test -v -count=1 -tags=e2e ./tests/... -run "E2E" -timeout 5m
+
+      - name: Stop container
+        if: always()
+        run: docker stop platform-website && docker rm platform-website
+
   docker:
-    needs: [build, visual-tests]
+    needs: [build, unit-tests, integration-tests, e2e-tests]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     permissions:
@@ -95,7 +194,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Try org endpoint first, then user endpoint as fallback
           curl -sf -X PUT \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
@@ -109,52 +207,3 @@ jobs:
             "https://api.github.com/user/packages/container/platform-website" \
             -d '{"visibility":"public"}' \
           || echo "Warning: Could not set package visibility to public. Please set it manually in GitHub Package Settings."
-
-  visual-tests:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
-      - name: Install Playwright dependencies
-        working-directory: tests
-        run: |
-          npm ci
-          npx playwright install --with-deps chromium
-
-      - name: Build container
-        run: docker build -t platform-website-test .
-
-      - name: Run container
-        run: |
-          docker run -d --name platform-website -p 3000:3000 platform-website-test
-          sleep 5
-          curl --retry 10 --retry-delay 2 --retry-connrefused http://localhost:3000
-
-      - name: Run visual regression tests
-        working-directory: tests
-        run: npx playwright test --project=visual
-        continue-on-error: true
-
-      - name: Run functional tests
-        working-directory: tests
-        run: npx playwright test --project=functional
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: tests/playwright-report/
-          retention-days: 30
-
-      - name: Stop container
-        if: always()
-        run: docker stop platform-website && docker rm platform-website
