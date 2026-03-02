@@ -65,6 +65,7 @@ func TestE2EThemeToggle(t *testing.T) {
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(getBaseURL()),
 		chromedp.WaitVisible("body"),
+		chromedp.Sleep(1*time.Second),
 	)
 	require.NoError(t, err)
 
@@ -76,7 +77,7 @@ func TestE2EThemeToggle(t *testing.T) {
 
 	err = chromedp.Run(ctx,
 		chromedp.Click("button[aria-label='Toggle theme']"),
-		chromedp.Sleep(300*time.Millisecond),
+		chromedp.Sleep(500*time.Millisecond),
 	)
 	require.NoError(t, err)
 

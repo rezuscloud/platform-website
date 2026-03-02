@@ -10,7 +10,7 @@ templ Layout(title string) {
 				(!localStorage.getItem('theme') &&
 				 window.matchMedia('(prefers-color-scheme: dark)').matches)
 		}"
-		:x-class="{ 'dark': dark }"
+		:class="{ 'dark': dark }"
 		x-init="$watch('dark', value => localStorage.setItem('theme', value ? 'dark' : 'light'))"
 	>
 		<head>
