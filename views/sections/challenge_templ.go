@@ -33,7 +33,7 @@ func Challenge() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = challengeRow("Cost", "$2,000-5,000/month minimum", "Budget-draining infrastructure").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = challengeRow("Vendor Lock-in", "Single cloud provider", "Limited flexibility").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -41,7 +41,7 @@ func Challenge() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = challengeRow("Vendor Lock-in", "Single cloud provider", "Limited flexibility").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = challengeRow("Data Sovereignty", "Data stored in third-party clouds", "Compliance and privacy risks").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -29,11 +29,11 @@ func Comparison() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"comparison\" class=\"py-16 sm:py-24 bg-gray-50 dark:bg-gray-900\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4\">Platform Comparison</h2><p class=\"text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto\">See how our platform stacks up against traditional enterprise Kubernetes solutions.</p></div><div class=\"max-w-4xl mx-auto\"><div class=\"bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden\"><table class=\"w-full text-left text-sm\"><thead><tr class=\"bg-gray-50 dark:bg-gray-900\"><th class=\"py-4 px-6 font-semibold text-gray-500 dark:text-gray-400\">Capability</th><th class=\"py-4 px-6 font-semibold text-gray-500 dark:text-gray-400\">Traditional Enterprise</th><th class=\"py-4 px-6 font-semibold text-cyan-600 dark:text-cyan-400\">Our Platform</th></tr></thead> <tbody class=\"divide-y divide-gray-200 dark:divide-gray-700\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"comparison\" class=\"py-16 sm:py-24 bg-gray-50 dark:bg-gray-900\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4\">Platform Comparison</h2><p class=\"text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto\">See how our platform compares to traditional enterprise Kubernetes solutions.</p></div><div class=\"max-w-4xl mx-auto\"><div class=\"bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden\"><table class=\"w-full text-left text-sm\"><thead><tr class=\"bg-gray-50 dark:bg-gray-900\"><th class=\"py-4 px-6 font-semibold text-gray-500 dark:text-gray-400\">Capability</th><th class=\"py-4 px-6 font-semibold text-gray-500 dark:text-gray-400\">Traditional Enterprise</th><th class=\"py-4 px-6 font-semibold text-cyan-600 dark:text-cyan-400\">Our Platform</th></tr></thead> <tbody class=\"divide-y divide-gray-200 dark:divide-gray-700\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = compRow("Monthly Cost", "$2,000-5,000+", "<$100", true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = compRow("Infrastructure Ownership", "Third-party managed", "Fully self-owned", true).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -61,11 +61,11 @@ func Comparison() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = compRow("Control Plane HA", "Self-managed (expensive)", "Cloud SLA guaranteed", true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = compRow("Control Plane", "Cloud-managed dependency", "Self-managed independence", true).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = compRow("Edge Compute Cost", "Cloud rates everywhere", "Zero (use own hardware)", true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = compRow("Edge Compute", "Cloud dependency", "Full autonomy", true).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

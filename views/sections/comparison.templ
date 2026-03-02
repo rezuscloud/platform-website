@@ -6,7 +6,7 @@ templ Comparison() {
 			<div class="text-center mb-12">
 				<h2 class="text-3xl sm:text-4xl font-bold mb-4">Platform Comparison</h2>
 				<p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-					See how our platform stacks up against traditional enterprise Kubernetes solutions.
+					See how our platform compares to traditional enterprise Kubernetes solutions.
 				</p>
 			</div>
 			<div class="max-w-4xl mx-auto">
@@ -20,15 +20,15 @@ templ Comparison() {
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-							@compRow("Monthly Cost", "$2,000-5,000+", "<$100", true)
+							@compRow("Infrastructure Ownership", "Third-party managed", "Fully self-owned", true)
 							@compRow("Setup Time", "2-4 weeks", "2-4 hours", true)
 							@compRow("Cloud Lock-in", "Single vendor", "Multi-cloud ready", true)
 							@compRow("Edge Support", "Separate clusters", "Unified cluster", true)
 							@compRow("Architecture", "Homogeneous", "Heterogeneous", false)
 							@compRow("Networking", "Basic CNI", "eBPF + eBGP + Gateway API", true)
 							@compRow("Hardware", "Enterprise servers only", "Consumer-grade supported", true)
-							@compRow("Control Plane HA", "Self-managed (expensive)", "Cloud SLA guaranteed", true)
-							@compRow("Edge Compute Cost", "Cloud rates everywhere", "Zero (use own hardware)", true)
+							@compRow("Control Plane", "Cloud-managed dependency", "Self-managed independence", true)
+							@compRow("Edge Compute", "Cloud dependency", "Full autonomy", true)
 							@compRow("Security", "Add-on cost", "Built-in", true)
 							@compRow("GitOps", "Manual/expensive", "Automated (Flux)", true)
 							@compRow("IPv6", "Optional", "Native-first", false)
