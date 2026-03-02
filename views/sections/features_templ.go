@@ -29,21 +29,21 @@ func Features() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"features\" class=\"py-16 sm:py-24 bg-gray-50 dark:bg-gray-900\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4\">Key Differentiators</h2><p class=\"text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto\">Enterprise-grade capabilities without the enterprise price tag.</p></div><div class=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"features\" class=\"py-16 sm:py-24 bg-gray-50 dark:bg-gray-900\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4\">Key Differentiators</h2><p class=\"text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto\">Enterprise-grade capabilities with full infrastructure ownership.</p></div><div class=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = featureCard(
-			"Cost Efficiency",
-			"Save $1,600+/month with open-source alternatives to commercial platforms. Flux CD, Cilium, Prometheus, Grafana, and cert-manager -- all free.",
-			costIcon(),
+			"Infrastructure Freedom",
+			"Own your entire stack with open-source alternatives. Flux CD, Cilium, Prometheus, Grafana, and cert-manager -- all community-driven and transparent.",
+			freedomIcon(),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = featureCard(
 			"True Hybrid Architecture",
-			"Single control plane for all nodes. Automatic encrypted tunnels between cloud and edge. Schedule workloads anywhere. Zero edge compute costs.",
+			"Single control plane for all nodes. Automatic encrypted tunnels between cloud and edge. Schedule workloads anywhere. Full edge autonomy.",
 			hybridIcon(),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -81,7 +81,7 @@ func Features() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><!-- Cost Breakdown --><div class=\"mt-16 max-w-4xl mx-auto\"><h3 class=\"text-2xl font-bold text-center mb-8\">Estimated Monthly Infrastructure Costs</h3><div class=\"bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden\"><table class=\"w-full text-left\"><thead><tr class=\"bg-gray-50 dark:bg-gray-900\"><th class=\"py-3 px-6 text-sm font-semibold text-gray-500 dark:text-gray-400\">Resource</th><th class=\"py-3 px-6 text-sm font-semibold text-gray-500 dark:text-gray-400\">Specification</th><th class=\"py-3 px-6 text-sm font-semibold text-gray-500 dark:text-gray-400\">Monthly Cost</th></tr></thead> <tbody class=\"divide-y divide-gray-200 dark:divide-gray-700\"><tr><td class=\"py-3 px-6 font-medium\">Control Plane (ARM64)</td><td class=\"py-3 px-6 text-gray-600 dark:text-gray-400\">4 OCPU, 24GB RAM</td><td class=\"py-3 px-6 text-cyan-600 dark:text-cyan-400 font-semibold\">~$50-70</td></tr><tr><td class=\"py-3 px-6 font-medium\">Block Storage</td><td class=\"py-3 px-6 text-gray-600 dark:text-gray-400\">150GB</td><td class=\"py-3 px-6 text-cyan-600 dark:text-cyan-400 font-semibold\">~$3</td></tr><tr><td class=\"py-3 px-6 font-medium\">Network Load Balancer</td><td class=\"py-3 px-6 text-gray-600 dark:text-gray-400\">L4, Dual-stack</td><td class=\"py-3 px-6 text-cyan-600 dark:text-cyan-400 font-semibold\">~$20</td></tr><tr class=\"bg-cyan-50 dark:bg-cyan-950/30\"><td class=\"py-3 px-6 font-bold\" colspan=\"2\">Base Cluster Total</td><td class=\"py-3 px-6 text-cyan-600 dark:text-cyan-400 font-bold text-lg\">~$73-93/month</td></tr></tbody></table></div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -125,7 +125,7 @@ func featureCard(title string, description string, icon templ.Component) templ.C
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/features.templ`, Line: 89, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/features.templ`, Line: 53, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -138,7 +138,7 @@ func featureCard(title string, description string, icon templ.Component) templ.C
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/features.templ`, Line: 90, Col: 83}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/features.templ`, Line: 54, Col: 83}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -152,7 +152,7 @@ func featureCard(title string, description string, icon templ.Component) templ.C
 	})
 }
 
-func costIcon() templ.Component {
+func freedomIcon() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -173,7 +173,7 @@ func costIcon() templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<svg class=\"w-6 h-6 text-cyan-600 dark:text-cyan-400\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<svg class=\"w-6 h-6 text-cyan-600 dark:text-cyan-400\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

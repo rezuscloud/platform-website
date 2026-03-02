@@ -29,7 +29,7 @@ func Layout(title string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"scroll-smooth\" x-data=\"{\n\t\t\tdark: localStorage.getItem('theme') === 'dark' ||\n\t\t\t\t(!localStorage.getItem('theme') &&\n\t\t\t\t window.matchMedia('(prefers-color-scheme: dark)').matches)\n\t\t}\" :class=\"{ 'dark': dark }\" x-init=\"$watch('dark', value => localStorage.setItem('theme', value ? 'dark' : 'light'))\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"Enterprise Kubernetes Platform - Hybrid Cloud & Edge Computing at a fraction of traditional costs\"><meta name=\"theme-color\" content=\"#06b6d4\"><title>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"scroll-smooth\" x-data=\"{\n\t\t\tdark: localStorage.getItem('theme') === 'dark' ||\n\t\t\t\t(!localStorage.getItem('theme') &&\n\t\t\t\t window.matchMedia('(prefers-color-scheme: dark)').matches)\n\t\t}\" :class=\"{ 'dark': dark }\" x-init=\"$watch('dark', value => localStorage.setItem('theme', value ? 'dark' : 'light'))\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"Enterprise Kubernetes Platform - Hybrid Cloud & Edge Computing with full infrastructure ownership\"><meta name=\"theme-color\" content=\"#06b6d4\"><title>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
