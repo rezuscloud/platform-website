@@ -69,9 +69,9 @@ func TestE2EThemeToggle(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	var initialHasDark bool
+	var initialDarkState bool
 	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`document.documentElement.classList.contains('dark')`, &initialHasDark),
+		chromedp.Evaluate(`document.documentElement.__x.$data.dark`, &initialDarkState),
 	)
 	require.NoError(t, err)
 
@@ -81,14 +81,22 @@ func TestE2EThemeToggle(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	var afterToggleHasDark bool
+	var afterToggleDarkState bool
 	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`document.documentElement.classList.contains('dark')`, &afterToggleHasDark),
+		chromedp.Evaluate(`document.documentElement.__x.$data.dark`, &afterToggleDarkState),
 	)
 	require.NoError(t, err)
 
-	assert.NotEqual(t, initialHasDark, afterToggleHasDark,
-		"Theme should toggle between light and dark")
+	assert.NotEqual(t, initialDarkState, afterToggleDarkState,
+		"Theme state should toggle between light and dark")
+
+	var hasDarkClass bool
+	err = chromedp.Run(ctx,
+		chromedp.Evaluate(`document.documentElement.classList.contains('dark')`, &hasDarkClass),
+	)
+	require.NoError(t, err)
+	assert.Equal(t, afterToggleDarkState, hasDarkClass,
+		"Dark class should match theme state")
 }
 
 func TestE2EMobileMenu(t *testing.T) {
