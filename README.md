@@ -390,3 +390,4 @@ MIT License - See LICENSE file for details.
 - **Source:** https://github.com/rezuscloud/platform-website
 - **Container Registry:** https://github.com/rezuscloud/platform-website/pkgs/container/platform-website
 - **Platform Documentation:** See `docs/PLATFORM.md` in the talos repository
+<!-- Build 1772478984 -->
