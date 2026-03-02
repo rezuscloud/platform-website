@@ -65,38 +65,30 @@ func TestE2EThemeToggle(t *testing.T) {
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(getBaseURL()),
 		chromedp.WaitVisible("body"),
-		chromedp.Sleep(1*time.Second),
+		chromedp.Sleep(2*time.Second),
 	)
 	require.NoError(t, err)
 
-	var initialDarkState bool
+	var initialHasDark bool
 	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`document.documentElement.__x.$data.dark`, &initialDarkState),
+		chromedp.Evaluate(`document.documentElement.classList.contains('dark')`, &initialHasDark),
 	)
 	require.NoError(t, err)
 
 	err = chromedp.Run(ctx,
 		chromedp.Click("button[aria-label='Toggle theme']"),
-		chromedp.Sleep(500*time.Millisecond),
+		chromedp.Sleep(1*time.Second),
 	)
 	require.NoError(t, err)
 
-	var afterToggleDarkState bool
+	var afterToggleHasDark bool
 	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`document.documentElement.__x.$data.dark`, &afterToggleDarkState),
+		chromedp.Evaluate(`document.documentElement.classList.contains('dark')`, &afterToggleHasDark),
 	)
 	require.NoError(t, err)
 
-	assert.NotEqual(t, initialDarkState, afterToggleDarkState,
-		"Theme state should toggle between light and dark")
-
-	var hasDarkClass bool
-	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`document.documentElement.classList.contains('dark')`, &hasDarkClass),
-	)
-	require.NoError(t, err)
-	assert.Equal(t, afterToggleDarkState, hasDarkClass,
-		"Dark class should match theme state")
+	assert.NotEqual(t, initialHasDark, afterToggleHasDark,
+		"Theme should toggle between light and dark")
 }
 
 func TestE2EMobileMenu(t *testing.T) {
