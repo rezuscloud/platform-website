@@ -22,8 +22,21 @@ func getBaseURL() string {
 	return "http://localhost:3000"
 }
 
+func newChromedpContext() (context.Context, context.CancelFunc) {
+	opts := append(chromedp.DefaultExecAllocatorOptions[:],
+		chromedp.Flag("no-sandbox", true),
+		chromedp.Flag("disable-setuid-sandbox", true),
+	)
+	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
+	ctx, ctxCancel := chromedp.NewContext(allocCtx)
+	return ctx, func() {
+		ctxCancel()
+		cancel()
+	}
+}
+
 func TestE2EHomePageLoads(t *testing.T) {
-	ctx, cancel := chromedp.NewContext(context.Background())
+	ctx, cancel := newChromedpContext()
 	defer cancel()
 
 	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
@@ -40,7 +53,7 @@ func TestE2EHomePageLoads(t *testing.T) {
 }
 
 func TestE2EAllSectionsExist(t *testing.T) {
-	ctx, cancel := chromedp.NewContext(context.Background())
+	ctx, cancel := newChromedpContext()
 	defer cancel()
 
 	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
@@ -76,7 +89,7 @@ func TestE2EAllSectionsExist(t *testing.T) {
 }
 
 func TestE2EThemeToggle(t *testing.T) {
-	ctx, cancel := chromedp.NewContext(context.Background())
+	ctx, cancel := newChromedpContext()
 	defer cancel()
 
 	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
@@ -111,7 +124,7 @@ func TestE2EThemeToggle(t *testing.T) {
 }
 
 func TestE2ENavigationScroll(t *testing.T) {
-	ctx, cancel := chromedp.NewContext(context.Background())
+	ctx, cancel := newChromedpContext()
 	defer cancel()
 
 	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
@@ -152,7 +165,7 @@ func TestE2ENavigationScroll(t *testing.T) {
 }
 
 func TestE2EMobileMenu(t *testing.T) {
-	ctx, cancel := chromedp.NewContext(context.Background())
+	ctx, cancel := newChromedpContext()
 	defer cancel()
 
 	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
@@ -208,7 +221,7 @@ func TestE2EMobileMenu(t *testing.T) {
 }
 
 func TestE2EPerformance(t *testing.T) {
-	ctx, cancel := chromedp.NewContext(context.Background())
+	ctx, cancel := newChromedpContext()
 	defer cancel()
 
 	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
@@ -232,7 +245,7 @@ func TestE2EPerformance(t *testing.T) {
 }
 
 func TestE2EHTMXSectionLoad(t *testing.T) {
-	ctx, cancel := chromedp.NewContext(context.Background())
+	ctx, cancel := newChromedpContext()
 	defer cancel()
 
 	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
@@ -252,7 +265,7 @@ func TestE2EHTMXSectionLoad(t *testing.T) {
 }
 
 func TestE2EConsoleErrors(t *testing.T) {
-	ctx, cancel := chromedp.NewContext(context.Background())
+	ctx, cancel := newChromedpContext()
 	defer cancel()
 
 	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
