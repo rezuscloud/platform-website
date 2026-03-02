@@ -156,10 +156,29 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup GitVersion
+        uses: gittools/actions/gitversion/setup@v3.0.0
+        with:
+          versionSpec: '6.0.x'
+
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v3.0.0
+
+      - name: Display GitVersion outputs
+        run: |
+          echo "SemVer: ${{ steps.gitversion.outputs.SemVer }}"
+          echo "FullSemVer: ${{ steps.gitversion.outputs.FullSemVer }}"
+          echo "Major: ${{ steps.gitversion.outputs.Major }}"
+          echo "Minor: ${{ steps.gitversion.outputs.Minor }}"
+          echo "Patch: ${{ steps.gitversion.outputs.Patch }}"
 
       - name: Log in to Container Registry
         uses: docker/login-action@v3
@@ -174,7 +193,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=sha,prefix=
+            type=semver,pattern={{version}},value=${{ steps.gitversion.outputs.SemVer }}
             type=raw,value=latest
 
       - name: Set up Docker Buildx
