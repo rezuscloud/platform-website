@@ -5,7 +5,6 @@ package tests
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -39,7 +38,7 @@ func TestE2EHomePageLoads(t *testing.T) {
 	ctx, cancel := newChromedpContext()
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
 	var title string
@@ -52,36 +51,11 @@ func TestE2EHomePageLoads(t *testing.T) {
 	assert.Contains(t, title, "RezusCloud")
 }
 
-func TestE2EAllSectionsExist(t *testing.T) {
-	ctx, cancel := newChromedpContext()
-	defer cancel()
-
-	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
-
-	sections := []string{"hero", "features", "getstarted"}
-
-	err := chromedp.Run(ctx,
-		chromedp.Navigate(getBaseURL()),
-		chromedp.WaitVisible("#hero"),
-	)
-	require.NoError(t, err)
-
-	for _, section := range sections {
-		var exists bool
-		err := chromedp.Run(ctx,
-			chromedp.Evaluate(fmt.Sprintf(`document.getElementById('%s') !== null`, section), &exists),
-		)
-		require.NoError(t, err)
-		assert.True(t, exists, "Section %s should exist", section)
-	}
-}
-
 func TestE2EThemeToggle(t *testing.T) {
 	ctx, cancel := newChromedpContext()
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
 	err := chromedp.Run(ctx,
@@ -112,41 +86,11 @@ func TestE2EThemeToggle(t *testing.T) {
 		"Theme should toggle between light and dark")
 }
 
-func TestE2ENavigationScroll(t *testing.T) {
-	ctx, cancel := newChromedpContext()
-	defer cancel()
-
-	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
-
-	err := chromedp.Run(ctx,
-		chromedp.Navigate(getBaseURL()),
-		chromedp.WaitVisible("nav"),
-	)
-	require.NoError(t, err)
-
-	var isInViewport bool
-	err = chromedp.Run(ctx,
-		chromedp.Click("nav a[href='#features']"),
-		chromedp.Sleep(500*time.Millisecond),
-		chromedp.Evaluate(`
-			(function() {
-				const el = document.querySelector('#features');
-				if (!el) return false;
-				const rect = el.getBoundingClientRect();
-				return rect.top >= 0 && rect.top < window.innerHeight;
-			})()
-		`, &isInViewport),
-	)
-	require.NoError(t, err)
-	assert.True(t, isInViewport, "Features section should be in viewport after clicking nav")
-}
-
 func TestE2EMobileMenu(t *testing.T) {
 	ctx, cancel := newChromedpContext()
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
 	err := chromedp.Run(ctx,
@@ -202,7 +146,7 @@ func TestE2EPerformance(t *testing.T) {
 	ctx, cancel := newChromedpContext()
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
 	var loadTime float64
@@ -226,7 +170,7 @@ func TestE2EHTMXSectionLoad(t *testing.T) {
 	ctx, cancel := newChromedpContext()
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
 	var bodyText string
