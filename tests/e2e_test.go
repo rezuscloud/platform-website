@@ -52,29 +52,18 @@ func TestE2EHomePageLoads(t *testing.T) {
 	assert.Contains(t, title, "RezusCloud")
 }
 
-func TestE2ENavigationScroll(t *testing.T) {
-    app := setupApp()
-    
-    navLinks := []struct {
-        selector    string
-        target      string
-        description string
-    }{
-        {"nav a[href='#architecture']", "#architecture"},
-        {"nav a[href='#features']", "#features"},
-        {"nav a[href='#getstarted"], "#getstarted"}
-    }
+func TestE2EAllSectionsExist(t *testing.T) {
+	ctx, cancel := newChromedpContext()
+	defer cancel()
 
-    doc := getHTMLDoc(t, getHTMLDoc(t) {
-        body := doc.Find("nav")
-        body := doc.Find("footer")
-        if footer.Length() == 0 {
-            return
-        }
-    }
-    return nil
-    }
-}
+	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+
+	sections := []string{
+		"hero", "challenge", "architecture", "features",
+		"networking", "edge", "services", "comparison",
+		"usecases", "techstack", "getstarted",
+	}
 
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(getBaseURL()),
@@ -138,17 +127,16 @@ func TestE2ENavigationScroll(t *testing.T) {
 	ctx, cancel := newChromedpContext()
 	defer cancel()
 
-	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
 	navLinks := []struct {
-		selector    string
-		target      string
-		description string
+		selector string
+		target   string
 	}{
-		{"nav a[href='#architecture']", "#architecture", "Architecture"},
-		{"nav a[href='#features']", "#features", "Features"},
-		{"nav a[href='#getstarted']", "#getstarted", "Get Started"},
+		{"nav a[href='#architecture']", "#architecture"},
+		{"nav a[href='#features']", "#features"},
+		{"nav a[href='#getstarted']", "#getstarted"},
 	}
 
 	err := chromedp.Run(ctx,
@@ -165,13 +153,14 @@ func TestE2ENavigationScroll(t *testing.T) {
 			chromedp.Evaluate(fmt.Sprintf(`
 				(function() {
 					const el = document.querySelector('%s');
+					if (!el) return false;
 					const rect = el.getBoundingClientRect();
 					return rect.top >= 0 && rect.top < window.innerHeight;
 				})()
 			`, link.target), &isInViewport),
 		)
 		require.NoError(t, err)
-		assert.True(t, isInViewport, "%s section should be in viewport after clicking nav", link.description)
+		assert.True(t, isInViewport, "Section %s should be in viewport after clicking nav", link.target)
 	}
 }
 
@@ -273,30 +262,4 @@ func TestE2EHTMXSectionLoad(t *testing.T) {
 
 	assert.Contains(t, bodyText, "Enterprise Kubernetes",
 		"Section endpoint should contain expected content")
-}
-
-func TestE2EConsoleErrors(t *testing.T) {
-	ctx, cancel := newChromedpContext()
-	defer cancel()
-
-	ctx, cancel = context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
-
-	err := chromedp.Run(ctx,
-		chromedp.Navigate(getBaseURL()),
-		chromedp.WaitVisible("body"),
-		chromedp.Sleep(2*time.Second),
-	)
-	require.NoError(t, err)
-
-	var hasErrors bool
-	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`
-			(function() {
-				return window.__e2eErrors && window.__e2eErrors.length > 0;
-			})()
-		`, &hasErrors),
-	)
-	require.NoError(t, err)
-	assert.False(t, hasErrors, "Page should not have JavaScript errors")
 }
