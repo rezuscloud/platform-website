@@ -186,8 +186,62 @@ func TestAccessibilityHTML(t *testing.T) {
 	})
 }
 
+func TestHTMXScriptLoaded(t *testing.T) {
+	app := setupIntegrationApp()
+	doc := getHTMLDoc(t, app, "/")
+
+	t.Run("htmx script tag exists", func(t *testing.T) {
+		script := doc.Find("script[src*='htmx']")
+		assert.Equal(t, 1, script.Length(), "HTMX script should be included")
+	})
+
+	t.Run("htmx script has correct path", func(t *testing.T) {
+		src, exists := doc.Find("script[src*='htmx']").Attr("src")
+		assert.True(t, exists)
+		assert.Contains(t, src, "htmx.min.js")
+	})
+
+	t.Run("htmx script in head", func(t *testing.T) {
+		script := doc.Find("head script[src*='htmx']")
+		assert.Equal(t, 1, script.Length(), "HTMX script should be in <head>")
+	})
+}
+
 func TestHTMXAttributes(t *testing.T) {
 	app := setupIntegrationApp()
+
+	htmxAttrs := []string{
+		"hx-get", "hx-post", "hx-put", "hx-delete", "hx-patch",
+		"hx-trigger", "hx-swap", "hx-target", "hx-swap-oob",
+		"hx-boost", "hx-include", "hx-params", "hx-headers",
+		"hx-indicator", "hx-push-url", "hx-confirm", "hx-disabled-elt",
+		"hx-ext", "hx-history", "hx-history-elt", "hx-on",
+		"hx-preserve", "hx-prompt", "hx-replace-url", "hx-request",
+		"hx-select", "hx-select-oob", "hx-sync", "hx-validate",
+		"hx-vals", "hx-ws", "hx-sse",
+	}
+
+	t.Run("find any htmx attributes on home page", func(t *testing.T) {
+		doc := getHTMLDoc(t, app, "/")
+
+		foundAttrs := make(map[string][]string)
+		for _, attr := range htmxAttrs {
+			doc.Find("[" + attr + "]").Each(func(i int, s *goquery.Selection) {
+				val, _ := s.Attr(attr)
+				tag := goquery.NodeName(s)
+				id, _ := s.Attr("id")
+				selector := tag
+				if id != "" {
+					selector += "#" + id
+				}
+				foundAttrs[attr] = append(foundAttrs[attr], selector+"="+val)
+			})
+		}
+
+		if len(foundAttrs) > 0 {
+			t.Logf("Found HTMX attributes: %v", foundAttrs)
+		}
+	})
 
 	t.Run("section endpoints return valid HTML", func(t *testing.T) {
 		sections := []string{"hero", "features", "architecture", "getstarted"}
@@ -207,6 +261,55 @@ func TestHTMXAttributes(t *testing.T) {
 		headings := doc.Find("h1, h2, h3")
 		assert.Greater(t, headings.Length(), 0,
 			"Hero section should contain headings")
+	})
+
+	t.Run("section endpoints could be used with hx-get", func(t *testing.T) {
+		sections := []string{"hero", "features", "architecture", "networking", "edge", "services", "comparison", "usecases", "techstack", "getstarted"}
+
+		for _, section := range sections {
+			doc := getHTMLDoc(t, app, "/sections/"+section)
+
+			assert.Equal(t, 1, doc.Find("#"+section).Length(),
+				"Section %s endpoint should return single element for hx-swap", section)
+
+			content := doc.Find("#" + section).Text()
+			assert.Greater(t, len(strings.TrimSpace(content)), 10,
+				"Section %s should have content suitable for HTMX swap", section)
+		}
+	})
+}
+
+func TestHTMXDataAttributes(t *testing.T) {
+	app := setupIntegrationApp()
+	doc := getHTMLDoc(t, app, "/")
+
+	dataHtmxAttrs := []string{
+		"data-hx-get", "data-hx-post", "data-hx-put", "data-hx-delete",
+		"data-hx-trigger", "data-hx-swap", "data-hx-target",
+	}
+
+	t.Run("find data-hx attributes", func(t *testing.T) {
+		for _, attr := range dataHtmxAttrs {
+			count := doc.Find("[" + attr + "]").Length()
+			if count > 0 {
+				t.Logf("Found %d elements with %s", count, attr)
+			}
+		}
+	})
+}
+
+func TestHTMXExtensionSupport(t *testing.T) {
+	app := setupIntegrationApp()
+	doc := getHTMLDoc(t, app, "/")
+
+	t.Run("htmx-indicator class available", func(t *testing.T) {
+		indicator := doc.Find(".htmx-indicator")
+		t.Logf("Found %d htmx-indicator elements", indicator.Length())
+	})
+
+	t.Run("htmx-request class check", func(t *testing.T) {
+		request := doc.Find(".htmx-request")
+		t.Logf("Found %d htmx-request elements", request.Length())
 	})
 }
 
