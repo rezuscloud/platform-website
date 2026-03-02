@@ -100,7 +100,8 @@ func TestE2EMobileMenu(t *testing.T) {
 	err := chromedp.Run(ctx,
 		chromedp.EmulateViewport(375, 812),
 		chromedp.Navigate(getBaseURL()),
-		chromedp.WaitVisible("#mobile-menu-btn"),
+		chromedp.WaitVisible("body"),
+		chromedp.Sleep(500*time.Millisecond),
 	)
 	require.NoError(t, err)
 
@@ -108,7 +109,7 @@ func TestE2EMobileMenu(t *testing.T) {
 	err = chromedp.Run(ctx,
 		chromedp.Evaluate(`
 			(function() {
-				const el = document.getElementById('mobile-menu');
+				const el = document.querySelector('[x-show="mobileOpen"]');
 				if (!el) return false;
 				const style = window.getComputedStyle(el);
 				return style.display !== 'none' && style.visibility !== 'hidden';
@@ -119,7 +120,7 @@ func TestE2EMobileMenu(t *testing.T) {
 	assert.False(t, menuInitiallyVisible, "Mobile menu should be hidden initially")
 
 	err = chromedp.Run(ctx,
-		chromedp.Click("#mobile-menu-btn"),
+		chromedp.Click("button[aria-label='Toggle mobile menu']"),
 		chromedp.Sleep(300*time.Millisecond),
 	)
 	require.NoError(t, err)
@@ -128,7 +129,7 @@ func TestE2EMobileMenu(t *testing.T) {
 	err = chromedp.Run(ctx,
 		chromedp.Evaluate(`
 			(function() {
-				const el = document.getElementById('mobile-menu');
+				const el = document.querySelector('[x-show="mobileOpen"]');
 				if (!el) return false;
 				const style = window.getComputedStyle(el);
 				return style.display !== 'none' && style.visibility !== 'hidden';
@@ -140,7 +141,7 @@ func TestE2EMobileMenu(t *testing.T) {
 
 	var linkCount int
 	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`document.querySelectorAll('#mobile-menu a').length`, &linkCount),
+		chromedp.Evaluate(`document.querySelectorAll('nav [x-show="mobileOpen"] a').length`, &linkCount),
 	)
 	require.NoError(t, err)
 	assert.Equal(t, 5, linkCount, "Mobile menu should have 5 links")
@@ -188,4 +189,80 @@ func TestE2EHTMXSectionLoad(t *testing.T) {
 
 	assert.Contains(t, bodyText, "Enterprise Kubernetes",
 		"Section endpoint should contain expected content")
+}
+
+func TestE2EProgressiveEnhancement(t *testing.T) {
+	ctx, cancel := newChromedpContext()
+	defer cancel()
+
+	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+
+	err := chromedp.Run(ctx,
+		chromedp.Navigate(getBaseURL()),
+		chromedp.WaitVisible("body"),
+		chromedp.Sleep(500*time.Millisecond),
+	)
+	require.NoError(t, err)
+
+	var contentChecks map[string]bool
+	err = chromedp.Run(ctx,
+		chromedp.Evaluate(`
+			(function() {
+				return {
+					hasTitle: document.title.includes('RezusCloud'),
+					hasH1: document.querySelector('h1') !== null,
+					hasNav: document.querySelector('nav') !== null,
+					hasMain: document.querySelector('main') !== null,
+					hasFooter: document.querySelector('footer') !== null,
+					allSectionsPresent: ['hero', 'features', 'architecture', 'getstarted']
+						.every(id => document.getElementById(id) !== null),
+					navLinksWork: document.querySelectorAll('nav a[href^="#"]').length >= 5
+				};
+			})()
+		`, &contentChecks),
+	)
+	require.NoError(t, err)
+
+	assert.True(t, contentChecks["hasTitle"], "Page should have title")
+	assert.True(t, contentChecks["hasH1"], "Page should have h1")
+	assert.True(t, contentChecks["hasNav"], "Page should have nav")
+	assert.True(t, contentChecks["hasMain"], "Page should have main")
+	assert.True(t, contentChecks["hasFooter"], "Page should have footer")
+	assert.True(t, contentChecks["allSectionsPresent"], "All sections should be present")
+	assert.True(t, contentChecks["navLinksWork"], "Navigation links should exist")
+}
+
+func TestE2EAlpineJSInitialization(t *testing.T) {
+	ctx, cancel := newChromedpContext()
+	defer cancel()
+
+	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+
+	err := chromedp.Run(ctx,
+		chromedp.Navigate(getBaseURL()),
+		chromedp.WaitVisible("body"),
+		chromedp.Sleep(1000*time.Millisecond),
+	)
+	require.NoError(t, err)
+
+	var alpineLoaded bool
+	err = chromedp.Run(ctx,
+		chromedp.Evaluate(`typeof Alpine !== 'undefined'`, &alpineLoaded),
+	)
+	require.NoError(t, err)
+	assert.True(t, alpineLoaded, "Alpine.js should be loaded")
+
+	var themeStateExists bool
+	err = chromedp.Run(ctx,
+		chromedp.Evaluate(`
+			(function() {
+				const html = document.documentElement;
+				return html.__x !== undefined || html._x_dataStack !== undefined;
+			})()
+		`, &themeStateExists),
+	)
+	require.NoError(t, err)
+	assert.True(t, themeStateExists, "Alpine.js should have initialized on html element")
 }

@@ -43,6 +43,13 @@ live:
 htmx:
 	curl -sL https://unpkg.com/htmx.org@2.0.6/dist/htmx.min.js -o assets/js/htmx.min.js
 
+# Download Alpine.js
+alpine:
+	curl -sL https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js -o assets/js/alpine.min.js
+
+# Download all vendored JS libraries
+vendor: htmx alpine
+
 # Clean build artifacts
 clean:
 	rm -rf bin/ tmp/ assets/styles.css

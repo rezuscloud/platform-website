@@ -104,7 +104,7 @@ jobs:
           npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
 
       - name: Run integration tests (Layer 2 - goquery)
-        run: go test -v -count=1 ./tests/... -run "Integration|HTML|Section|Navigation|Footer|Accessibility|HTMX|Responsive|DarkMode"
+        run: go test -v -count=1 ./tests/... -run "Integration|HTML|Section|Navigation|Footer|Accessibility|HTMX|Responsive|DarkMode|Alpine|Progressive"
 
   e2e-tests:
     needs: build
