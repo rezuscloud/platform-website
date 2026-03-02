@@ -172,7 +172,7 @@ jobs:
         id: gitversion
         uses: gittools/actions/gitversion/execute@v3.0.0
         with:
-          useConfigFile: true
+          additionalArguments: '/overrideconfig mode=Mainline'
 
       - name: Display GitVersion outputs
         run: |
