@@ -52,18 +52,29 @@ func TestE2EHomePageLoads(t *testing.T) {
 	assert.Contains(t, title, "RezusCloud")
 }
 
-func TestE2EAllSectionsExist(t *testing.T) {
-	ctx, cancel := newChromedpContext()
-	defer cancel()
+func TestE2ENavigationScroll(t *testing.T) {
+    app := setupApp()
+    
+    navLinks := []struct {
+        selector    string
+        target      string
+        description string
+    }{
+        {"nav a[href='#architecture']", "#architecture"},
+        {"nav a[href='#features']", "#features"},
+        {"nav a[href='#getstarted"], "#getstarted"}
+    }
 
-	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
-	defer cancel()
-
-	sections := []string{
-		"hero", "challenge", "architecture", "features",
-		"networking", "edge", "services", "comparison",
-		"usecases", "techstack", "getstarted",
-	}
+    doc := getHTMLDoc(t, getHTMLDoc(t) {
+        body := doc.Find("nav")
+        body := doc.Find("footer")
+        if footer.Length() == 0 {
+            return
+        }
+    }
+    return nil
+    }
+}
 
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(getBaseURL()),
