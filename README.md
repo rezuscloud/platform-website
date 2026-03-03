@@ -54,48 +54,59 @@ flowchart LR
 
 ### Project Structure
 
-```mermaid
-graph TB
-    Root["platform-website/"]
-
-    Root --> Main["main.go<br/><i>Application entry point</i>"]
-    Root --> GoMod["go.mod<br/><i>Go module definition</i>"]
-    Root --> GoSum["go.sum<br/><i>Go dependencies lock</i>"]
-    Root --> InputCSS["input.css<br/><i>Tailwind CSS entry point</i>"]
-    Root --> PackageJSON["package.json<br/><i>npm scripts for Tailwind CLI</i>"]
-    Root --> Dockerfile["Dockerfile<br/><i>Multi-stage container build</i>"]
-    Root --> README["README.md<br/><i>This file</i>"]
-
-    Root --> Github[".github/"]
-    Github --> Workflows["workflows/"]
-    Workflows --> CI["ci.yml<br/><i>GitHub Actions CI/CD</i>"]
-
-    Root --> Handlers["handlers/"]
-    Handlers --> PagesGo["pages.go<br/><i>HTTP handlers (Home, Section)</i>"]
-
-    Root --> Views["views/"]
-    Views --> LayoutTempl["layout.templ<br/><i>Base HTML layout, Nav, Footer</i>"]
-    Views --> LayoutGen["layout_templ.go<br/><i>Generated Go code</i>"]
-    Views --> PagesDir["pages/"]
-    PagesDir --> HomeTempl["home.templ<br/><i>Home page composition</i>"]
-    PagesDir --> HomeGen["home_templ.go<br/><i>Generated Go code</i>"]
-    Views --> SectionsDir["sections/"]
-    SectionsDir --> Hero["hero.templ"]
-    SectionsDir --> Challenge["challenge.templ"]
-    SectionsDir --> Architecture["architecture.templ"]
-    SectionsDir --> Features["features.templ"]
-    SectionsDir --> Networking["networking.templ"]
-    SectionsDir --> Edge["edge.templ"]
-    SectionsDir --> Services["services.templ"]
-    SectionsDir --> Comparison["comparison.templ"]
-    SectionsDir --> Usecases["usecases.templ"]
-    SectionsDir --> Techstack["techstack.templ"]
-    SectionsDir --> Getstarted["getstarted.templ"]
-
-    Root --> Assets["assets/"]
-    Assets --> JSDir["js/"]
-    JSDir --> HTMX["htmx.min.js<br/><i>Vendored HTMX 2.0.6</i>"]
-    Assets --> Styles["styles.css<br/><i>Generated Tailwind CSS (gitignored)</i>"]
+```
+platform-website/
+├── main.go                     # Application entry point
+├── go.mod                      # Go module definition
+├── go.sum                      # Go dependencies lock
+├── input.css                   # Tailwind CSS entry point
+├── package.json                # npm scripts for Tailwind CLI
+├── Dockerfile                  # Multi-stage container build
+├── Makefile                    # Build automation commands
+├── README.md                   # This file
+├── AGENTS.md                   # Guidelines for AI coding agents
+├── .github/
+│   └── workflows/
+│       └── ci.yml              # GitHub Actions CI/CD
+├── handlers/
+│   ├── pages.go                # HTTP handlers (Home, Section)
+│   └── api.go                  # API handlers (Version)
+├── version/
+│   └── version.go              # Version info (injected at build)
+├── views/
+│   ├── layout.templ            # Base HTML layout, Nav, Footer
+│   ├── layout_templ.go         # Generated Go code
+│   ├── components/             # Reusable components (placeholder)
+│   ├── pages/
+│   │   ├── home.templ          # Home page composition
+│   │   └── home_templ.go       # Generated Go code
+│   └── sections/
+│       ├── hero.templ
+│       ├── challenge.templ
+│       ├── architecture.templ
+│       ├── features.templ
+│       ├── networking.templ
+│       ├── edge.templ
+│       ├── services.templ
+│       ├── comparison.templ
+│       ├── usecases.templ
+│       ├── techstack.templ
+│       └── getstarted.templ
+├── assets/
+│   ├── js/
+│   │   ├── htmx.min.js         # Vendored HTMX 2.0.6
+│   │   └── alpine.min.js       # Vendored Alpine.js 3.x
+│   ├── img/
+│   │   ├── icon.svg            # SVG favicon
+│   │   ├── favicon.ico         # ICO favicon
+│   │   ├── apple-touch-icon.png
+│   │   ├── icon-192.png        # PWA icon
+│   │   └── icon-512.png        # PWA icon
+│   ├── manifest.webmanifest    # PWA manifest
+│   └── styles.css              # Generated Tailwind CSS (gitignored)
+└── tests/
+    ├── integration_test.go     # Layer 2: goquery tests
+    └── e2e_test.go             # Layer 3: chromedp tests
 ```
 
 ## Design Decisions
@@ -131,8 +142,12 @@ Theme is managed by adding/removing the `dark` class on `<html>` and persisted t
 
 The application supports both full-page renders and partial section updates:
 
-- `GET /` - Full page with all sections
-- `GET /sections/:name` - Individual section for HTMX swaps
+| Route | Handler | Description |
+|-------|---------|-------------|
+| `GET /` | `handlers.Home` | Full page with all sections |
+| `GET /sections/:name` | `handlers.Section` | Individual section for HTMX swaps |
+| `GET /api/version` | `handlers.APIVersion` | JSON with version, gitCommit, buildTime |
+| `GET /manifest.webmanifest` | Static file | PWA manifest |
 
 This enables future enhancements like lazy-loading sections or animated transitions.
 
@@ -211,6 +226,9 @@ The website consists of 11 sections, each as a separate templ component:
 # Install dependencies
 npm install
 
+# Download vendored JS libraries (HTMX, Alpine.js)
+make vendor
+
 # Generate templ files
 templ generate
 
@@ -250,6 +268,22 @@ CGO_ENABLED=0 go build -o bin/server .
 ```bash
 docker build -t platform-website .
 docker run -p 3000:3000 platform-website
+```
+
+**Build Arguments:**
+
+| Argument | Default | Description |
+|----------|---------|-------------|
+| `VERSION` | `dev` | Application version (e.g., `1.0.0`) |
+| `GIT_COMMIT` | `unknown` | Git commit hash |
+| `BUILD_TIME` | `unknown` | Build timestamp |
+
+```bash
+docker build \
+  --build-arg VERSION=1.0.0 \
+  --build-arg GIT_COMMIT=$(git rev-parse HEAD) \
+  --build-arg BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+  -t platform-website .
 ```
 
 ## CI/CD Pipeline
@@ -364,6 +398,20 @@ HTMX is vendored at `assets/js/htmx.min.js` to avoid external dependencies. Futu
 - Form submissions without page reload
 - Real-time updates via SSE/WebSocket
 
+### Version API
+
+The `/api/version` endpoint returns build information:
+
+```json
+{
+  "version": "1.0.0",
+  "gitCommit": "abc123def456",
+  "buildTime": "2024-01-15T10:30:00Z"
+}
+```
+
+Version information is injected at build time via ldflags (see Docker Build section).
+
 ### Memory Footprint
 
 The application has minimal memory overhead:
@@ -390,5 +438,3 @@ MIT License - See LICENSE file for details.
 - **Source:** https://github.com/rezuscloud/platform-website
 - **Container Registry:** https://github.com/rezuscloud/platform-website/pkgs/container/platform-website
 - **Platform Documentation:** See `docs/PLATFORM.md` in the talos repository
-<!-- Build 1772478984 -->
-<!-- Auto-deploy test 1772479757 -->
