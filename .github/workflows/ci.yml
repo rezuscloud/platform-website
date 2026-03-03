@@ -212,7 +212,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           no-cache: true
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           build-args: |
             VERSION=${{ steps.gitversion.outputs.SemVer }}
             GIT_COMMIT=${{ github.sha }}
