@@ -22,6 +22,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.24"
+          cache: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -64,6 +65,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.24"
+          cache: false
 
       - name: Install templ
         run: go install github.com/a-h/templ/cmd/templ@latest
@@ -91,6 +93,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.24"
+          cache: false
 
       - name: Install templ
         run: go install github.com/a-h/templ/cmd/templ@latest
@@ -118,6 +121,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.24"
+          cache: false
 
       - name: Install templ
         run: go install github.com/a-h/templ/cmd/templ@latest
@@ -175,7 +179,7 @@ jobs:
         id: gitversion
         uses: gittools/actions/gitversion/execute@v3.0.0
         with:
-          additionalArguments: '/overrideconfig mode=Mainline'
+          overrideConfig: 'mode=Mainline'
 
       - name: Display GitVersion outputs
         run: |
