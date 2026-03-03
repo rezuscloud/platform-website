@@ -223,6 +223,7 @@ jobs:
 
       - name: Health check ARM64 image
         run: |
+          docker rm -f health-test-arm64 2>/dev/null || true
           docker run -d --name health-test-arm64 -p 3001:3000 platform-website:test-arm64
           sleep 5
           curl --retry 10 --retry-delay 2 --retry-connrefused -f http://localhost:3001/health
@@ -245,6 +246,7 @@ jobs:
 
       - name: Health check AMD64 image
         run: |
+          docker rm -f health-test-amd64 2>/dev/null || true
           docker run -d --name health-test-amd64 -p 3002:3000 --platform linux/amd64 platform-website:test-amd64
           sleep 30
           curl --retry 30 --retry-delay 3 --retry-connrefused -f http://localhost:3002/health
