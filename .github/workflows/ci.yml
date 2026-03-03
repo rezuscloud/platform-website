@@ -162,9 +162,9 @@ jobs:
           fetch-depth: 0
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
+        run: |
+          curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 8.0 --install-dir ~/.dotnet
+          echo "$HOME/.dotnet" >> $GITHUB_PATH
 
       - name: Setup GitVersion
         uses: gittools/actions/gitversion/setup@v3.0.0
