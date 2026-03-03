@@ -367,7 +367,7 @@ func TestAlpineJSIntegration(t *testing.T) {
 	})
 
 	t.Run("theme toggle uses Alpine", func(t *testing.T) {
-		assert.Contains(t, html, "$root.dark")
+		assert.Contains(t, html, `@click="dark = !dark"`)
 	})
 
 	t.Run("x-cloak style defined", func(t *testing.T) {
@@ -456,7 +456,7 @@ func TestAlpineHTMXSeparation(t *testing.T) {
 		assert.Contains(t, html, "x-show", "Alpine x-show for visibility")
 		assert.Contains(t, html, "@click", "Alpine @click for events")
 		assert.Contains(t, html, "mobileOpen", "Alpine state for mobile menu")
-		assert.Contains(t, html, "$root.dark", "Alpine state for theme")
+		assert.Contains(t, html, `@click="dark = !dark"`, "Alpine state for theme")
 	})
 
 	t.Run("HTMX ready for server-side interactions", func(t *testing.T) {

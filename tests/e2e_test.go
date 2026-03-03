@@ -216,11 +216,11 @@ func TestE2EAlpineJSInitialization(t *testing.T) {
 	err = chromedp.Run(ctx,
 		chromedp.Evaluate(`
 			(function() {
-				const html = document.documentElement;
-				return html.__x !== undefined || html._x_dataStack !== undefined;
+				const body = document.body;
+				return body.__x !== undefined || body._x_dataStack !== undefined;
 			})()
 		`, &themeStateExists),
 	)
 	require.NoError(t, err)
-	assert.True(t, themeStateExists, "Alpine.js should have initialized on html element")
+	assert.True(t, themeStateExists, "Alpine.js should have initialized on body element")
 }
