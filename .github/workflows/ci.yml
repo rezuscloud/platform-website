@@ -201,6 +201,9 @@ jobs:
             type=semver,pattern={{version}},value=${{ steps.gitversion.outputs.SemVer }}
             type=raw,value=latest
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -212,7 +215,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           no-cache: true
-          platforms: linux/arm64
+          platforms: linux/amd64,linux/arm64
           build-args: |
             VERSION=${{ steps.gitversion.outputs.SemVer }}
             GIT_COMMIT=${{ github.sha }}
