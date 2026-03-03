@@ -175,7 +175,8 @@ jobs:
         id: gitversion
         uses: gittools/actions/gitversion/execute@v3.0.0
         with:
-          additionalArguments: '/overrideconfig mode=Mainline'
+          overrideConfig: |
+            mode=Mainline
 
       - name: Display GitVersion outputs
         run: |
@@ -207,7 +208,51 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push
+      - name: Build ARM64 image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: platform-website:test-arm64
+          no-cache: true
+          platforms: linux/arm64
+          build-args: |
+            VERSION=${{ steps.gitversion.outputs.SemVer }}
+            GIT_COMMIT=${{ github.sha }}
+            BUILD_TIME=${{ github.event.head_commit.timestamp }}
+
+      - name: Health check ARM64 image
+        run: |
+          docker run -d --name health-test-arm64 -p 3001:3000 platform-website:test-arm64
+          sleep 5
+          curl --retry 10 --retry-delay 2 --retry-connrefused -f http://localhost:3001/health
+          echo "ARM64 health check passed"
+          docker stop health-test-arm64 && docker rm health-test-arm64
+
+      - name: Build AMD64 image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: platform-website:test-amd64
+          no-cache: true
+          platforms: linux/amd64
+          build-args: |
+            VERSION=${{ steps.gitversion.outputs.SemVer }}
+            GIT_COMMIT=${{ github.sha }}
+            BUILD_TIME=${{ github.event.head_commit.timestamp }}
+
+      - name: Health check AMD64 image
+        run: |
+          docker run -d --name health-test-amd64 -p 3002:3000 --platform linux/amd64 platform-website:test-amd64
+          sleep 10
+          curl --retry 10 --retry-delay 2 --retry-connrefused -f http://localhost:3002/health
+          echo "AMD64 health check passed"
+          docker stop health-test-amd64 && docker rm health-test-amd64
+
+      - name: Push multi-platform images
         uses: docker/build-push-action@v6
         with:
           context: .

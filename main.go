@@ -31,6 +31,9 @@ func main() {
 		return c.SendFile("./assets/manifest.webmanifest")
 	})
 
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.SendStatus(fiber.StatusNoContent)
+	})
 	app.Get("/", handlers.Home)
 	app.Get("/sections/:name", handlers.Section)
 	app.Get("/api/version", handlers.APIVersion)
