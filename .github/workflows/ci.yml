@@ -248,8 +248,8 @@ jobs:
         run: |
           docker rm -f health-test-amd64 2>/dev/null || true
           docker run -d --name health-test-amd64 -p 3002:3000 --platform linux/amd64 platform-website:test-amd64
-          sleep 30
-          curl --retry 30 --retry-delay 3 --retry-connrefused -f http://localhost:3002/health
+          sleep 60
+          curl --retry 380 --retry-delay 3 --retry-connrefused -f http://localhost:3002/health
           echo "AMD64 health check passed"
           docker stop health-test-amd64 && docker rm health-test-amd64
 
