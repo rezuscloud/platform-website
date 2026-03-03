@@ -13,9 +13,9 @@ RUN apk add --no-cache git
 RUN go install github.com/a-h/templ/cmd/templ@latest
 WORKDIR /app
 
-# Target platform for cross-compilation
-ARG TARGETOS=linux
-ARG TARGETARCH=arm64
+# Target platform args (automatically set by buildx)
+ARG TARGETOS
+ARG TARGETARCH
 ARG VERSION=dev
 ARG GIT_COMMIT=unknown
 ARG BUILD_TIME=unknown
@@ -32,7 +32,7 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
     -o /bin/server .
 
 # Stage 3: Production image (target platform)
-FROM gcr.io/distroless/static-debian12:nonroot
+FROM --platform=$TARGETPLATFORM gcr.io/distroless/static-debian12:nonroot
 WORKDIR /
 COPY --from=builder /bin/server /server
 COPY --from=builder /app/assets/ /assets/
