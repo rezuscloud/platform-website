@@ -54,7 +54,7 @@ jobs:
 
   unit-tests:
     needs: build
-    runs-on: [self-hosted, Linux, ARM64]
+    runs-on: [self-hosted, Linux]
     permissions:
       contents: read
     steps:
