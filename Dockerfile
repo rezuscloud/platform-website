@@ -7,15 +7,12 @@ COPY input.css ./
 COPY views/ ./views/
 RUN npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
 
-# Stage 2: Generate templ + Build Go binary with cross-compilation
-FROM --platform=$BUILDPLATFORM golang:1.24-alpine AS builder
-RUN apk add --no-cache git
+# Stage 2: Generate templ + Build Go binary (native compilation with CGO)
+FROM golang:1.24-alpine AS builder
+RUN apk add --no-cache git build-base
 RUN go install github.com/a-h/templ/cmd/templ@latest
 WORKDIR /app
 
-# Target platform for cross-compilation
-ARG TARGETOS=linux
-ARG TARGETARCH=arm64
 ARG VERSION=dev
 ARG GIT_COMMIT=unknown
 ARG BUILD_TIME=unknown
@@ -25,14 +22,14 @@ RUN go mod download
 COPY . .
 RUN templ generate
 COPY --from=tailwind /app/assets/styles.css ./assets/styles.css
-RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
+RUN go build \
     -ldflags="-s -w -X github.com/rezuscloud/platform-website/version.Version=${VERSION} \
     -X github.com/rezuscloud/platform-website/version.GitCommit=${GIT_COMMIT} \
     -X github.com/rezuscloud/platform-website/version.BuildTime=${BUILD_TIME}" \
     -o /bin/server .
 
-# Stage 3: Production image (target platform)
-FROM gcr.io/distroless/static-debian12:nonroot
+# Stage 3: Production image (requires libc for CGO binary)
+FROM gcr.io/distroless/base-debian12:nonroot
 WORKDIR /
 COPY --from=builder /bin/server /server
 COPY --from=builder /app/assets/ /assets/
