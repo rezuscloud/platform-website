@@ -28,8 +28,9 @@ RUN go build \
     -X github.com/rezuscloud/platform-website/version.BuildTime=${BUILD_TIME}" \
     -o /bin/server .
 
-# Stage 3: Production image (requires libc for CGO binary)
-FROM gcr.io/distroless/base-debian12:nonroot
+# Stage 3: Production image (Alpine for musl compatibility with CGO binary)
+FROM alpine:3.21
+RUN addgroup -g 65532 -S nonroot && adduser -u 65532 -S nonroot -G nonroot
 WORKDIR /
 COPY --from=builder /bin/server /server
 COPY --from=builder /app/assets/ /assets/
