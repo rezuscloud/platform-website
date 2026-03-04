@@ -238,7 +238,6 @@ jobs:
           platforms: linux/amd64
           provenance: false
           sbom: false
-          outputs: type=docker,dest=/tmp/
           build-args: |
             VERSION=${{ needs.docker-version.outputs.semver }}
             GIT_COMMIT=${{ github.sha }}
@@ -280,7 +279,6 @@ jobs:
           platforms: linux/arm64
           provenance: false
           sbom: false
-          outputs: type=docker,dest=/tmp/
           build-args: |
             VERSION=${{ needs.docker-version.outputs.semver }}
             GIT_COMMIT=${{ github.sha }}
@@ -389,7 +387,6 @@ jobs:
           platforms: linux/amd64
           provenance: false
           sbom: false
-          outputs: type=docker,dest=/tmp/
           build-args: |
             VERSION=pr-${{ github.event.pull_request.number }}
             GIT_COMMIT=${{ github.event.pull_request.head.sha }}
@@ -431,7 +428,6 @@ jobs:
           platforms: linux/arm64
           provenance: false
           sbom: false
-          outputs: type=docker,dest=/tmp/
           build-args: |
             VERSION=pr-${{ github.event.pull_request.number }}
             GIT_COMMIT=${{ github.event.pull_request.head.sha }}
