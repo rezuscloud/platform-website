@@ -1,0 +1,62 @@
+version: 2
+
+project_name: platform-website
+
+before:
+  hooks:
+    - go install github.com/a-h/templ/cmd/templ@latest
+    - templ generate
+    - npm install
+    - npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
+
+builds:
+  - env: [CGO_ENABLED=0]
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    ldflags:
+      - -s -w
+      - -X github.com/rezuscloud/platform-website/version.Version={{.Version}}
+      - -X github.com/rezuscloud/platform-website/version.GitCommit={{.Commit}}
+      - -X github.com/rezuscloud/platform-website/version.BuildTime={{.Date}}
+
+archives:
+  - formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - assets/**/*
+
+dockers_v2:
+  - dockerfile: Dockerfile.goreleaser
+    images:
+      - ghcr.io/rezuscloud/platform-website
+    tags:
+      - "{{.Version}}"
+      - latest
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    extra_files:
+      - assets
+
+sboms:
+  - artifacts: archive
+
+signs:
+  - cmd: cosign
+    args: ["sign-blob", "--yes", "--output-signature", "${signature}", "${artifact}"]
+    artifacts: checksum
+
+docker_signs:
+  - cmd: cosign
+    args: ["sign", "--yes", "${artifact}"]
+    artifacts: all
+
+changelog:
+  sort: asc
+  filters:
+    exclude: ["^docs:", "^test:", "^ci:"]
+
+release:
+  github:
+    owner: rezuscloud
+    name: platform-website
