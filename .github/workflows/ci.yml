@@ -109,10 +109,6 @@ jobs:
         run: |
           docker run -d --name platform-website -p 3000:3000 platform-website-test
           sleep 3
-          echo "Container status:"
-          docker ps -a | grep platform-website || true
-          echo "Container logs:"
-          docker logs platform-website 2>&1 | tail -50 || true
           curl --retry 10 --retry-delay 2 --retry-connrefused http://localhost:3000
 
       - name: Run E2E tests (Layer 3 - chromedp)
