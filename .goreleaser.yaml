@@ -62,7 +62,7 @@ sboms:
 
 signs:
   - cmd: cosign
-    args: ["sign", "--yes", "${artifact}"]
+    args: ["sign-blob", "--yes", "--output-signature", "${signature}", "${artifact}"]
     artifacts: checksum
 
 docker_signs:
