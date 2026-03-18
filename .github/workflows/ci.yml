@@ -75,13 +75,10 @@ jobs:
       - name: Setup build environment
         uses: ./.github/actions/setup-build
 
-      - name: Install Chromium (ARM64 compatible)
-        if: matrix.arch == 'arm64'
-        run: sudo apt-get update && sudo apt-get install -y chromium-browser
-
-      - name: Install Chromium (X64)
-        if: matrix.arch == 'x64'
-        run: sudo apt-get update && sudo apt-get install -y chromium
+      - name: Install Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser 2>/dev/null || sudo apt-get install -y chromium
 
       - name: Build container
         run: docker build -t platform-website-test .
