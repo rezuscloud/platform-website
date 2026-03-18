@@ -102,7 +102,8 @@ jobs:
       - name: Build container
         run: |
           docker rm -f platform-website 2>/dev/null || true
-          docker build -t platform-website-test .
+          ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+          docker build --build-arg TARGETARCH=${ARCH} -t platform-website-test .
 
       - name: Run container
         run: |
