@@ -20,6 +20,8 @@ jobs:
 
       - name: Setup build environment
         uses: ./.github/actions/setup-build
+        with:
+          enable-cache: ${{ runner.environment != 'self-hosted' }}
 
       - name: Format check (templ)
         run: templ fmt -fail .
@@ -50,6 +52,8 @@ jobs:
 
       - name: Setup build environment
         uses: ./.github/actions/setup-build
+        with:
+          enable-cache: ${{ runner.environment != 'self-hosted' }}
 
       - name: Run unit tests (Layer 1 - httptest)
         run: go test -v -race -parallel 4 ./handlers/...
@@ -74,6 +78,8 @@ jobs:
 
       - name: Setup build environment
         uses: ./.github/actions/setup-build
+        with:
+          enable-cache: ${{ runner.environment != 'self-hosted' }}
 
       - name: Install Chromium
         run: |
@@ -94,12 +100,18 @@ jobs:
           fi
 
       - name: Build container
-        run: docker build -t platform-website-test .
+        run: |
+          docker rm -f platform-website 2>/dev/null || true
+          docker build -t platform-website-test .
 
       - name: Run container
         run: |
           docker run -d --name platform-website -p 3000:3000 platform-website-test
-          sleep 5
+          sleep 3
+          echo "Container status:"
+          docker ps -a | grep platform-website || true
+          echo "Container logs:"
+          docker logs platform-website 2>&1 | tail -50 || true
           curl --retry 10 --retry-delay 2 --retry-connrefused http://localhost:3000
 
       - name: Run E2E tests (Layer 3 - chromedp)
