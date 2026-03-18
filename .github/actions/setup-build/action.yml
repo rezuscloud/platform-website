@@ -24,8 +24,6 @@ runs:
       uses: actions/setup-node@v6
       with:
         node-version: ${{ inputs.node-version }}
-        cache: 'npm'
-        cache-dependency-path: package-lock.json
 
     - name: Install templ
       shell: bash
