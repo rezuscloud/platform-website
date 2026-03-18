@@ -25,35 +25,17 @@ archives:
     files:
       - assets/**/*
 
-dockers:
-  - use: buildx
-    id: amd64
-    dockerfile: Dockerfile.goreleaser
-    image_templates:
-      - ghcr.io/rezuscloud/platform-website:{{ .Version }}-amd64
-    build_flag_templates:
-      - --platform=linux/amd64
+dockers_v2:
+  - images:
+      - ghcr.io/rezuscloud/platform-website
+    tags:
+      - "{{.Version}}"
+      - latest
+    platforms:
+      - linux/amd64
+      - linux/arm64
     extra_files:
       - assets
-  - use: buildx
-    id: arm64
-    dockerfile: Dockerfile.goreleaser
-    image_templates:
-      - ghcr.io/rezuscloud/platform-website:{{ .Version }}-arm64
-    build_flag_templates:
-      - --platform=linux/arm64
-    extra_files:
-      - assets
-
-docker_manifests:
-  - name_template: ghcr.io/rezuscloud/platform-website:{{ .Version }}
-    image_templates:
-      - ghcr.io/rezuscloud/platform-website:{{ .Version }}-amd64
-      - ghcr.io/rezuscloud/platform-website:{{ .Version }}-arm64
-  - name_template: ghcr.io/rezuscloud/platform-website:latest
-    image_templates:
-      - ghcr.io/rezuscloud/platform-website:{{ .Version }}-amd64
-      - ghcr.io/rezuscloud/platform-website:{{ .Version }}-arm64
 
 sboms:
   - artifacts: archive

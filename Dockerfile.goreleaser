@@ -1,6 +1,7 @@
 FROM gcr.io/distroless/static-debian12:nonroot
 WORKDIR /
-COPY platform-website /server
+ARG TARGETPLATFORM
+COPY $TARGETPLATFORM/platform-website /server
 COPY assets/ /assets/
 EXPOSE 3000
 USER nonroot:nonroot
