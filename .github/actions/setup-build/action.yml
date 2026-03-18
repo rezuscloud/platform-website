@@ -1,0 +1,45 @@
+name: 'Setup Build Environment'
+description: 'Sets up Go, Node.js, templ, and generates assets'
+inputs:
+  go-version:
+    description: 'Go version'
+    default: '1.24'
+  node-version:
+    description: 'Node.js version'
+    default: '22'
+  skip-css:
+    description: 'Skip CSS generation'
+    default: 'false'
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Go
+      uses: actions/setup-go@v6
+      with:
+        go-version: ${{ inputs.go-version }}
+        cache: true
+        cache-dependency-path: go.sum
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'npm'
+        cache-dependency-path: package-lock.json
+
+    - name: Install templ
+      shell: bash
+      run: go install github.com/a-h/templ/cmd/templ@latest
+
+    - name: Install npm dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Generate templ files
+      shell: bash
+      run: templ generate
+
+    - name: Build CSS
+      if: inputs.skip-css != 'true'
+      shell: bash
+      run: npx @tailwindcss/cli -i input.css -o assets/styles.css --minify

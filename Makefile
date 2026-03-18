@@ -1,4 +1,9 @@
-.PHONY: generate fmt build dev live clean
+.PHONY: generate fmt build build-debug dev live clean css vendor htmx alpine
+
+VERSION ?= dev
+GIT_COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+BUILD_TIME ?= $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
+LDFLAGS := -s -w -X main.version=$(VERSION) -X main.gitCommit=$(GIT_COMMIT) -X main.buildTime=$(BUILD_TIME)
 
 # Generate templ files to Go code
 generate:
@@ -13,9 +18,13 @@ fmt:
 css:
 	npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
 
-# Build the application
+# Build the application (optimized)
 build: generate css
-	CGO_ENABLED=0 go build -o bin/server .
+	CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -trimpath -o bin/server .
+
+# Build the application (debug - no optimizations)
+build-debug: generate css
+	CGO_ENABLED=0 go build -gcflags="all=-N -l" -o bin/server .
 
 # Run the server
 dev: generate css

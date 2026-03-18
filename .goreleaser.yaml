@@ -11,6 +11,7 @@ before:
 
 builds:
   - env: [CGO_ENABLED=0]
+    flags: [-trimpath]
     goos: [linux, darwin, windows]
     goarch: [amd64, arm64]
     ldflags:

@@ -17,13 +17,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-go@v6
-        with:
-          go-version: "1.24"
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "22"
+      - name: Setup build environment
+        uses: ./.github/actions/setup-build
 
       - uses: sigstore/cosign-installer@v4
 
