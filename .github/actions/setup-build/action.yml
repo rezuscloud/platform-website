@@ -10,6 +10,9 @@ inputs:
   skip-css:
     description: 'Skip CSS generation'
     default: 'false'
+  enable-cache:
+    description: 'Enable GitHub Actions cache (disable for self-hosted runners with persistent storage)'
+    default: 'true'
 runs:
   using: 'composite'
   steps:
@@ -17,13 +20,13 @@ runs:
       uses: actions/setup-go@v6
       with:
         go-version: ${{ inputs.go-version }}
-        cache: false
+        cache: ${{ inputs.enable-cache }}
 
     - name: Set up Node.js
       uses: actions/setup-node@v6
       with:
         node-version: ${{ inputs.node-version }}
-        cache: false
+        cache: ${{ inputs.enable-cache == 'true' && 'npm' || '' }}
 
     - name: Install templ
       shell: bash
