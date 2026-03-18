@@ -26,7 +26,8 @@ archives:
       - assets/**/*
 
 dockers_v2:
-  - images:
+  - dockerfile: Dockerfile.goreleaser
+    images:
       - ghcr.io/rezuscloud/platform-website
     tags:
       - "{{.Version}}"
