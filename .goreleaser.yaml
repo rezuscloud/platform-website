@@ -28,24 +28,22 @@ archives:
 dockers:
   - use: buildx
     id: amd64
-    dockerfile: Dockerfile
+    dockerfile: Dockerfile.goreleaser
     image_templates:
       - ghcr.io/rezuscloud/platform-website:{{ .Version }}-amd64
     build_flag_templates:
       - --platform=linux/amd64
-      - --build-arg=VERSION={{.Version}}
-      - --build-arg=GIT_COMMIT={{.Commit}}
-      - --build-arg=BUILD_TIME={{.Date}}
+    extra_files:
+      - assets
   - use: buildx
     id: arm64
-    dockerfile: Dockerfile
+    dockerfile: Dockerfile.goreleaser
     image_templates:
       - ghcr.io/rezuscloud/platform-website:{{ .Version }}-arm64
     build_flag_templates:
       - --platform=linux/arm64
-      - --build-arg=VERSION={{.Version}}
-      - --build-arg=GIT_COMMIT={{.Commit}}
-      - --build-arg=BUILD_TIME={{.Date}}
+    extra_files:
+      - assets
 
 docker_manifests:
   - name_template: ghcr.io/rezuscloud/platform-website:{{ .Version }}
