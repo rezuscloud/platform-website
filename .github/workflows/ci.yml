@@ -12,31 +12,16 @@ env:
 
 jobs:
   build:
-    runs-on: [self-hosted, Linux, ARM64]
+    runs-on: [self-hosted, Linux, X64]
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up Go
-        uses: actions/setup-go@v6
+      - name: Setup build environment
+        uses: ./.github/actions/setup-build
         with:
-          go-version: "1.24"
-          cache: false
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-
-      - name: Install templ
-        run: go install github.com/a-h/templ/cmd/templ@latest
-
-      - name: Install npm dependencies
-        run: npm install
-
-      - name: Generate templ
-        run: templ generate
+          enable-cache: ${{ runner.environment != 'self-hosted' }}
 
       - name: Format check (templ)
         run: templ fmt -fail .
@@ -47,114 +32,94 @@ jobs:
       - name: Vet
         run: go vet ./...
 
-      - name: Build CSS
-        run: npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
-
       - name: Build binary
-        run: CGO_ENABLED=0 go build -o bin/server .
+        run: make build
 
-  unit-tests:
+  test:
     needs: build
-    runs-on: [self-hosted, Linux]
+    strategy:
+      matrix:
+        include:
+          - runner: [self-hosted, Linux, X64]
+            arch: x64
+          - runner: [self-hosted, Linux, ARM64]
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up Go
-        uses: actions/setup-go@v6
+      - name: Setup build environment
+        uses: ./.github/actions/setup-build
         with:
-          go-version: "1.24"
-          cache: false
-
-      - name: Install templ
-        run: go install github.com/a-h/templ/cmd/templ@latest
-
-      - name: Generate templ
-        run: templ generate
-
-      - name: Build CSS
-        run: |
-          npm install
-          npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
+          enable-cache: ${{ runner.environment != 'self-hosted' }}
 
       - name: Run unit tests (Layer 1 - httptest)
-        run: go test -v -count=1 ./handlers/...
-
-  integration-tests:
-    needs: build
-    runs-on: [self-hosted, Linux, ARM64]
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Set up Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: "1.24"
-          cache: false
-
-      - name: Install templ
-        run: go install github.com/a-h/templ/cmd/templ@latest
-
-      - name: Generate templ
-        run: templ generate
-
-      - name: Build CSS
-        run: |
-          npm install
-          npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
+        run: go test -v -race -parallel 4 ./handlers/...
 
       - name: Run integration tests (Layer 2 - goquery)
-        run: go test -v -count=1 ./tests/... -run "Integration|HTML|Section|Navigation|Footer|Accessibility|HTMX|Responsive|DarkMode|Alpine|Progressive"
+        run: go test -v -race -parallel 2 ./tests/... -run "Integration|HTML|Section|Navigation|Footer|Accessibility|HTMX|Responsive|DarkMode|Alpine|Progressive"
 
-  e2e-tests:
+  e2e-test:
     needs: build
-    runs-on: [self-hosted, Linux, ARM64]
+    strategy:
+      matrix:
+        include:
+          - runner: [self-hosted, Linux, X64]
+            arch: x64
+          - runner: [self-hosted, Linux, ARM64]
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v6
 
-      - name: Set up Go
-        uses: actions/setup-go@v6
+      - name: Setup build environment
+        uses: ./.github/actions/setup-build
         with:
-          go-version: "1.24"
-          cache: false
+          enable-cache: ${{ runner.environment != 'self-hosted' }}
 
-      - name: Install templ
-        run: go install github.com/a-h/templ/cmd/templ@latest
-
-      - name: Install Chromium (ARM64 compatible)
-        run: sudo apt-get update && sudo apt-get install -y chromium-browser
-
-      - name: Generate templ
-        run: templ generate
-
-      - name: Build CSS
+      - name: Install Chromium
         run: |
-          npm install
-          npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
+          if command -v apt-get &> /dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y chromium-browser 2>/dev/null || sudo apt-get install -y chromium
+          elif command -v dnf &> /dev/null; then
+            sudo dnf install -y chromium
+          elif command -v yum &> /dev/null; then
+            sudo yum install -y chromium
+          elif command -v pacman &> /dev/null; then
+            sudo pacman -S --noconfirm chromium
+          elif command -v zypper &> /dev/null; then
+            sudo zypper install -y chromium
+          else
+            echo "Warning: Unsupported package manager. Trying to proceed without installing Chromium."
+            echo "Chromium must be pre-installed on this runner for E2E tests."
+          fi
 
       - name: Build container
-        run: docker build -t platform-website-test .
+        run: |
+          docker rm -f platform-website 2>/dev/null || true
+          ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+          docker build --build-arg TARGETARCH=${ARCH} -t platform-website-test .
 
       - name: Run container
         run: |
           docker run -d --name platform-website -p 3000:3000 platform-website-test
-          sleep 5
+          sleep 3
           curl --retry 10 --retry-delay 2 --retry-connrefused http://localhost:3000
 
       - name: Run E2E tests (Layer 3 - chromedp)
-        run: go test -v -count=1 -tags=e2e ./tests/... -run "E2E" -timeout 5m
+        run: go test -v -race -count=1 -tags=e2e ./tests/... -run "E2E" -timeout 5m
 
       - name: Stop container
         if: always()
         run: docker stop platform-website && docker rm platform-website
 
   docker-pr:
-    needs: [build, unit-tests, integration-tests, e2e-tests]
+    needs: [build, test, e2e-test]
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     permissions:
@@ -193,7 +158,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          no-cache: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64
           build-args: |
             VERSION=pr-${{ github.event.pull_request.number }}
