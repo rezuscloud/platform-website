@@ -13,6 +13,9 @@ inputs:
   enable-cache:
     description: 'Enable GitHub Actions cache (disable for self-hosted runners with persistent storage)'
     default: 'true'
+  enable-templ-cache:
+    description: 'Enable templ file caching (recommended for GitHub-hosted runners)'
+    default: 'true'
 runs:
   using: 'composite'
   steps:
@@ -36,7 +39,24 @@ runs:
       shell: bash
       run: npm ci
 
+    - name: Get templ hash
+      if: inputs.enable-templ-cache == 'true'
+      id: templ-hash
+      shell: bash
+      run: echo "hash=${{ hashFiles('**/*.templ') }}" >> $GITHUB_OUTPUT
+
+    - name: Cache templ generated files
+      if: inputs.enable-templ-cache == 'true'
+      id: templ-cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          views/*_templ.go
+          views/**/*_templ.go
+        key: templ-${{ steps.templ-hash.outputs.hash }}
+
     - name: Generate templ files
+      if: steps.templ-cache.outputs.cache-hit != 'true'
       shell: bash
       run: templ generate
 
