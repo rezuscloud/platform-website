@@ -1,0 +1,142 @@
+name: Docker Multiarch
+
+on:
+  workflow_call:
+    inputs:
+      push_image:
+        description: Push image to GHCR
+        required: true
+        type: boolean
+      tag_list:
+        description: Newline-separated image tags
+        required: true
+        type: string
+      version:
+        description: Version embedded in binary
+        required: true
+        type: string
+      git_commit:
+        description: Git commit embedded in binary
+        required: true
+        type: string
+      build_time:
+        description: Build timestamp embedded in binary
+        required: false
+        type: string
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Prepare tags
+        id: prep
+        env:
+          TAG_LIST: ${{ inputs.tag_list }}
+        run: |
+          set -euo pipefail
+          image="ghcr.io/${{ github.repository }}"
+          primary_tag=""
+          {
+            echo "tags<<EOF"
+            while IFS= read -r tag; do
+              [ -z "$tag" ] && continue
+              full_tag="${image}:${tag}"
+              echo "$full_tag"
+              if [ -z "$primary_tag" ]; then
+                primary_tag="$full_tag"
+              fi
+            done <<< "$TAG_LIST"
+            echo "EOF"
+            echo "primary_tag=$primary_tag"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Log in to Container Registry
+        if: inputs.push_image
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+        with:
+          version: latest
+
+      - name: Resolve build metadata
+        id: meta
+        env:
+          INPUT_BUILD_TIME: ${{ inputs.build_time }}
+        run: |
+          set -euo pipefail
+          build_time="$INPUT_BUILD_TIME"
+          if [ -z "$build_time" ]; then
+            build_time="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          fi
+          echo "build_time=$build_time" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: ${{ inputs.push_image }}
+          tags: ${{ steps.prep.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+          provenance: false
+          sbom: false
+          build-args: |
+            VERSION=${{ inputs.version }}
+            GIT_COMMIT=${{ inputs.git_commit }}
+            BUILD_TIME=${{ steps.meta.outputs.build_time }}
+
+      - name: Verify manifest platforms
+        if: inputs.push_image
+        env:
+          PRIMARY_TAG: ${{ steps.prep.outputs.primary_tag }}
+        run: |
+          set -euo pipefail
+          docker buildx imagetools inspect "$PRIMARY_TAG"
+          platforms="$(docker buildx imagetools inspect "$PRIMARY_TAG" --format '{{json .Manifest.Manifests}}' \
+            | jq -r '.[] | select(.Platform.os != null and .Platform.architecture != null) | "\(.Platform.os)/\(.Platform.architecture)"' \
+            | sort -u)"
+          echo "Resolved platforms:"
+          echo "$platforms"
+          echo "$platforms" | grep -qx 'linux/amd64'
+          echo "$platforms" | grep -qx 'linux/arm64'
+
+      - name: Verify binary architecture per platform
+        if: inputs.push_image
+        env:
+          PRIMARY_TAG: ${{ steps.prep.outputs.primary_tag }}
+        run: |
+          set -euo pipefail
+
+          verify_binary() {
+            platform="$1"
+            expected="$2"
+            name="verify-${platform//\//-}"
+            out="/tmp/server-${platform//\//-}"
+
+            docker pull --platform "$platform" "$PRIMARY_TAG"
+            docker rm -f "$name" >/dev/null 2>&1 || true
+            docker create --name "$name" --platform "$platform" "$PRIMARY_TAG" >/dev/null
+            docker cp "$name:/server" "$out"
+            docker rm "$name" >/dev/null
+
+            result="$(file "$out")"
+            echo "$result"
+            echo "$result" | grep -q "$expected"
+          }
+
+          verify_binary linux/amd64 'x86-64'
+          verify_binary linux/arm64 'aarch64'

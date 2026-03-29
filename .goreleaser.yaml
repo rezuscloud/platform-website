@@ -26,19 +26,6 @@ archives:
     files:
       - assets/**/*
 
-dockers_v2:
-  - dockerfile: Dockerfile.goreleaser
-    images:
-      - ghcr.io/rezuscloud/platform-website
-    tags:
-      - "{{.Version}}"
-      - latest
-    platforms:
-      - linux/amd64
-      - linux/arm64
-    extra_files:
-      - assets
-
 sboms:
   - artifacts: archive
 
@@ -46,11 +33,6 @@ signs:
   - cmd: cosign
     args: ["sign-blob", "--yes", "--output-signature", "${signature}", "${artifact}"]
     artifacts: checksum
-
-docker_signs:
-  - cmd: cosign
-    args: ["sign", "--yes", "${artifact}"]
-    artifacts: all
 
 changelog:
   sort: asc
