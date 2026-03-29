@@ -124,8 +124,8 @@ jobs:
     with:
       push_image: true
       tag_list: |
-        pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
-      version: pr-${{ github.event.pull_request.number }}
-      git_commit: ${{ github.event.pull_request.head.sha }}
-      build_time: ${{ github.event.pull_request.updated_at }}
+        pr-${{ github.event.number || github.run_number }}-${{ github.sha }}
+      version: pr-${{ github.event.number || github.run_number }}
+      git_commit: ${{ github.sha }}
+      build_time: ""
     secrets: inherit
