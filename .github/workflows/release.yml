@@ -42,4 +42,3 @@ jobs:
         latest
       version: ${{ github.ref_name }}
       git_commit: ${{ github.sha }}
-    secrets: inherit
