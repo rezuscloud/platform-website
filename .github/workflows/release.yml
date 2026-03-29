@@ -34,11 +34,18 @@ jobs:
 
   docker-release:
     needs: release
-    uses: ./.github/workflows/docker-multiarch.yml
-    with:
-      push_image: true
-      tag_list: |
-        ${{ github.ref_name }}
-        latest
-      version: ${{ github.ref_name }}
-      git_commit: ${{ github.sha }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/docker-multiarch
+        with:
+          push_image: true
+          tag_list: |
+            ${{ github.ref_name }}
+            latest
+          version: ${{ github.ref_name }}
+          git_commit: ${{ github.sha }}
+          build_time: ""
