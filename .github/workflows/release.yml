@@ -20,7 +20,7 @@ jobs:
       - name: Setup build environment
         uses: ./.github/actions/setup-build
 
-      - uses: sigstore/cosign-installer@v4
+      - uses: sigstore/cosign-installer@v4.1.1
 
       - uses: anchore/sbom-action/download-syft@v0
 
