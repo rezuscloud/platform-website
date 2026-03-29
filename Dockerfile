@@ -14,7 +14,7 @@ RUN go install github.com/a-h/templ/cmd/templ@latest
 WORKDIR /app
 
 ARG TARGETOS=linux
-ARG TARGETARCH=arm64
+ARG TARGETARCH
 ARG VERSION=dev
 ARG GIT_COMMIT=unknown
 ARG BUILD_TIME=unknown
@@ -24,7 +24,7 @@ RUN go mod download
 COPY . .
 RUN templ generate
 COPY --from=tailwind /app/assets/styles.css ./assets/styles.css
-RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
+RUN test -n "${TARGETARCH}" && CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
     -ldflags="-s -w -X github.com/rezuscloud/platform-website/version.Version=${VERSION} \
     -X github.com/rezuscloud/platform-website/version.GitCommit=${GIT_COMMIT} \
     -X github.com/rezuscloud/platform-website/version.BuildTime=${BUILD_TIME}" \

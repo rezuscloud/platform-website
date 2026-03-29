@@ -98,8 +98,8 @@ runs:
       run: |
         set -euo pipefail
         docker buildx imagetools inspect "$PRIMARY_TAG"
-        platforms="$(docker buildx imagetools inspect "$PRIMARY_TAG" --format '{{json .Manifest.Manifests}}' \
-          | jq -r '.[] | select(.Platform.os != null and .Platform.architecture != null) | "\(.Platform.os)/\(.Platform.architecture)"' \
+        platforms="$(docker buildx imagetools inspect "$PRIMARY_TAG" --raw \
+          | jq -r '.manifests[]?.platform | select(.os != null and .architecture != null) | "\(.os)/\(.architecture)"' \
           | sort -u)"
         echo "Resolved platforms:"
         echo "$platforms"
