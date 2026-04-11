@@ -322,6 +322,33 @@ ghcr.io/rezuscloud/platform-website:<sha>
 
 ## Kubernetes Deployment
 
+### Current Runtime State
+
+| Component | Status | Details |
+|-----------|--------|---------|
+| Application (KubeVela) | Ready:1/1 | Image: `ghcr.io/rezuscloud/platform-website:v0.0.1-77` |
+| Pod | Running 2/2 | On cloud control-plane node, with Dapr sidecar |
+| HTTPRoute | Accepted | `rezus.cloud`, `www.rezus.cloud` → port 3000 |
+| TLS Certificate | Ready | Let's Encrypt wildcard `*.rezus.cloud` (DNS-01) |
+| Gateway API | hostNetwork mode | Envoy on `0.0.0.0:80/443` + `[::]:80/443` |
+| DNS | Synced | `rezus.cloud` A: 92.4.174.87, AAAA: 2603:c027:... |
+| Live Site | **Reachable** | IPv4 + IPv6, HTTP 200, valid TLS |
+
+### Request Path
+
+```
+Internet (IPv4) → 92.4.174.87:443 → OCI DNAT → 10.0.10.119:443
+                                                ↓
+Internet (IPv6) → [2603:c027:...]:443 ──────────┘
+                                    Envoy (0.0.0.0:443, [::]:443)
+                                           ↓
+                                    HTTPRoute (rezus.cloud)
+                                           ↓
+                                    platform-website:3000 (ClusterIP)
+                                           ↓
+                                    Pod (Go Fiber + Dapr sidecar)
+```
+
 ### Infrastructure
 
 The website is deployed via Terraform module in `k8s-iac/modules/platform-website/`:
@@ -339,27 +366,32 @@ module "platform_website" {
 
 | Resource | Type | Purpose |
 |----------|------|---------|
-| Deployment | apps/v1 | 2 replicas with Dapr sidecar |
+| Deployment | apps/v1 | 1 replica with Dapr sidecar |
 | Service | v1 | ClusterIP on port 3000 |
 | HTTPRoute | gateway.networking.k8s.io/v1 | Gateway API routing |
 
 ### Gateway API Configuration
 
-The HTTPRoute routes `rezus.cloud` to the platform-website service:
+The HTTPRoute routes `rezus.cloud` and `www.rezus.cloud` to the platform-website service:
 
 ```yaml
 spec:
   hostnames:
     - rezus.cloud
+    - www.rezus.cloud
   rules:
     - backendRefs:
         - name: platform-website
           port: 3000
 ```
 
+Gateway API runs in **hostNetwork mode** — Cilium Envoy binds directly to host ports 80/443.
+No LoadBalancer Service is created; traffic reaches Envoy on node IPs directly.
+See `talos-iac/manifest/cni/README.md` for full CNI architecture.
+
 ### Pod Security
 
-When Dapr is enabled, the namespace uses `baseline` PodSecurity policy because the Dapr sidecar doesn't drop capabilities (required for `restricted` policy).
+When Dapr is enabled, the namespace uses `baseline` PodSecurity policy because the Dapr sidecar doesn't drop capabilities (required for `restricted` policy). The pod is scheduled on the cloud control-plane node with affinity.
 
 ### Dapr Configuration
 
