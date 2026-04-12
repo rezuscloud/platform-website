@@ -1,36 +1,36 @@
 package sections
 
 templ Services() {
-	<section id="services" class="py-16 sm:py-24">
+	<section id="services" class="py-16 sm:py-24 bg-cream-100 dark:bg-terminal-surface">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-12">
-				<h2 class="text-3xl sm:text-4xl font-bold mb-4">Platform Services</h2>
-				<p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-					A complete, production-ready stack built entirely on open-source technologies.
+				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-display">What You Can Run</h2>
+				<p class="text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display">
+					Everything you need comes in the box — networking, monitoring, app deployment, and storage. All bundled, all ready to go.
 				</p>
 			</div>
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-				@serviceCategory("Core Infrastructure", []ServiceItem{
-					{"Cilium 1.18.x", "Container Networking", "CNI with eBPF"},
-					{"Cilium + Envoy", "Service Mesh", "L7 routing"},
-					{"External DNS + Cloudflare", "DNS Management", "Automated records"},
-					{"cert-manager + Let's Encrypt", "Certificate Authority", "TLS automation"},
+				@serviceCategory("System Software", []ServiceItem{
+					{"cilium", "Container Networking", "Connects your workloads with eBPF-powered networking"},
+					{"cilium + envoy", "Service Mesh", "Routes traffic between your services at layer 7"},
+					{"external-dns", "DNS Management", "Keeps your domain records in sync automatically"},
+					{"cert-manager", "TLS Certificates", "Provisions and renews HTTPS certificates hands-free"},
 				})
-				@serviceCategory("Observability Stack", []ServiceItem{
-					{"Prometheus", "Metrics", "Time-series collection"},
-					{"Grafana", "Visualization", "Dashboard and alerts"},
-					{"Loki", "Logging", "Log aggregation"},
-					{"Hubble", "Network", "Cilium observability"},
+				@serviceCategory("Dashboard & Monitoring", []ServiceItem{
+					{"prometheus", "Metrics Collection", "Records performance data from everything running"},
+					{"grafana", "Dashboards & Alerts", "Visualizes what's happening and warns you when it's not"},
+					{"loki", "Log Aggregation", "Collects and searches logs from all your services"},
+					{"hubble", "Network Visibility", "Shows who's talking to whom across the cluster"},
 				})
-				@serviceCategory("Application Platform", []ServiceItem{
-					{"KubeVela", "App Delivery", "Component-based deployments"},
-					{"Helm", "Package Manager", "Chart-based installation"},
-					{"Kustomize", "Config Management", "Overlay-based customization"},
+				@serviceCategory("App Launcher", []ServiceItem{
+					{"kubevela", "Component Deployments", "Deploys multi-piece applications as a single unit"},
+					{"helm", "Package Installation", "Installs pre-packaged software with one command"},
+					{"kustomize", "Config Overlays", "Customizes deployments per environment without templates"},
 				})
-				@serviceCategory("Storage Solutions", []ServiceItem{
-					{"local-path-provisioner", "Local Storage", "High-performance local volumes"},
-					{"JuiceFS + TiKV", "Distributed", "Shared storage across nodes"},
-					{"OCI Block Volumes", "Block Storage", "Cloud persistent storage"},
+				@serviceCategory("Storage", []ServiceItem{
+					{"local-path-provisioner", "Local Volumes", "Fast storage directly on the machine running your app"},
+					{"juicefs + tikv", "Distributed Storage", "Shared storage accessible from any node in the cluster"},
+					{"oci block volumes", "Cloud Block Storage", "Persistent cloud disks when you need extra capacity"},
 				})
 			</div>
 		</div>
@@ -44,18 +44,18 @@ type ServiceItem struct {
 }
 
 templ serviceCategory(title string, items []ServiceItem) {
-	<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-		<div class="px-6 py-4 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950/30 dark:to-blue-950/30 border-b border-gray-200 dark:border-gray-700">
-			<h3 class="text-lg font-bold">{ title }</h3>
+	<div class="bg-cream-50 dark:bg-terminal-bg rounded-xl border border-cream-300 dark:border-terminal-border overflow-hidden">
+		<div class="px-6 py-4 bg-amber-50 dark:bg-amber-900/20 border-b border-cream-300 dark:border-terminal-border">
+			<h3 class="text-lg font-bold font-display">{ title }</h3>
 		</div>
-		<div class="divide-y divide-gray-200 dark:divide-gray-700">
+		<div class="divide-y divide-cream-200 dark:divide-terminal-border">
 			for _, item := range items {
 				<div class="px-6 py-3 flex items-center justify-between">
 					<div>
-						<div class="font-medium text-sm">{ item.Service }</div>
-						<div class="text-xs text-gray-500 dark:text-gray-400">{ item.Description }</div>
+						<div class="font-medium text-sm font-display">{ item.Service }</div>
+						<div class="text-xs text-cream-600 dark:text-gray-400 font-display">{ item.Description }</div>
 					</div>
-					<code class="text-xs bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded text-cyan-600 dark:text-cyan-400">{ item.Technology }</code>
+					<code class="text-xs bg-cream-200 dark:bg-terminal-bg px-2 py-1 rounded text-amber-600 dark:text-amber-400 font-display">{ item.Technology }</code>
 				</div>
 			}
 		</div>

@@ -29,63 +29,39 @@ func Comparison() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"comparison\" class=\"py-16 sm:py-24 bg-gray-50 dark:bg-gray-900\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4\">Platform Comparison</h2><p class=\"text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto\">See how our platform compares to traditional enterprise Kubernetes solutions.</p></div><div class=\"max-w-4xl mx-auto\"><div class=\"bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden\"><table class=\"w-full text-left text-sm\"><thead><tr class=\"bg-gray-50 dark:bg-gray-900\"><th class=\"py-4 px-6 font-semibold text-gray-500 dark:text-gray-400\">Capability</th><th class=\"py-4 px-6 font-semibold text-gray-500 dark:text-gray-400\">Traditional Enterprise</th><th class=\"py-4 px-6 font-semibold text-cyan-600 dark:text-cyan-400\">Our Platform</th></tr></thead> <tbody class=\"divide-y divide-gray-200 dark:divide-gray-700\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"comparison\" class=\"py-16 sm:py-24 bg-cream-100 dark:bg-terminal-surface\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-display text-cream-800 dark:text-gray-300\">Own vs. Rent</h2><p class=\"text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display\">Renting cloud infrastructure is like renting an apartment forever. At some point, you might want to own.</p></div><div class=\"max-w-4xl mx-auto\"><div class=\"bg-cream-50 dark:bg-terminal-bg rounded-xl border border-cream-300 dark:border-terminal-border overflow-hidden\"><table class=\"w-full text-left font-display\"><thead><tr class=\"bg-cream-200 dark:bg-terminal-bg uppercase tracking-wider text-sm text-cream-500 dark:text-gray-500\"><th class=\"py-3 px-4 sm:px-6 font-semibold\">What</th><th class=\"py-3 px-4 sm:px-6 font-semibold\">Renting</th><th class=\"py-3 px-4 sm:px-6 font-semibold\">Owning</th></tr></thead> <tbody class=\"divide-y divide-cream-300 dark:divide-terminal-border\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = compRow("Infrastructure Ownership", "Third-party managed", "Fully self-owned", true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = compRow("Monthly cost", "Grows with usage", "Electricity you already pay").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = compRow("Setup Time", "2-4 weeks", "2-4 hours", true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = compRow("Your data", "On their servers, their encryption", "Your hardware, your encryption keys").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = compRow("Cloud Lock-in", "Single vendor", "Multi-cloud ready", true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = compRow("Vendor lock-in", "Stuck in their ecosystem", "Open source, replaceable").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = compRow("Edge Support", "Separate clusters", "Unified cluster", true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = compRow("Scaling", "Pay more", "Add hardware you already have").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = compRow("Architecture", "Homogeneous", "Heterogeneous", false).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = compRow("Privacy", "They can see your data", "You control encryption end-to-end").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = compRow("Networking", "Basic CNI", "eBPF + eBGP + Gateway API", true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = compRow("Service deprecation", "They decide what to kill", "Open source lives forever").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = compRow("Hardware", "Enterprise servers only", "Consumer-grade supported", true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = compRow("Edge computing", "Separate clusters, extra cost", "Your hardware, unified cluster").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = compRow("Control Plane", "Cloud-managed dependency", "Self-managed independence", true).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = compRow("Edge Compute", "Cloud dependency", "Full autonomy", true).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = compRow("Security", "Add-on cost", "Built-in", true).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = compRow("GitOps", "Manual/expensive", "Automated (Flux)", true).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = compRow("IPv6", "Optional", "Native-first", false).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = compRow("Operating System", "General purpose", "Immutable (Talos)", true).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = compRow("Memory Overhead", "1-2 GB per node", "~200 MB per node", true).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = compRow("Setup time", "Minutes (with a credit card)", "Hours (one afternoon, forever)").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -97,7 +73,7 @@ func Comparison() templ.Component {
 	})
 }
 
-func compRow(capability string, traditional string, ours string, highlight bool) templ.Component {
+func compRow(what string, renting string, owning string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -118,64 +94,46 @@ func compRow(capability string, traditional string, ours string, highlight bool)
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var3 = []any{templ.KV("bg-cyan-50/50 dark:bg-cyan-950/20", highlight)}
-		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var3...)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-amber-50/50 dark:hover:bg-amber-900/10 transition-colors\"><td class=\"py-3 px-4 sm:px-6 font-semibold text-cream-700 dark:text-gray-400\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"")
+		var templ_7745c5c3_Var3 string
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(what)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 43, Col: 86}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</td><td class=\"py-3 px-4 sm:px-6 text-red-600 dark:text-red-400\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var3).String())
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(renting)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 1, Col: 0}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 44, Col: 72}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><td class=\"py-3 px-6 font-medium\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</td><td class=\"py-3 px-4 sm:px-6 text-phosphor-600 dark:text-phosphor-400 font-semibold\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(capability)
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(owning)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 47, Col: 48}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 45, Col: 95}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</td><td class=\"py-3 px-6 text-gray-500 dark:text-gray-400\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(traditional)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 48, Col: 70}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</td><td class=\"py-3 px-6 text-cyan-600 dark:text-cyan-400 font-semibold\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(ours)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 49, Col: 77}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</td></tr>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</td></tr>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

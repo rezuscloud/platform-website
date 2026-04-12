@@ -60,7 +60,7 @@ func TestHomePageHTMLStructure(t *testing.T) {
 	t.Run("has meta description", func(t *testing.T) {
 		description, exists := doc.Find("meta[name='description']").Attr("content")
 		assert.True(t, exists)
-		assert.Contains(t, description, "Enterprise Kubernetes")
+		assert.Contains(t, description, "Personal Cloud")
 	})
 
 	t.Run("has viewport meta tag", func(t *testing.T) {
@@ -436,7 +436,7 @@ func TestProgressiveEnhancement(t *testing.T) {
 	html := string(body)
 
 	t.Run("content visible before JavaScript loads", func(t *testing.T) {
-		assert.Contains(t, html, "Enterprise Kubernetes")
+		assert.Contains(t, html, "Your Personal Cloud")
 		assert.Contains(t, html, "RezusCloud")
 	})
 }

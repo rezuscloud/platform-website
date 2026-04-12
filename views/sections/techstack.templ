@@ -1,28 +1,28 @@
 package sections
 
 templ TechStack() {
-	<section id="techstack" class="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900">
+	<section id="techstack" class="py-16 sm:py-24 bg-cream-100 dark:bg-terminal-surface">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-12">
-				<h2 class="text-3xl sm:text-4xl font-bold mb-4">Technology Stack</h2>
-				<p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-					Built entirely on proven, open-source technologies with zero vendor lock-in.
+				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-display">What's Inside</h2>
+				<p class="text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display">
+					Under the hood of your personal cloud.
 				</p>
 			</div>
 			<div class="max-w-3xl mx-auto">
-				<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-					<div class="divide-y divide-gray-200 dark:divide-gray-700">
-						@techRow("Infrastructure as Code", "OpenTofu (Terraform)")
-						@techRow("Configuration Language", "CUE")
+				<div class="bg-cream-50 dark:bg-terminal-bg rounded-xl border border-cream-300 dark:border-terminal-border overflow-hidden">
+					<div class="divide-y divide-cream-200 dark:divide-terminal-border">
+						@techRow("Infrastructure as Code", "OpenTofu")
+						@techRow("Configuration", "CUE")
 						@techRow("Operating System", "Talos Linux")
-						@techRow("Cloud Provider", "Oracle Cloud Infrastructure")
-						@techRow("GitOps Engine", "Flux CD")
-						@techRow("Container Networking", "Cilium")
-						@techRow("Package Manager", "Helm")
+						@techRow("Cloud Provider", "Oracle Cloud (free tier)")
+						@techRow("Automation", "Flux CD")
+						@techRow("Networking", "Cilium")
+						@techRow("Packages", "Helm")
 						@techRow("CI/CD", "GitLab CI/CD")
-						@techRow("Secrets Vault", "Bitwarden (self-hosted)")
-						@techRow("DNS Provider", "Cloudflare")
-						@techRow("Network Protocol", "Dual-stack IPv4/IPv6")
+						@techRow("Secrets", "Bitwarden (self-hosted)")
+						@techRow("DNS", "Cloudflare")
+						@techRow("Network", "Dual-stack IPv4/IPv6")
 					</div>
 				</div>
 			</div>
@@ -31,8 +31,8 @@ templ TechStack() {
 }
 
 templ techRow(category string, technology string) {
-	<div class="flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-		<span class="text-sm text-gray-600 dark:text-gray-400">{ category }</span>
-		<span class="text-sm font-semibold">{ technology }</span>
+	<div class="flex items-center justify-between px-6 py-4 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">
+		<span class="text-sm text-cream-600 dark:text-gray-400 font-display">{ category }</span>
+		<span class="text-sm font-semibold font-display">{ technology }</span>
 	</div>
 }
