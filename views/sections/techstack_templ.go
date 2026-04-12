@@ -29,15 +29,15 @@ func TechStack() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"techstack\" class=\"py-16 sm:py-24 bg-gray-50 dark:bg-gray-900\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4\">Technology Stack</h2><p class=\"text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto\">Built entirely on proven, open-source technologies with zero vendor lock-in.</p></div><div class=\"max-w-3xl mx-auto\"><div class=\"bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden\"><div class=\"divide-y divide-gray-200 dark:divide-gray-700\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"techstack\" class=\"py-16 sm:py-24 bg-cream-100 dark:bg-terminal-surface\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-display\">What's Inside</h2><p class=\"text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display\">Under the hood of your personal cloud.</p></div><div class=\"max-w-3xl mx-auto\"><div class=\"bg-cream-50 dark:bg-terminal-bg rounded-xl border border-cream-300 dark:border-terminal-border overflow-hidden\"><div class=\"divide-y divide-cream-200 dark:divide-terminal-border\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Infrastructure as Code", "OpenTofu (Terraform)").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techRow("Infrastructure as Code", "OpenTofu").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Configuration Language", "CUE").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techRow("Configuration", "CUE").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -45,19 +45,19 @@ func TechStack() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Cloud Provider", "Oracle Cloud Infrastructure").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techRow("Cloud Provider", "Oracle Cloud (free tier)").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("GitOps Engine", "Flux CD").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techRow("Automation", "Flux CD").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Container Networking", "Cilium").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techRow("Networking", "Cilium").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Package Manager", "Helm").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techRow("Packages", "Helm").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -65,15 +65,15 @@ func TechStack() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Secrets Vault", "Bitwarden (self-hosted)").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techRow("Secrets", "Bitwarden (self-hosted)").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("DNS Provider", "Cloudflare").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techRow("DNS", "Cloudflare").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Network Protocol", "Dual-stack IPv4/IPv6").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techRow("Network", "Dual-stack IPv4/IPv6").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -106,27 +106,27 @@ func techRow(category string, technology string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex items-center justify-between px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors\"><span class=\"text-sm text-gray-600 dark:text-gray-400\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex items-center justify-between px-6 py-4 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors\"><span class=\"text-sm text-cream-600 dark:text-gray-400 font-display\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(category)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/techstack.templ`, Line: 35, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/techstack.templ`, Line: 35, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <span class=\"text-sm font-semibold\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <span class=\"text-sm font-semibold font-display\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(technology)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/techstack.templ`, Line: 36, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/techstack.templ`, Line: 36, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {

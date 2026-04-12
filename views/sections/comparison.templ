@@ -1,39 +1,35 @@
 package sections
 
 templ Comparison() {
-	<section id="comparison" class="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900">
+	<section id="comparison" class="py-16 sm:py-24 bg-cream-100 dark:bg-terminal-surface">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-12">
-				<h2 class="text-3xl sm:text-4xl font-bold mb-4">Platform Comparison</h2>
-				<p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-					See how our platform compares to traditional enterprise Kubernetes solutions.
+				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-display text-cream-800 dark:text-gray-300">
+					Own vs. Rent
+				</h2>
+				<p class="text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display">
+					Renting cloud infrastructure is like renting an apartment forever. At some point, you might want to own.
 				</p>
 			</div>
 			<div class="max-w-4xl mx-auto">
-				<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-					<table class="w-full text-left text-sm">
+				<div class="bg-cream-50 dark:bg-terminal-bg rounded-xl border border-cream-300 dark:border-terminal-border overflow-hidden">
+					<table class="w-full text-left font-display">
 						<thead>
-							<tr class="bg-gray-50 dark:bg-gray-900">
-								<th class="py-4 px-6 font-semibold text-gray-500 dark:text-gray-400">Capability</th>
-								<th class="py-4 px-6 font-semibold text-gray-500 dark:text-gray-400">Traditional Enterprise</th>
-								<th class="py-4 px-6 font-semibold text-cyan-600 dark:text-cyan-400">Our Platform</th>
+							<tr class="bg-cream-200 dark:bg-terminal-bg uppercase tracking-wider text-sm text-cream-500 dark:text-gray-500">
+								<th class="py-3 px-4 sm:px-6 font-semibold">What</th>
+								<th class="py-3 px-4 sm:px-6 font-semibold">Renting</th>
+								<th class="py-3 px-4 sm:px-6 font-semibold">Owning</th>
 							</tr>
 						</thead>
-						<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-							@compRow("Infrastructure Ownership", "Third-party managed", "Fully self-owned", true)
-							@compRow("Setup Time", "2-4 weeks", "2-4 hours", true)
-							@compRow("Cloud Lock-in", "Single vendor", "Multi-cloud ready", true)
-							@compRow("Edge Support", "Separate clusters", "Unified cluster", true)
-							@compRow("Architecture", "Homogeneous", "Heterogeneous", false)
-							@compRow("Networking", "Basic CNI", "eBPF + eBGP + Gateway API", true)
-							@compRow("Hardware", "Enterprise servers only", "Consumer-grade supported", true)
-							@compRow("Control Plane", "Cloud-managed dependency", "Self-managed independence", true)
-							@compRow("Edge Compute", "Cloud dependency", "Full autonomy", true)
-							@compRow("Security", "Add-on cost", "Built-in", true)
-							@compRow("GitOps", "Manual/expensive", "Automated (Flux)", true)
-							@compRow("IPv6", "Optional", "Native-first", false)
-							@compRow("Operating System", "General purpose", "Immutable (Talos)", true)
-							@compRow("Memory Overhead", "1-2 GB per node", "~200 MB per node", true)
+						<tbody class="divide-y divide-cream-300 dark:divide-terminal-border">
+							@compRow("Monthly cost", "Grows with usage", "Electricity you already pay")
+							@compRow("Your data", "On their servers, their encryption", "Your hardware, your encryption keys")
+							@compRow("Vendor lock-in", "Stuck in their ecosystem", "Open source, replaceable")
+							@compRow("Scaling", "Pay more", "Add hardware you already have")
+							@compRow("Privacy", "They can see your data", "You control encryption end-to-end")
+							@compRow("Service deprecation", "They decide what to kill", "Open source lives forever")
+							@compRow("Edge computing", "Separate clusters, extra cost", "Your hardware, unified cluster")
+							@compRow("Setup time", "Minutes (with a credit card)", "Hours (one afternoon, forever)")
 						</tbody>
 					</table>
 				</div>
@@ -42,10 +38,10 @@ templ Comparison() {
 	</section>
 }
 
-templ compRow(capability string, traditional string, ours string, highlight bool) {
-	<tr class={ templ.KV("bg-cyan-50/50 dark:bg-cyan-950/20", highlight) }>
-		<td class="py-3 px-6 font-medium">{ capability }</td>
-		<td class="py-3 px-6 text-gray-500 dark:text-gray-400">{ traditional }</td>
-		<td class="py-3 px-6 text-cyan-600 dark:text-cyan-400 font-semibold">{ ours }</td>
+templ compRow(what string, renting string, owning string) {
+	<tr class="hover:bg-amber-50/50 dark:hover:bg-amber-900/10 transition-colors">
+		<td class="py-3 px-4 sm:px-6 font-semibold text-cream-700 dark:text-gray-400">{ what }</td>
+		<td class="py-3 px-4 sm:px-6 text-red-600 dark:text-red-400">{ renting }</td>
+		<td class="py-3 px-4 sm:px-6 text-phosphor-600 dark:text-phosphor-400 font-semibold">{ owning }</td>
 	</tr>
 }

@@ -145,7 +145,7 @@ func TestE2EHTMXSectionLoad(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	assert.Contains(t, bodyText, "Enterprise Kubernetes",
+	assert.Contains(t, bodyText, "Your Personal",
 		"Section endpoint should contain expected content")
 }
 
