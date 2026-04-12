@@ -1,16 +1,17 @@
 # RezusCloud Platform Website
 
-The official landing page for the RezusCloud Enterprise Kubernetes Platform, built with Go Fiber, templ, HTMX, and Tailwind CSS, running on the Dapr runtime.
+The landing page for RezusCloud — your personal cloud. Built with Go Fiber, templ, HTMX, Alpine.js, and Tailwind CSS, running on the Dapr runtime.
 
 ## Overview
 
-This is a single-page marketing website that showcases the RezusCloud Kubernetes platform. The site features:
+This is a single-page website that presents the **Personal Cloud** narrative: one person with any hardware and any ISP can run their own cloud infrastructure. The site draws the analogy from the personal computer revolution (mainframes → PCs) to today (cloud providers → personal cloud). The visual design evokes retro computing with CRT effects, monospace typography, and a cream/terminal color palette.
 
 - **Single-page scrolling layout** with 11 content sections
-- **Dark/light theme toggle** with localStorage persistence
-- **Alpine.js** focuses on client-side interactivity (theme, mobile menu)
-- **HTMX** focuses on server-side interactivity (section updates)
-- **Progressive enhancement** - works without JavaScript, enhanced with it
+- **Retro design system** — IBM Plex Mono + VT323 fonts, CRT scanlines, phosphor glow, beveled borders
+- **Dark/light theme toggle** — cream background (light) / terminal green (dark), localStorage persistence
+- **Alpine.js** for client-side interactivity (theme, mobile menu)
+- **HTMX** for server-side interactivity (section updates)
+- **Progressive enhancement** — works without JavaScript, enhanced with it
 - **Dapr sidecar integration** for microservices building blocks
 - **Multi-architecture container images** (amd64/arm64)
 
@@ -18,12 +19,13 @@ This is a single-page marketing website that showcases the RezusCloud Kubernetes
 
 | Category | Technology | Version |
 |----------|------------|---------|
-| Runtime | Go | 1.24 |
+| Runtime | Go | 1.24+ |
 | Web Framework | Fiber v2 | 2.52.6 |
-| Templating | templ | 0.3.1001 |
-| CSS Framework | Tailwind CSS | 4.1.0 |
+| Templating | templ | latest |
+| CSS Framework | Tailwind CSS | v4 |
 | Server Interactivity | HTMX | 2.0.6 |
 | Client State | Alpine.js | 3.x |
+| Fonts | IBM Plex Mono, VT323 | self-hosted woff2 |
 | Container Runtime | Dapr | 1.15.3 |
 | Base Image | distroless/static-debian12 | nonroot |
 
@@ -200,17 +202,17 @@ The website consists of 11 sections, each as a separate templ component:
 
 | Section | ID | Purpose |
 |---------|-----|---------|
-| Hero | `#hero` | Main headline, CTA, key stats |
-| Challenge | `#challenge` | Industry problem statement |
-| Architecture | `#architecture` | Three-tier platform diagram |
-| Features | `#features` | Core capabilities grid |
-| Networking | `#networking` | Cilium, WireGuard, dual-stack |
-| Edge | `#edge` | Baremetal edge computing |
-| Services | `#services` | Managed platform services |
-| Comparison | `#comparison` | Cost comparison table |
-| Use Cases | `#usecases` | Industry applications |
-| Tech Stack | `#techstack` | Technology components |
-| Get Started | `#getstarted` | Quick start guide |
+| Hero | `#hero` | "Your Personal Cloud" manifesto + PC revolution analogy |
+| Challenge | `#challenge` | "The Mainframe Moment" — then vs now parallel |
+| Architecture | `#architecture` | "How It Works" — personal cloud blueprint |
+| Features | `#features` | "What You Get" — personal benefits |
+| Networking | `#networking` | "Always Connected" — any ISP, any network |
+| Edge | `#edge` | "Runs on Anything" — old laptop, Raspberry Pi |
+| Services | `#services` | "What You Can Run" — bundled software |
+| Comparison | `#comparison` | "Own vs Rent" — personal decision |
+| Use Cases | `#usecases` | "What Will You Build?" — inspiration |
+| Tech Stack | `#techstack` | "What's Inside" — spec sheet |
+| Get Started | `#getstarted` | "Start Your Cloud" — unboxing experience |
 
 ## Development
 
@@ -326,7 +328,7 @@ ghcr.io/rezuscloud/platform-website:<sha>
 
 | Component | Status | Details |
 |-----------|--------|---------|
-| Application (KubeVela) | Ready:1/1 | Image: `ghcr.io/rezuscloud/platform-website:v0.0.1-77` |
+| Application (KubeVela) | Ready:1/1 | Image: `ghcr.io/rezuscloud/platform-website:latest` |
 | Pod | Running 2/2 | On cloud control-plane node, with Dapr sidecar |
 | HTTPRoute | Accepted | `rezus.cloud`, `www.rezus.cloud` → port 3000 |
 | TLS Certificate | Ready | Let's Encrypt wildcard `*.rezus.cloud` (DNS-01) |
@@ -408,6 +410,18 @@ The Dapr control plane is deployed separately via `k8s-iac/modules/dapr/`:
 | `PORT` | `3000` | Server listen port |
 
 ## Key Implementation Notes
+
+### Retro Design System
+
+The visual identity is inspired by personal computers of the 1980s (Olivetti, Apple Macintosh, Commodore 64):
+
+- **Colors**: Cream (`#f5f0e8`), phosphor green (`#00ff41`), amber (`#ffb000`), retro blue (`#4a9eff`), terminal (`#0a0a0a`)
+- **Fonts**: IBM Plex Mono (body) + VT323 (headings/accents), self-hosted as woff2
+- **CRT effects**: Scanline overlay, text glow, pixel borders, beveled edges
+- **Tailwind v4 theme**: Custom colors, fonts, and utilities defined in `input.css` via `@theme` blocks
+- **Dark mode**: Class strategy with `.dark` on `<html>`, toggled via Alpine.js with localStorage persistence
+
+**Important**: Tailwind v4 font variables use `--font-display` / `--font-retro` (not `--font-family-*`). See `input.css` for reference.
 
 ### Theme Persistence
 
