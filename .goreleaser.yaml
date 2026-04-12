@@ -31,7 +31,7 @@ sboms:
 
 signs:
   - cmd: cosign
-    args: ["sign-blob", "--yes", "--output-signature", "${signature}", "${artifact}"]
+    args: ["sign-blob", "--yes", "--output-bundle", "${signature}", "${artifact}"]
     artifacts: checksum
 
 changelog:
