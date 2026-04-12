@@ -119,7 +119,7 @@ jobs:
 
   docker-pr:
     needs: [build, test, e2e-test]
-    if: github.event_name == 'pull_request'
+    if: always() && github.event_name == 'pull_request' && needs.build.result == 'success' && needs.test.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: read
