@@ -29,23 +29,23 @@ func Hero() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"hero\" class=\"pt-24 pb-16 sm:pt-32 sm:pb-24\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center max-w-4xl mx-auto\"><div class=\"inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-50 dark:bg-cyan-950 border border-cyan-200 dark:border-cyan-800 text-cyan-700 dark:text-cyan-300 text-sm font-medium mb-6\"><span class=\"w-2 h-2 bg-cyan-500 rounded-full animate-pulse\"></span> Open Source Kubernetes Platform</div><h1 class=\"text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6\"><span class=\"bg-gradient-to-r from-cyan-500 via-blue-500 to-violet-500 bg-clip-text text-transparent\">Enterprise Kubernetes</span><br><span class=\"text-gray-900 dark:text-white\">You Fully Control</span></h1><p class=\"text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto\">Production-ready, GitOps-managed Kubernetes infrastructure that unifies cloud and edge locations into a single, scalable platform. Own your infrastructure, your data, your destiny.</p><div class=\"flex flex-col sm:flex-row items-center justify-center gap-4 mb-16\"><a href=\"#getstarted\" class=\"inline-flex items-center px-6 py-3 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all\">Get Started <svg class=\"ml-2 w-4 h-4\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M17 8l4 4m0 0l-4 4m4-4H3\"></path></svg></a> <a href=\"#architecture\" class=\"inline-flex items-center px-6 py-3 rounded-lg border border-gray-300 dark:border-gray-700 font-semibold hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors\">View Architecture</a></div></div><!-- Key Stats --><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"hero\" class=\"pt-24 pb-16 sm:pt-32 sm:pb-24\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center max-w-4xl mx-auto\"><div class=\"inline-flex items-center gap-2 px-4 py-1.5 bg-cream-200 dark:bg-terminal-surface border border-cream-300 dark:border-terminal-border text-cream-700 dark:text-phosphor-400 text-sm font-display mb-6\"><span class=\"w-2 h-2 bg-amber-500 dark:bg-phosphor-500 animate-pulse\"></span> Open Source Cloud Infrastructure</div><h1 class=\"text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 font-display\"><span class=\"text-amber-600 dark:text-phosphor-400\">Your Personal</span><br><span class=\"text-cream-900 dark:text-gray-100\">Cloud</span></h1><p class=\"text-lg sm:text-xl text-cream-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto font-display\">They said you didn't need your own computer either.<br class=\"hidden sm:block\">Then the personal computer changed everything. Now it's the cloud's turn.</p><div class=\"flex flex-col sm:flex-row items-center justify-center gap-4 mb-16\"><a href=\"#getstarted\" class=\"inline-flex items-center px-6 py-3 bg-amber-500 dark:bg-phosphor-500 text-terminal-bg dark:bg-terminal-bg dark:text-terminal-bg font-bold font-display border-2 border-amber-600 dark:border-phosphor-400 hover:bg-amber-600 dark:hover:bg-phosphor-400 retro-bevel-inset transition-colors\">Power On <svg class=\"ml-2 w-4 h-4\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2.5\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13 10V3L4 14h7v7l9-11h-7z\"></path></svg></a> <a href=\"#architecture\" class=\"inline-flex items-center px-6 py-3 border-2 border-cream-300 dark:border-terminal-border font-bold font-display hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors\">See How It Works</a></div></div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = statCard("100%", "Self-owned", "Full infrastructure control").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = statCard("100%", "Yours", "Entirely yours").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = statCard("2-4h", "setup", "Time to production").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = statCard("2-4h", "setup", "Ready in an afternoon").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = statCard("~200MB", "per node", "Memory overhead").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = statCard("~200MB", "per node", "Runs on a potato").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = statCard("30s", "boot", "Talos Linux boot time").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = statCard("30s", "boot", "Boots in seconds").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -78,7 +78,7 @@ func statCard(value string, unit string, label string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-gray-50 dark:bg-gray-900 rounded-xl p-5 text-center border border-gray-200 dark:border-gray-800\"><div class=\"text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-cream-200 dark:bg-terminal-surface p-5 text-center border border-cream-300 dark:border-terminal-border retro-bevel-inset\"><div class=\"text-2xl sm:text-3xl font-bold font-retro text-amber-600 dark:text-phosphor-400\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -91,27 +91,27 @@ func statCard(value string, unit string, label string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"text-sm font-medium text-gray-500 dark:text-gray-400\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"text-sm font-medium font-display text-cream-600 dark:text-gray-400\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(unit)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/hero.templ`, Line: 48, Col: 74}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/hero.templ`, Line: 48, Col: 88}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div class=\"text-xs text-gray-400 dark:text-gray-500 mt-1\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div class=\"text-xs font-display text-cream-400 dark:text-gray-500 mt-1\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/hero.templ`, Line: 49, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/hero.templ`, Line: 49, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
