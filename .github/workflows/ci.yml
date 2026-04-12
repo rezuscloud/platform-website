@@ -130,7 +130,7 @@ jobs:
         with:
           push_image: true
           tag_list: |
-            pr-${{ github.run_number }}-${{ github.sha }}
-          version: pr-${{ github.run_number }}
+            pr-${{ github.event.pull_request.number }}-${{ github.sha }}
+          version: pr-${{ github.event.pull_request.number }}
           git_commit: ${{ github.sha }}
           build_time: ""
