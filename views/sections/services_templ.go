@@ -29,40 +29,40 @@ func Services() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"services\" class=\"py-16 sm:py-24\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4\">Platform Services</h2><p class=\"text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto\">A complete, production-ready stack built entirely on open-source technologies.</p></div><div class=\"grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"services\" class=\"py-16 sm:py-24 bg-cream-100 dark:bg-terminal-surface\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-display\">What You Can Run</h2><p class=\"text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display\">Everything you need comes in the box — networking, monitoring, app deployment, and storage. All bundled, all ready to go.</p></div><div class=\"grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = serviceCategory("Core Infrastructure", []ServiceItem{
-			{"Cilium 1.18.x", "Container Networking", "CNI with eBPF"},
-			{"Cilium + Envoy", "Service Mesh", "L7 routing"},
-			{"External DNS + Cloudflare", "DNS Management", "Automated records"},
-			{"cert-manager + Let's Encrypt", "Certificate Authority", "TLS automation"},
+		templ_7745c5c3_Err = serviceCategory("System Software", []ServiceItem{
+			{"cilium", "Container Networking", "Connects your workloads with eBPF-powered networking"},
+			{"cilium + envoy", "Service Mesh", "Routes traffic between your services at layer 7"},
+			{"external-dns", "DNS Management", "Keeps your domain records in sync automatically"},
+			{"cert-manager", "TLS Certificates", "Provisions and renews HTTPS certificates hands-free"},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = serviceCategory("Observability Stack", []ServiceItem{
-			{"Prometheus", "Metrics", "Time-series collection"},
-			{"Grafana", "Visualization", "Dashboard and alerts"},
-			{"Loki", "Logging", "Log aggregation"},
-			{"Hubble", "Network", "Cilium observability"},
+		templ_7745c5c3_Err = serviceCategory("Dashboard & Monitoring", []ServiceItem{
+			{"prometheus", "Metrics Collection", "Records performance data from everything running"},
+			{"grafana", "Dashboards & Alerts", "Visualizes what's happening and warns you when it's not"},
+			{"loki", "Log Aggregation", "Collects and searches logs from all your services"},
+			{"hubble", "Network Visibility", "Shows who's talking to whom across the cluster"},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = serviceCategory("Application Platform", []ServiceItem{
-			{"KubeVela", "App Delivery", "Component-based deployments"},
-			{"Helm", "Package Manager", "Chart-based installation"},
-			{"Kustomize", "Config Management", "Overlay-based customization"},
+		templ_7745c5c3_Err = serviceCategory("App Launcher", []ServiceItem{
+			{"kubevela", "Component Deployments", "Deploys multi-piece applications as a single unit"},
+			{"helm", "Package Installation", "Installs pre-packaged software with one command"},
+			{"kustomize", "Config Overlays", "Customizes deployments per environment without templates"},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = serviceCategory("Storage Solutions", []ServiceItem{
-			{"local-path-provisioner", "Local Storage", "High-performance local volumes"},
-			{"JuiceFS + TiKV", "Distributed", "Shared storage across nodes"},
-			{"OCI Block Volumes", "Block Storage", "Cloud persistent storage"},
+		templ_7745c5c3_Err = serviceCategory("Storage", []ServiceItem{
+			{"local-path-provisioner", "Local Volumes", "Fast storage directly on the machine running your app"},
+			{"juicefs + tikv", "Distributed Storage", "Shared storage accessible from any node in the cluster"},
+			{"oci block volumes", "Cloud Block Storage", "Persistent cloud disks when you need extra capacity"},
 		}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -102,58 +102,58 @@ func serviceCategory(title string, items []ServiceItem) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden\"><div class=\"px-6 py-4 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950/30 dark:to-blue-950/30 border-b border-gray-200 dark:border-gray-700\"><h3 class=\"text-lg font-bold\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-cream-50 dark:bg-terminal-bg rounded-xl border border-cream-300 dark:border-terminal-border overflow-hidden\"><div class=\"px-6 py-4 bg-amber-50 dark:bg-amber-900/20 border-b border-cream-300 dark:border-terminal-border\"><h3 class=\"text-lg font-bold font-display\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/services.templ`, Line: 49, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/services.templ`, Line: 49, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</h3></div><div class=\"divide-y divide-gray-200 dark:divide-gray-700\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</h3></div><div class=\"divide-y divide-cream-200 dark:divide-terminal-border\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, item := range items {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"px-6 py-3 flex items-center justify-between\"><div><div class=\"font-medium text-sm\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"px-6 py-3 flex items-center justify-between\"><div><div class=\"font-medium text-sm font-display\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(item.Service)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/services.templ`, Line: 55, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/services.templ`, Line: 55, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div class=\"text-xs text-gray-500 dark:text-gray-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div class=\"text-xs text-cream-600 dark:text-gray-400 font-display\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(item.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/services.templ`, Line: 56, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/services.templ`, Line: 56, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div><code class=\"text-xs bg-gray-100 dark:bg-gray-900 px-2 py-1 rounded text-cyan-600 dark:text-cyan-400\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div><code class=\"text-xs bg-cream-200 dark:bg-terminal-bg px-2 py-1 rounded text-amber-600 dark:text-amber-400 font-display\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(item.Technology)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/services.templ`, Line: 58, Col: 124}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/services.templ`, Line: 58, Col: 143}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {

@@ -29,91 +29,59 @@ func Networking() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"networking\" class=\"py-16 sm:py-24\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4\">Modern Networking Stack</h2><p class=\"text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto\">High-performance eBGP routing with Cilium for production-grade multi-site connectivity.</p></div><!-- BGP Routing Diagram --><div class=\"max-w-4xl mx-auto mb-12\"><div class=\"bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-8\"><div class=\"text-center text-sm font-semibold text-gray-500 dark:text-gray-400 mb-6 uppercase tracking-wider\">BGP Routing Fabric</div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"networking\" class=\"py-16 sm:py-24\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-display\">Always Connected</h2><p class=\"text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display\">Your machines talk to each other securely, no matter what ISP they're on.</p></div><div class=\"max-w-4xl mx-auto mb-12\"><div class=\"bg-cream-100 dark:bg-terminal-surface rounded-2xl border-2 border-cream-300 dark:border-terminal-border p-8\"><div class=\"text-center text-sm font-semibold text-cream-500 dark:text-gray-500 mb-6 uppercase tracking-wider font-display\">Your Network</div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = bgpNode("OCI Cloud", "10.0.0.0/16", "blue").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = networkNode("Your Home", "wifi").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = bgpNode("Edge Site 1", "fd00:1::/48", "emerald").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = networkNode("Office", "building").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = bgpNode("Edge Site 2", "fd00:2::/48", "violet").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = networkNode("VPS", "server").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = bgpNode("Edge Site 3", "fd00:3::/48", "amber").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = networkNode("Parents' House", "home").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"text-center mt-6 text-sm text-gray-500 dark:text-gray-400\">Native routing between all sites -- no overlay complexity</div></div></div><!-- Performance + Features --><div class=\"grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto\"><!-- Performance --><div class=\"bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700\"><h3 class=\"text-xl font-bold mb-4\">Performance Characteristics</h3><ul class=\"space-y-3\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"flex items-center justify-center gap-2 mt-6\"><span class=\"w-2 h-2 bg-phosphor-500 rounded-full animate-pulse\"></span> <span class=\"text-sm text-cream-600 dark:text-gray-400 font-display\">All connected through encrypted tunnels</span></div></div></div><div class=\"grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto\"><div class=\"bg-cream-100 dark:bg-terminal-surface rounded-xl p-6 border border-cream-300 dark:border-terminal-border\"><h3 class=\"text-xl font-bold mb-4 font-display text-amber-600 dark:text-amber-400\">How It Connects</h3><ul class=\"space-y-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = perfItem("Latency", "Direct routing eliminates tunnel overhead").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = networkBullet("Encrypted tunnels between all locations").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = perfItem("Throughput", "Wire-speed packet forwarding").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = networkBullet("Works over any consumer ISP").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = perfItem("Scale", "Hundreds of edge locations").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = networkBullet("No static IP required").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = perfItem("MTU", "Full 1500-byte payloads (no encapsulation)").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</ul></div><div class=\"bg-cream-100 dark:bg-terminal-surface rounded-xl p-6 border border-cream-300 dark:border-terminal-border\"><h3 class=\"text-xl font-bold mb-4 font-display text-amber-600 dark:text-amber-400\">What You Get</h3><ul class=\"space-y-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</ul></div><!-- Advanced CNI --><div class=\"bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700\"><h3 class=\"text-xl font-bold mb-4\">Advanced CNI Features</h3><ul class=\"space-y-3\">")
+		templ_7745c5c3_Err = networkBullet("Automatic routing between sites").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = perfItem("kube-proxy Replacement", "30%+ performance improvement").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = networkBullet("Full IPv6 support").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = perfItem("eBPF Data Plane", "Kernel-level packet processing").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = networkBullet("No overlay complexity").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = perfItem("Gateway API", "Kubernetes-standard ingress").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = perfItem("Hubble Observability", "Real-time network visibility").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = perfItem("BGP Control Plane", "Native routing integration").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</ul></div></div><!-- IPv6 --><div class=\"mt-12 max-w-5xl mx-auto\"><div class=\"bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950/30 dark:to-blue-950/30 rounded-xl p-6 border border-cyan-200 dark:border-cyan-800\"><h3 class=\"text-xl font-bold mb-4 text-cyan-700 dark:text-cyan-300\">IPv6-First Design</h3><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4 text-sm\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = ipv6Feature("Native IPv6", "Pods communicate via IPv6 natively").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = ipv6Feature("Dual-Stack", "IPv4 compatibility where needed").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = ipv6Feature("Global Addressing", "No NAT, no IP exhaustion").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = ipv6Feature("Future-Proof", "Ready for IPv6-only internet").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</ul></div></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -121,7 +89,7 @@ func Networking() templ.Component {
 	})
 }
 
-func bgpNode(name string, cidr string, color string) templ.Component {
+func networkNode(name string, icon string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -142,33 +110,45 @@ func bgpNode(name string, cidr string, color string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center\"><div class=\"text-sm font-bold mb-1\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"bg-cream-50 dark:bg-terminal-bg rounded-xl p-4 border border-cream-300 dark:border-terminal-border text-center\"><div class=\"text-2xl mb-2\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if icon == "wifi" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "&#x1F4F6;")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else if icon == "building" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "&#x1F3E2;")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else if icon == "server" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "&#x1F5A5;&#xFE0F;")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else if icon == "home" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "&#x1F3E0;")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"text-sm font-bold font-display\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 71, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 64, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div><code class=\"text-xs text-gray-500 dark:text-gray-400\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(cidr)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 72, Col: 63}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</code><div class=\"mt-2 text-xs text-gray-400 dark:text-gray-500\">BGP Peering</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -176,7 +156,7 @@ func bgpNode(name string, cidr string, color string) templ.Component {
 	})
 }
 
-func perfItem(label string, description string) templ.Component {
+func networkBullet(text string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -192,93 +172,25 @@ func perfItem(label string, description string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var5 == nil {
-			templ_7745c5c3_Var5 = templ.NopComponent
+		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var4 == nil {
+			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<li class=\"flex items-start gap-3\"><span class=\"mt-1 w-1.5 h-1.5 bg-cyan-500 rounded-full shrink-0\"></span><div><span class=\"font-medium\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<li class=\"flex items-start gap-3 font-display\"><span class=\"mt-1.5 w-2 h-2 bg-amber-500 rounded-full shrink-0\"></span> <span class=\"text-cream-700 dark:text-gray-300\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(label)
+		var templ_7745c5c3_Var5 string
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 81, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 71, Col: 56}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, ":</span> <span class=\"text-gray-600 dark:text-gray-400\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(description)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 82, Col: 63}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span></div></li>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
-}
-
-func ipv6Feature(title string, description string) templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
-		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var8 == nil {
-			templ_7745c5c3_Var8 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div><div class=\"font-semibold text-cyan-700 dark:text-cyan-300\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(title)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 89, Col: 69}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div><div class=\"text-gray-600 dark:text-gray-400\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var10 string
-		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(description)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 90, Col: 61}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</span></li>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

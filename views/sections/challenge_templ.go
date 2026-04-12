@@ -29,31 +29,31 @@ func Challenge() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"challenge\" class=\"py-16 sm:py-24 bg-gray-50 dark:bg-gray-900\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4\">The Challenge</h2><p class=\"text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto\">Modern enterprises face impossible trade-offs with traditional Kubernetes infrastructure.</p></div><div class=\"max-w-4xl mx-auto\"><div class=\"overflow-x-auto\"><table class=\"w-full text-left\"><thead><tr class=\"border-b border-gray-200 dark:border-gray-700\"><th class=\"py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400\">Challenge</th><th class=\"py-3 px-4 text-sm font-semibold text-gray-500 dark:text-gray-400\">Traditional Solutions</th><th class=\"py-3 px-4 text-sm font-semibold text-red-500\">The Problem</th></tr></thead> <tbody class=\"divide-y divide-gray-200 dark:divide-gray-700\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"challenge\" class=\"py-16 sm:py-24 bg-cream-100 dark:bg-terminal-surface\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-display text-cream-800 dark:text-gray-300\">The Mainframe Moment</h2><p class=\"text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display\">In the 1970s, computers were room-sized machines owned by a handful of corporations. Companies rented time on them. When people proposed putting a computer on every desk, the industry said it was absurd. Sound familiar?</p></div><div class=\"max-w-4xl mx-auto mb-12\"><div class=\"overflow-x-auto border-2 border-cream-300 dark:border-terminal-border rounded-xl\"><table class=\"w-full text-left font-display\"><thead><tr class=\"border-b border-cream-300 dark:border-terminal-border\"><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-cream-500 dark:text-gray-500 font-semibold\">Then (1970s)</th><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-cream-500 dark:text-gray-500 font-semibold\">Now</th></tr></thead> <tbody class=\"divide-y divide-cream-300 dark:divide-terminal-border\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = challengeRow("Vendor Lock-in", "Single cloud provider", "Limited flexibility").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = challengeRow("Rent time on a mainframe", "Rent VMs from a cloud provider").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = challengeRow("Complexity", "Weeks of setup, specialized teams", "Slow time-to-market").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = challengeRow("IT department controls access", "Cloud provider controls your data").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = challengeRow("Data Sovereignty", "Data stored in third-party clouds", "Compliance and privacy risks").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = challengeRow("\"You don't need your own computer\"", "\"You don't need your own cloud\"").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = challengeRow("Edge Computing", "Separate clusters, complex networking", "Operational overhead").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = challengeRow("Batch processing, queues", "API rate limits, quotas").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = challengeRow("Security", "Add-on costs, bolt-on solutions", "Incomplete protection").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = challengeRow("Physical terminals", "Web dashboards").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</tbody></table></div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</tbody></table></div></div><div class=\"text-center max-w-3xl mx-auto\"><p class=\"text-xl sm:text-2xl font-bold font-display text-amber-600 dark:text-phosphor-500\">The Personal Computer changed everything. The Personal Cloud will too.</p></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -61,7 +61,7 @@ func Challenge() templ.Component {
 	})
 }
 
-func challengeRow(challenge string, traditional string, problem string) templ.Component {
+func challengeRow(then string, now string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -82,46 +82,33 @@ func challengeRow(challenge string, traditional string, problem string) templ.Co
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors\"><td class=\"py-4 px-4 font-semibold\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-cream-200/50 dark:hover:bg-terminal-border/30 transition-colors\"><td class=\"py-4 px-4 sm:px-6 text-cream-700 dark:text-gray-400\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(challenge)
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(then)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 38, Col: 49}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 46, Col: 72}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</td><td class=\"py-4 px-4 text-gray-600 dark:text-gray-400\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</td><td class=\"py-4 px-4 sm:px-6 text-cream-800 dark:text-gray-300 font-semibold\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(traditional)
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(now)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 39, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 47, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</td><td class=\"py-4 px-4 text-red-600 dark:text-red-400\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(problem)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 40, Col: 64}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</td></tr>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</td></tr>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -4,89 +4,70 @@ templ Networking() {
 	<section id="networking" class="py-16 sm:py-24">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-12">
-				<h2 class="text-3xl sm:text-4xl font-bold mb-4">Modern Networking Stack</h2>
-				<p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-					High-performance eBGP routing with Cilium for production-grade multi-site connectivity.
+				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-display">Always Connected</h2>
+				<p class="text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display">
+					Your machines talk to each other securely, no matter what ISP they're on.
 				</p>
 			</div>
-			<!-- BGP Routing Diagram -->
 			<div class="max-w-4xl mx-auto mb-12">
-				<div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-8">
-					<div class="text-center text-sm font-semibold text-gray-500 dark:text-gray-400 mb-6 uppercase tracking-wider">
-						BGP Routing Fabric
+				<div class="bg-cream-100 dark:bg-terminal-surface rounded-2xl border-2 border-cream-300 dark:border-terminal-border p-8">
+					<div class="text-center text-sm font-semibold text-cream-500 dark:text-gray-500 mb-6 uppercase tracking-wider font-display">
+						Your Network
 					</div>
 					<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-						@bgpNode("OCI Cloud", "10.0.0.0/16", "blue")
-						@bgpNode("Edge Site 1", "fd00:1::/48", "emerald")
-						@bgpNode("Edge Site 2", "fd00:2::/48", "violet")
-						@bgpNode("Edge Site 3", "fd00:3::/48", "amber")
+						@networkNode("Your Home", "wifi")
+						@networkNode("Office", "building")
+						@networkNode("VPS", "server")
+						@networkNode("Parents' House", "home")
 					</div>
-					<div class="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
-						Native routing between all sites -- no overlay complexity
+					<div class="flex items-center justify-center gap-2 mt-6">
+						<span class="w-2 h-2 bg-phosphor-500 rounded-full animate-pulse"></span>
+						<span class="text-sm text-cream-600 dark:text-gray-400 font-display">All connected through encrypted tunnels</span>
 					</div>
 				</div>
 			</div>
-			<!-- Performance + Features -->
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-				<!-- Performance -->
-				<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-					<h3 class="text-xl font-bold mb-4">Performance Characteristics</h3>
+				<div class="bg-cream-100 dark:bg-terminal-surface rounded-xl p-6 border border-cream-300 dark:border-terminal-border">
+					<h3 class="text-xl font-bold mb-4 font-display text-amber-600 dark:text-amber-400">How It Connects</h3>
 					<ul class="space-y-3">
-						@perfItem("Latency", "Direct routing eliminates tunnel overhead")
-						@perfItem("Throughput", "Wire-speed packet forwarding")
-						@perfItem("Scale", "Hundreds of edge locations")
-						@perfItem("MTU", "Full 1500-byte payloads (no encapsulation)")
+						@networkBullet("Encrypted tunnels between all locations")
+						@networkBullet("Works over any consumer ISP")
+						@networkBullet("No static IP required")
 					</ul>
 				</div>
-				<!-- Advanced CNI -->
-				<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-					<h3 class="text-xl font-bold mb-4">Advanced CNI Features</h3>
+				<div class="bg-cream-100 dark:bg-terminal-surface rounded-xl p-6 border border-cream-300 dark:border-terminal-border">
+					<h3 class="text-xl font-bold mb-4 font-display text-amber-600 dark:text-amber-400">What You Get</h3>
 					<ul class="space-y-3">
-						@perfItem("kube-proxy Replacement", "30%+ performance improvement")
-						@perfItem("eBPF Data Plane", "Kernel-level packet processing")
-						@perfItem("Gateway API", "Kubernetes-standard ingress")
-						@perfItem("Hubble Observability", "Real-time network visibility")
-						@perfItem("BGP Control Plane", "Native routing integration")
+						@networkBullet("Automatic routing between sites")
+						@networkBullet("Full IPv6 support")
+						@networkBullet("No overlay complexity")
 					</ul>
-				</div>
-			</div>
-			<!-- IPv6 -->
-			<div class="mt-12 max-w-5xl mx-auto">
-				<div class="bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950/30 dark:to-blue-950/30 rounded-xl p-6 border border-cyan-200 dark:border-cyan-800">
-					<h3 class="text-xl font-bold mb-4 text-cyan-700 dark:text-cyan-300">IPv6-First Design</h3>
-					<div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-						@ipv6Feature("Native IPv6", "Pods communicate via IPv6 natively")
-						@ipv6Feature("Dual-Stack", "IPv4 compatibility where needed")
-						@ipv6Feature("Global Addressing", "No NAT, no IP exhaustion")
-						@ipv6Feature("Future-Proof", "Ready for IPv6-only internet")
-					</div>
 				</div>
 			</div>
 		</div>
 	</section>
 }
 
-templ bgpNode(name string, cidr string, color string) {
-	<div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
-		<div class="text-sm font-bold mb-1">{ name }</div>
-		<code class="text-xs text-gray-500 dark:text-gray-400">{ cidr }</code>
-		<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">BGP Peering</div>
-	</div>
-}
-
-templ perfItem(label string, description string) {
-	<li class="flex items-start gap-3">
-		<span class="mt-1 w-1.5 h-1.5 bg-cyan-500 rounded-full shrink-0"></span>
-		<div>
-			<span class="font-medium">{ label }:</span>
-			<span class="text-gray-600 dark:text-gray-400">{ description }</span>
+templ networkNode(name string, icon string) {
+	<div class="bg-cream-50 dark:bg-terminal-bg rounded-xl p-4 border border-cream-300 dark:border-terminal-border text-center">
+		<div class="text-2xl mb-2">
+			if icon == "wifi" {
+				&#x1F4F6;
+			} else if icon == "building" {
+				&#x1F3E2;
+			} else if icon == "server" {
+				&#x1F5A5;&#xFE0F;
+			} else if icon == "home" {
+				&#x1F3E0;
+			}
 		</div>
-	</li>
+		<div class="text-sm font-bold font-display">{ name }</div>
+	</div>
 }
 
-templ ipv6Feature(title string, description string) {
-	<div>
-		<div class="font-semibold text-cyan-700 dark:text-cyan-300">{ title }</div>
-		<div class="text-gray-600 dark:text-gray-400">{ description }</div>
-	</div>
+templ networkBullet(text string) {
+	<li class="flex items-start gap-3 font-display">
+		<span class="mt-1.5 w-2 h-2 bg-amber-500 rounded-full shrink-0"></span>
+		<span class="text-cream-700 dark:text-gray-300">{ text }</span>
+	</li>
 }
