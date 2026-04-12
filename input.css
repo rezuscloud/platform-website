@@ -53,8 +53,8 @@
 	--color-terminal-surface: #141428;
 	--color-terminal-border: #1e1e3a;
 
-	--font-family-retro: "VT323", "Courier New", monospace;
-	--font-family-display: "IBM Plex Mono", "Courier New", monospace;
+	--font-retro: "VT323", "Courier New", monospace;
+	--font-display: "IBM Plex Mono", "Courier New", monospace;
 }
 
 @font-face {
