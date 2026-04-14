@@ -29,69 +29,7 @@ func GetStarted() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"getstarted\" class=\"py-16 sm:py-24 bg-cream-50 dark:bg-terminal-bg\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-display\">Start Your Cloud</h2><p class=\"text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display\">Like setting up a new computer. Clone, configure, deploy — you're online.</p></div><div class=\"max-w-3xl mx-auto mb-12\"><h3 class=\"text-xl font-bold mb-4 font-display\">What You'll Need</h3><div class=\"grid grid-cols-1 sm:grid-cols-2 gap-3\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = prereq("A machine (any computer will do)").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = prereq("An internet connection (any ISP works)").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = prereq("A domain name (optional but recommended)").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = prereq("A GitLab account (for CI/CD)").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div><div class=\"max-w-3xl mx-auto mb-12\"><div class=\"bg-terminal-bg rounded-xl overflow-hidden border border-terminal-border\"><div class=\"flex items-center gap-2 px-4 py-3 border-b border-terminal-border\"><span class=\"w-3 h-3 rounded-full bg-red-500\"></span> <span class=\"w-3 h-3 rounded-full bg-yellow-500\"></span> <span class=\"w-3 h-3 rounded-full bg-green-500\"></span> <span class=\"ml-2 text-xs text-cream-400 font-display\">terminal</span></div><pre class=\"p-6 text-sm font-display overflow-x-auto\"><code><span class=\"text-cream-400\"># 1. Clone the repository</span> <span class=\"text-phosphor-400\">git clone</span> https://gitlab.com/rezusnet/operations/iac/talos-iac <span class=\"text-cream-400\"># 2. Configure your variables</span> <span class=\"text-phosphor-400\">cp</span> terraform.tfvars.example terraform.tfvars <span class=\"text-cream-400\"># 3. Deploy your infrastructure</span> <span class=\"text-phosphor-400\">tofu init</span> && <span class=\"text-phosphor-400\">tofu apply</span> <span class=\"text-cream-400\"># 4. Access your cluster</span> <span class=\"text-phosphor-400\">kubectl</span> get nodes</code></pre></div></div><div class=\"max-w-3xl mx-auto text-center\"><div class=\"bg-amber-50 dark:bg-amber-900/10 rounded-2xl p-8 border border-amber-200 dark:border-amber-800\"><h3 class=\"text-2xl font-bold mb-3 font-display\">Ready to Own Your Cloud?</h3><p class=\"text-cream-600 dark:text-gray-400 mb-6 font-display\">Take control of your infrastructure. Every component is open source, fully documented, and ready to deploy.</p><a href=\"https://gitlab.com/rezusnet/operations/iac/talos-iac\" class=\"inline-flex items-center px-6 py-3 rounded-lg bg-amber-500 dark:bg-phosphor-500 text-terminal-bg font-bold font-display border-2 border-amber-600 dark:border-phosphor-400 transition-all\">View on GitLab <svg class=\"ml-2 w-4 h-4\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14\"></path></svg></a></div></div></div></section>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
-}
-
-func prereq(text string) templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
-		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var2 == nil {
-			templ_7745c5c3_Var2 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex items-center gap-2 p-3 bg-cream-100 dark:bg-terminal-surface rounded-lg text-sm font-display\"><svg class=\"w-4 h-4 text-amber-500 shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg> ")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(text)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/getstarted.templ`, Line: 66, Col: 8}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"getstarted\" class=\"py-16 sm:py-24 bg-cream-50 dark:bg-terminal-bg\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-display\">Start Your Cloud</h2><p class=\"text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display\">We're putting the finishing touches on your personal cloud.</p></div><div class=\"max-w-lg mx-auto\"><div class=\"bg-terminal-bg rounded-xl overflow-hidden border border-terminal-border\"><div class=\"flex items-center gap-2 px-4 py-3 border-b border-terminal-border\"><span class=\"w-3 h-3 rounded-full bg-red-500\"></span> <span class=\"w-3 h-3 rounded-full bg-yellow-500\"></span> <span class=\"w-3 h-3 rounded-full bg-green-500\"></span> <span class=\"ml-2 text-xs text-cream-400 font-display\">system</span></div><div class=\"p-8 text-center\"><div class=\"text-6xl mb-6 text-amber-500 dark:text-phosphor-400 font-retro\">▓▒░</div><p class=\"text-phosphor-400 font-retro text-xl mb-2 animate-pulse\">Coming Soon</p><p class=\"text-cream-400 font-display text-sm\">Insert Disk 2 to continue...</p></div></div><p class=\"text-center text-sm text-cream-400 dark:text-gray-500 mt-6 font-display\">The source code and deployment guides will be available here when we launch.</p></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
