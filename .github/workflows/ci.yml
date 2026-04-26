@@ -94,8 +94,16 @@ jobs:
       - name: Install Chromium
         run: |
           if command -v apt-get &> /dev/null; then
-            sudo apt-get update
-            sudo apt-get install -y chromium-browser 2>/dev/null || sudo apt-get install -y chromium
+            # On Ubuntu 22+, chromium-browser is a snap stub.
+            # Install via snap to get the real binary at /snap/bin/chromium.
+            if sudo snap install chromium 2>/dev/null; then
+              echo "Installed chromium via snap"
+              echo "/snap/bin" >> "$GITHUB_PATH"
+              echo "CHROME_PATH=/snap/bin/chromium" >> "$GITHUB_ENV"
+            else
+              sudo apt-get update -q
+              sudo apt-get install -y chromium 2>/dev/null || sudo apt-get install -y chromium-browser
+            fi
           elif command -v dnf &> /dev/null; then
             sudo dnf install -y chromium
           elif command -v yum &> /dev/null; then
