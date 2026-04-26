@@ -31,6 +31,9 @@ func newChromedpContext() (context.Context, context.CancelFunc) {
 		chromedp.Flag("disable-software-rasterizer", true),
 		chromedp.Flag("remote-debugging-port", "9222"),
 	)
+	if chromePath := os.Getenv("CHROME_PATH"); chromePath != "" {
+		opts = append(opts, chromedp.ExecPath(chromePath))
+	}
 	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
 	ctx, ctxCancel := chromedp.NewContext(allocCtx)
 	return ctx, func() {

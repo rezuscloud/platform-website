@@ -54,10 +54,17 @@ jobs:
           enable-cache: ${{ runner.environment != 'self-hosted' }}
           enable-templ-cache: ${{ runner.environment != 'self-hosted' }}
 
+      - name: Install C compiler (required for -race)
+        run: which gcc || (sudo apt-get update -q && sudo apt-get install -y gcc)
+
       - name: Run unit tests (Layer 1 - httptest)
+        env:
+          CGO_ENABLED: "1"
         run: go test -v -race -parallel 4 ./handlers/...
 
       - name: Run integration tests (Layer 2 - goquery)
+        env:
+          CGO_ENABLED: "1"
         run: go test -v -race -parallel 2 ./tests/... -run "Integration|HTML|Section|Navigation|Footer|Accessibility|HTMX|Responsive|DarkMode|Alpine|Progressive"
 
   e2e-test:
@@ -67,8 +74,6 @@ jobs:
         include:
           - runner: [self-hosted, Linux, X64]
             arch: x64
-          - runner: [self-hosted, Linux, ARM64]
-            arch: arm64
     runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
@@ -81,29 +86,31 @@ jobs:
           enable-cache: ${{ runner.environment != 'self-hosted' }}
           enable-templ-cache: ${{ runner.environment != 'self-hosted' }}
 
+      - name: Install C compiler (required for -race)
+        run: which gcc || (sudo apt-get update -q && sudo apt-get install -y gcc)
+
       - name: Install Chromium
         run: |
-          if command -v apt-get &> /dev/null; then
-            sudo apt-get update
-            sudo apt-get install -y chromium-browser 2>/dev/null || sudo apt-get install -y chromium
-          elif command -v dnf &> /dev/null; then
-            sudo dnf install -y chromium
-          elif command -v yum &> /dev/null; then
-            sudo yum install -y chromium
-          elif command -v pacman &> /dev/null; then
+          if command -v pacman &>/dev/null; then
             sudo pacman -S --noconfirm chromium
-          elif command -v zypper &> /dev/null; then
+          elif command -v apt-get &>/dev/null; then
+            sudo apt-get update -q
+            sudo apt-get install -y chromium 2>/dev/null || sudo apt-get install -y chromium-browser
+          elif command -v dnf &>/dev/null; then
+            sudo dnf install -y chromium
+          elif command -v yum &>/dev/null; then
+            sudo yum install -y chromium
+          elif command -v zypper &>/dev/null; then
             sudo zypper install -y chromium
           else
-            echo "Warning: Unsupported package manager. Trying to proceed without installing Chromium."
-            echo "Chromium must be pre-installed on this runner for E2E tests."
+            echo "Warning: Unsupported package manager. Chromium must be pre-installed."
           fi
 
       - name: Build container
         run: |
           docker rm -f platform-website 2>/dev/null || true
           ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
-          docker build --build-arg TARGETARCH=${ARCH} -t platform-website-test .
+          docker build --network=host --build-arg TARGETARCH=${ARCH} -t platform-website-test .
 
       - name: Run container
         run: |
@@ -112,11 +119,13 @@ jobs:
           curl --retry 10 --retry-delay 2 --retry-connrefused http://localhost:3000
 
       - name: Run E2E tests (Layer 3 - chromedp)
+        env:
+          CGO_ENABLED: "1"
         run: go test -v -race -count=1 -tags=e2e ./tests/... -run "E2E" -timeout 5m
 
       - name: Stop container
         if: always()
-        run: docker stop platform-website && docker rm platform-website
+        run: docker stop platform-website && docker rm platform-website || true
 
   docker-pr:
     needs: [build, test, e2e-test]

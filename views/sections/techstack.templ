@@ -6,33 +6,28 @@ templ TechStack() {
 			<div class="text-center mb-12">
 				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-display">What's Inside</h2>
 				<p class="text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display">
-					Under the hood of your personal cloud.
+					For the curious — the open source components that make it work.
 				</p>
 			</div>
-			<div class="max-w-3xl mx-auto">
-				<div class="bg-cream-50 dark:bg-terminal-bg rounded-xl border border-cream-300 dark:border-terminal-border overflow-hidden">
-					<div class="divide-y divide-cream-200 dark:divide-terminal-border">
-						@techRow("Infrastructure as Code", "OpenTofu")
-						@techRow("Configuration", "CUE")
-						@techRow("Operating System", "Talos Linux")
-						@techRow("Cloud Provider", "Oracle Cloud (free tier)")
-						@techRow("Automation", "Flux CD")
-						@techRow("Networking", "Cilium")
-						@techRow("Packages", "Helm")
-						@techRow("CI/CD", "GitLab CI/CD")
-						@techRow("Secrets", "Bitwarden (self-hosted)")
-						@techRow("DNS", "Cloudflare")
-						@techRow("Network", "Dual-stack IPv4/IPv6")
-					</div>
-				</div>
+			<div class="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
+				@techBadge("Talos Linux")
+				@techBadge("Kubernetes")
+				@techBadge("Cilium")
+				@techBadge("OpenTofu")
+				@techBadge("CUE")
+				@techBadge("Flux CD")
+				@techBadge("Helm")
+				@techBadge("GitLab CI")
+				@techBadge("Bitwarden")
+				@techBadge("Cloudflare")
 			</div>
 		</div>
 	</section>
 }
 
-templ techRow(category string, technology string) {
-	<div class="flex items-center justify-between px-6 py-4 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">
-		<span class="text-sm text-cream-600 dark:text-gray-400 font-display">{ category }</span>
-		<span class="text-sm font-semibold font-display">{ technology }</span>
-	</div>
+templ techBadge(name string) {
+	<span class="inline-flex items-center px-4 py-2 bg-cream-50 dark:bg-terminal-bg border border-cream-300 dark:border-terminal-border rounded-lg text-sm font-display hover:border-amber-400 dark:hover:border-phosphor-500 transition-colors">
+		<span class="w-1.5 h-1.5 bg-amber-500 rounded-full mr-2 shrink-0"></span>
+		{ name }
+	</span>
 }
