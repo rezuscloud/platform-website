@@ -74,8 +74,6 @@ jobs:
         include:
           - runner: [self-hosted, Linux, X64]
             arch: x64
-          - runner: [self-hosted, Linux, ARM64]
-            arch: arm64
     runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
@@ -94,17 +92,10 @@ jobs:
       - name: Install Chromium
         run: |
           if command -v pacman &>/dev/null; then
-            # Arch Linux: real chromium package in repos
             sudo pacman -S --noconfirm chromium
           elif command -v apt-get &>/dev/null; then
-            # Ubuntu/Debian ARM64: no real chromium in apt — use snap
-            command -v snap || (sudo apt-get update -q && sudo apt-get install -y snapd)
-            sudo systemctl start snapd.socket snapd.service 2>/dev/null || true
-            # Wait until snapd has seeded (up to 60s)
-            sudo snap wait system seed.loaded 2>/dev/null || sleep 10
-            snap list chromium 2>/dev/null || sudo snap install chromium
-            echo "/snap/bin" >> "$GITHUB_PATH"
-            echo "CHROME_PATH=/snap/bin/chromium" >> "$GITHUB_ENV"
+            sudo apt-get update -q
+            sudo apt-get install -y chromium 2>/dev/null || sudo apt-get install -y chromium-browser
           elif command -v dnf &>/dev/null; then
             sudo dnf install -y chromium
           elif command -v yum &>/dev/null; then
