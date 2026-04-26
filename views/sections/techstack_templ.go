@@ -29,55 +29,51 @@ func TechStack() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"techstack\" class=\"py-16 sm:py-24 bg-cream-100 dark:bg-terminal-surface\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-display\">What's Inside</h2><p class=\"text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display\">Under the hood of your personal cloud.</p></div><div class=\"max-w-3xl mx-auto\"><div class=\"bg-cream-50 dark:bg-terminal-bg rounded-xl border border-cream-300 dark:border-terminal-border overflow-hidden\"><div class=\"divide-y divide-cream-200 dark:divide-terminal-border\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"techstack\" class=\"py-16 sm:py-24 bg-cream-100 dark:bg-terminal-surface\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-display\">What's Inside</h2><p class=\"text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display\">For the curious — the open source components that make it work.</p></div><div class=\"flex flex-wrap justify-center gap-3 max-w-3xl mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Infrastructure as Code", "OpenTofu").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techBadge("Talos Linux").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Configuration", "CUE").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techBadge("Kubernetes").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Operating System", "Talos Linux").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techBadge("Cilium").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Cloud Provider", "Oracle Cloud (free tier)").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techBadge("OpenTofu").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Automation", "Flux CD").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techBadge("CUE").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Networking", "Cilium").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techBadge("Flux CD").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Packages", "Helm").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techBadge("Helm").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("CI/CD", "GitLab CI/CD").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techBadge("GitLab CI").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Secrets", "Bitwarden (self-hosted)").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techBadge("Bitwarden").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("DNS", "Cloudflare").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = techBadge("Cloudflare").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = techRow("Network", "Dual-stack IPv4/IPv6").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -85,7 +81,7 @@ func TechStack() templ.Component {
 	})
 }
 
-func techRow(category string, technology string) templ.Component {
+func techBadge(name string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -106,33 +102,20 @@ func techRow(category string, technology string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"flex items-center justify-between px-6 py-4 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors\"><span class=\"text-sm text-cream-600 dark:text-gray-400 font-display\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span class=\"inline-flex items-center px-4 py-2 bg-cream-50 dark:bg-terminal-bg border border-cream-300 dark:border-terminal-border rounded-lg text-sm font-display hover:border-amber-400 dark:hover:border-phosphor-500 transition-colors\"><span class=\"w-1.5 h-1.5 bg-amber-500 rounded-full mr-2 shrink-0\"></span> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(category)
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/techstack.templ`, Line: 35, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/techstack.templ`, Line: 31, Col: 8}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span> <span class=\"text-sm font-semibold font-display\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(technology)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/techstack.templ`, Line: 36, Col: 63}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
