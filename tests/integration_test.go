@@ -63,6 +63,22 @@ func TestHomePageHTMLStructure(t *testing.T) {
 		assert.Contains(t, description, "Personal Cloud")
 	})
 
+	t.Run("has open graph metadata", func(t *testing.T) {
+		ogTitle, exists := doc.Find("meta[property='og:title']").Attr("content")
+		assert.True(t, exists)
+		assert.Contains(t, ogTitle, "Your Personal Cloud")
+
+		ogImage, exists := doc.Find("meta[property='og:image']").Attr("content")
+		assert.True(t, exists)
+		assert.Contains(t, ogImage, "icon-512.png")
+	})
+
+	t.Run("has manifest link", func(t *testing.T) {
+		manifest, exists := doc.Find("link[rel='manifest']").Attr("href")
+		assert.True(t, exists)
+		assert.Equal(t, "/manifest.webmanifest", manifest)
+	})
+
 	t.Run("has viewport meta tag", func(t *testing.T) {
 		viewport, exists := doc.Find("meta[name='viewport']").Attr("content")
 		assert.True(t, exists)
