@@ -6,7 +6,7 @@ before:
   hooks:
     - go install github.com/a-h/templ/cmd/templ@latest
     - templ generate
-    - npm install
+    - npm ci
     - npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
 
 builds:
@@ -28,6 +28,36 @@ archives:
 
 sboms:
   - artifacts: archive
+
+dockers_v2:
+  - id: website
+    dockerfile: Dockerfile.release
+    images:
+      - ghcr.io/rezuscloud/platform-website
+    tags:
+      - v{{ .Version }}
+      - v{{ .Major }}
+      - v{{ .Major }}.{{ .Minor }}
+      - latest
+    extra_files:
+      - assets
+    labels:
+      org.opencontainers.image.title: RezusCloud Platform Website
+      org.opencontainers.image.description: RezusCloud Personal Cloud website
+      org.opencontainers.image.created: "{{ .Date }}"
+      org.opencontainers.image.revision: "{{ .FullCommit }}"
+      org.opencontainers.image.version: "{{ .Version }}"
+      org.opencontainers.image.source: "{{ .GitURL }}"
+      org.opencontainers.image.url: https://rezus.cloud
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    sbom: true
+    flags:
+      - --provenance=false
+
+docker_digest:
+  name_template: digests.txt
 
 signs:
   - cmd: cosign
