@@ -47,7 +47,44 @@ func TestE2EPageLoad(t *testing.T) {
 }
 
 func TestE2EThemeToggle(t *testing.T) {
-	t.Skip("Skipping theme toggle E2E test - Alpine.js class binding has timing issues in containerized environment")
+	ctx, cancel := newChromedpContext()
+	defer cancel()
+
+	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+
+	err := chromedp.Run(ctx,
+		chromedp.Navigate(getBaseURL()),
+		chromedp.WaitVisible("body"),
+		chromedp.Sleep(1000*time.Millisecond),
+	)
+	require.NoError(t, err)
+
+	var initialDark bool
+	err = chromedp.Run(ctx,
+		chromedp.Evaluate(`document.documentElement.classList.contains('dark')`, &initialDark),
+	)
+	require.NoError(t, err)
+
+	err = chromedp.Run(ctx,
+		chromedp.Click("button[aria-label='Toggle theme']"),
+		chromedp.Sleep(300*time.Millisecond),
+	)
+	require.NoError(t, err)
+
+	var afterClickDark bool
+	err = chromedp.Run(ctx,
+		chromedp.Evaluate(`document.documentElement.classList.contains('dark')`, &afterClickDark),
+	)
+	require.NoError(t, err)
+	assert.NotEqual(t, initialDark, afterClickDark, "Theme should toggle after clicking button")
+
+	var storedTheme string
+	err = chromedp.Run(ctx,
+		chromedp.Evaluate(`localStorage.getItem('theme')`, &storedTheme),
+	)
+	require.NoError(t, err)
+	assert.Equal(t, "dark", storedTheme, "localStorage should persist 'dark' after toggle")
 }
 
 func TestE2EMobileMenu(t *testing.T) {

@@ -5,19 +5,23 @@ templ Layout(title string) {
 	<html
 		lang="en"
 		class="scroll-smooth font-display"
-		x-data="{
-			dark: localStorage.getItem('theme') === 'dark' ||
-				(!localStorage.getItem('theme') &&
-				 window.matchMedia('(prefers-color-scheme: dark)').matches)
-		}"
-		:class="{ 'dark': dark }"
-		x-init="$watch('dark', value => localStorage.setItem('theme', value ? 'dark' : 'light'))"
+		x-data
+		:class="{ 'dark': $store.theme.dark }"
 	>
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<meta name="description" content="RezusCloud — The Personal Cloud. Own your infrastructure like you own your computer. Open source, self-managed, fully private."/>
 			<meta name="theme-color" content="#ffb000"/>
+			<meta property="og:title" content="Your Personal Cloud | RezusCloud"/>
+			<meta property="og:description" content="RezusCloud — The Personal Cloud. Own your infrastructure like you own your computer. Open source, self-managed, fully private."/>
+			<meta property="og:type" content="website"/>
+			<meta property="og:url" content="https://rezus.cloud"/>
+			<meta property="og:image" content="https://rezus.cloud/assets/img/icon-512.png"/>
+			<meta name="twitter:card" content="summary_large_image"/>
+			<meta name="twitter:title" content="Your Personal Cloud | RezusCloud"/>
+			<meta name="twitter:description" content="RezusCloud — The Personal Cloud. Own your infrastructure like you own your computer. Open source, self-managed, fully private."/>
+			<meta name="twitter:image" content="https://rezus.cloud/assets/img/icon-512.png"/>
 			<title>{ title }</title>
 			<link rel="icon" href="/assets/img/favicon.ico" sizes="32x32"/>
 			<link rel="icon" href="/assets/img/icon.svg" type="image/svg+xml"/>
@@ -25,6 +29,20 @@ templ Layout(title string) {
 			<link rel="manifest" href="/manifest.webmanifest"/>
 			<link rel="stylesheet" href="/assets/styles.css"/>
 			<script src="/assets/js/htmx.min.js"></script>
+			<script>
+				document.addEventListener("alpine:init", () => {
+					Alpine.store("theme", {
+						dark:
+							localStorage.getItem("theme") === "dark" ||
+							(!localStorage.getItem("theme") &&
+								window.matchMedia("(prefers-color-scheme: dark)").matches),
+						toggle() {
+							this.dark = !this.dark;
+							localStorage.setItem("theme", this.dark ? "dark" : "light");
+						},
+					});
+				});
+			</script>
 			<script defer src="/assets/js/alpine.min.js"></script>
 		</head>
 		<body class="bg-cream-50 dark:bg-terminal-bg text-cream-800 dark:text-gray-200 transition-colors duration-300">
@@ -103,15 +121,15 @@ templ Nav() {
 
 templ ThemeToggle() {
 	<button
-		@click="$root.dark = !$root.dark"
+		@click="$store.theme.toggle()"
 		class="w-8 h-8 flex items-center justify-center border-2 border-cream-300 dark:border-terminal-border bg-cream-50 dark:bg-terminal-bg hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors"
 		aria-label="Toggle theme"
 	>
-		<svg x-show="$root.dark" class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+		<svg x-show="$store.theme.dark" class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 			<circle cx="12" cy="12" r="4"></circle>
 			<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
 		</svg>
-		<svg x-show="!$root.dark" class="w-4 h-4 text-cream-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+		<svg x-show="!$store.theme.dark" class="w-4 h-4 text-cream-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 			<path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
 		</svg>
 	</button>
