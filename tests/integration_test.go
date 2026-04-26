@@ -63,6 +63,12 @@ func TestHomePageHTMLStructure(t *testing.T) {
 		assert.Contains(t, description, "Personal Cloud")
 	})
 
+	t.Run("has canonical link", func(t *testing.T) {
+		canonical, exists := doc.Find("link[rel='canonical']").Attr("href")
+		assert.True(t, exists)
+		assert.Equal(t, "https://rezus.cloud/", canonical)
+	})
+
 	t.Run("has open graph metadata", func(t *testing.T) {
 		ogTitle, exists := doc.Find("meta[property='og:title']").Attr("content")
 		assert.True(t, exists)
@@ -71,6 +77,31 @@ func TestHomePageHTMLStructure(t *testing.T) {
 		ogImage, exists := doc.Find("meta[property='og:image']").Attr("content")
 		assert.True(t, exists)
 		assert.Contains(t, ogImage, "icon-512.png")
+
+		ogSiteName, exists := doc.Find("meta[property='og:site_name']").Attr("content")
+		assert.True(t, exists)
+		assert.Equal(t, "RezusCloud", ogSiteName)
+
+		ogImageAlt, exists := doc.Find("meta[property='og:image:alt']").Attr("content")
+		assert.True(t, exists)
+		assert.Contains(t, ogImageAlt, "RezusCloud")
+	})
+
+	t.Run("has twitter metadata", func(t *testing.T) {
+		twitterCard, exists := doc.Find("meta[name='twitter:card']").Attr("content")
+		assert.True(t, exists)
+		assert.Equal(t, "summary_large_image", twitterCard)
+
+		twitterImageAlt, exists := doc.Find("meta[name='twitter:image:alt']").Attr("content")
+		assert.True(t, exists)
+		assert.Contains(t, twitterImageAlt, "RezusCloud")
+	})
+
+	t.Run("has structured data", func(t *testing.T) {
+		structuredData := doc.Find("script[type='application/ld+json']").Text()
+		assert.Contains(t, structuredData, `"@type": "WebSite"`)
+		assert.Contains(t, structuredData, `"@type": "Organization"`)
+		assert.Contains(t, structuredData, `"email": "tiberiu@rezus.net"`)
 	})
 
 	t.Run("has manifest link", func(t *testing.T) {
