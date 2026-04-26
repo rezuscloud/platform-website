@@ -55,9 +55,13 @@ jobs:
           enable-templ-cache: ${{ runner.environment != 'self-hosted' }}
 
       - name: Run unit tests (Layer 1 - httptest)
+        env:
+          CGO_ENABLED: "1"
         run: go test -v -race -parallel 4 ./handlers/...
 
       - name: Run integration tests (Layer 2 - goquery)
+        env:
+          CGO_ENABLED: "1"
         run: go test -v -race -parallel 2 ./tests/... -run "Integration|HTML|Section|Navigation|Footer|Accessibility|HTMX|Responsive|DarkMode|Alpine|Progressive"
 
   e2e-test:
@@ -112,11 +116,13 @@ jobs:
           curl --retry 10 --retry-delay 2 --retry-connrefused http://localhost:3000
 
       - name: Run E2E tests (Layer 3 - chromedp)
+        env:
+          CGO_ENABLED: "1"
         run: go test -v -race -count=1 -tags=e2e ./tests/... -run "E2E" -timeout 5m
 
       - name: Stop container
         if: always()
-        run: docker stop platform-website && docker rm platform-website
+        run: docker stop platform-website && docker rm platform-website || true
 
   docker-pr:
     needs: [build, test, e2e-test]
