@@ -94,8 +94,19 @@ jobs:
           if command -v pacman &>/dev/null; then
             sudo pacman -S --noconfirm chromium
           elif command -v apt-get &>/dev/null; then
-            sudo apt-get update -q
-            sudo apt-get install -y chromium 2>/dev/null || sudo apt-get install -y chromium-browser
+            if command -v chromium &>/dev/null && chromium --version &>/dev/null 2>&1; then
+              echo "Chromium already installed"
+            else
+              sudo apt-get update -q
+              sudo apt-get install -y chromium 2>/dev/null
+              if ! chromium --version &>/dev/null 2>&1 && ! chromium-browser --version &>/dev/null 2>&1; then
+                echo "apt chromium is a snap stub, installing Google Chrome instead..."
+                wget -q -O /tmp/google-chrome.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+                sudo apt-get install -y /tmp/google-chrome.deb || sudo apt-get install -f -y
+                sudo ln -sf /usr/bin/google-chrome-stable /usr/local/bin/chromium
+                sudo ln -sf /usr/bin/google-chrome-stable /usr/local/bin/chromium-browser
+              fi
+            fi
           elif command -v dnf &>/dev/null; then
             sudo dnf install -y chromium
           elif command -v yum &>/dev/null; then
@@ -105,6 +116,14 @@ jobs:
           else
             echo "Warning: Unsupported package manager. Chromium must be pre-installed."
           fi
+
+      - name: Verify Chromium
+        run: |
+          chromium --version 2>/dev/null || chromium-browser --version 2>/dev/null || google-chrome --version 2>/dev/null || {
+            echo "ERROR: No working Chromium/Chrome found"
+            ls -la /usr/bin/chromium* /usr/bin/google-chrome* /usr/local/bin/chromium* 2>/dev/null || true
+            exit 1
+          }
 
       - name: Build container
         run: |
@@ -121,6 +140,7 @@ jobs:
       - name: Run E2E tests (Layer 3 - chromedp)
         env:
           CGO_ENABLED: "1"
+          CHROME_PATH: /usr/local/bin/chromium
         run: go test -v -race -count=1 -tags=e2e ./tests/... -run "E2E" -timeout 5m
 
       - name: Stop container
