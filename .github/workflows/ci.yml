@@ -54,6 +54,9 @@ jobs:
           enable-cache: ${{ runner.environment != 'self-hosted' }}
           enable-templ-cache: ${{ runner.environment != 'self-hosted' }}
 
+      - name: Install C compiler (required for -race)
+        run: which gcc || (sudo apt-get update -q && sudo apt-get install -y gcc)
+
       - name: Run unit tests (Layer 1 - httptest)
         env:
           CGO_ENABLED: "1"
@@ -85,6 +88,9 @@ jobs:
           enable-cache: ${{ runner.environment != 'self-hosted' }}
           enable-templ-cache: ${{ runner.environment != 'self-hosted' }}
 
+      - name: Install C compiler (required for -race)
+        run: which gcc || (sudo apt-get update -q && sudo apt-get install -y gcc)
+
       - name: Install Chromium
         run: |
           if command -v apt-get &> /dev/null; then
@@ -107,7 +113,7 @@ jobs:
         run: |
           docker rm -f platform-website 2>/dev/null || true
           ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
-          docker build --build-arg TARGETARCH=${ARCH} -t platform-website-test .
+          docker build --network=host --build-arg TARGETARCH=${ARCH} -t platform-website-test .
 
       - name: Run container
         run: |
