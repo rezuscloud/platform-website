@@ -89,13 +89,19 @@ jobs:
       - name: Install C compiler (required for -race)
         run: which gcc || (sudo apt-get update -q && sudo apt-get install -y gcc)
 
-      - name: Install Chromium
+      - name: Install Chrome/Chromium
         run: |
+          if command -v google-chrome &>/dev/null || command -v chromium &>/dev/null || command -v chromium-browser &>/dev/null; then
+            echo "Chrome/Chromium already installed"
+            exit 0
+          fi
           if command -v pacman &>/dev/null; then
             sudo pacman -S --noconfirm chromium
           elif command -v apt-get &>/dev/null; then
             sudo apt-get update -q
-            sudo apt-get install -y chromium 2>/dev/null || sudo apt-get install -y chromium-browser
+            sudo apt-get install -y wget
+            wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+            sudo apt-get install -y /tmp/google-chrome.deb || sudo apt-get install -f -y
           elif command -v dnf &>/dev/null; then
             sudo dnf install -y chromium
           elif command -v yum &>/dev/null; then
@@ -103,7 +109,7 @@ jobs:
           elif command -v zypper &>/dev/null; then
             sudo zypper install -y chromium
           else
-            echo "Warning: Unsupported package manager. Chromium must be pre-installed."
+            echo "Warning: Unsupported package manager. Chrome must be pre-installed."
           fi
 
       - name: Build container
