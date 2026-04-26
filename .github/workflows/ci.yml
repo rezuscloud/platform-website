@@ -31,7 +31,7 @@ jobs:
         run: go vet ./...
 
       - name: Build binary
-        run: make build
+        run: CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=dev -X main.gitCommit=$(git rev-parse --short HEAD) -X main.buildTime=$(date -u +%Y-%m-%dT%H:%M:%SZ)" -trimpath -o bin/server .
 
   test:
     needs: build
