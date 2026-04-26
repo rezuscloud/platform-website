@@ -3,10 +3,14 @@
   "private": true,
   "scripts": {
     "build:css": "npx @tailwindcss/cli -i input.css -o assets/styles.css --minify",
-    "watch:css": "npx @tailwindcss/cli -i input.css -o assets/styles.css --watch"
+    "watch:css": "npx @tailwindcss/cli -i input.css -o assets/styles.css --watch",
+    "release:dry-run": "semantic-release --dry-run"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.0",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/release-notes-generator": "^14.1.0",
+    "semantic-release": "^24.2.7",
     "tailwindcss": "^4.1.0"
   }
 }

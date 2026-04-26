@@ -1,0 +1,14 @@
+FROM gcr.io/distroless/static-debian12:nonroot
+
+ARG TARGETPLATFORM
+
+WORKDIR /
+
+COPY ${TARGETPLATFORM}/platform-website /server
+COPY assets /assets
+
+EXPOSE 3000
+
+USER nonroot:nonroot
+
+ENTRYPOINT ["/server"]
