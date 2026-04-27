@@ -57,6 +57,7 @@ templ Layout(title string) {
 			</script>
 			<link rel="stylesheet" href="/assets/styles.css"/>
 			<script src="/assets/js/htmx.min.js"></script>
+			<script defer src="/assets/js/scene.js"></script>
 			<script>
 				document.addEventListener("alpine:init", () => {
 					Alpine.store("theme", {
@@ -73,9 +74,9 @@ templ Layout(title string) {
 			</script>
 			<script defer src="/assets/js/alpine.min.js"></script>
 		</head>
-		<body class="bg-cream-50 dark:bg-terminal-bg text-cream-800 dark:text-gray-200 transition-colors duration-300">
+		<body class="overflow-x-hidden bg-cream-50 dark:bg-terminal-bg text-cream-800 dark:text-gray-200 transition-colors duration-300">
 			@Nav()
-			<main>
+			<main class="relative">
 				{ children... }
 			</main>
 			@Footer()

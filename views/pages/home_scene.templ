@@ -1,0 +1,153 @@
+package pages
+
+templ HomeScene() {
+	<div class="story-stage" aria-hidden="true">
+		<div class="story-backdrop"></div>
+		<div class="story-camera-shell">
+			<div class="story-camera">
+				<div class="story-world">
+					<div class="linux-desktop">
+						<div class="linux-panel">
+							<div class="flex items-center gap-2">
+								<span class="w-2.5 h-2.5 rounded-full bg-phosphor-500"></span>
+								<span>workspace // rezuscloud</span>
+							</div>
+							<div class="flex items-center gap-4">
+								<span>cluster healthy</span>
+								<span>git synced</span>
+							</div>
+						</div>
+						@sceneLinuxWindow("linux-host", "scene-linux-main") {
+							<div class="mac-desktop">
+								<div class="mac-menubar">
+									<div class="flex items-center gap-3">
+										<span class="font-bold">RZ</span>
+										<span>File</span>
+										<span>Edit</span>
+										<span>View</span>
+										<span>Special</span>
+									</div>
+									<div class="font-bold">Personal Cloud</div>
+								</div>
+								<div class="mac-desktop-canvas">
+									@sceneMacWindow("Message", "scene-mac-note") {
+										<div class="scene-mac-copy">
+											<p>From mainframes to desks.</p>
+											<p>From rented cloud to owned infrastructure.</p>
+											<p>The computer became personal.</p>
+											<p>Now the cloud does too.</p>
+										</div>
+									}
+									@sceneMacWindow("Terminal", "scene-mac-terminal") {
+										@sceneTerminal()
+									}
+									<div class="scene-mac-icons">
+										@sceneMacIcon("System")
+										@sceneMacIcon("Projects")
+										@sceneMacIcon("Deploy")
+										@sceneMacIcon("Trash")
+									</div>
+								</div>
+							</div>
+						}
+						@sceneLinuxWindow("cluster-status.log", "scene-linux-status") {
+							<div class="scene-pane">
+								<div class="scene-pane-label">STATUS</div>
+								<p>Nodes online: 04</p>
+								<p>Ingress routes: 11</p>
+								<p>Tunnels: encrypted</p>
+								<p>Certificates: current</p>
+							</div>
+						}
+						@sceneLinuxWindow("deploy.yaml", "scene-linux-editor") {
+							<div class="scene-pane scene-code-pane">
+								<p>platform:</p>
+								<p>&nbsp;&nbsp;owner: you</p>
+								<p>&nbsp;&nbsp;hardware: any</p>
+								<p>&nbsp;&nbsp;isp: whatever works</p>
+								<p>&nbsp;&nbsp;gitops: enabled</p>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ storyChapter(name string) {
+	<div class="story-chapter" data-scene-chapter={ name }>
+		{ children... }
+	</div>
+}
+
+templ storyShell() {
+	<div class="story-section-shell">
+		{ children... }
+	</div>
+}
+
+templ sceneLinuxWindow(title string, className string) {
+	<div class={ "scene-window scene-window-linux", className }>
+		<div class="scene-window-titlebar scene-window-titlebar-linux">
+			<div class="scene-window-controls">
+				<span class="scene-window-dot"></span>
+				<span class="scene-window-dot"></span>
+				<span class="scene-window-dot"></span>
+			</div>
+			<span>{ title }</span>
+		</div>
+		<div class="scene-window-body">
+			{ children... }
+		</div>
+	</div>
+}
+
+templ sceneMacWindow(title string, className string) {
+	<div class={ "scene-window scene-window-mac", className }>
+		<div class="scene-window-titlebar scene-window-titlebar-mac">
+			<div class="scene-window-stripes">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+			<span>{ title }</span>
+			<div class="scene-window-stripes">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+		</div>
+		<div class="scene-window-body">
+			{ children... }
+		</div>
+	</div>
+}
+
+templ sceneTerminal() {
+	<div class="terminal-scene crt-scanlines">
+		<div class="terminal-toolbar">
+			<span class="terminal-pill">editor</span>
+			<span class="terminal-pill terminal-pill-active">session.log</span>
+			<span class="terminal-path">~/rezuscloud/personal-cloud</span>
+		</div>
+		<div class="terminal-body">
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> boot sequence: personal-cloud</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> loading cluster primitives</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> bringing any-hardware online</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> tunneling through ordinary internet</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> syncing infrastructure from git</div>
+			<div class="scene-terminal-note">they said you did not need your own computer either</div>
+			<div class="scene-terminal-line scene-terminal-cursor"><span class="scene-terminal-prompt">&gt;</span> reclaiming the cloud<span class="animate-blink">_</span></div>
+		</div>
+	</div>
+}
+
+templ sceneMacIcon(label string) {
+	<div class="scene-mac-icon">
+		<div class="scene-mac-icon-glyph">
+			<div class="scene-mac-icon-paper"></div>
+		</div>
+		<span>{ label }</span>
+	</div>
+}
