@@ -290,51 +290,82 @@ docker build \
 
 ## CI/CD Pipeline
 
-### GitHub Actions Workflow
+### GitHub Actions Workflows
 
-The CI pipeline (`.github/workflows/ci.yml`) runs on:
+The repository uses three workflows:
 
-- Push to `master` branch
-- Pull requests to `master`
+- `ci.yml` runs on pushes and pull requests to `master`
+- `semantic-release.yml` runs after successful CI on `master` and creates the next semver tag
+- `release.yml` runs on version tags (`v*`) and publishes release artifacts and container images
 
-**Build Stage:**
-1. Set up Go 1.24
-2. Set up Node.js 22
-3. Install templ CLI
-4. Generate templ files
-5. Format check (templ and Go)
-6. Run `go vet`
-7. Build CSS
-8. Build binary
+**CI (`.github/workflows/ci.yml`)**
+1. Set up Go 1.24 and Node.js 22
+2. Generate templ files and build CSS through the shared setup action
+3. Check templ and Go formatting
+4. Run `go vet`
+5. Build the binary
+6. Run handler tests and HTML integration tests on amd64 and arm64
+7. Run chromedp E2E tests on amd64 against a real container image
+8. For pull requests, publish a preview image tagged `pr-<number>-<sha>` to GHCR
 
-**Docker Stage (master only):**
-1. Log in to GitHub Container Registry
-2. Extract metadata (SHA tag + latest)
-3. Build multi-arch image (amd64, arm64)
-4. Push to `ghcr.io/rezuscloud/platform-website`
-5. Set package visibility to public
+**Release (`.github/workflows/release.yml`)**
+1. Triggered by semver tags such as `v0.1.0`
+2. Runs GoReleaser
+3. Publishes multi-architecture images to GHCR
+4. Publishes semver tags plus `latest`
 
 ### Container Registry
 
 Images are published to:
+
 ```
+ghcr.io/rezuscloud/platform-website:pr-<number>-<sha>
+ghcr.io/rezuscloud/platform-website:v<version>
+ghcr.io/rezuscloud/platform-website:v<major>
+ghcr.io/rezuscloud/platform-website:v<major>.<minor>
 ghcr.io/rezuscloud/platform-website:latest
-ghcr.io/rezuscloud/platform-website:<sha>
 ```
 
 ## Kubernetes Deployment
 
-### Current Runtime State
+### GitOps Source Of Truth
 
-| Component | Status | Details |
-|-----------|--------|---------|
-| Application (KubeVela) | Ready:1/1 | Image: `ghcr.io/rezuscloud/platform-website:latest` |
-| Pod | Running 2/2 | On cloud control-plane node, with Dapr sidecar |
-| HTTPRoute | Accepted | `rezus.cloud`, `www.rezus.cloud` → port 3000 |
-| TLS Certificate | Ready | Let's Encrypt wildcard `*.rezus.cloud` (DNS-01) |
-| Gateway API | hostNetwork mode | Envoy on `0.0.0.0:80/443` + `[::]:80/443` |
-| DNS | Synced | `rezus.cloud` A: 92.4.174.87, AAAA: 2603:c027:... |
-| Live Site | **Reachable** | IPv4 + IPv6, HTTP 200, valid TLS |
+Application deployment is owned by `../k8s-config/apps/platform-website/`, not by this repository and not by a Terraform module. That directory contains:
+
+- `namespace.yaml` - the `platform-website` namespace with `baseline` Pod Security labels
+- `application.yaml` - the KubeVela `Application` that defines the website container, probes, Dapr annotations, and container security settings
+- `httproute.yaml` - the Gateway API route for `rezus.cloud` and `www.rezus.cloud`
+- `imagerepository.yaml` - Flux image scanning for `ghcr.io/rezuscloud/platform-website`
+- `imagepolicy.yaml` - Flux semver selection for the newest allowed production tag
+- `imageupdateautomation.yaml` - Flux automation that commits the selected tag back into `k8s-config`
+- `preview/` - Flux preview-environment automation for open pull requests
+
+The production image in `application.yaml` is intentionally pinned to a versioned tag such as `ghcr.io/rezuscloud/platform-website:v0.0.5` and annotated with a Flux image policy setter. Production does not deploy from `latest` directly.
+
+### Production Rollout Flow
+
+1. A change lands on `master` in `platform-website`
+2. CI passes and `semantic-release.yml` may create a new semver tag when the merged commits warrant a release
+3. `release.yml` publishes a multi-arch image to GHCR
+4. Flux in `k8s-config` scans GHCR through `ImageRepository`
+5. `ImagePolicy` selects the newest matching semver tag
+6. `ImageUpdateAutomation` updates `k8s-config/apps/platform-website/application.yaml` with that tag and commits the change to `main`
+7. Flux reconciles the updated manifests in the cluster
+8. KubeVela materializes the `Deployment` and `Service`, and the separately-managed `HTTPRoute` keeps traffic pointed at the service
+
+This means application code changes flow through this repository first, but the cluster-side deployment truth stays in `k8s-config`.
+
+### Preview Environments
+
+Pull requests also have GitOps-managed preview environments defined in `../k8s-config/apps/platform-website/preview/`.
+
+- `rsip.yaml` watches GitHub pull requests for `rezuscloud/platform-website`
+- `resourceset.yaml` creates one preview namespace per PR, named `platform-website-pr<id>`
+- each preview `Application` uses image tag `ghcr.io/rezuscloud/platform-website:pr-<id>-<sha>`
+- each preview `HTTPRoute` is exposed at `https://pr<id>.dev.rezus.cloud`
+- `dev-wildcard-cert.yaml` provides the wildcard certificate for `*.dev.rezus.cloud`
+
+Preview environments are generated reactively by Flux; they are not hand-authored per pull request.
 
 ### Request Path
 
@@ -346,31 +377,20 @@ Internet (IPv6) → [2603:c027:...]:443 ──────────┘
                                            ↓
                                     HTTPRoute (rezus.cloud)
                                            ↓
-                                    platform-website:3000 (ClusterIP)
-                                           ↓
-                                    Pod (Go Fiber + Dapr sidecar)
-```
-
-### Infrastructure
-
-The website is deployed via Terraform module in `k8s-iac/modules/platform-website/`:
-
-```hcl
-module "platform_website" {
-  source       = "./modules/platform-website"
-  image        = "ghcr.io/rezuscloud/platform-website:latest"
-  dapr_enabled = true
-  dapr_app_id  = "platform-website"
-}
+                                     platform-website:3000 (ClusterIP)
+                                            ↓
+                                     Pod (Go Fiber + Dapr sidecar)
 ```
 
 ### Resources Created
 
 | Resource | Type | Purpose |
 |----------|------|---------|
-| Deployment | apps/v1 | 1 replica with Dapr sidecar |
-| Service | v1 | ClusterIP on port 3000 |
-| HTTPRoute | gateway.networking.k8s.io/v1 | Gateway API routing |
+| Namespace | v1 | Dedicated app namespace with `baseline` Pod Security labels |
+| Application | core.oam.dev/v1beta1 | KubeVela definition for the website workload |
+| Deployment | apps/v1 | Generated by KubeVela from the `Application` |
+| Service | v1 | Generated by KubeVela on port 3000 |
+| HTTPRoute | gateway.networking.k8s.io/v1 | Gateway API routing for production hostnames |
 
 ### Gateway API Configuration
 
@@ -393,15 +413,35 @@ See `talos-iac/manifest/cni/README.md` for full CNI architecture.
 
 ### Pod Security
 
-When Dapr is enabled, the namespace uses `baseline` PodSecurity policy because the Dapr sidecar doesn't drop capabilities (required for `restricted` policy). The pod is scheduled on the cloud control-plane node with affinity.
+The namespace uses `baseline` Pod Security labels because the Dapr sidecar does not satisfy the stricter `restricted` profile. The application manifest also applies explicit pod and container security contexts, including non-root execution, `RuntimeDefault` seccomp, a read-only root filesystem, and dropped Linux capabilities.
 
 ### Dapr Configuration
 
-The Dapr control plane is deployed separately via `k8s-iac/modules/dapr/`:
+The website workload is annotated for Dapr sidecar injection in `application.yaml`:
+
+```yaml
+dapr.io/enabled: "true"
+dapr.io/app-id: platform-website
+dapr.io/app-port: "3000"
+dapr.io/continue-on-failed-component-init: "true"
+dapr.io/scheduler-host-address: " "
+```
+
+The Dapr control plane itself is shared cluster infrastructure and is deployed separately from the website application:
 
 - **Namespace:** `dapr-system`
 - **Components:** Operator, Placement, Scheduler, Sentry, Sidecar Injector
 - **HA Mode:** 3 replicas for scheduler
+
+### Configuration Changes
+
+Operational deployment changes should be made in `k8s-config/apps/platform-website/`, for example:
+
+- changing replicas, probes, Dapr annotations, or security settings in `application.yaml`
+- changing production hostnames or routing in `httproute.yaml`
+- adjusting the preview deployment behavior under `preview/`
+
+Cluster-wide prerequisites such as the gateway, cert-manager, Flux, or the Dapr control plane belong to `talos-iac` or `k8s-iac`, not this repository.
 
 ## Environment Variables
 
