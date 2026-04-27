@@ -13,6 +13,12 @@
       {
         "preset": "conventionalcommits"
       }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "publishCmd": "cat > /tmp/release-notes.md <<'EOF'\n${nextRelease.notes}\nEOF\ngoreleaser release --release-notes /tmp/release-notes.md --clean"
+      }
     ]
   ]
 }

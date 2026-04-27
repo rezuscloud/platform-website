@@ -4,10 +4,12 @@
   "scripts": {
     "build:css": "npx @tailwindcss/cli -i input.css -o assets/styles.css --minify",
     "watch:css": "npx @tailwindcss/cli -i input.css -o assets/styles.css --watch",
-    "release:dry-run": "semantic-release --dry-run"
+    "release:dry-run": "semantic-release --dry-run",
+    "release": "semantic-release"
   },
   "devDependencies": {
     "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/exec": "^7.1.0",
     "@semantic-release/release-notes-generator": "^14.1.0",
     "@tailwindcss/cli": "^4.1.0",
     "conventional-changelog-conventionalcommits": "^9.3.1",
