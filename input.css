@@ -360,6 +360,16 @@
 	transform-origin: top center;
 }
 
+.scene-linux-services {
+	right: 5.5%;
+	top: 43%;
+	width: 25%;
+	height: 24%;
+	opacity: calc(0.18 + (var(--linux-progress) * 0.82));
+	transform: translateY(calc((1 - var(--linux-progress)) * 1.5rem));
+	transform-origin: center center;
+}
+
 .scene-linux-editor {
 	right: 8%;
 	bottom: 10%;
@@ -389,6 +399,20 @@
 	font-size: 0.72rem;
 	letter-spacing: 0.12em;
 	color: rgba(148, 163, 184, 0.8);
+}
+
+.scene-list {
+	margin: 0;
+	padding-left: 1rem;
+	display: grid;
+	gap: 0.35rem;
+}
+
+.scene-copy-heading {
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
 }
 
 .mac-desktop {
@@ -463,10 +487,18 @@
 
 .scene-mac-note {
 	right: 6%;
-	top: 18%;
+	top: 14%;
 	width: 24%;
-	height: 34%;
+	height: 28%;
 	transform: translateX(calc((1 - var(--mac-progress)) * 1.25rem));
+}
+
+.scene-mac-plan {
+	left: 10%;
+	bottom: 9%;
+	width: 36%;
+	height: 22%;
+	transform: translateY(calc((1 - var(--mac-progress)) * 1.1rem));
 }
 
 .scene-mac-copy {
@@ -565,6 +597,15 @@
 	align-content: start;
 }
 
+.scene-terminal-heading {
+	margin-bottom: 0.35rem;
+	font-size: clamp(1.1rem, 2vw, 1.7rem);
+	line-height: 1.15;
+	color: rgba(255, 255, 255, 0.95);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
 .scene-terminal-line {
 	display: flex;
 	gap: 0.55rem;
@@ -592,49 +633,40 @@
 
 .story-content {
 	position: relative;
-	z-index: 10;
-	padding-bottom: 4rem;
+	z-index: -1;
+	padding-bottom: 12rem;
+	visibility: hidden;
 }
 
 .story-chapter {
 	position: relative;
-	padding: 1.5rem 0;
+	padding: 0;
+	min-height: 140svh;
 }
 
 .story-section-shell {
-	position: relative;
-	padding: 0.75rem 0;
+	height: 0;
+	overflow: hidden;
 }
 
 .story-page .story-section-shell > section {
-	position: relative;
+	height: 0;
+	margin: 0;
+	overflow: hidden;
 	background: transparent !important;
-	transition: opacity 200ms ease;
 }
 
 .story-page .story-section-shell > section > div {
-	position: relative;
-	padding-top: clamp(1.5rem, 2vw, 2.2rem);
-	padding-bottom: clamp(1.5rem, 2vw, 2.2rem);
-	border: 1px solid rgba(255, 255, 255, 0.28);
-	border-radius: 1.75rem;
-	background: rgba(250, 248, 243, 0.72);
-	box-shadow: 0 1.25rem 3rem rgba(148, 163, 184, 0.12);
-	backdrop-filter: blur(10px);
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+	backdrop-filter: none;
 }
 
 .dark .story-page .story-section-shell > section > div {
-	border-color: rgba(148, 163, 184, 0.16);
-	background: rgba(10, 10, 26, 0.68);
-	box-shadow: 0 1.5rem 3.5rem rgba(2, 6, 23, 0.28);
-}
-
-.story-page [data-scene-active] .story-section-shell > section {
-	opacity: 1;
-}
-
-.story-page [data-scene-chapter]:not([data-scene-active]) .story-section-shell > section {
-	opacity: 0.92;
+	background: transparent;
 }
 
 .story-page .story-section-shell:first-child > section {
@@ -660,6 +692,11 @@
 		width: 25%;
 	}
 
+	.scene-linux-services {
+		right: 4%;
+		width: 25%;
+	}
+
 	.scene-linux-editor {
 		right: 5%;
 		width: 28%;
@@ -669,6 +706,10 @@
 @media (max-width: 767px) {
 	.story-stage {
 		top: 3.5rem;
+	}
+
+	.story-chapter {
+		min-height: 120svh;
 	}
 
 	.story-camera-shell {
@@ -700,6 +741,13 @@
 		display: none;
 	}
 
+	.scene-linux-services {
+		right: 6%;
+		top: 44%;
+		width: 35%;
+		height: 22%;
+	}
+
 	.scene-linux-editor {
 		right: 6%;
 		bottom: 8%;
@@ -709,6 +757,13 @@
 
 	.scene-mac-note {
 		display: none;
+	}
+
+	.scene-mac-plan {
+		left: 8%;
+		bottom: 9%;
+		width: 46%;
+		height: 19%;
 	}
 
 	.scene-mac-terminal {
@@ -742,10 +797,8 @@
 		font-size: 0.78rem;
 	}
 
-	.story-page .story-section-shell > section > div {
-		padding-top: 1.25rem;
-		padding-bottom: 1.25rem;
-		border-radius: 1.25rem;
+	.story-chapter {
+		min-height: 110svh;
 	}
 }
 
@@ -755,8 +808,7 @@
 		transition: none;
 	}
 
-	.story-chapter,
-	.story-page .story-section-shell > section {
+	.story-chapter {
 		transition: none;
 	}
 
@@ -766,7 +818,7 @@
 		--linux-progress: 1;
 	}
 
-	.story-page .story-section-shell > section {
-		opacity: 1 !important;
+	.story-content {
+		visibility: hidden;
 	}
 }

@@ -10,11 +10,12 @@ templ HomeScene() {
 						<div class="linux-panel">
 							<div class="flex items-center gap-2">
 								<span class="w-2.5 h-2.5 rounded-full bg-phosphor-500"></span>
-								<span>workspace // rezuscloud</span>
+								<span>workspace // personal-cloud</span>
 							</div>
 							<div class="flex items-center gap-4">
-								<span>cluster healthy</span>
-								<span>git synced</span>
+								<span>any hardware</span>
+								<span>any isp</span>
+								<span>installer: soon</span>
 							</div>
 						</div>
 						@sceneLinuxWindow("linux-host", "scene-linux-main") {
@@ -27,15 +28,29 @@ templ HomeScene() {
 										<span>View</span>
 										<span>Special</span>
 									</div>
-									<div class="font-bold">Personal Cloud</div>
+									<div class="font-bold">RezusCloud</div>
 								</div>
 								<div class="mac-desktop-canvas">
-									@sceneMacWindow("Message", "scene-mac-note") {
+									@sceneMacWindow("The Mainframe Moment", "scene-mac-note") {
 										<div class="scene-mac-copy">
-											<p>From mainframes to desks.</p>
-											<p>From rented cloud to owned infrastructure.</p>
-											<p>The computer became personal.</p>
-											<p>Now the cloud does too.</p>
+											<p class="scene-copy-heading">Then // Now</p>
+											<ul class="scene-list">
+												<li>Rent time on a mainframe.</li>
+												<li>Rent VMs from a cloud provider.</li>
+												<li>Access controlled by someone else.</li>
+												<li>Your cloud should be yours.</li>
+											</ul>
+										</div>
+									}
+									@sceneMacWindow("How It Works", "scene-mac-plan") {
+										<div class="scene-mac-copy">
+											<p class="scene-copy-heading">Blueprint</p>
+											<ul class="scene-list">
+												<li>A small cloud brain somewhere cheap.</li>
+												<li>Your machines wherever they already live.</li>
+												<li>Encrypted tunnels over ordinary internet.</li>
+												<li>Push to Git and let the platform reconcile.</li>
+											</ul>
 										</div>
 									}
 									@sceneMacWindow("Terminal", "scene-mac-terminal") {
@@ -43,29 +58,42 @@ templ HomeScene() {
 									}
 									<div class="scene-mac-icons">
 										@sceneMacIcon("System")
-										@sceneMacIcon("Projects")
-										@sceneMacIcon("Deploy")
+										@sceneMacIcon("Finder")
 										@sceneMacIcon("Trash")
 									</div>
 								</div>
 							</div>
 						}
-						@sceneLinuxWindow("cluster-status.log", "scene-linux-status") {
+						@sceneLinuxWindow("ownership.txt", "scene-linux-status") {
 							<div class="scene-pane">
-								<div class="scene-pane-label">STATUS</div>
-								<p>Nodes online: 04</p>
-								<p>Ingress routes: 11</p>
-								<p>Tunnels: encrypted</p>
-								<p>Certificates: current</p>
+								<div class="scene-pane-label">OWN VS RENT</div>
+								<ul class="scene-list">
+									<li>No monthly bill spiral.</li>
+									<li>Private by design.</li>
+									<li>Open source, replaceable parts.</li>
+									<li>Add hardware you already have.</li>
+								</ul>
 							</div>
 						}
-						@sceneLinuxWindow("deploy.yaml", "scene-linux-editor") {
+						@sceneLinuxWindow("services.md", "scene-linux-services") {
+							<div class="scene-pane">
+								<div class="scene-pane-label">WHAT YOU CAN RUN</div>
+								<ul class="scene-list">
+									<li>Websites and APIs</li>
+									<li>Databases and file storage</li>
+									<li>Monitoring, logs, and alerts</li>
+									<li>Private backups and home services</li>
+								</ul>
+							</div>
+						}
+						@sceneLinuxWindow("techstack.lock", "scene-linux-editor") {
 							<div class="scene-pane scene-code-pane">
-								<p>platform:</p>
-								<p>&nbsp;&nbsp;owner: you</p>
-								<p>&nbsp;&nbsp;hardware: any</p>
-								<p>&nbsp;&nbsp;isp: whatever works</p>
-								<p>&nbsp;&nbsp;gitops: enabled</p>
+								<p>stack:</p>
+								<p>&nbsp;&nbsp;- talos linux</p>
+								<p>&nbsp;&nbsp;- kubernetes</p>
+								<p>&nbsp;&nbsp;- cilium</p>
+								<p>&nbsp;&nbsp;- flux cd</p>
+								<p>&nbsp;&nbsp;- gitops</p>
 							</div>
 						}
 					</div>
@@ -127,18 +155,20 @@ templ sceneMacWindow(title string, className string) {
 templ sceneTerminal() {
 	<div class="terminal-scene crt-scanlines">
 		<div class="terminal-toolbar">
-			<span class="terminal-pill">editor</span>
-			<span class="terminal-pill terminal-pill-active">session.log</span>
-			<span class="terminal-path">~/rezuscloud/personal-cloud</span>
+			<span class="terminal-pill">manifesto</span>
+			<span class="terminal-pill terminal-pill-active">personal-cloud.txt</span>
+			<span class="terminal-path">~/rezuscloud/boot</span>
 		</div>
 		<div class="terminal-body">
-			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> boot sequence: personal-cloud</div>
-			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> loading cluster primitives</div>
-			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> bringing any-hardware online</div>
-			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> tunneling through ordinary internet</div>
-			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> syncing infrastructure from git</div>
-			<div class="scene-terminal-note">they said you did not need your own computer either</div>
-			<div class="scene-terminal-line scene-terminal-cursor"><span class="scene-terminal-prompt">&gt;</span> reclaiming the cloud<span class="animate-blink">_</span></div>
+			<div class="scene-terminal-heading">Your Personal Cloud</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> they said you did not need your own computer either</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> mainframes gave way to personal computers</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> cloud providers can give way to personal cloud</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> hardware: old laptop, pi, mini pc, whatever works</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> network: encrypted tunnels over ordinary home internet</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> workflow: push to git and watch it go live</div>
+			<div class="scene-terminal-note">fully open source, private by design, and entirely yours</div>
+			<div class="scene-terminal-line scene-terminal-cursor"><span class="scene-terminal-prompt">&gt;</span> booting ownership<span class="animate-blink">_</span></div>
 		</div>
 	</div>
 }
