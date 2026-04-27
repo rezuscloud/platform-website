@@ -5,6 +5,7 @@
   }
 
   const chapters = Array.from(root.querySelectorAll("[data-scene-chapter]"))
+  const navLinks = Array.from(document.querySelectorAll("[data-story-link]"))
   if (chapters.length < 3) {
     return
   }
@@ -72,6 +73,12 @@
       const isActive = position >= metrics[index].start && (!next || position < next.start)
       chapter.toggleAttribute("data-scene-active", isActive)
     })
+
+    const active = chapters.find((chapter) => chapter.hasAttribute("data-scene-active"))
+    const activeName = active?.dataset.sceneChapter
+    navLinks.forEach((link) => {
+      link.toggleAttribute("data-story-active", link.dataset.storyLink === activeName)
+    })
   }
 
   function measure() {
@@ -79,6 +86,7 @@
       const rect = chapter.getBoundingClientRect()
       const top = window.scrollY + rect.top
       return {
+        element: chapter,
         start: top,
         end: top + chapter.offsetHeight,
       }

@@ -18,7 +18,7 @@ templ HomeScene() {
 								<span>installer: soon</span>
 							</div>
 						</div>
-						@sceneLinuxWindow("linux-host", "scene-linux-main") {
+						@sceneLinuxWindow("system1.vm", "scene-linux-main") {
 							<div class="mac-desktop">
 								<div class="mac-menubar">
 									<div class="flex items-center gap-3">
@@ -31,6 +31,17 @@ templ HomeScene() {
 									<div class="font-bold">RezusCloud</div>
 								</div>
 								<div class="mac-desktop-canvas">
+									@sceneMacWindow("The Personal Computer", "scene-mac-story") {
+										<div class="scene-mac-copy">
+											<p class="scene-copy-heading">A Computer For One Person</p>
+											<ul class="scene-list">
+												<li>Mainframes were shared and rented.</li>
+												<li>Personal computers brought computing to one desk.</li>
+												<li>That changed who could build, publish, and own software.</li>
+												<li>RezusCloud applies that same shift to cloud infrastructure.</li>
+											</ul>
+										</div>
+									}
 									@sceneMacWindow("The Mainframe Moment", "scene-mac-note") {
 										<div class="scene-mac-copy">
 											<p class="scene-copy-heading">Then // Now</p>
@@ -53,31 +64,33 @@ templ HomeScene() {
 											</ul>
 										</div>
 									}
-									@sceneMacWindow("Terminal", "scene-mac-terminal") {
+									@sceneMacWindow("Personal Cloud Terminal", "scene-mac-terminal") {
 										@sceneTerminal()
 									}
 									<div class="scene-mac-icons">
 										@sceneMacIcon("System")
-										@sceneMacIcon("Finder")
+										@sceneMacIcon("Docs")
 										@sceneMacIcon("Trash")
 									</div>
 								</div>
 							</div>
 						}
-						@sceneLinuxWindow("ownership.txt", "scene-linux-status") {
+						@sceneLinuxWindow("platform-details.md", "scene-linux-status") {
 							<div class="scene-pane">
-								<div class="scene-pane-label">OWN VS RENT</div>
+								<div class="scene-pane-label">PLATFORM DETAILS</div>
+								<p class="scene-copy-heading">What the personal cloud means</p>
 								<ul class="scene-list">
-									<li>No monthly bill spiral.</li>
-									<li>Private by design.</li>
-									<li>Open source, replaceable parts.</li>
-									<li>Add hardware you already have.</li>
+									<li>Your infrastructure is yours to run and change.</li>
+									<li>Old laptops, Pis, and mini PCs become useful nodes.</li>
+									<li>Encrypted tunnels connect sites over ordinary ISPs.</li>
+									<li>Git becomes the control surface instead of cloud dashboards.</li>
 								</ul>
 							</div>
 						}
 						@sceneLinuxWindow("services.md", "scene-linux-services") {
 							<div class="scene-pane">
 								<div class="scene-pane-label">WHAT YOU CAN RUN</div>
+								<p class="scene-copy-heading">Workloads</p>
 								<ul class="scene-list">
 									<li>Websites and APIs</li>
 									<li>Databases and file storage</li>
@@ -88,6 +101,7 @@ templ HomeScene() {
 						}
 						@sceneLinuxWindow("techstack.lock", "scene-linux-editor") {
 							<div class="scene-pane scene-code-pane">
+								<p># implementation</p>
 								<p>stack:</p>
 								<p>&nbsp;&nbsp;- talos linux</p>
 								<p>&nbsp;&nbsp;- kubernetes</p>
@@ -104,9 +118,9 @@ templ HomeScene() {
 }
 
 templ storyChapter(name string) {
-	<div class="story-chapter" data-scene-chapter={ name }>
+	<section id={ name } class="story-chapter" data-scene-chapter={ name }>
 		{ children... }
-	</div>
+	</section>
 }
 
 templ storyShell() {
