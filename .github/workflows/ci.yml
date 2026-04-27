@@ -168,5 +168,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          gh label create preview-ready --color 0e8a16 --description "Preview image published successfully" --force
           gh api --silent --method POST repos/${{ github.repository }}/issues/${PR_NUMBER}/labels -f labels[]=preview-ready
