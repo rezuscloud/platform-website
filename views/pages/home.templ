@@ -7,48 +7,19 @@ import (
 
 templ Home() {
 	@views.Layout("Your Personal Cloud | RezusCloud") {
-		<div class="story-page" data-scene-root>
+		<div class="home-page">
 			@HomeScene()
-			<div class="story-content">
-				@storyChapter("terminal") {
-					@storyShell() {
-						@sections.Hero()
-					}
-					@storyShell() {
-						@sections.Challenge()
-					}
-				}
-				@storyChapter("mac") {
-					@storyShell() {
-						@sections.Architecture()
-					}
-					@storyShell() {
-						@sections.Features()
-					}
-					@storyShell() {
-						@sections.Networking()
-					}
-					@storyShell() {
-						@sections.Edge()
-					}
-				}
-				@storyChapter("linux") {
-					@storyShell() {
-						@sections.Services()
-					}
-					@storyShell() {
-						@sections.Comparison()
-					}
-					@storyShell() {
-						@sections.UseCases()
-					}
-					@storyShell() {
-						@sections.TechStack()
-					}
-					@storyShell() {
-						@sections.GetStarted()
-					}
-				}
+			<div class="home-content">
+				@sections.Challenge()
+				@sections.Architecture()
+				@sections.Features()
+				@sections.Networking()
+				@sections.Edge()
+				@sections.Services()
+				@sections.Comparison()
+				@sections.UseCases()
+				@sections.TechStack()
+				@sections.GetStarted()
 			</div>
 		</div>
 	}

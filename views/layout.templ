@@ -102,9 +102,9 @@ templ Nav() {
 					<span class="text-lg font-bold font-retro text-amber-600 dark:text-amber-400 tracking-wide">RezusCloud</span>
 				</div>
 				<div class="hidden md:flex items-center gap-1 text-sm font-display">
-					<a href="#terminal" data-story-link="terminal" class="px-3 py-1 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Terminal</a>
-					<a href="#mac" data-story-link="mac" class="px-3 py-1 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">System 1</a>
-					<a href="#linux" data-story-link="linux" class="px-3 py-1 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Linux</a>
+					<a href="#scene" class="px-3 py-1 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Home</a>
+					<a href="#challenge" class="px-3 py-1 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Why</a>
+					<a href="#getstarted" class="px-3 py-1 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Start</a>
 				</div>
 				<div class="flex items-center gap-3">
 					@ThemeToggle()
@@ -135,9 +135,9 @@ templ Nav() {
 				class="md:hidden pb-4"
 			>
 				<div class="flex flex-col gap-1 text-sm font-display">
-					<a href="#terminal" data-story-link="terminal" @click="mobileOpen = false" class="block px-3 py-2 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Terminal</a>
-					<a href="#mac" data-story-link="mac" @click="mobileOpen = false" class="block px-3 py-2 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">System 1</a>
-					<a href="#linux" data-story-link="linux" @click="mobileOpen = false" class="block px-3 py-2 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Linux</a>
+					<a href="#scene" @click="mobileOpen = false" class="block px-3 py-2 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Home</a>
+					<a href="#challenge" @click="mobileOpen = false" class="block px-3 py-2 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Why</a>
+					<a href="#getstarted" @click="mobileOpen = false" class="block px-3 py-2 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Start</a>
 				</div>
 			</div>
 		</div>

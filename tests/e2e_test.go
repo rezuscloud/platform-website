@@ -142,7 +142,7 @@ func TestE2EMobileMenu(t *testing.T) {
 		chromedp.Evaluate(`document.querySelectorAll('nav [x-show="mobileOpen"] a').length`, &linkCount),
 	)
 	require.NoError(t, err)
-	assert.Equal(t, 5, linkCount, "Mobile menu should have 5 links")
+	assert.Equal(t, 3, linkCount, "Mobile menu should have 3 links")
 }
 
 func TestE2EPerformance(t *testing.T) {
@@ -213,9 +213,9 @@ func TestE2EProgressiveEnhancement(t *testing.T) {
 					hasNav: document.querySelector('nav') !== null,
 					hasMain: document.querySelector('main') !== null,
 					hasFooter: document.querySelector('footer') !== null,
-					allSectionsPresent: ['hero', 'features', 'architecture', 'getstarted']
+					allSectionsPresent: ['scene', 'challenge', 'features', 'architecture', 'getstarted']
 						.every(id => document.getElementById(id) !== null),
-					navLinksWork: document.querySelectorAll('nav a[href^="#"]').length >= 5
+					navLinksWork: document.querySelectorAll('nav a[href^="#"]').length >= 3
 				};
 			})()
 		`, &contentChecks),
