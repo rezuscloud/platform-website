@@ -115,6 +115,16 @@ func TestHomePageHTMLStructure(t *testing.T) {
 		assert.True(t, exists)
 		assert.Contains(t, viewport, "width=device-width")
 	})
+
+	t.Run("has homepage scene root", func(t *testing.T) {
+		sceneRoot := doc.Find("[data-scene-root]")
+		assert.Equal(t, 1, sceneRoot.Length())
+	})
+
+	t.Run("has scene script", func(t *testing.T) {
+		script := doc.Find("script[src='/assets/js/scene.js']")
+		assert.Equal(t, 1, script.Length())
+	})
 }
 
 func TestHomePageSections(t *testing.T) {
@@ -155,11 +165,9 @@ func TestNavigationHTML(t *testing.T) {
 		href string
 		text string
 	}{
-		{"#hero", "Home"},
-		{"#architecture", "Architecture"},
-		{"#features", "Features"},
-		{"#comparison", "Compare"},
-		{"#getstarted", "Get Started"},
+		{"#terminal", "Terminal"},
+		{"#mac", "System 1"},
+		{"#linux", "Linux"},
 	}
 
 	for _, link := range navLinks {
@@ -458,6 +466,13 @@ func TestProgressiveEnhancement(t *testing.T) {
 		sections := []string{"hero", "challenge", "architecture", "features", "networking", "edge", "services", "comparison", "usecases", "techstack", "getstarted"}
 		for _, section := range sections {
 			assert.Equal(t, 1, doc.Find("#"+section).Length(), "Section %s should exist server-side", section)
+		}
+	})
+
+	t.Run("scene chapter wrappers exist server-side", func(t *testing.T) {
+		chapters := []string{"terminal", "mac", "linux"}
+		for _, chapter := range chapters {
+			assert.Equal(t, 1, doc.Find(`[data-scene-chapter='`+chapter+`']`).Length(), "Chapter %s should exist", chapter)
 		}
 	})
 

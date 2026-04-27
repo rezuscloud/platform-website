@@ -1,0 +1,197 @@
+package pages
+
+templ HomeScene() {
+	<div class="story-stage" aria-hidden="true">
+		<div class="story-backdrop"></div>
+		<div class="story-camera-shell">
+			<div class="story-camera">
+				<div class="story-world">
+					<div class="linux-desktop">
+						<div class="linux-panel">
+							<div class="flex items-center gap-2">
+								<span class="w-2.5 h-2.5 rounded-full bg-phosphor-500"></span>
+								<span>workspace // personal-cloud</span>
+							</div>
+							<div class="flex items-center gap-4">
+								<span>any hardware</span>
+								<span>any isp</span>
+								<span>installer: soon</span>
+							</div>
+						</div>
+						@sceneLinuxWindow("system1.vm", "scene-linux-main") {
+							<div class="mac-desktop">
+								<div class="mac-menubar">
+									<div class="flex items-center gap-3">
+										<span class="font-bold">RZ</span>
+										<span>File</span>
+										<span>Edit</span>
+										<span>View</span>
+										<span>Special</span>
+									</div>
+									<div class="font-bold">RezusCloud</div>
+								</div>
+								<div class="mac-desktop-canvas">
+									@sceneMacWindow("The Personal Computer", "scene-mac-story") {
+										<div class="scene-mac-copy">
+											<p class="scene-copy-heading">A Computer For One Person</p>
+											<ul class="scene-list">
+												<li>Mainframes were shared and rented.</li>
+												<li>Personal computers brought computing to one desk.</li>
+												<li>That changed who could build, publish, and own software.</li>
+												<li>RezusCloud applies that same shift to cloud infrastructure.</li>
+											</ul>
+										</div>
+									}
+									@sceneMacWindow("The Mainframe Moment", "scene-mac-note") {
+										<div class="scene-mac-copy">
+											<p class="scene-copy-heading">Then // Now</p>
+											<ul class="scene-list">
+												<li>Rent time on a mainframe.</li>
+												<li>Rent VMs from a cloud provider.</li>
+												<li>Access controlled by someone else.</li>
+												<li>Your cloud should be yours.</li>
+											</ul>
+										</div>
+									}
+									@sceneMacWindow("How It Works", "scene-mac-plan") {
+										<div class="scene-mac-copy">
+											<p class="scene-copy-heading">Blueprint</p>
+											<ul class="scene-list">
+												<li>A small cloud brain somewhere cheap.</li>
+												<li>Your machines wherever they already live.</li>
+												<li>Encrypted tunnels over ordinary internet.</li>
+												<li>Push to Git and let the platform reconcile.</li>
+											</ul>
+										</div>
+									}
+									@sceneMacWindow("Personal Cloud Terminal", "scene-mac-terminal") {
+										@sceneTerminal()
+									}
+									<div class="scene-mac-icons">
+										@sceneMacIcon("System")
+										@sceneMacIcon("Docs")
+										@sceneMacIcon("Trash")
+									</div>
+								</div>
+							</div>
+						}
+						@sceneLinuxWindow("platform-details.md", "scene-linux-status") {
+							<div class="scene-pane">
+								<div class="scene-pane-label">PLATFORM DETAILS</div>
+								<p class="scene-copy-heading">What the personal cloud means</p>
+								<ul class="scene-list">
+									<li>Your infrastructure is yours to run and change.</li>
+									<li>Old laptops, Pis, and mini PCs become useful nodes.</li>
+									<li>Encrypted tunnels connect sites over ordinary ISPs.</li>
+									<li>Git becomes the control surface instead of cloud dashboards.</li>
+								</ul>
+							</div>
+						}
+						@sceneLinuxWindow("services.md", "scene-linux-services") {
+							<div class="scene-pane">
+								<div class="scene-pane-label">WHAT YOU CAN RUN</div>
+								<p class="scene-copy-heading">Workloads</p>
+								<ul class="scene-list">
+									<li>Websites and APIs</li>
+									<li>Databases and file storage</li>
+									<li>Monitoring, logs, and alerts</li>
+									<li>Private backups and home services</li>
+								</ul>
+							</div>
+						}
+						@sceneLinuxWindow("techstack.lock", "scene-linux-editor") {
+							<div class="scene-pane scene-code-pane">
+								<p># implementation</p>
+								<p>stack:</p>
+								<p>&nbsp;&nbsp;- talos linux</p>
+								<p>&nbsp;&nbsp;- kubernetes</p>
+								<p>&nbsp;&nbsp;- cilium</p>
+								<p>&nbsp;&nbsp;- flux cd</p>
+								<p>&nbsp;&nbsp;- gitops</p>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ storyChapter(name string) {
+	<section id={ name } class="story-chapter" data-scene-chapter={ name }>
+		{ children... }
+	</section>
+}
+
+templ storyShell() {
+	<div class="story-section-shell">
+		{ children... }
+	</div>
+}
+
+templ sceneLinuxWindow(title string, className string) {
+	<div class={ "scene-window scene-window-linux", className }>
+		<div class="scene-window-titlebar scene-window-titlebar-linux">
+			<div class="scene-window-controls">
+				<span class="scene-window-dot"></span>
+				<span class="scene-window-dot"></span>
+				<span class="scene-window-dot"></span>
+			</div>
+			<span>{ title }</span>
+		</div>
+		<div class="scene-window-body">
+			{ children... }
+		</div>
+	</div>
+}
+
+templ sceneMacWindow(title string, className string) {
+	<div class={ "scene-window scene-window-mac", className }>
+		<div class="scene-window-titlebar scene-window-titlebar-mac">
+			<div class="scene-window-stripes">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+			<span>{ title }</span>
+			<div class="scene-window-stripes">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+		</div>
+		<div class="scene-window-body">
+			{ children... }
+		</div>
+	</div>
+}
+
+templ sceneTerminal() {
+	<div class="terminal-scene crt-scanlines">
+		<div class="terminal-toolbar">
+			<span class="terminal-pill">manifesto</span>
+			<span class="terminal-pill terminal-pill-active">personal-cloud.txt</span>
+			<span class="terminal-path">~/rezuscloud/boot</span>
+		</div>
+		<div class="terminal-body">
+			<div class="scene-terminal-heading">Your Personal Cloud</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> they said you did not need your own computer either</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> mainframes gave way to personal computers</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> cloud providers can give way to personal cloud</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> hardware: old laptop, pi, mini pc, whatever works</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> network: encrypted tunnels over ordinary home internet</div>
+			<div class="scene-terminal-line"><span class="scene-terminal-prompt">&gt;</span> workflow: push to git and watch it go live</div>
+			<div class="scene-terminal-note">fully open source, private by design, and entirely yours</div>
+			<div class="scene-terminal-line scene-terminal-cursor"><span class="scene-terminal-prompt">&gt;</span> booting ownership<span class="animate-blink">_</span></div>
+		</div>
+	</div>
+}
+
+templ sceneMacIcon(label string) {
+	<div class="scene-mac-icon">
+		<div class="scene-mac-icon-glyph">
+			<div class="scene-mac-icon-paper"></div>
+		</div>
+		<span>{ label }</span>
+	</div>
+}

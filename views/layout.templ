@@ -57,6 +57,7 @@ templ Layout(title string) {
 			</script>
 			<link rel="stylesheet" href="/assets/styles.css"/>
 			<script src="/assets/js/htmx.min.js"></script>
+			<script defer src="/assets/js/scene.js"></script>
 			<script>
 				document.addEventListener("alpine:init", () => {
 					Alpine.store("theme", {
@@ -73,9 +74,9 @@ templ Layout(title string) {
 			</script>
 			<script defer src="/assets/js/alpine.min.js"></script>
 		</head>
-		<body class="bg-cream-50 dark:bg-terminal-bg text-cream-800 dark:text-gray-200 transition-colors duration-300">
+		<body class="overflow-x-hidden bg-cream-50 dark:bg-terminal-bg text-cream-800 dark:text-gray-200 transition-colors duration-300">
 			@Nav()
-			<main>
+			<main class="relative">
 				{ children... }
 			</main>
 			@Footer()
@@ -101,11 +102,9 @@ templ Nav() {
 					<span class="text-lg font-bold font-retro text-amber-600 dark:text-amber-400 tracking-wide">RezusCloud</span>
 				</div>
 				<div class="hidden md:flex items-center gap-1 text-sm font-display">
-					<a href="#hero" class="px-3 py-1 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Home</a>
-					<a href="#architecture" class="px-3 py-1 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Architecture</a>
-					<a href="#features" class="px-3 py-1 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Features</a>
-					<a href="#comparison" class="px-3 py-1 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Compare</a>
-					<a href="#getstarted" class="px-3 py-1 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Get Started</a>
+					<a href="#terminal" data-story-link="terminal" class="px-3 py-1 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Terminal</a>
+					<a href="#mac" data-story-link="mac" class="px-3 py-1 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">System 1</a>
+					<a href="#linux" data-story-link="linux" class="px-3 py-1 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Linux</a>
 				</div>
 				<div class="flex items-center gap-3">
 					@ThemeToggle()
@@ -136,11 +135,9 @@ templ Nav() {
 				class="md:hidden pb-4"
 			>
 				<div class="flex flex-col gap-1 text-sm font-display">
-					<a href="#hero" @click="mobileOpen = false" class="block px-3 py-2 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Home</a>
-					<a href="#architecture" @click="mobileOpen = false" class="block px-3 py-2 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Architecture</a>
-					<a href="#features" @click="mobileOpen = false" class="block px-3 py-2 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Features</a>
-					<a href="#comparison" @click="mobileOpen = false" class="block px-3 py-2 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Compare</a>
-					<a href="#getstarted" @click="mobileOpen = false" class="block px-3 py-2 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Get Started</a>
+					<a href="#terminal" data-story-link="terminal" @click="mobileOpen = false" class="block px-3 py-2 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Terminal</a>
+					<a href="#mac" data-story-link="mac" @click="mobileOpen = false" class="block px-3 py-2 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">System 1</a>
+					<a href="#linux" data-story-link="linux" @click="mobileOpen = false" class="block px-3 py-2 hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors">Linux</a>
 				</div>
 			</div>
 		</div>

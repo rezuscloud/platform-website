@@ -185,3 +185,674 @@
 @utility animate-fade-in-up {
 	animation: fade-in-up 0.4s ease-out forwards;
 }
+
+.story-page {
+	--scene-scale: 2.45;
+	--scene-x: 14%;
+	--scene-y: 8%;
+	--terminal-progress: 1;
+	--mac-progress: 0;
+	--linux-progress: 0;
+	position: relative;
+	isolation: isolate;
+	min-height: 100vh;
+	scroll-snap-type: y mandatory;
+}
+
+.story-stage {
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	z-index: 0;
+	overflow: clip;
+}
+
+.story-backdrop {
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(circle at top, rgba(255, 255, 255, 0.28), transparent 40%),
+		linear-gradient(180deg, rgba(250, 248, 243, 0.96) 0%, rgba(233, 224, 208, 0.78) 45%, rgba(217, 208, 189, 0.72) 100%);
+}
+
+.dark .story-backdrop {
+	background:
+		radial-gradient(circle at top, rgba(79, 70, 229, 0.2), transparent 38%),
+		linear-gradient(180deg, rgba(9, 12, 24, 0.98) 0%, rgba(12, 18, 35, 0.94) 42%, rgba(8, 12, 24, 0.98) 100%);
+}
+
+.story-backdrop::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background:
+		linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+		linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+	background-size: 2.75rem 2.75rem;
+	opacity: 0.35;
+	mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.35));
+}
+
+.story-camera-shell {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: clamp(1.5rem, 4vw, 3rem);
+}
+
+.story-camera {
+	width: min(100%, 112rem);
+	aspect-ratio: 16 / 10;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.story-world {
+	position: relative;
+	width: min(100%, 104rem);
+	aspect-ratio: 16 / 10;
+	transform: translate3d(var(--scene-x), var(--scene-y), 0) scale(var(--scene-scale));
+	transform-origin: center center;
+	will-change: transform;
+	transition: transform 120ms linear;
+}
+
+.linux-desktop {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	border-radius: 2rem;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	background:
+		radial-gradient(circle at top left, rgba(96, 165, 250, 0.28), transparent 30%),
+		linear-gradient(180deg, rgba(47, 55, 78, 0.96) 0%, rgba(23, 30, 50, 0.98) 100%);
+	box-shadow: 0 2rem 5rem rgba(15, 23, 42, 0.35);
+}
+
+.dark .linux-desktop {
+	border-color: rgba(148, 163, 184, 0.25);
+	box-shadow: 0 2rem 6rem rgba(2, 6, 23, 0.55);
+}
+
+.linux-panel {
+	position: absolute;
+	inset: 0 0 auto 0;
+	height: 3rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 1rem;
+	background: rgba(15, 23, 42, 0.72);
+	backdrop-filter: blur(10px);
+	font-size: 0.75rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: rgba(226, 232, 240, 0.9);
+	font-family: var(--font-display);
+}
+
+.scene-window {
+	position: absolute;
+	overflow: hidden;
+	border-radius: 1.25rem;
+	border: 1px solid rgba(255, 255, 255, 0.22);
+	background: rgba(12, 17, 30, 0.76);
+	box-shadow: 0 1.5rem 3rem rgba(15, 23, 42, 0.28);
+}
+
+.scene-window-linux {
+	backdrop-filter: blur(8px);
+	color: rgba(226, 232, 240, 0.95);
+	font-family: var(--font-display);
+}
+
+.scene-window-titlebar {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	height: 2.5rem;
+	padding: 0 0.9rem;
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.scene-window-titlebar-linux {
+	background: rgba(30, 41, 59, 0.88);
+	border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.scene-window-controls {
+	display: flex;
+	gap: 0.4rem;
+}
+
+.scene-window-dot {
+	width: 0.65rem;
+	height: 0.65rem;
+	border-radius: 9999px;
+	background: rgba(226, 232, 240, 0.28);
+}
+
+.scene-window-body {
+	position: relative;
+	height: calc(100% - 2.5rem);
+}
+
+.scene-linux-main {
+	left: 7%;
+	top: 9%;
+	width: 64%;
+	height: 76%;
+	opacity: calc(0.84 + (var(--linux-progress) * 0.16));
+}
+
+.scene-linux-status {
+	right: 5.5%;
+	top: 11%;
+	width: 24%;
+	height: 28%;
+	opacity: calc(0.22 + (var(--linux-progress) * 0.78));
+	transform: translateY(calc((1 - var(--linux-progress)) * 1.5rem));
+	transform-origin: top center;
+}
+
+.scene-linux-services {
+	right: 5.5%;
+	top: 42%;
+	width: 25%;
+	height: 24.5%;
+	opacity: calc(0.18 + (var(--linux-progress) * 0.82));
+	transform: translateY(calc((1 - var(--linux-progress)) * 1.5rem));
+	transform-origin: center center;
+}
+
+.scene-linux-editor {
+	right: 8%;
+	bottom: 10%;
+	width: 27%;
+	height: 33%;
+	opacity: calc(0.18 + (var(--linux-progress) * 0.82));
+	transform: translateY(calc((1 - var(--linux-progress)) * 2rem));
+	transform-origin: bottom center;
+}
+
+.scene-pane {
+	height: 100%;
+	padding: 1rem 1.1rem;
+	font-size: 0.86rem;
+	line-height: 1.65;
+	color: rgba(226, 232, 240, 0.92);
+	background: linear-gradient(180deg, rgba(15, 23, 42, 0.24), rgba(15, 23, 42, 0.1));
+}
+
+.scene-code-pane {
+	font-family: var(--font-retro);
+	color: rgba(191, 219, 254, 0.95);
+}
+
+.scene-pane-label {
+	margin-bottom: 0.75rem;
+	font-size: 0.72rem;
+	letter-spacing: 0.12em;
+	color: rgba(148, 163, 184, 0.8);
+}
+
+.scene-list {
+	margin: 0;
+	padding-left: 1.05rem;
+	display: grid;
+	gap: 0.45rem;
+}
+
+.scene-copy-heading {
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.mac-desktop {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background:
+		repeating-linear-gradient(45deg, rgba(15, 23, 42, 0.06) 0 0.45rem, transparent 0.45rem 0.9rem),
+		linear-gradient(180deg, rgba(252, 252, 249, 0.98) 0%, rgba(235, 231, 221, 0.98) 100%);
+	color: #111;
+	font-family: var(--font-display);
+}
+
+.mac-menubar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 0.75rem;
+	height: 2.2rem;
+	border-bottom: 2px solid #111;
+	background: rgba(255, 255, 255, 0.92);
+	font-size: 0.78rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.mac-desktop-canvas {
+	position: relative;
+	height: calc(100% - 2.2rem);
+	padding: 1rem;
+}
+
+.scene-window-mac {
+	border-radius: 0;
+	border: 2px solid #111;
+	background: rgba(255, 255, 255, 0.94);
+	box-shadow: 0.4rem 0.4rem 0 0 rgba(17, 17, 17, 0.16);
+	color: #111;
+	opacity: calc(0.4 + (var(--mac-progress) * 0.6));
+}
+
+.scene-window-titlebar-mac {
+	justify-content: space-between;
+	border-bottom: 2px solid #111;
+	background: #fff;
+	font-weight: 700;
+	color: #111;
+}
+
+.scene-window-stripes {
+	display: flex;
+	gap: 0.2rem;
+}
+
+.scene-window-stripes span {
+	display: block;
+	width: 0.45rem;
+	height: 0.45rem;
+	border: 1px solid #111;
+	background: #fff;
+}
+
+.scene-mac-terminal {
+	left: 6%;
+	top: 12%;
+	width: 66%;
+	height: 62%;
+	transform: translateY(calc((1 - var(--mac-progress)) * 1rem));
+	box-shadow: 0.8rem 0.8rem 0 0 rgba(17, 17, 17, 0.12);
+}
+
+.scene-mac-story {
+	right: 6%;
+	top: 12%;
+	width: 25%;
+	height: 34%;
+	transform: translateX(calc((1 - var(--mac-progress)) * 1.1rem));
+}
+
+.scene-mac-note {
+	right: 6%;
+	top: 49%;
+	width: 24%;
+	height: 24%;
+	transform: translateX(calc((1 - var(--mac-progress)) * 1.25rem));
+}
+
+.scene-mac-plan {
+	left: 10%;
+	bottom: 9%;
+	width: 36%;
+	height: 22%;
+	transform: translateY(calc((1 - var(--mac-progress)) * 1.1rem));
+}
+
+.scene-mac-copy {
+	height: 100%;
+	padding: 0.85rem 1rem;
+	font-size: 0.88rem;
+	line-height: 1.55;
+	display: grid;
+	align-content: start;
+	gap: 0.45rem;
+}
+
+.scene-mac-icons {
+	position: absolute;
+	right: 4.5%;
+	bottom: 10%;
+	display: grid;
+	gap: 1rem;
+	justify-items: center;
+	opacity: calc(0.25 + (var(--mac-progress) * 0.75));
+}
+
+.scene-mac-icon {
+	display: grid;
+	gap: 0.35rem;
+	justify-items: center;
+	width: 4.6rem;
+	font-size: 0.72rem;
+	font-weight: 700;
+	text-align: center;
+}
+
+.scene-mac-icon-glyph {
+	width: 2.5rem;
+	height: 3rem;
+	border: 2px solid #111;
+	background: #fff;
+	padding: 0.15rem;
+}
+
+.scene-mac-icon-paper {
+	width: 100%;
+	height: 100%;
+	border: 1px solid #111;
+	background:
+		linear-gradient(180deg, transparent 0 18%, #111 18% 20%, transparent 20% 38%, #111 38% 40%, transparent 40% 58%, #111 58% 60%, transparent 60% 100%),
+		#fff;
+}
+
+.terminal-scene {
+	position: relative;
+	height: 100%;
+	overflow: hidden;
+	background: linear-gradient(180deg, rgba(4, 10, 18, 0.98) 0%, rgba(5, 11, 16, 0.98) 100%);
+	color: var(--color-phosphor-300);
+	font-family: var(--font-display);
+	text-shadow: 0 0 6px rgba(0, 255, 65, 0.35);
+}
+
+.terminal-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem 0.9rem;
+	border-bottom: 1px solid rgba(0, 255, 65, 0.15);
+	font-size: 0.72rem;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: rgba(229, 231, 235, 0.85);
+}
+
+.terminal-pill {
+	padding: 0.25rem 0.45rem;
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	border-radius: 9999px;
+	background: rgba(255, 255, 255, 0.05);
+}
+
+.terminal-pill-active {
+	border-color: rgba(0, 255, 65, 0.32);
+	color: var(--color-phosphor-300);
+}
+
+.terminal-path {
+	margin-left: auto;
+	color: rgba(156, 163, 175, 0.9);
+}
+
+.terminal-body {
+	display: grid;
+	gap: 0.65rem;
+	padding: 1rem 1rem 1.15rem;
+	font-size: 0.92rem;
+	line-height: 1.55;
+	min-height: calc(100% - 3rem);
+	align-content: start;
+}
+
+.scene-terminal-heading {
+	margin-bottom: 0.35rem;
+	font-size: clamp(1.1rem, 2vw, 1.7rem);
+	line-height: 1.15;
+	color: rgba(255, 255, 255, 0.95);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.scene-terminal-line {
+	display: flex;
+	gap: 0.55rem;
+	align-items: baseline;
+}
+
+.scene-terminal-prompt {
+	color: var(--color-amber-400);
+	min-width: 0.7rem;
+	text-shadow: 0 0 6px rgba(255, 176, 0, 0.32);
+}
+
+.scene-terminal-note {
+	margin-top: 0.4rem;
+	padding-top: 0.75rem;
+	border-top: 1px solid rgba(0, 255, 65, 0.14);
+	color: rgba(229, 231, 235, 0.72);
+	font-size: 0.84rem;
+}
+
+.scene-terminal-cursor {
+	margin-top: auto;
+	color: var(--color-phosphor-200);
+}
+
+.story-content {
+	position: relative;
+	z-index: -1;
+	padding-bottom: 0;
+	visibility: hidden;
+}
+
+.story-chapter {
+	position: relative;
+	padding: 0;
+	min-height: 100svh;
+	scroll-snap-align: start;
+	scroll-snap-stop: always;
+}
+
+.story-section-shell {
+	height: 0;
+	overflow: hidden;
+}
+
+.story-page .story-section-shell > section {
+	height: 0;
+	margin: 0;
+	overflow: hidden;
+	background: transparent !important;
+}
+
+.story-page .story-section-shell > section > div {
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+	backdrop-filter: none;
+}
+
+.dark .story-page .story-section-shell > section > div {
+	background: transparent;
+}
+
+.story-page .story-section-shell:first-child > section {
+	padding-top: 0;
+}
+
+.story-page .story-section-shell:last-child > section {
+	padding-bottom: 0;
+}
+
+.dark .story-page {
+	color: rgba(229, 231, 235, 0.96);
+}
+
+[data-story-link][data-story-active] {
+	background: rgba(255, 176, 0, 0.12);
+	color: var(--color-amber-600);
+	box-shadow: inset 0 -2px 0 0 var(--color-amber-500);
+}
+
+.dark [data-story-link][data-story-active] {
+	background: rgba(0, 255, 65, 0.12);
+	color: var(--color-phosphor-300);
+	box-shadow: inset 0 -2px 0 0 var(--color-phosphor-500);
+}
+
+@media (max-width: 1024px) {
+	.scene-linux-main {
+		left: 5%;
+		width: 68%;
+	}
+
+	.scene-linux-status {
+		right: 4%;
+		width: 25%;
+	}
+
+	.scene-linux-services {
+		right: 4%;
+		width: 25%;
+	}
+
+	.scene-linux-editor {
+		right: 5%;
+		width: 28%;
+	}
+}
+
+@media (max-width: 767px) {
+	.story-stage {
+		top: 3.5rem;
+	}
+
+	.story-chapter {
+		min-height: calc(100svh - 3.5rem);
+	}
+
+	.story-camera-shell {
+		padding: 1rem;
+	}
+
+	.story-world {
+		width: min(100%, 64rem);
+	}
+
+	.linux-panel {
+		height: 2.6rem;
+		font-size: 0.65rem;
+		padding: 0 0.7rem;
+	}
+
+	.linux-panel .flex:last-child {
+		display: none;
+	}
+
+	.scene-linux-main {
+		left: 5%;
+		top: 12%;
+		width: 80%;
+		height: 68%;
+	}
+
+	.scene-linux-status {
+		display: none;
+	}
+
+	.scene-linux-services {
+		right: 6%;
+		top: 44%;
+		width: 35%;
+		height: 22%;
+	}
+
+	.scene-linux-editor {
+		right: 6%;
+		bottom: 8%;
+		width: 35%;
+		height: 25%;
+	}
+
+	.scene-mac-note {
+		display: block;
+		right: 8%;
+		top: 49%;
+		width: 30%;
+		height: 22%;
+	}
+
+	.scene-mac-story {
+		right: 8%;
+		top: 12%;
+		width: 30%;
+		height: 30%;
+	}
+
+	.scene-mac-plan {
+		left: 8%;
+		bottom: 9%;
+		width: 46%;
+		height: 19%;
+	}
+
+	.scene-mac-terminal {
+		left: 5%;
+		top: 12%;
+		width: 84%;
+		height: 65%;
+	}
+
+	.scene-mac-icons {
+		right: 6%;
+		bottom: 8%;
+		gap: 0.6rem;
+	}
+
+	.scene-mac-icon:nth-child(n + 2) {
+		display: none;
+	}
+
+	.terminal-toolbar {
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+
+	.terminal-path {
+		margin-left: 0;
+		width: 100%;
+	}
+
+	.terminal-body {
+		font-size: 0.78rem;
+	}
+
+	.story-chapter {
+		min-height: calc(100svh - 3.5rem);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.story-world {
+		transform: translate3d(0, 0, 0) scale(1) !important;
+		transition: none;
+	}
+
+	.story-chapter {
+		transition: none;
+	}
+
+	.story-page {
+		--terminal-progress: 1;
+		--mac-progress: 1;
+		--linux-progress: 1;
+	}
+
+	.story-content {
+		visibility: hidden;
+	}
+}
