@@ -46,9 +46,17 @@ jobs:
             exit 0
           fi
 
+          current_head_sha="$(gh pr view "$pr_number" --repo "${{ github.repository }}" --json headRefOid --jq '.headRefOid')"
+
+          if [ "$current_head_sha" != "$head_sha" ]; then
+            gh api --silent --method DELETE repos/${{ github.repository }}/issues/${pr_number}/labels/preview-ready || true
+            exit 0
+          fi
+
           docker_pr_conclusion="$(gh api repos/${{ github.repository }}/actions/runs/${RUN_ID}/jobs --paginate --jq '.jobs[] | select(.name == "docker-pr") | .conclusion' | tail -n 1)"
 
           if [ "$docker_pr_conclusion" != "success" ]; then
+            gh api --silent --method DELETE repos/${{ github.repository }}/issues/${pr_number}/labels/preview-ready || true
             exit 0
           fi
 
