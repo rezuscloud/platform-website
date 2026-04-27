@@ -8,6 +8,18 @@ on:
   workflow_dispatch:
 
 jobs:
+  preview-reset:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Remove preview-ready label
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh api --silent --method DELETE repos/${{ github.repository }}/issues/${PR_NUMBER}/labels/preview-ready || true
+
   build:
     runs-on: [self-hosted, Linux, X64]
     permissions:
@@ -134,11 +146,12 @@ jobs:
         run: docker stop platform-website && docker rm platform-website || true
 
   docker-pr:
-    needs: [build, test, e2e-test]
-    if: always() && github.event_name == 'pull_request' && needs.build.result == 'success' && needs.test.result == 'success'
+    needs: [preview-reset, build, test, e2e-test]
+    if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && needs.preview-reset.result == 'success' && needs.build.result == 'success' && needs.test.result == 'success' && needs.e2e-test.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      issues: write
       packages: write
     steps:
       - uses: actions/checkout@v6
@@ -150,3 +163,10 @@ jobs:
           version: pr-${{ github.event.pull_request.number }}
           git_commit: ${{ github.event.pull_request.head.sha }}
           build_time: ""
+      - name: Mark preview ready
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh label create preview-ready --color 0e8a16 --description "Preview image published successfully" --force
+          gh api --silent --method POST repos/${{ github.repository }}/issues/${PR_NUMBER}/labels -f labels[]=preview-ready
