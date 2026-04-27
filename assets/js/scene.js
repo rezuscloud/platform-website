@@ -13,13 +13,13 @@
 
   const presets = {
     desktop: {
-      terminal: { scale: 2.45, x: 14, y: 8 },
-      mac: { scale: 1.52, x: 5, y: 3 },
+      terminal: { scale: 2.7, x: 15, y: 9 },
+      mac: { scale: 1.62, x: 4, y: 3 },
       linux: { scale: 1.0, x: 0, y: 0 },
     },
     mobile: {
-      terminal: { scale: 2.0, x: 9, y: 7 },
-      mac: { scale: 1.28, x: 3, y: 2 },
+      terminal: { scale: 2.18, x: 10, y: 7 },
+      mac: { scale: 1.34, x: 3, y: 2 },
       linux: { scale: 0.94, x: 0, y: 0 },
     },
   }
@@ -105,24 +105,20 @@
 
     const currentPresets = activePresets()
     const focusPoint = window.scrollY + window.innerHeight * 0.5
-    const terminalExit = metrics[1].start
-    const linuxEntry = metrics[2].start
+    const terminalToMac = ease(progressBetween(metrics[0].start, metrics[1].start, focusPoint))
+    const macToLinux = ease(progressBetween(metrics[1].start, metrics[2].start, focusPoint))
 
     let state = currentPresets.terminal
 
-    if (focusPoint < terminalExit) {
-      const amount = ease(progressBetween(metrics[0].start, terminalExit, focusPoint))
-      state = lerpPreset(currentPresets.terminal, currentPresets.mac, amount)
-      setProgress("terminal", 1)
-      setProgress("mac", amount)
-      setProgress("linux", 0)
+    if (macToLinux > 0) {
+      state = lerpPreset(currentPresets.mac, currentPresets.linux, macToLinux)
     } else {
-      const amount = ease(progressBetween(terminalExit, linuxEntry, focusPoint))
-      state = lerpPreset(currentPresets.mac, currentPresets.linux, amount)
-      setProgress("terminal", 1)
-      setProgress("mac", 1)
-      setProgress("linux", amount)
+      state = lerpPreset(currentPresets.terminal, currentPresets.mac, terminalToMac)
     }
+
+    setProgress("terminal", 1 - terminalToMac * 0.18)
+    setProgress("mac", terminalToMac)
+    setProgress("linux", macToLinux)
 
     markActiveChapter(focusPoint)
     setState(state)
