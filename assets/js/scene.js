@@ -4,28 +4,26 @@
     return
   }
 
-  const chapters = Array.from(root.querySelectorAll("[data-scene-chapter]"))
-  const navLinks = Array.from(document.querySelectorAll("[data-story-link]"))
-  if (chapters.length < 3) {
+  const track = root.querySelector("[data-scene-track]")
+  if (!track) {
     return
   }
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)")
+  const navHeight = 56
 
   const presets = {
     desktop: {
-      terminal: { scale: 2.7, x: 15, y: 9 },
-      mac: { scale: 1.62, x: 4, y: 3 },
-      linux: { scale: 1.0, x: 0, y: 0 },
+      startScale: 1.72,
+      endScale: 1,
     },
     mobile: {
-      terminal: { scale: 2.18, x: 10, y: 7 },
-      mac: { scale: 1.34, x: 3, y: 2 },
-      linux: { scale: 0.94, x: 0, y: 0 },
+      startScale: 1.42,
+      endScale: 1,
     },
   }
 
-  let metrics = []
+  let metrics = { start: 0, end: 1 }
   let ticking = false
 
   function clamp(value) {
@@ -40,65 +38,34 @@
     return start + (end - start) * amount
   }
 
-  function lerpPreset(start, end, amount) {
-    return {
-      scale: lerp(start.scale, end.scale, amount),
-      x: lerp(start.x, end.x, amount),
-      y: lerp(start.y, end.y, amount),
-    }
-  }
-
   function activePresets() {
     return window.innerWidth < 768 ? presets.mobile : presets.desktop
   }
 
-  function setState(state) {
-    root.style.setProperty("--scene-scale", state.scale.toFixed(3))
-    root.style.setProperty("--scene-x", `${state.x.toFixed(3)}%`)
-    root.style.setProperty("--scene-y", `${state.y.toFixed(3)}%`)
-  }
+  function setState(progress) {
+    const currentPresets = activePresets()
+    const eased = ease(progress)
+    const scale = lerp(currentPresets.startScale, currentPresets.endScale, eased)
 
-  function setProgress(name, value) {
-    root.style.setProperty(`--${name}-progress`, clamp(value).toFixed(3))
-  }
-
-  function progressBetween(start, end, position) {
-    const span = Math.max(1, end - start)
-    return clamp((position - start) / span)
-  }
-
-  function markActiveChapter(position) {
-    chapters.forEach((chapter, index) => {
-      const next = metrics[index + 1]
-      const isActive = position >= metrics[index].start && (!next || position < next.start)
-      chapter.toggleAttribute("data-scene-active", isActive)
-    })
-
-    const active = chapters.find((chapter) => chapter.hasAttribute("data-scene-active"))
-    const activeName = active?.dataset.sceneChapter
-    navLinks.forEach((link) => {
-      link.toggleAttribute("data-story-active", link.dataset.storyLink === activeName)
-    })
+    root.style.setProperty("--scene-progress", eased.toFixed(3))
+    root.style.setProperty("--scene-scale", scale.toFixed(3))
   }
 
   function measure() {
-    metrics = chapters.map((chapter) => {
-      const rect = chapter.getBoundingClientRect()
-      const top = window.scrollY + rect.top
-      return {
-        element: chapter,
-        start: top,
-        end: top + chapter.offsetHeight,
-      }
-    })
+    const rect = track.getBoundingClientRect()
+    const top = window.scrollY + rect.top
+    const stickyHeight = Math.max(1, window.innerHeight - navHeight)
+
+    metrics = {
+      start: top,
+      end: top + Math.max(1, track.offsetHeight - stickyHeight),
+    }
   }
 
   function applyReducedMotionState() {
     root.dataset.sceneMotion = "reduced"
-    setState(activePresets().linux)
-    setProgress("terminal", 1)
-    setProgress("mac", 1)
-    setProgress("linux", 1)
+    root.style.setProperty("--scene-progress", "1")
+    root.style.setProperty("--scene-scale", "1")
   }
 
   function update() {
@@ -111,25 +78,10 @@
 
     delete root.dataset.sceneMotion
 
-    const currentPresets = activePresets()
-    const focusPoint = window.scrollY + window.innerHeight * 0.5
-    const terminalToMac = ease(progressBetween(metrics[0].start, metrics[1].start, focusPoint))
-    const macToLinux = ease(progressBetween(metrics[1].start, metrics[2].start, focusPoint))
+    const span = Math.max(1, metrics.end - metrics.start)
+    const progress = clamp((window.scrollY - metrics.start) / span)
 
-    let state = currentPresets.terminal
-
-    if (macToLinux > 0) {
-      state = lerpPreset(currentPresets.mac, currentPresets.linux, macToLinux)
-    } else {
-      state = lerpPreset(currentPresets.terminal, currentPresets.mac, terminalToMac)
-    }
-
-    setProgress("terminal", 1 - terminalToMac * 0.18)
-    setProgress("mac", terminalToMac)
-    setProgress("linux", macToLinux)
-
-    markActiveChapter(focusPoint)
-    setState(state)
+    setState(progress)
   }
 
   function schedule() {
@@ -152,7 +104,7 @@
 
   if (typeof ResizeObserver !== "undefined") {
     const observer = new ResizeObserver(refresh)
-    chapters.forEach((chapter) => observer.observe(chapter))
+    observer.observe(track)
   }
 
   if (typeof prefersReducedMotion.addEventListener === "function") {

@@ -128,7 +128,7 @@ func TestHomePageContainsAllSections(t *testing.T) {
 	app := setupApp()
 
 	sections := []string{
-		"hero", "challenge", "architecture", "features",
+		"scene", "challenge", "architecture", "features",
 		"networking", "edge", "services", "comparison",
 		"usecases", "techstack", "getstarted",
 	}
