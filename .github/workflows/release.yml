@@ -1,46 +1,73 @@
 name: Release
 
 on:
-  push:
-    tags: ["v*"]
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
   workflow_dispatch:
     inputs:
       ref:
-        description: Git ref (tag, branch, or SHA)
+        description: Git ref to publish (tag, branch, or SHA)
         required: false
         default: master
       snapshot:
-        description: Run in snapshot mode (skip publish)
-        required: false
-        default: "false"
+        description: Snapshot mode (skip publish)
         type: boolean
+        default: false
 
 permissions:
   contents: write
   packages: write
   id-token: write
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   release:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_branch == 'master')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          ref: ${{ github.event.inputs.ref || github.ref }}
 
-      - name: Set up Go
-        uses: actions/setup-go@v6
+      - uses: actions/setup-go@v6
         with:
           go-version: "1.24"
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: "22"
           cache: npm
 
+      - run: npm ci
+
+      - name: Resolve release ref
+        id: resolve
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            git checkout "${{ github.event.inputs.ref || 'master' }}"
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git checkout -B master "${{ github.event.workflow_run.head_sha }}"
+          npx semantic-release
+          git fetch --tags origin
+          if git tag --points-at HEAD --list 'v*' | grep -q .; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Log in to GHCR
+        if: steps.resolve.outputs.publish == 'true'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -48,16 +75,21 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        if: steps.resolve.outputs.publish == 'true'
+        uses: docker/setup-qemu@v3
 
       - name: Set up Docker Buildx
+        if: steps.resolve.outputs.publish == 'true'
         uses: docker/setup-buildx-action@v3
 
       - uses: sigstore/cosign-installer@v4.1.1
+        if: steps.resolve.outputs.publish == 'true'
 
       - uses: anchore/sbom-action/download-syft@v0
+        if: steps.resolve.outputs.publish == 'true'
 
       - name: Run GoReleaser
+        if: steps.resolve.outputs.publish == 'true'
         uses: goreleaser/goreleaser-action@v7
         with:
           version: "~> v2"
