@@ -80,8 +80,6 @@ runs:
         context: .
         push: ${{ inputs.push_image }}
         tags: ${{ steps.prep.outputs.tags }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
         platforms: linux/amd64,linux/arm64
         provenance: false
         sbom: false
