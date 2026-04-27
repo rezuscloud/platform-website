@@ -136,7 +136,7 @@ jobs:
   docker-pr:
     needs: [build, test, e2e-test]
     if: always() && github.event_name == 'pull_request' && needs.build.result == 'success' && needs.test.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     permissions:
       contents: read
       packages: write
