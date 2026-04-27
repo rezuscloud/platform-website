@@ -165,11 +165,9 @@ func TestNavigationHTML(t *testing.T) {
 		href string
 		text string
 	}{
-		{"#hero", "Home"},
-		{"#architecture", "Architecture"},
-		{"#features", "Features"},
-		{"#comparison", "Compare"},
-		{"#getstarted", "Get Started"},
+		{"#terminal", "Terminal"},
+		{"#mac", "System 1"},
+		{"#linux", "Linux"},
 	}
 
 	for _, link := range navLinks {
