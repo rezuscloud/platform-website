@@ -43,7 +43,9 @@ func TestHomeHandlerContainsExpectedContent(t *testing.T) {
 
 	html := string(body)
 	assert.Contains(t, html, "RezusCloud")
-	assert.Contains(t, html, "Your Personal Cloud")
+	assert.Contains(t, html, "REZUS OS ROM 1.0.0")
+	assert.Contains(t, html, "Mini vMac")
+	assert.Contains(t, html, "xterm")
 }
 
 func TestSectionHandler(t *testing.T) {
@@ -158,8 +160,8 @@ func TestHomePageContainsNavigation(t *testing.T) {
 	require.NoError(t, err)
 
 	html := string(body)
-	assert.Contains(t, html, "<nav")
-	assert.Contains(t, html, "</nav>")
+	assert.NotContains(t, html, "<nav")
+	assert.NotContains(t, html, "</nav>")
 }
 
 func TestHomePageContainsFooter(t *testing.T) {
@@ -174,6 +176,6 @@ func TestHomePageContainsFooter(t *testing.T) {
 	require.NoError(t, err)
 
 	html := string(body)
-	assert.Contains(t, html, "<footer")
-	assert.Contains(t, html, "</footer>")
+	assert.NotContains(t, html, "<footer")
+	assert.NotContains(t, html, "</footer>")
 }

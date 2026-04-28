@@ -8,6 +8,8 @@ package pages
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import "strings"
+
 func HomeScene() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -29,11 +31,57 @@ func HomeScene() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"scene\" class=\"scene-section\" data-scene-root><div class=\"scene-scroll-track\" data-scene-track><div class=\"scene-stage\"><div class=\"scene-camera\"><div class=\"scene-world\"><div class=\"mac-desktop\"><div class=\"mac-menubar\"><div class=\"mac-menubar-left\"><span class=\"mac-apple\">&#63743;</span> <span class=\"mac-menu-item mac-menu-bold\">File</span> <span class=\"mac-menu-item\">Edit</span> <span class=\"mac-menu-item\">View</span> <span class=\"mac-menu-item\">Special</span></div><div class=\"mac-menubar-right\"><span>RezusCloud</span></div></div><div class=\"mac-desktop-area\"><div class=\"scene-terminal-window scene-window\"><div class=\"mac-titlebar\"><div class=\"mac-close-box\"></div><span class=\"mac-title-text\">personal-cloud</span><div class=\"mac-zoom-box\"></div></div><div class=\"scene-window-body\"><div class=\"terminal-screen crt-scanlines\"><div class=\"terminal-content\"><div class=\"term-line\"><span class=\"term-prompt\">$</span> <span>cat ./personal-cloud.txt</span></div><h1 class=\"term-heading\">Your Personal Cloud</h1><p class=\"term-paragraph\">They said you did not need your own computer either. Then the personal computer changed who could own, build, and publish software.</p><p class=\"term-paragraph\">RezusCloud applies that same shift to infrastructure. Your machines, your network, your rules.</p><div class=\"term-block\"><ul class=\"term-list\"><li><span class=\"term-prompt\">&gt;</span><span>private by design</span></li><li><span class=\"term-prompt\">&gt;</span><span>open source all the way down</span></li><li><span class=\"term-prompt\">&gt;</span><span>push to git, let the platform reconcile</span></li><li><span class=\"term-prompt\">&gt;</span><span>use whatever machine you already have</span></li></ul></div><div class=\"term-footer\"><span class=\"term-prompt\">&gt;</span> <span class=\"term-cursor-text\">scroll to zoom out</span> <span class=\"animate-blink\">_</span></div></div></div></div></div><div class=\"mac-icons\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"scene\" class=\"scene-section\" data-scene-root aria-label=\"Retro computing scrollytelling scene\"><div class=\"scene-scroll-track\" data-scene-track><div class=\"scene-stage\" aria-hidden=\"true\"><div class=\"scene-camera-viewport\"><div class=\"scene-camera\" data-scene-camera><div class=\"scene-world\" data-scene-world><div class=\"linux-desktop\" data-scene-target=\"linux\"><div class=\"linux-topbar\"><div class=\"linux-topbar-left\"><span class=\"linux-badge\">x11</span> <span class=\"linux-badge\">twm</span> <span class=\"linux-badge\">rezus workstation</span></div><div class=\"linux-topbar-right\"><span>tty7</span> <span>load 0.04</span> <span>01:14</span></div></div><div class=\"linux-root-pattern\"></div><div class=\"linux-window linux-xterm-window\"><div class=\"linux-titlebar\"><span>xterm</span><div class=\"linux-titlebar-controls\"><span class=\"linux-control\"></span> <span class=\"linux-control\"></span></div></div><div class=\"linux-xterm-screen\" role=\"img\" aria-label=\"xterm session log\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = macIcon("ReadMe").Render(ctx, templ_7745c5c3_Buffer)
+		for _, line := range strings.Split(linuxXTermText, "\n") {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"terminal-row\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var2 string
+			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(line)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/home_scene.templ`, Line: 36, Col: 43}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div></div><div class=\"linux-window linux-mac-window\"><div class=\"linux-titlebar\"><span>Mini vMac</span><div class=\"linux-titlebar-controls\"><span class=\"linux-control\"></span> <span class=\"linux-control\"></span></div></div><div class=\"linux-window-body\"><div class=\"mac-desktop\" data-scene-target=\"mac\"><div class=\"mac-menubar\"><div class=\"mac-menubar-left\"><span class=\"mac-apple\">&#63743;</span> <span class=\"mac-menu mac-menu-strong\">File</span> <span class=\"mac-menu\">Edit</span> <span class=\"mac-menu\">View</span> <span class=\"mac-menu\">Special</span></div><div class=\"mac-menubar-right\"><span>1:14</span></div></div><div class=\"mac-desktop-area\"><div class=\"mac-window mac-terminal-window\"><div class=\"mac-titlebar\"><div class=\"mac-box\"></div><span class=\"mac-title\">MacTerminal</span><div class=\"mac-box\"></div></div><div class=\"terminal-bezel\"><div class=\"terminal-screen crt-scanlines\" data-scene-target=\"terminal\"><div class=\"crt-vignette\"></div><div class=\"terminal-copy\" role=\"img\" aria-label=\"booting phosphor terminal\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, line := range strings.Split(terminalBootText, "\n") {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"terminal-row\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(line)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/home_scene.templ`, Line: 74, Col: 49}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div></div></div><div class=\"mac-window mac-note-window\"><div class=\"mac-titlebar\"><div class=\"mac-box\"></div><span class=\"mac-title\">Read Me</span><div class=\"mac-box\"></div></div><div class=\"mac-note-body\"><p>RezusCloud reframes infrastructure as something you can own, tune, and keep near you.</p><p>The story starts on a terminal because every personal cloud begins with a machine under your hand.</p></div></div><div class=\"mac-icons\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = macIcon("Macintosh HD").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -45,7 +93,7 @@ func HomeScene() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div></div></div></div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></div></div></div></div><div class=\"linux-window linux-clock-window\"><div class=\"linux-titlebar\"><span>xclock</span><div class=\"linux-titlebar-controls\"><span class=\"linux-control\"></span></div></div><div class=\"linux-clock-face\"><div class=\"linux-clock-hand linux-clock-hour\"></div><div class=\"linux-clock-hand linux-clock-minute\"></div><div class=\"linux-clock-center\"></div></div></div></div></div></div></div></div></div><div class=\"scene-sr-copy\"><h1>RezusCloud</h1><p>A scroll-driven retro computing scene that begins in a phosphor terminal, expands into Macintosh System 1, and ends on a Linux X11 workstation.</p></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -69,25 +117,25 @@ func macIcon(label string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var2 == nil {
-			templ_7745c5c3_Var2 = templ.NopComponent
+		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var4 == nil {
+			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"mac-icon\"><div class=\"mac-icon-glyph\"></div><span class=\"mac-icon-label\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"mac-icon\"><div class=\"mac-icon-glyph\"></div><span class=\"mac-icon-label\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(label)
+		var templ_7745c5c3_Var5 string
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/home_scene.templ`, Line: 73, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/home_scene.templ`, Line: 129, Col: 38}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

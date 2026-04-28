@@ -55,14 +55,9 @@
 
 	--font-retro: "VT323", "Courier New", monospace;
 	--font-display: "IBM Plex Mono", "Courier New", monospace;
-}
-
-@font-face {
-	font-family: "IBM Plex Mono";
-	font-style: normal;
-	font-weight: 100 700;
-	font-display: swap;
-	src: url("/assets/fonts/IBMPlexMono-Regular.woff2") format("woff2");
+	--font-terminal: "VT323", "Courier New", monospace;
+	--font-mac: "ChicagoFLF", "Geneva", sans-serif;
+	--font-x11: "Terminus", "Courier New", monospace;
 }
 
 @font-face {
@@ -70,7 +65,23 @@
 	font-style: normal;
 	font-weight: 400;
 	font-display: swap;
-	src: url("/assets/fonts/VT323-Regular.woff2") format("woff2");
+	src: url("/assets/fonts/VT323-Regular.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "ChicagoFLF";
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url("/assets/fonts/ChicagoFLF.woff") format("woff");
+}
+
+@font-face {
+	font-family: "Terminus";
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url("/assets/fonts/Terminus.ttf") format("truetype");
 }
 
 [x-cloak] {
@@ -186,354 +197,784 @@
 	animation: fade-in-up 0.4s ease-out forwards;
 }
 
-.scene-section {
-	--scene-progress: 0;
-	--scene-scale: 1.75;
+.scene-html,
+.scene-body {
+	margin: 0;
+	min-height: 100%;
+}
+
+.scene-html,
+.scene-body,
+.scene-main {
+	min-height: 100vh;
+}
+
+.scene-body {
+	overflow-x: hidden;
+	background:
+		radial-gradient(circle at top, oklch(0.28 0.04 152) 0%, transparent 42%),
+		linear-gradient(180deg, oklch(0.17 0.018 150) 0%, oklch(0.12 0.012 140) 100%);
+	color: oklch(0.9 0.02 145);
+}
+
+.scene-main {
 	position: relative;
-	min-height: 100svh;
+	width: 100%;
+}
+
+.scene-section {
+	position: relative;
+	min-height: 100vh;
+	background: transparent;
+	--scene-translate-x: var(--scene-initial-x, 0px);
+	--scene-translate-y: var(--scene-initial-y, 0px);
+	--scene-scale: var(--scene-initial-scale, 1);
+	--scene-progress: 0;
 }
 
 .scene-scroll-track {
+	height: 360vh;
 	position: relative;
-	height: 200vh;
 }
 
 .scene-stage {
 	position: sticky;
-	top: 3.5rem;
-	height: calc(100svh - 3.5rem);
+	top: 0;
+	height: 100vh;
+	overflow: clip;
+	background:
+		radial-gradient(circle at center, oklch(0.2 0.03 150) 0%, transparent 54%),
+		linear-gradient(180deg, oklch(0.13 0.014 145) 0%, oklch(0.1 0.01 140) 100%);
+}
+
+.scene-camera-viewport {
+	position: absolute;
+	inset: 0;
 	overflow: clip;
 }
 
 .scene-camera {
-	display: flex;
-	height: 100%;
-	align-items: center;
-	justify-content: center;
-	padding: clamp(1rem, 4vw, 2.75rem);
+	position: absolute;
+	left: 0;
+	top: 0;
+	transform-origin: 0 0;
+	transform: translate3d(var(--scene-translate-x), var(--scene-translate-y), 0) scale(var(--scene-scale));
+	will-change: transform;
+	backface-visibility: hidden;
 }
 
 .scene-world {
 	position: relative;
-	width: min(100%, 72rem);
-	aspect-ratio: 4 / 3;
-	transform: scale(var(--scene-scale));
-	transform-origin: center center;
-	will-change: transform;
-	transition: transform 120ms linear;
+	width: 1600px;
+	height: 1080px;
+	transform-origin: top left;
+	user-select: none;
+}
+
+.linux-desktop {
+	position: relative;
+	width: 1600px;
+	height: 1080px;
+	overflow: hidden;
+	background: oklch(0.58 0.014 228);
+	border: 4px solid oklch(0.36 0.014 228);
+	box-shadow:
+		0 0 0 1px oklch(0.8 0.006 225),
+		0 32px 90px rgba(0, 0, 0, 0.55);
+	font-family: var(--font-x11);
+	color: oklch(0.17 0.01 228);
+	text-rendering: optimizeLegibility;
+}
+
+.linux-root-pattern,
+.linux-desktop::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+.linux-root-pattern {
+	background-image:
+		linear-gradient(45deg, rgba(255, 255, 255, 0.09) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.09) 50%, rgba(255, 255, 255, 0.09) 75%, transparent 75%, transparent),
+		linear-gradient(-45deg, rgba(0, 0, 0, 0.07) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.07) 50%, rgba(0, 0, 0, 0.07) 75%, transparent 75%, transparent);
+	background-size: 12px 12px;
+	opacity: 0.6;
+}
+
+.linux-desktop::before {
+	background: radial-gradient(circle at center, transparent 0%, transparent 54%, rgba(0, 0, 0, 0.28) 100%);
+	z-index: 1;
+}
+
+.linux-topbar {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 16px;
+	background: oklch(0.81 0.008 228);
+	border-bottom: 2px solid oklch(0.35 0.014 228);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+	font-size: 18px;
+	letter-spacing: 0.02em;
+	z-index: 2;
+}
+
+.linux-topbar-left,
+.linux-topbar-right,
+.linux-titlebar,
+.linux-titlebar-controls {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.linux-badge {
+	padding: 1px 8px;
+	border: 1px solid oklch(0.42 0.012 228);
+	background: oklch(0.86 0.008 228);
+	box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.75);
+	text-transform: lowercase;
+	white-space: nowrap;
+}
+
+.linux-window {
+	position: absolute;
+	z-index: 2;
+	background: oklch(0.78 0.012 228);
+	border: 2px solid oklch(0.33 0.012 228);
+	box-shadow:
+		inset 1px 1px 0 rgba(255, 255, 255, 0.84),
+		inset -1px -1px 0 rgba(0, 0, 0, 0.2),
+		8px 8px 0 rgba(0, 0, 0, 0.2);
+	overflow: hidden;
+}
+
+.linux-titlebar {
+	justify-content: space-between;
+	height: 30px;
+	padding: 0 10px;
+	font-size: 18px;
+	background: oklch(0.82 0.008 228);
+	border-bottom: 2px solid oklch(0.33 0.012 228);
+	text-transform: lowercase;
+	letter-spacing: 0.03em;
+	white-space: nowrap;
+}
+
+.linux-control {
+	width: 12px;
+	height: 12px;
+	border: 1px solid oklch(0.35 0.014 228);
+	background: oklch(0.88 0.008 228);
+	box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.linux-xterm-window {
+	left: 92px;
+	top: 104px;
+	width: 432px;
+	height: 334px;
+	transform: rotate(-0.8deg);
+	z-index: 3;
+}
+
+.linux-xterm-screen {
+	margin: 0;
+	padding: 18px 20px;
+	height: calc(100% - 30px);
+	background: oklch(0.11 0.008 228);
+	color: oklch(0.93 0.012 228);
+	font-family: var(--font-x11);
+	font-size: 20px;
+	line-height: 1.15;
+	letter-spacing: 0.01em;
+	overflow: hidden;
+	display: grid;
+	align-content: start;
+	gap: 0;
+}
+
+.linux-mac-window {
+	left: 404px;
+	top: 116px;
+	width: 910px;
+	height: 708px;
+	transform: rotate(0.35deg);
+	z-index: 4;
+}
+
+.linux-window-body {
+	position: relative;
+	height: calc(100% - 30px);
+	padding: 18px;
+	background: oklch(0.68 0.008 228);
+	box-sizing: border-box;
+}
+
+.linux-clock-window {
+	right: 124px;
+	top: 122px;
+	width: 182px;
+	height: 196px;
+	transform: rotate(0.9deg);
+	z-index: 3;
+}
+
+.linux-clock-face {
+	position: relative;
+	margin: 26px auto 0;
+	width: 112px;
+	height: 112px;
+	border-radius: 50%;
+	border: 2px solid oklch(0.28 0.014 228);
+	background: oklch(0.93 0.006 228);
+	box-shadow: inset 0 0 0 2px oklch(0.74 0.008 228);
+}
+
+.linux-clock-hand,
+.linux-clock-center {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform-origin: center bottom;
+	background: oklch(0.22 0.012 228);
+}
+
+.linux-clock-hour {
+	width: 4px;
+	height: 28px;
+	margin-left: -2px;
+	margin-top: -28px;
+	transform: rotate(300deg);
+}
+
+.linux-clock-minute {
+	width: 2px;
+	height: 38px;
+	margin-left: -1px;
+	margin-top: -38px;
+	transform: rotate(62deg);
+}
+
+.linux-clock-center {
+	width: 10px;
+	height: 10px;
+	margin-left: -5px;
+	margin-top: -5px;
+	border-radius: 999px;
 }
 
 .mac-desktop {
 	position: relative;
 	width: 100%;
 	height: 100%;
-	background: #fff;
-	border: 1px solid #000;
 	overflow: hidden;
+	background: oklch(0.98 0.004 92);
+	border: 2px solid oklch(0.14 0.008 92);
 	box-shadow:
-		4px 4px 0 rgba(0, 0, 0, 0.15),
-		8px 8px 0 rgba(0, 0, 0, 0.07);
-	font-family: var(--font-retro);
+		0 0 0 1px oklch(0.98 0.004 92),
+		0 0 0 2px oklch(0.14 0.008 92);
+	font-family: var(--font-mac);
+	color: oklch(0.15 0.008 92);
+	image-rendering: pixelated;
 }
 
 .mac-menubar {
 	position: absolute;
-	top: 0;
 	left: 0;
 	right: 0;
-	height: 20px;
-	background: #000;
-	color: #fff;
+	top: 0;
+	height: 30px;
 	display: flex;
-	justify-content: space-between;
 	align-items: center;
-	font-size: 12px;
-	font-family: var(--font-retro);
-	padding: 0 8px;
+	justify-content: space-between;
+	padding: 0 10px;
+	background: oklch(0.98 0.004 92);
+	border-bottom: 2px solid oklch(0.15 0.008 92);
+	font-size: 18px;
+	letter-spacing: 0.01em;
+	z-index: 2;
 }
 
 .mac-menubar-left,
 .mac-menubar-right {
 	display: flex;
 	align-items: center;
-	gap: 12px;
+	gap: 14px;
 }
 
-.mac-apple {
-	font-size: 14px;
-}
-
-.mac-menu-item {
-	cursor: default;
-}
-
-.mac-menu-bold {
-	font-weight: bold;
+.mac-apple,
+.mac-menu-strong {
+	font-weight: 700;
 }
 
 .mac-desktop-area {
 	position: relative;
-	height: calc(100% - 20px);
-	margin-top: 20px;
-	background: #fff;
-	background-image: radial-gradient(circle, #ccc 1px, transparent 1px);
-	background-size: 20px 20px;
+	margin-top: 30px;
+	height: calc(100% - 30px);
+	background-color: oklch(0.98 0.004 92);
+	background-image:
+		radial-gradient(circle, oklch(0.76 0.006 92) 0.9px, transparent 0.95px),
+		linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0));
+	background-size: 18px 18px, 100% 100%;
+	background-position: 0 0, 0 0;
 }
 
-.scene-window {
+.mac-window {
 	position: absolute;
-	border: 2px solid #000;
-	background: #fff;
-	box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+	background: oklch(0.98 0.004 92);
+	border: 2px solid oklch(0.14 0.008 92);
+	box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.16);
 	overflow: hidden;
 }
 
-.scene-terminal-window {
-	left: 50%;
-	top: 50%;
-	width: 55%;
-	height: 65%;
-	transform: translate(-50%, -50%);
-}
-
 .mac-titlebar {
-	height: 22px;
-	background: #fff;
-	border-bottom: 2px solid #000;
+	height: 28px;
 	display: flex;
 	align-items: center;
-	padding: 0 6px;
+	justify-content: space-between;
+	padding: 0 8px;
+	background: oklch(0.98 0.004 92);
+	border-bottom: 2px solid oklch(0.14 0.008 92);
+	font-size: 16px;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
 }
 
-.mac-close-box {
-	width: 12px;
-	height: 12px;
-	border: 1px solid #000;
-	flex-shrink: 0;
+.mac-box {
+	width: 13px;
+	height: 13px;
+	border: 2px solid oklch(0.14 0.008 92);
+	background: transparent;
+	flex: none;
 }
 
-.mac-zoom-box {
-	margin-left: auto;
-	width: 12px;
-	height: 12px;
-	border: 1px solid #000;
-	flex-shrink: 0;
-}
-
-.mac-title-text {
+.mac-title {
 	flex: 1;
 	text-align: center;
-	font-size: 12px;
-	font-family: var(--font-retro);
-	text-transform: none;
-	color: #000;
-	pointer-events: none;
+	white-space: nowrap;
+}
+
+.mac-terminal-window {
+	left: 90px;
+	top: 82px;
+	width: 618px;
+	height: 430px;
+	z-index: 4;
+}
+
+.terminal-bezel {
+	position: relative;
+	padding: 18px;
+	background:
+		linear-gradient(180deg, oklch(0.28 0.02 145) 0%, oklch(0.18 0.016 145) 24%, oklch(0.1 0.01 145) 100%),
+		linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.22));
+	height: calc(100% - 28px);
+	box-sizing: border-box;
+	border-top: 2px solid rgba(255, 255, 255, 0.08);
 }
 
 .terminal-screen {
-	height: calc(100% - 22px);
-	background: #0a0a0a;
-	color: #00ff41;
-	font-family: var(--font-retro);
 	position: relative;
-}
-
-.terminal-content {
-	padding: 16px;
-	display: grid;
-	gap: 8px;
-	align-content: start;
-	font-size: 15px;
-	line-height: 1.5;
 	height: 100%;
+	overflow: hidden;
+	background:
+		radial-gradient(circle at center, rgba(50, 115, 74, 0.22) 0%, rgba(10, 18, 12, 0.96) 64%),
+		linear-gradient(180deg, rgba(16, 36, 20, 0.98) 0%, rgba(5, 11, 7, 0.98) 100%);
+	border-radius: 28px;
+	box-shadow:
+		inset 0 0 120px rgba(0, 0, 0, 0.85),
+		inset 0 0 16px rgba(41, 255, 139, 0.22),
+		0 0 24px rgba(0, 0, 0, 0.45);
+	color: var(--color-phosphor-500);
+	font-family: var(--font-terminal);
+	font-size: 24px;
+	line-height: 0.86;
+	letter-spacing: 0.045em;
 }
 
-.term-line {
-	display: flex;
-	gap: 8px;
-	color: rgba(229, 231, 235, 0.85);
+.terminal-screen::before,
+.terminal-screen::after,
+.crt-vignette {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
 }
 
-.term-prompt {
-	color: #ffa81a;
-	min-width: 12px;
-	text-shadow:
-		0 0 4px rgba(255, 168, 26, 0.4),
-		0 0 8px rgba(255, 168, 26, 0.2);
+.terminal-screen::before {
+	background:
+		linear-gradient(90deg, rgba(255, 255, 255, 0.045), transparent 6%, transparent 94%, rgba(255, 255, 255, 0.045)),
+		radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.36) 100%);
+	border-radius: 28px;
+	opacity: 0.9;
+	z-index: 1;
 }
 
-.term-heading {
-	font-size: clamp(18px, 2.5vw, 28px);
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
-	color: #fff;
-	text-shadow:
-		0 0 4px rgba(0, 255, 65, 0.4),
-		0 0 8px rgba(0, 255, 65, 0.2);
+.terminal-screen::after {
+	background: repeating-linear-gradient(
+		180deg,
+		rgba(255, 255, 255, 0.01) 0,
+		rgba(255, 255, 255, 0.01) 2px,
+		rgba(0, 0, 0, 0.16) 2px,
+		rgba(0, 0, 0, 0.16) 4px
+	);
+	mix-blend-mode: screen;
+	opacity: 0.65;
+	z-index: 1;
 }
 
-.term-paragraph {
-	max-width: 50ch;
-	color: rgba(0, 255, 65, 0.75);
+.crt-vignette {
+	background: radial-gradient(circle at center, transparent 54%, rgba(0, 0, 0, 0.56) 100%);
+	border-radius: 28px;
+	z-index: 1;
 }
 
-.term-block {
-	margin-top: 4px;
-}
-
-.term-list {
-	list-style: none;
-	padding: 0;
+.terminal-copy {
+	position: relative;
+	margin: 0;
+	padding: 28px 34px 30px;
+	height: 100%;
+	box-sizing: border-box;
+	overflow: hidden;
 	display: grid;
-	gap: 4px;
+	align-content: start;
+	gap: 0;
+	text-shadow:
+		0 0 7px rgba(28, 255, 119, 0.78),
+		0 0 18px rgba(28, 255, 119, 0.32),
+		0 0 36px rgba(14, 115, 48, 0.18);
+	z-index: 2;
 }
 
-.term-list li {
-	display: flex;
-	gap: 8px;
+.terminal-row {
+	min-height: 1em;
+	white-space: pre;
+	overflow: hidden;
+	text-overflow: clip;
 }
 
-.term-footer {
-	margin-top: auto;
-	padding-top: 8px;
-	border-top: 1px solid rgba(0, 255, 65, 0.2);
-	display: flex;
-	gap: 8px;
-	color: rgba(229, 231, 235, 0.72);
+.mac-note-window {
+	right: 78px;
+	top: 126px;
+	width: 202px;
+	min-height: 198px;
+	z-index: 3;
+	transform: rotate(-0.65deg);
+}
+
+.mac-note-body {
+	padding: 12px 14px 16px;
+	font-size: 14px;
+	line-height: 1.35;
+	display: grid;
+	gap: 10px;
+	max-width: 22ch;
+}
+
+.mac-note-body p {
+	margin: 0;
 }
 
 .mac-icons {
 	position: absolute;
-	right: 0;
-	top: 0;
+	right: 34px;
+	bottom: 26px;
 	display: grid;
-	gap: 24px;
-	padding: 20px;
-	align-content: start;
+	gap: 18px;
+	justify-items: center;
+	z-index: 2;
 }
 
 .mac-icon {
-	text-align: center;
+	display: grid;
+	justify-items: center;
+	gap: 6px;
+	width: 88px;
 }
 
 .mac-icon-glyph {
-	width: 32px;
-	height: 36px;
-	border: 1px solid #000;
-	background: #fff;
 	position: relative;
+	width: 32px;
+	height: 38px;
+	background: oklch(0.98 0.004 92);
+	border: 2px solid oklch(0.14 0.008 92);
 }
 
-.mac-icon-glyph::before {
-	content: "";
-	position: absolute;
-	top: 2px;
-	left: 2px;
-	right: 2px;
-	height: 1px;
-	background: #000;
-	box-shadow: 0 4px 0 #000, 0 8px 0 #000, 0 12px 0 #000, 0 16px 0 #000;
-}
-
+.mac-icon-glyph::before,
 .mac-icon-glyph::after {
 	content: "";
 	position: absolute;
-	bottom: 2px;
-	left: 2px;
-	right: 2px;
-	height: 1px;
-	background: #000;
-	box-shadow: 0 -20px 0 #000;
+	left: 4px;
+	right: 4px;
+	border-top: 2px solid oklch(0.14 0.008 92);
+}
+
+.mac-icon-glyph::before {
+	top: 8px;
+	box-shadow: 0 6px 0 oklch(0.14 0.008 92), 0 12px 0 oklch(0.14 0.008 92);
+}
+
+.mac-icon-glyph::after {
+	bottom: 8px;
 }
 
 .mac-icon-label {
-	font-size: 10px;
-	font-family: var(--font-retro);
-	margin-top: 4px;
-	color: #000;
+	max-width: 8ch;
+	font-size: 12px;
+	line-height: 1.15;
 	text-align: center;
+	text-transform: none;
 }
 
-@media (max-width: 767px) {
+.scene-sr-copy {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+@media (max-width: 900px) {
 	.scene-scroll-track {
-		height: 160vh;
+		height: 320vh;
 	}
 
 	.scene-world {
-		width: min(100%, 56rem);
+		width: 1240px;
+		height: 920px;
 	}
 
-	.scene-terminal-window {
-		width: 70%;
-		height: 60%;
+	.linux-desktop {
+		width: 1240px;
+		height: 920px;
 	}
 
-	.terminal-content {
-		font-size: 12px;
-		padding: 10px;
-		gap: 6px;
+	.linux-topbar {
+		font-size: 15px;
+		height: 30px;
+		padding: 0 10px;
+	}
+
+	.linux-topbar-left,
+	.linux-topbar-right,
+	.linux-titlebar,
+	.linux-titlebar-controls,
+	.mac-menubar-left,
+	.mac-menubar-right {
+		gap: 8px;
+	}
+
+	.linux-window,
+	.mac-window {
+		box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.18);
+	}
+
+	.linux-titlebar,
+	.mac-menubar {
+		font-size: 15px;
+	}
+
+	.linux-xterm-window {
+		left: 60px;
+		top: 92px;
+		width: 344px;
+		height: 278px;
+	}
+
+	.linux-xterm-screen {
+		font-size: 16px;
+		padding: 14px 15px;
+	}
+
+	.linux-mac-window {
+		left: 300px;
+		top: 98px;
+		width: 720px;
+		height: 576px;
+	}
+
+	.linux-clock-window {
+		right: 72px;
+		top: 96px;
+		width: 150px;
+		height: 162px;
+	}
+
+	.linux-clock-face {
+		width: 92px;
+		height: 92px;
+	}
+
+	.linux-clock-hour {
+		height: 22px;
+		margin-top: -22px;
+	}
+
+	.linux-clock-minute {
+		height: 32px;
+		margin-top: -32px;
 	}
 
 	.mac-menubar {
-		font-size: 10px;
-		padding: 0 4px;
+		height: 24px;
 	}
 
-	.mac-menubar-left,
-	.mac-menubar-right {
-		gap: 6px;
+	.mac-desktop-area {
+		margin-top: 24px;
+		height: calc(100% - 24px);
+		background-size: 14px 14px, 100% 100%;
 	}
 
 	.mac-titlebar {
-		height: 18px;
+		height: 24px;
+		font-size: 13px;
 	}
 
-	.mac-close-box,
-	.mac-zoom-box {
-		width: 10px;
-		height: 10px;
+	.mac-box {
+		width: 11px;
+		height: 11px;
 	}
 
-	.mac-title-text {
-		font-size: 10px;
+	.mac-terminal-window {
+		left: 62px;
+		top: 60px;
+		width: 488px;
+		height: 334px;
+	}
+
+	.terminal-bezel {
+		padding: 12px;
+	}
+
+	.terminal-screen {
+		font-size: 16px;
+	}
+
+	.terminal-copy {
+		padding: 20px 22px;
+	}
+
+	.mac-note-window {
+		right: 58px;
+		top: 98px;
+		width: 154px;
+	}
+
+	.mac-note-body {
+		font-size: 11px;
+		gap: 8px;
+		padding: 10px 10px 12px;
 	}
 
 	.mac-icons {
-		gap: 16px;
-		padding: 12px;
+		right: 18px;
+		bottom: 16px;
+		gap: 12px;
+	}
+
+	.mac-icon {
+		width: 64px;
 	}
 
 	.mac-icon-glyph {
 		width: 24px;
-		height: 28px;
+		height: 30px;
 	}
 
 	.mac-icon-label {
-		font-size: 8px;
-	}
-
-	.term-heading {
-		font-size: clamp(14px, 4vw, 20px);
+		font-size: 10px;
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.scene-section {
-		--scene-progress: 1;
-		--scene-scale: 1;
-	}
-
-	.scene-world {
-		transition: none;
-	}
-
 	.scene-scroll-track {
-		height: 100vh;
+		height: auto;
 	}
 
 	.scene-stage {
 		position: relative;
-		top: 0;
-		height: calc(100svh - 3.5rem);
+		height: auto;
+		overflow: visible;
+		padding: 16px 0 32px;
+	}
+
+	.scene-camera-viewport {
+		position: relative;
+		overflow: visible;
+	}
+
+	.scene-camera {
+		position: relative;
+		transform: none !important;
+	}
+
+	.scene-world {
+		width: min(100%, 1040px);
+		height: auto;
+		margin: 0 auto;
+		display: grid;
+		gap: 20px;
+	}
+
+	.linux-desktop,
+	.mac-desktop,
+	.terminal-bezel {
+		width: 100%;
+		height: auto;
+	}
+
+	.linux-desktop {
+		display: grid;
+		grid-template-rows: auto auto;
+		padding-top: 36px;
+	}
+
+	.linux-root-pattern,
+	.linux-desktop::before {
+		display: none;
+	}
+
+	.linux-window,
+	.mac-window,
+	.linux-topbar,
+	.mac-menubar {
+		position: relative;
+		left: auto;
+		right: auto;
+		top: auto;
+		bottom: auto;
+		transform: none;
+		margin: 12px;
+	}
+
+	.linux-window-body {
+		height: auto;
+	}
+
+	.mac-desktop {
+		min-height: 520px;
+	}
+
+	.mac-desktop-area {
+		min-height: 490px;
+	}
+
+	.mac-terminal-window {
+		min-height: 280px;
+	}
+
+	.terminal-bezel {
+		min-height: 252px;
 	}
 }

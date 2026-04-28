@@ -50,7 +50,7 @@ func main() {
 		port = "3000"
 	}
 
-	addr := ":3000"
+	addr := ":" + port
 	log.Printf("Starting server on %s", addr)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {

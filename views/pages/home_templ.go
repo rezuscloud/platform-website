@@ -49,7 +49,10 @@ func Home() templ.Component {
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = views.Layout("Your Personal Cloud | RezusCloud").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = views.SceneLayout(
+			"RezusCloud | Terminal to Macintosh to Linux",
+			"A scroll-driven retro computing scene: phosphor terminal, Macintosh System 1, and Linux X11/TWM.",
+		).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
