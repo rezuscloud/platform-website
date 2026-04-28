@@ -90,6 +90,16 @@ The app code uses those concrete component names explicitly:
 
 Preview environments use the same topology. Flux creates a fresh namespace `platform-website-pr<N>` with its own Dapr components and its own PostgreSQL, JetStream, and Redis backends for every pull request that carries the `preview-ready` label.
 
+### Observability
+
+Dapr telemetry is collected by a dedicated SigNoz `k8s-infra` chart (separate from the main SigNoz deployment):
+
+- **Traces** — Dapr sidecars export OTLP gRPC traces directly to the SigNoz collector at `signoz-otel-collector.signoz.svc.cluster.local:4317`
+- **Metrics** — a Deployment-mode OTEL collector scrapes sidecar metrics from port 9090 using label-based discovery
+- **Logs** — a DaemonSet-mode OTEL collector tails Dapr sidecar logs from `/var/log/pods/`
+
+All signals flow through the main SigNoz collector into ClickHouse. The k8s-infra chart configuration lives in `../k8s-config/infrastructure/signoz/`.
+
 ## Repo layout
 
 ```text
