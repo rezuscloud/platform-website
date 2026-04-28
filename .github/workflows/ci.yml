@@ -31,7 +31,7 @@ jobs:
         run: go vet ./...
 
       - name: Build binary
-        run: CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=dev -X main.gitCommit=$(git rev-parse --short HEAD) -X main.buildTime=$(date -u +%Y-%m-%dT%H:%M:%SZ)" -trimpath -o bin/server .
+        run: CGO_ENABLED=0 go build -trimpath -o bin/server .
 
   test:
     needs: build
@@ -65,7 +65,7 @@ jobs:
       - name: Run integration tests (Layer 2 - goquery)
         env:
           CGO_ENABLED: "1"
-        run: go test -v -race -parallel 2 ./tests/... -run "Integration|HTML|Section|Navigation|Footer|Accessibility|HTMX|Responsive|DarkMode|Alpine|Progressive"
+        run: go test -v -race -parallel 2 ./tests/... -run "HTML|Shell|Standalone|Shared|Legacy|Progressive"
 
   e2e-test:
     needs: build

@@ -1,0 +1,68 @@
+package apps
+
+import (
+	model "github.com/rezuscloud/platform-website/internal/platform"
+	"github.com/rezuscloud/platform-website/views"
+)
+
+templ TerminalPage(state model.SessionState, basePath string) {
+	@views.Layout(
+		"Terminal App | RezusCloud",
+		"Command surface for the RezusCloud homepage shell.",
+	) {
+		<div class="surface-page">
+			<div class="surface-page-copy">
+				<p class="shell-kicker">terminal-app</p>
+				<h1>Command surface</h1>
+				<p>The terminal accepts intent, then hands real work to linux-app. This page works standalone, and the shell embeds the same surface at <code>{ basePath }/embed</code>.</p>
+			</div>
+			@TerminalEmbed(state, false, basePath)
+		</div>
+	}
+}
+
+templ TerminalEmbed(state model.SessionState, live bool, basePath string) {
+	if live {
+		<section id="terminal-panel" class="app-panel terminal-panel" hx-get={ basePath + "/embed" } hx-trigger="session-updated from:body, every 10s" hx-swap="outerHTML">
+			@terminalPanelBody(state, basePath)
+		</section>
+	} else {
+		<section id="terminal-panel" class="app-panel terminal-panel">
+			@terminalPanelBody(state, basePath)
+		</section>
+	}
+}
+
+templ terminalPanelBody(state model.SessionState, basePath string) {
+	<div class="panel-header">
+		<div>
+			<p class="panel-eyebrow">terminal-app</p>
+			<h2>Intent and flow control</h2>
+		</div>
+		<a class="panel-link" href={ basePath }>Open full surface</a>
+	</div>
+	<p class="panel-copy">Run one of the scripted commands. The response is rendered here, while Mac, Linux, and the shell update from the same session state.</p>
+	<div class="terminal-screen-shell">
+		<div class="terminal-chrome">
+			<span>{ state.Terminal.Prompt }</span>
+			<span>session { state.SessionID }</span>
+		</div>
+		<div class="terminal-scrollback" role="log" aria-live="polite">
+			for _, line := range state.Terminal.History {
+				<p>{ line }</p>
+			}
+		</div>
+	</div>
+	<form class="terminal-form" method="post" action={ basePath + "/actions/run" } hx-post={ basePath + "/actions/run" } hx-target="#terminal-panel" hx-swap="outerHTML">
+		<label class="terminal-label" for="terminal-command">Command</label>
+		<div class="terminal-input-row">
+			<input id="terminal-command" name="command" type="text" value={ state.Terminal.LastCommand } placeholder="rezus sync demo" autocomplete="off" spellcheck="false"/>
+			<button type="submit">Run</button>
+		</div>
+		<div class="terminal-suggestions">
+			for _, suggestion := range state.Terminal.Suggestions {
+				<button type="submit" name="preset" value={ suggestion }>{ suggestion }</button>
+			}
+		</div>
+	</form>
+}

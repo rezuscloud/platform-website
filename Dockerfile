@@ -24,16 +24,17 @@ RUN go mod download
 COPY . .
 RUN templ generate
 COPY --from=tailwind /app/assets/styles.css ./assets/styles.css
-RUN test -n "${TARGETARCH}" && CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
+RUN mkdir -p /out && test -n "${TARGETARCH}" && \
+    CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
     -ldflags="-s -w -X github.com/rezuscloud/platform-website/version.Version=${VERSION} \
     -X github.com/rezuscloud/platform-website/version.GitCommit=${GIT_COMMIT} \
     -X github.com/rezuscloud/platform-website/version.BuildTime=${BUILD_TIME}" \
-    -o /bin/server .
+    -o /out/server .
 
 # Stage 3: Production image (target platform)
 FROM gcr.io/distroless/static-debian12:nonroot
 WORKDIR /
-COPY --from=builder /bin/server /server
+COPY --from=builder /out/server /server
 COPY --from=builder /app/assets/ /assets/
 EXPOSE 3000
 USER nonroot:nonroot
