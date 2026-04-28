@@ -114,15 +114,20 @@ jobs:
 
       - name: Build container
         run: |
-          docker rm -f platform-website 2>/dev/null || true
+          docker rm -f "platform-website-${{ github.run_id }}-${{ github.run_attempt }}" 2>/dev/null || true
           ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
           docker build --network=host --build-arg TARGETARCH=${ARCH} -t platform-website-test .
 
       - name: Run container
         run: |
-          docker run -d --name platform-website -p 3000:3000 platform-website-test
+          container_name="platform-website-${{ github.run_id }}-${{ github.run_attempt }}"
+          docker run -d --name "$container_name" -p 127.0.0.1::3000 platform-website-test
           sleep 3
-          curl --retry 10 --retry-delay 2 --retry-connrefused http://localhost:3000
+          mapped_port="$(docker port "$container_name" 3000/tcp)"
+          host_port="${mapped_port##*:}"
+          echo "E2E_CONTAINER_NAME=$container_name" >> "$GITHUB_ENV"
+          echo "BASE_URL=http://127.0.0.1:${host_port}" >> "$GITHUB_ENV"
+          curl --retry 10 --retry-delay 2 --retry-connrefused "http://127.0.0.1:${host_port}"
 
       - name: Run E2E tests (Layer 3 - chromedp)
         env:
@@ -131,7 +136,7 @@ jobs:
 
       - name: Stop container
         if: always()
-        run: docker stop platform-website && docker rm platform-website || true
+        run: docker stop "$E2E_CONTAINER_NAME" && docker rm "$E2E_CONTAINER_NAME" || true
 
   docker-pr:
     needs: [build, test, e2e-test]

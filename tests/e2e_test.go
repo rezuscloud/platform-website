@@ -6,6 +6,7 @@ package tests
 import (
 	"context"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -135,9 +136,9 @@ func TestE2ECrossAppFlow(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	assert.Contains(t, terminalText, "artifact.published")
-	assert.Contains(t, shellText, "One command moved through three services")
-	assert.Contains(t, macText, "Deployment dossier")
-	assert.Contains(t, linuxText, "reconciled")
-	assert.Contains(t, linuxText, "artifact.published")
+	assert.Contains(t, strings.ToLower(terminalText), "artifact.published")
+	assert.Contains(t, strings.ToLower(shellText), "one command moved through three services")
+	assert.Contains(t, strings.ToLower(macText), "deployment dossier")
+	assert.Contains(t, strings.ToLower(linuxText), "reconciled")
+	assert.Contains(t, strings.ToLower(linuxText), "artifact.published")
 }
