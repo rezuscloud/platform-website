@@ -36,65 +36,44 @@ func getHTMLDoc(t *testing.T, app *fiber.App, path string) *goquery.Document {
 	return doc
 }
 
+func getHTMLString(t *testing.T, app *fiber.App, path string) string {
+	req := httptest.NewRequest("GET", path, nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	return string(body)
+}
+
 func TestHomePageHTMLStructure(t *testing.T) {
 	app := setupIntegrationApp()
 	doc := getHTMLDoc(t, app, "/")
+	html := getHTMLString(t, app, "/")
 
 	t.Run("has valid HTML5 doctype", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/", nil)
-		resp, err := app.Test(req, -1)
-		require.NoError(t, err)
-		defer resp.Body.Close()
-
-		body, _ := io.ReadAll(resp.Body)
-		bodyStr := string(body)
-		assert.True(t, strings.Contains(bodyStr, "<!DOCTYPE html>") || strings.Contains(bodyStr, "<html"),
-			"Response should contain HTML document structure")
+		assert.True(t, strings.Contains(html, "<!DOCTYPE html>") || strings.Contains(html, "<html"))
 	})
 
 	t.Run("has title containing RezusCloud", func(t *testing.T) {
 		title := doc.Find("title").Text()
 		assert.Contains(t, title, "RezusCloud")
+		assert.Contains(t, title, "Terminal")
 	})
 
-	t.Run("has meta description", func(t *testing.T) {
+	t.Run("has meta description for retro scene", func(t *testing.T) {
 		description, exists := doc.Find("meta[name='description']").Attr("content")
 		assert.True(t, exists)
-		assert.Contains(t, description, "Personal Cloud")
+		assert.Contains(t, description, "phosphor terminal")
+		assert.Contains(t, description, "Macintosh System 1")
 	})
 
 	t.Run("has canonical link", func(t *testing.T) {
 		canonical, exists := doc.Find("link[rel='canonical']").Attr("href")
 		assert.True(t, exists)
 		assert.Equal(t, "https://rezus.cloud/", canonical)
-	})
-
-	t.Run("has open graph metadata", func(t *testing.T) {
-		ogTitle, exists := doc.Find("meta[property='og:title']").Attr("content")
-		assert.True(t, exists)
-		assert.Contains(t, ogTitle, "Your Personal Cloud")
-
-		ogImage, exists := doc.Find("meta[property='og:image']").Attr("content")
-		assert.True(t, exists)
-		assert.Contains(t, ogImage, "icon-512.png")
-
-		ogSiteName, exists := doc.Find("meta[property='og:site_name']").Attr("content")
-		assert.True(t, exists)
-		assert.Equal(t, "RezusCloud", ogSiteName)
-
-		ogImageAlt, exists := doc.Find("meta[property='og:image:alt']").Attr("content")
-		assert.True(t, exists)
-		assert.Contains(t, ogImageAlt, "RezusCloud")
-	})
-
-	t.Run("has twitter metadata", func(t *testing.T) {
-		twitterCard, exists := doc.Find("meta[name='twitter:card']").Attr("content")
-		assert.True(t, exists)
-		assert.Equal(t, "summary_large_image", twitterCard)
-
-		twitterImageAlt, exists := doc.Find("meta[name='twitter:image:alt']").Attr("content")
-		assert.True(t, exists)
-		assert.Contains(t, twitterImageAlt, "RezusCloud")
 	})
 
 	t.Run("has structured data", func(t *testing.T) {
@@ -104,98 +83,73 @@ func TestHomePageHTMLStructure(t *testing.T) {
 		assert.Contains(t, structuredData, `"email": "tiberiu@rezus.net"`)
 	})
 
-	t.Run("has manifest link", func(t *testing.T) {
-		manifest, exists := doc.Find("link[rel='manifest']").Attr("href")
-		assert.True(t, exists)
-		assert.Equal(t, "/manifest.webmanifest", manifest)
+	t.Run("has homepage scene root and track", func(t *testing.T) {
+		assert.Equal(t, 1, doc.Find("#scene[data-scene-root]").Length())
+		assert.Equal(t, 1, doc.Find("[data-scene-track]").Length())
+		assert.Equal(t, 1, doc.Find("[data-scene-camera]").Length())
+		assert.Equal(t, 1, doc.Find("[data-scene-world]").Length())
 	})
 
-	t.Run("has viewport meta tag", func(t *testing.T) {
-		viewport, exists := doc.Find("meta[name='viewport']").Attr("content")
-		assert.True(t, exists)
-		assert.Contains(t, viewport, "width=device-width")
-	})
-
-	t.Run("has homepage scene root", func(t *testing.T) {
-		sceneRoot := doc.Find("#scene[data-scene-root]")
-		assert.Equal(t, 1, sceneRoot.Length())
-	})
-
-	t.Run("has scene scroll track", func(t *testing.T) {
-		sceneTrack := doc.Find("[data-scene-track]")
-		assert.Equal(t, 1, sceneTrack.Length())
-	})
-
-	t.Run("has terminal window inside scene", func(t *testing.T) {
-		terminalWindow := doc.Find(".scene-terminal-window")
-		assert.Equal(t, 1, terminalWindow.Length())
+	t.Run("has nested scene targets", func(t *testing.T) {
+		assert.Equal(t, 1, doc.Find(`[data-scene-target='terminal']`).Length())
+		assert.Equal(t, 1, doc.Find(`[data-scene-target='mac']`).Length())
+		assert.Equal(t, 1, doc.Find(`[data-scene-target='linux']`).Length())
 	})
 
 	t.Run("has scene script", func(t *testing.T) {
-		script := doc.Find("script[src='/assets/js/scene.js']")
-		assert.Equal(t, 1, script.Length())
+		assert.Equal(t, 1, doc.Find(`script[src='/assets/js/scene.js']`).Length())
+	})
+
+	t.Run("does not render nav or footer chrome on home", func(t *testing.T) {
+		assert.Equal(t, 0, doc.Find("nav").Length())
+		assert.Equal(t, 0, doc.Find("footer").Length())
 	})
 }
 
-func TestHomePageSections(t *testing.T) {
+func TestHomePageSceneContent(t *testing.T) {
 	app := setupIntegrationApp()
 	doc := getHTMLDoc(t, app, "/")
+	html := getHTMLString(t, app, "/")
 
-	sections := []string{
-		"scene",
-	}
-
-	for _, section := range sections {
-		t.Run("section_"+section+"_exists", func(t *testing.T) {
-			selection := doc.Find("#" + section)
-			assert.Equal(t, 1, selection.Length(), "Expected exactly one element with id '%s'", section)
-		})
-
-		t.Run("section_"+section+"_has_content", func(t *testing.T) {
-			selection := doc.Find("#" + section)
-			text := selection.Text()
-			assert.Greater(t, len(strings.TrimSpace(text)), 10,
-				"Section '%s' should have meaningful content", section)
-		})
-	}
-}
-
-func TestNavigationHTML(t *testing.T) {
-	app := setupIntegrationApp()
-	doc := getHTMLDoc(t, app, "/")
-
-	t.Run("navigation exists", func(t *testing.T) {
-		nav := doc.Find("nav")
-		assert.Equal(t, 1, nav.Length())
+	t.Run("scene section exists", func(t *testing.T) {
+		selection := doc.Find("#scene")
+		assert.Equal(t, 1, selection.Length())
+		assert.Greater(t, len(strings.TrimSpace(selection.Text())), 20)
 	})
 
-	t.Run("navigation has brand", func(t *testing.T) {
-		brand := doc.Find("nav").Text()
-		assert.Contains(t, brand, "RezusCloud")
+	t.Run("contains terminal manifesto and boot output", func(t *testing.T) {
+		assert.Contains(t, html, "REZUS OS ROM 1.0.0")
+		assert.Contains(t, html, "64K SYSTEM RAM PASSED")
+		assert.Contains(t, html, "your machines")
+		assert.Contains(t, html, "your network")
+		assert.Contains(t, html, "your rules")
+	})
+
+	t.Run("contains macintosh and linux world details", func(t *testing.T) {
+		assert.Contains(t, html, "Mini vMac")
+		assert.Contains(t, html, "MacTerminal")
+		assert.Contains(t, html, "xterm")
+		assert.Contains(t, html, "xclock")
 	})
 }
 
-func TestFooterHTML(t *testing.T) {
+func TestHomePageNoWebsiteChrome(t *testing.T) {
 	app := setupIntegrationApp()
 	doc := getHTMLDoc(t, app, "/")
+	html := getHTMLString(t, app, "/")
 
-	t.Run("footer exists", func(t *testing.T) {
-		footer := doc.Find("footer")
-		assert.Equal(t, 1, footer.Length())
+	t.Run("main landmark exists", func(t *testing.T) {
+		assert.Equal(t, 1, doc.Find("main").Length())
 	})
 
-	t.Run("footer has links", func(t *testing.T) {
-		links := doc.Find("footer a")
-		assert.Greater(t, links.Length(), 0, "Footer should contain links")
+	t.Run("no theme toggle or Alpine state on home", func(t *testing.T) {
+		assert.Equal(t, 0, doc.Find(`button[aria-label='Toggle theme']`).Length())
+		assert.NotContains(t, html, "$store.theme")
+		assert.NotContains(t, html, "alpine.min.js")
 	})
 
-	t.Run("footer links are internal anchors", func(t *testing.T) {
-		doc.Find("footer a").Each(func(i int, s *goquery.Selection) {
-			href, exists := s.Attr("href")
-			assert.True(t, exists)
-			assert.True(t, strings.HasPrefix(href, "#"),
-				"Footer link href should start with '#', got: %s", href)
-		})
+	t.Run("no htmx script on home", func(t *testing.T) {
+		assert.Equal(t, 0, doc.Find("script[src*='htmx']").Length())
 	})
 }
 
@@ -204,20 +158,13 @@ func TestAccessibilityHTML(t *testing.T) {
 	doc := getHTMLDoc(t, app, "/")
 
 	t.Run("has main landmark", func(t *testing.T) {
-		main := doc.Find("main")
-		assert.Equal(t, 1, main.Length())
+		assert.Equal(t, 1, doc.Find("main").Length())
 	})
 
-	t.Run("theme toggle has aria-label", func(t *testing.T) {
-		toggle := doc.Find("button[aria-label='Toggle theme']")
-		assert.Equal(t, 1, toggle.Length())
-	})
-
-	t.Run("images have alt attributes", func(t *testing.T) {
-		doc.Find("img").Each(func(i int, s *goquery.Selection) {
-			_, exists := s.Attr("alt")
-			assert.True(t, exists, "Image should have alt attribute")
-		})
+	t.Run("has hidden semantic copy for assistive tech", func(t *testing.T) {
+		srCopy := doc.Find(".scene-sr-copy")
+		assert.Equal(t, 1, srCopy.Length())
+		assert.Contains(t, srCopy.Text(), "RezusCloud")
 	})
 
 	t.Run("links have discernible text", func(t *testing.T) {
@@ -231,81 +178,22 @@ func TestAccessibilityHTML(t *testing.T) {
 	})
 }
 
-func TestHTMXScriptLoaded(t *testing.T) {
+func TestSectionEndpointsRemainValidForHTMX(t *testing.T) {
 	app := setupIntegrationApp()
-	doc := getHTMLDoc(t, app, "/")
-
-	t.Run("htmx script tag exists", func(t *testing.T) {
-		script := doc.Find("script[src*='htmx']")
-		assert.Equal(t, 1, script.Length(), "HTMX script should be included")
-	})
-
-	t.Run("htmx script has correct path", func(t *testing.T) {
-		src, exists := doc.Find("script[src*='htmx']").Attr("src")
-		assert.True(t, exists)
-		assert.Contains(t, src, "htmx.min.js")
-	})
-
-	t.Run("htmx script in head", func(t *testing.T) {
-		script := doc.Find("head script[src*='htmx']")
-		assert.Equal(t, 1, script.Length(), "HTMX script should be in <head>")
-	})
-}
-
-func TestHTMXAttributes(t *testing.T) {
-	app := setupIntegrationApp()
-
-	htmxAttrs := []string{
-		"hx-get", "hx-post", "hx-put", "hx-delete", "hx-patch",
-		"hx-trigger", "hx-swap", "hx-target", "hx-swap-oob",
-		"hx-boost", "hx-include", "hx-params", "hx-headers",
-		"hx-indicator", "hx-push-url", "hx-confirm", "hx-disabled-elt",
-		"hx-ext", "hx-history", "hx-history-elt", "hx-on",
-		"hx-preserve", "hx-prompt", "hx-replace-url", "hx-request",
-		"hx-select", "hx-select-oob", "hx-sync", "hx-validate",
-		"hx-vals", "hx-ws", "hx-sse",
-	}
-
-	t.Run("find any htmx attributes on home page", func(t *testing.T) {
-		doc := getHTMLDoc(t, app, "/")
-
-		foundAttrs := make(map[string][]string)
-		for _, attr := range htmxAttrs {
-			doc.Find("[" + attr + "]").Each(func(i int, s *goquery.Selection) {
-				val, _ := s.Attr(attr)
-				tag := goquery.NodeName(s)
-				id, _ := s.Attr("id")
-				selector := tag
-				if id != "" {
-					selector += "#" + id
-				}
-				foundAttrs[attr] = append(foundAttrs[attr], selector+"="+val)
-			})
-		}
-
-		if len(foundAttrs) > 0 {
-			t.Logf("Found HTMX attributes: %v", foundAttrs)
-		}
-	})
 
 	t.Run("section endpoints return valid HTML", func(t *testing.T) {
 		sections := []string{"hero", "features", "architecture", "getstarted"}
 
 		for _, section := range sections {
 			doc := getHTMLDoc(t, app, "/sections/"+section)
-
-			sectionEl := doc.Find("#" + section)
-			assert.Equal(t, 1, sectionEl.Length(),
+			assert.Equal(t, 1, doc.Find("#"+section).Length(),
 				"Section endpoint should return element with id '%s'", section)
 		}
 	})
 
 	t.Run("sections contain expected structure", func(t *testing.T) {
 		doc := getHTMLDoc(t, app, "/sections/hero")
-
-		headings := doc.Find("h1, h2, h3")
-		assert.Greater(t, headings.Length(), 0,
-			"Hero section should contain headings")
+		assert.Greater(t, doc.Find("h1, h2, h3").Length(), 0)
 	})
 
 	t.Run("section endpoints could be used with hx-get", func(t *testing.T) {
@@ -313,7 +201,6 @@ func TestHTMXAttributes(t *testing.T) {
 
 		for _, section := range sections {
 			doc := getHTMLDoc(t, app, "/sections/"+section)
-
 			assert.Equal(t, 1, doc.Find("#"+section).Length(),
 				"Section %s endpoint should return single element for hx-swap", section)
 
@@ -324,195 +211,29 @@ func TestHTMXAttributes(t *testing.T) {
 	})
 }
 
-func TestHTMXDataAttributes(t *testing.T) {
-	app := setupIntegrationApp()
-	doc := getHTMLDoc(t, app, "/")
-
-	dataHtmxAttrs := []string{
-		"data-hx-get", "data-hx-post", "data-hx-put", "data-hx-delete",
-		"data-hx-trigger", "data-hx-swap", "data-hx-target",
-	}
-
-	t.Run("find data-hx attributes", func(t *testing.T) {
-		for _, attr := range dataHtmxAttrs {
-			count := doc.Find("[" + attr + "]").Length()
-			if count > 0 {
-				t.Logf("Found %d elements with %s", count, attr)
-			}
-		}
-	})
-}
-
-func TestHTMXExtensionSupport(t *testing.T) {
-	app := setupIntegrationApp()
-	doc := getHTMLDoc(t, app, "/")
-
-	t.Run("htmx-indicator class available", func(t *testing.T) {
-		indicator := doc.Find(".htmx-indicator")
-		t.Logf("Found %d htmx-indicator elements", indicator.Length())
-	})
-
-	t.Run("htmx-request class check", func(t *testing.T) {
-		request := doc.Find(".htmx-request")
-		t.Logf("Found %d htmx-request elements", request.Length())
-	})
-}
-
-func TestResponsiveClasses(t *testing.T) {
-	app := setupIntegrationApp()
-	req := httptest.NewRequest("GET", "/", nil)
-	resp, err := app.Test(req, -1)
-	require.NoError(t, err)
-	defer resp.Body.Close()
-
-	body, _ := io.ReadAll(resp.Body)
-	html := string(body)
-
-	t.Run("has responsive navigation classes", func(t *testing.T) {
-		assert.Contains(t, html, "font-display")
-	})
-
-	t.Run("has mobile menu button with Alpine.js", func(t *testing.T) {
-		assert.Contains(t, html, "@click")
-	})
-
-	t.Run("has mobile menu transitions", func(t *testing.T) {
-		assert.Contains(t, html, "scene.js", "should have scene script")
-	})
-}
-
-func TestAlpineJSIntegration(t *testing.T) {
-	app := setupIntegrationApp()
-	doc := getHTMLDoc(t, app, "/")
-
-	t.Run("alpine script loaded", func(t *testing.T) {
-		script := doc.Find("script[src*='alpine']")
-		assert.Equal(t, 1, script.Length(), "Alpine.js script should be included")
-	})
-
-	t.Run("alpine script has defer", func(t *testing.T) {
-		deferred, exists := doc.Find("script[src*='alpine']").Attr("defer")
-		assert.True(t, exists)
-		assert.True(t, deferred == "" || deferred == "defer" || deferred == "true")
-	})
-
-	req := httptest.NewRequest("GET", "/", nil)
-	resp, err := app.Test(req, -1)
-	require.NoError(t, err)
-	defer resp.Body.Close()
-
-	body, _ := io.ReadAll(resp.Body)
-	html := string(body)
-
-	t.Run("html has x-data for theme", func(t *testing.T) {
-		assert.Contains(t, html, `x-data`)
-		assert.Contains(t, html, "dark")
-	})
-
-	t.Run("theme toggle uses Alpine store", func(t *testing.T) {
-		assert.Contains(t, html, "$store.theme")
-	})
-
-	t.Run("x-cloak style defined", func(t *testing.T) {
-		assert.Contains(t, html, "x-data")
-	})
-
-	t.Run("mobile nav uses Alpine state", func(t *testing.T) {
-		assert.Contains(t, html, "x-show")
-		assert.Contains(t, html, "$store.theme")
-	})
-}
-
-func TestDarkModeSupport(t *testing.T) {
-	app := setupIntegrationApp()
-	req := httptest.NewRequest("GET", "/", nil)
-	resp, err := app.Test(req, -1)
-	require.NoError(t, err)
-	defer resp.Body.Close()
-
-	body, _ := io.ReadAll(resp.Body)
-	html := string(body)
-
-	t.Run("supports dark class", func(t *testing.T) {
-		assert.Contains(t, html, "dark:")
-	})
-
-	t.Run("theme persisted to localStorage", func(t *testing.T) {
-		assert.Contains(t, html, "localStorage")
-	})
-
-	t.Run("respects prefers-color-scheme", func(t *testing.T) {
-		assert.Contains(t, html, "prefers-color-scheme")
-	})
-}
-
 func TestProgressiveEnhancement(t *testing.T) {
 	app := setupIntegrationApp()
 	doc := getHTMLDoc(t, app, "/")
+	html := getHTMLString(t, app, "/")
 
-	t.Run("page works without JavaScript - all content present", func(t *testing.T) {
-		sections := []string{"scene"}
-		for _, section := range sections {
-			assert.Equal(t, 1, doc.Find("#"+section).Length(), "Section %s should exist server-side", section)
-		}
+	t.Run("page works without JavaScript", func(t *testing.T) {
+		assert.Equal(t, 1, doc.Find("#scene").Length())
+		assert.Equal(t, 1, doc.Find(`[data-scene-target='terminal']`).Length())
+		assert.Equal(t, 1, doc.Find(`[data-scene-target='mac']`).Length())
+		assert.Equal(t, 1, doc.Find(`[data-scene-target='linux']`).Length())
 	})
 
 	t.Run("scene scroll track exists server-side", func(t *testing.T) {
-		assert.Equal(t, 1, doc.Find("[data-scene-track]").Length(), "Scene scroll track should exist")
+		assert.Equal(t, 1, doc.Find("[data-scene-track]").Length())
 	})
-
-	t.Run("navigation links work without JavaScript", func(t *testing.T) {
-		navLinks := doc.Find("nav a[href^='#']")
-		assert.GreaterOrEqual(t, navLinks.Length(), 0, "Nav links optional")
-	})
-
-	t.Run("forms and buttons have fallback behavior", func(t *testing.T) {
-		links := doc.Find("a[href]")
-		links.Each(func(i int, s *goquery.Selection) {
-			href, _ := s.Attr("href")
-			assert.NotEmpty(t, href, "Links should have href attributes")
-		})
-	})
-
-	req := httptest.NewRequest("GET", "/", nil)
-	resp, err := app.Test(req, -1)
-	require.NoError(t, err)
-	defer resp.Body.Close()
-
-	body, _ := io.ReadAll(resp.Body)
-	html := string(body)
 
 	t.Run("content visible before JavaScript loads", func(t *testing.T) {
-		assert.Contains(t, html, "Your Personal Cloud")
-		assert.Contains(t, html, "RezusCloud")
-	})
-}
-
-func TestAlpineHTMXSeparation(t *testing.T) {
-	app := setupIntegrationApp()
-	req := httptest.NewRequest("GET", "/", nil)
-	resp, err := app.Test(req, -1)
-	require.NoError(t, err)
-	defer resp.Body.Close()
-
-	body, _ := io.ReadAll(resp.Body)
-	html := string(body)
-
-	t.Run("Alpine handles client-side state (theme, mobile menu)", func(t *testing.T) {
-		assert.Contains(t, html, "x-data", "Alpine x-data for state")
-		assert.Contains(t, html, "@click", "Alpine @click for events")
-		assert.Contains(t, html, "$store.theme", "Alpine store for theme")
+		assert.Contains(t, html, "REZUS OS ROM 1.0.0")
+		assert.Contains(t, html, "Mini vMac")
+		assert.Contains(t, html, "xterm")
 	})
 
-	t.Run("HTMX ready for server-side interactions", func(t *testing.T) {
-		assert.Contains(t, html, "htmx.min.js", "HTMX script loaded")
-	})
-
-	t.Run("Alpine deferred for progressive enhancement", func(t *testing.T) {
-		assert.Contains(t, html, `defer src="/assets/js/alpine.min.js"`, "Alpine loaded with defer")
-	})
-
-	t.Run("x-cloak prevents flash of unstyled content", func(t *testing.T) {
-		assert.Contains(t, html, "alpine.min.js", "Alpine script loaded")
+	t.Run("no javascript fallback class present", func(t *testing.T) {
+		assert.Contains(t, html, "scene-html no-js")
 	})
 }

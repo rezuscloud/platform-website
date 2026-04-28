@@ -46,105 +46,6 @@ func TestE2EPageLoad(t *testing.T) {
 	t.Skip("Skipping page load E2E test - Chrome DevTools websocket timeout issues in CI environment. Content is tested by TestE2EProgressiveEnhancement.")
 }
 
-func TestE2EThemeToggle(t *testing.T) {
-	ctx, cancel := newChromedpContext()
-	defer cancel()
-
-	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
-	defer cancel()
-
-	err := chromedp.Run(ctx,
-		chromedp.Navigate(getBaseURL()),
-		chromedp.WaitVisible("body"),
-		chromedp.Sleep(1000*time.Millisecond),
-	)
-	require.NoError(t, err)
-
-	var initialDark bool
-	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`document.documentElement.classList.contains('dark')`, &initialDark),
-	)
-	require.NoError(t, err)
-
-	err = chromedp.Run(ctx,
-		chromedp.Click("button[aria-label='Toggle theme']"),
-		chromedp.Sleep(300*time.Millisecond),
-	)
-	require.NoError(t, err)
-
-	var afterClickDark bool
-	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`document.documentElement.classList.contains('dark')`, &afterClickDark),
-	)
-	require.NoError(t, err)
-	assert.NotEqual(t, initialDark, afterClickDark, "Theme should toggle after clicking button")
-
-	var storedTheme string
-	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`localStorage.getItem('theme')`, &storedTheme),
-	)
-	require.NoError(t, err)
-	assert.Equal(t, "dark", storedTheme, "localStorage should persist 'dark' after toggle")
-}
-
-func TestE2EMobileMenu(t *testing.T) {
-	t.Skip("Skipping mobile menu E2E test - Chrome DevTools websocket timeout issues in CI environment")
-	ctx, cancel := newChromedpContext()
-	defer cancel()
-
-	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
-	defer cancel()
-
-	err := chromedp.Run(ctx,
-		chromedp.EmulateViewport(375, 812),
-		chromedp.Navigate(getBaseURL()),
-		chromedp.WaitVisible("body"),
-		chromedp.Sleep(500*time.Millisecond),
-	)
-	require.NoError(t, err)
-
-	var menuInitiallyVisible bool
-	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`
-			(function() {
-				const el = document.querySelector('[x-show="mobileOpen"]');
-				if (!el) return false;
-				const style = window.getComputedStyle(el);
-				return style.display !== 'none' && style.visibility !== 'hidden';
-			})()
-		`, &menuInitiallyVisible),
-	)
-	require.NoError(t, err)
-	assert.False(t, menuInitiallyVisible, "Mobile menu should be hidden initially")
-
-	err = chromedp.Run(ctx,
-		chromedp.Click("button[aria-label='Toggle mobile menu']"),
-		chromedp.Sleep(300*time.Millisecond),
-	)
-	require.NoError(t, err)
-
-	var menuVisibleAfterClick bool
-	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`
-			(function() {
-				const el = document.querySelector('[x-show="mobileOpen"]');
-				if (!el) return false;
-				const style = window.getComputedStyle(el);
-				return style.display !== 'none' && style.visibility !== 'hidden';
-			})()
-		`, &menuVisibleAfterClick),
-	)
-	require.NoError(t, err)
-	assert.True(t, menuVisibleAfterClick, "Mobile menu should be visible after clicking button")
-
-	var linkCount int
-	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`document.querySelectorAll('nav [x-show="mobileOpen"] a').length`, &linkCount),
-	)
-	require.NoError(t, err)
-	assert.Equal(t, 3, linkCount, "Mobile menu should have 3 links")
-}
-
 func TestE2EPerformance(t *testing.T) {
 	ctx, cancel := newChromedpContext()
 	defer cancel()
@@ -199,7 +100,7 @@ func TestE2EProgressiveEnhancement(t *testing.T) {
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(getBaseURL()),
 		chromedp.WaitVisible("body"),
-		chromedp.Sleep(500*time.Millisecond),
+		chromedp.Sleep(700*time.Millisecond),
 	)
 	require.NoError(t, err)
 
@@ -210,12 +111,14 @@ func TestE2EProgressiveEnhancement(t *testing.T) {
 				return {
 					hasTitle: document.title.includes('RezusCloud'),
 					hasH1: document.querySelector('h1') !== null,
-					hasNav: document.querySelector('nav') !== null,
 					hasMain: document.querySelector('main') !== null,
-					hasFooter: document.querySelector('footer') !== null,
-					allSectionsPresent: ['scene']
-						.every(id => document.getElementById(id) !== null),
-					navLinksWork: document.querySelectorAll('nav a[href^="#"]').length >= 0
+					hasNav: document.querySelector('nav') === null,
+					hasFooter: document.querySelector('footer') === null,
+					hasScene: document.getElementById('scene') !== null,
+					hasTargets: ['terminal', 'mac', 'linux']
+						.every(id => document.querySelector('[data-scene-target="' + id + '"]') !== null),
+					hasNoJSBootstrap: document.documentElement.classList.contains('js'),
+					hasSceneScript: document.querySelector('script[src="/assets/js/scene.js"]') !== null
 				};
 			})()
 		`, &contentChecks),
@@ -224,43 +127,15 @@ func TestE2EProgressiveEnhancement(t *testing.T) {
 
 	assert.True(t, contentChecks["hasTitle"], "Page should have title")
 	assert.True(t, contentChecks["hasH1"], "Page should have h1")
-	assert.True(t, contentChecks["hasNav"], "Page should have nav")
 	assert.True(t, contentChecks["hasMain"], "Page should have main")
-	assert.True(t, contentChecks["hasFooter"], "Page should have footer")
-	assert.True(t, contentChecks["allSectionsPresent"], "All sections should be present")
-	assert.True(t, contentChecks["navLinksWork"], "Navigation links should exist")
+	assert.True(t, contentChecks["hasNav"], "Homepage should not render nav")
+	assert.True(t, contentChecks["hasFooter"], "Homepage should not render footer")
+	assert.True(t, contentChecks["hasScene"], "Scene should be present")
+	assert.True(t, contentChecks["hasTargets"], "All scene targets should exist")
+	assert.True(t, contentChecks["hasNoJSBootstrap"], "No-JS bootstrap should switch to js class")
+	assert.True(t, contentChecks["hasSceneScript"], "Scene script should be loaded")
 }
 
-func TestE2EAlpineJSInitialization(t *testing.T) {
-	ctx, cancel := newChromedpContext()
-	defer cancel()
-
-	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
-	defer cancel()
-
-	err := chromedp.Run(ctx,
-		chromedp.Navigate(getBaseURL()),
-		chromedp.WaitVisible("body"),
-		chromedp.Sleep(1000*time.Millisecond),
-	)
-	require.NoError(t, err)
-
-	var alpineLoaded bool
-	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`typeof Alpine !== 'undefined'`, &alpineLoaded),
-	)
-	require.NoError(t, err)
-	assert.True(t, alpineLoaded, "Alpine.js should be loaded")
-
-	var themeStateExists bool
-	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`
-			(function() {
-				const html = document.documentElement;
-				return html.__x !== undefined || html._x_dataStack !== undefined;
-			})()
-		`, &themeStateExists),
-	)
-	require.NoError(t, err)
-	assert.True(t, themeStateExists, "Alpine.js should have initialized on html element")
+func TestE2ESceneCameraPhases(t *testing.T) {
+	t.Skip("Skipping geometry-heavy scene E2E in CI until preview environment is stable enough for deterministic viewport assertions.")
 }

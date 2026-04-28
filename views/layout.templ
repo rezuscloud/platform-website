@@ -1,5 +1,104 @@
 package views
 
+templ SceneLayout(title string, description string) {
+	<!DOCTYPE html>
+	<html lang="en" class="scene-html no-js">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta name="description" content={ description }/>
+			<meta name="theme-color" content="#102916"/>
+			<link rel="canonical" href="https://rezus.cloud/"/>
+			<meta property="og:title" content={ title }/>
+			<meta property="og:description" content={ description }/>
+			<meta property="og:site_name" content="RezusCloud"/>
+			<meta property="og:type" content="website"/>
+			<meta property="og:locale" content="en_US"/>
+			<meta property="og:url" content="https://rezus.cloud"/>
+			<meta property="og:image" content="https://rezus.cloud/assets/img/icon-512.png"/>
+			<meta property="og:image:alt" content="RezusCloud Personal Cloud icon"/>
+			<meta name="twitter:card" content="summary_large_image"/>
+			<meta name="twitter:title" content={ title }/>
+			<meta name="twitter:description" content={ description }/>
+			<meta name="twitter:image" content="https://rezus.cloud/assets/img/icon-512.png"/>
+			<meta name="twitter:image:alt" content="RezusCloud Personal Cloud icon"/>
+			<title>{ title }</title>
+			<script>
+				document.documentElement.classList.remove("no-js");
+				document.documentElement.classList.add("js");
+			</script>
+			<script>
+				(() => {
+					const viewportWidth = window.innerWidth;
+					const viewportHeight = window.innerHeight;
+					const terminalRect =
+						viewportWidth <= 900
+							? { left: 380, top: 254, width: 488, height: 310 }
+							: { left: 512, top: 304, width: 618, height: 402 };
+					const scale = Math.max(
+						viewportWidth / terminalRect.width,
+						viewportHeight / terminalRect.height,
+					);
+					const translateX = Math.round(
+						viewportWidth / 2 -
+							(terminalRect.left + terminalRect.width / 2) * scale,
+					);
+					const translateY = Math.round(
+						viewportHeight / 2 -
+							(terminalRect.top + terminalRect.height / 2) * scale,
+					);
+					document.documentElement.style.setProperty(
+						"--scene-initial-scale",
+						scale.toFixed(5),
+					);
+					document.documentElement.style.setProperty(
+						"--scene-initial-x",
+						`${translateX}px`,
+					);
+					document.documentElement.style.setProperty(
+						"--scene-initial-y",
+						`${translateY}px`,
+					);
+				})();
+			</script>
+			<link rel="icon" href="/assets/img/favicon.ico" sizes="32x32"/>
+			<link rel="icon" href="/assets/img/icon.svg" type="image/svg+xml"/>
+			<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png"/>
+			<link rel="manifest" href="/manifest.webmanifest"/>
+			<script type="application/ld+json">
+				{
+					"@context": "https://schema.org",
+					"@graph": [
+						{
+							"@type": "WebSite",
+							"name": "RezusCloud",
+							"url": "https://rezus.cloud/",
+							"description": "RezusCloud turns the history of personal computing into a scroll-driven machine: phosphor terminal, Macintosh System 1, and Linux X11.",
+							"inLanguage": "en",
+							"publisher": { "@id": "https://rezus.cloud/#organization" }
+						},
+						{
+							"@type": "Organization",
+							"@id": "https://rezus.cloud/#organization",
+							"name": "RezusCloud",
+							"url": "https://rezus.cloud/",
+							"logo": "https://rezus.cloud/assets/img/icon-512.png",
+							"email": "tiberiu@rezus.net"
+						}
+					]
+				}
+			</script>
+			<link rel="stylesheet" href="/assets/styles.css"/>
+			<script defer src="/assets/js/scene.js"></script>
+		</head>
+		<body class="scene-body">
+			<main class="scene-main">
+				{ children... }
+			</main>
+		</body>
+	</html>
+}
+
 templ Layout(title string) {
 	<!DOCTYPE html>
 	<html
