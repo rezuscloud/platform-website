@@ -1,26 +1,9 @@
 package pages
 
-import (
-	"github.com/rezuscloud/platform-website/views"
-	"github.com/rezuscloud/platform-website/views/sections"
-)
+import "github.com/rezuscloud/platform-website/views"
 
 templ Home() {
 	@views.Layout("Your Personal Cloud | RezusCloud") {
-		<div class="home-page">
-			@HomeScene()
-			<div class="home-content">
-				@sections.Challenge()
-				@sections.Architecture()
-				@sections.Features()
-				@sections.Networking()
-				@sections.Edge()
-				@sections.Services()
-				@sections.Comparison()
-				@sections.UseCases()
-				@sections.TechStack()
-				@sections.GetStarted()
-			</div>
-		</div>
+		@HomeScene()
 	}
 }

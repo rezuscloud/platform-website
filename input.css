@@ -186,28 +186,16 @@
 	animation: fade-in-up 0.4s ease-out forwards;
 }
 
-.home-page {
-	position: relative;
-	min-height: 100vh;
-	background: transparent;
-}
-
-.home-content {
-	position: relative;
-	z-index: 1;
-}
-
 .scene-section {
 	--scene-progress: 0;
-	--scene-scale: 1.72;
+	--scene-scale: 1.75;
 	position: relative;
 	min-height: 100svh;
-	color: rgba(229, 231, 235, 0.96);
 }
 
 .scene-scroll-track {
 	position: relative;
-	height: 240svh;
+	height: 200vh;
 }
 
 .scene-stage {
@@ -215,38 +203,9 @@
 	top: 3.5rem;
 	height: calc(100svh - 3.5rem);
 	overflow: clip;
-	isolation: isolate;
-}
-
-.scene-backdrop {
-	position: absolute;
-	inset: 0;
-	background:
-		radial-gradient(circle at top, rgba(255, 255, 255, 0.34), transparent 42%),
-		linear-gradient(180deg, rgba(250, 248, 243, 0.98) 0%, rgba(227, 219, 203, 0.9) 45%, rgba(207, 197, 179, 0.88) 100%);
-}
-
-.dark .scene-backdrop {
-	background:
-		radial-gradient(circle at top, rgba(56, 189, 248, 0.16), transparent 40%),
-		linear-gradient(180deg, rgba(6, 10, 18, 0.98) 0%, rgba(11, 18, 31, 0.96) 44%, rgba(5, 9, 18, 0.98) 100%);
-}
-
-.scene-backdrop::after {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background:
-		linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-		linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-	background-size: 3rem 3rem;
-	opacity: 0.26;
-	mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.96), rgba(0, 0, 0, 0.4));
 }
 
 .scene-camera {
-	position: relative;
-	z-index: 1;
 	display: flex;
 	height: 100%;
 	align-items: center;
@@ -256,423 +215,325 @@
 
 .scene-world {
 	position: relative;
-	width: min(100%, 84rem);
-	aspect-ratio: 16 / 10;
+	width: min(100%, 72rem);
+	aspect-ratio: 4 / 3;
 	transform: scale(var(--scene-scale));
 	transform-origin: center center;
 	will-change: transform;
 	transition: transform 120ms linear;
 }
 
-.scene-desktop {
+.mac-desktop {
 	position: relative;
 	width: 100%;
 	height: 100%;
+	background: #fff;
+	border: 1px solid #000;
 	overflow: hidden;
-	border-radius: clamp(1.25rem, 2vw, 1.8rem);
-	border: 1px solid rgba(255, 255, 255, 0.34);
-	background:
-		radial-gradient(circle at 18% 0%, rgba(125, 211, 252, 0.22), transparent 30%),
-		radial-gradient(circle at 84% 16%, rgba(255, 176, 0, 0.12), transparent 26%),
-		linear-gradient(145deg, rgba(33, 48, 70, 0.98) 0%, rgba(20, 30, 47, 0.98) 46%, rgba(8, 12, 22, 1) 100%);
-	box-shadow: 0 2.5rem 5rem rgba(15, 23, 42, 0.28);
+	box-shadow:
+		4px 4px 0 rgba(0, 0, 0, 0.15),
+		8px 8px 0 rgba(0, 0, 0, 0.07);
+	font-family: var(--font-retro);
 }
 
-.dark .scene-desktop {
-	border-color: rgba(148, 163, 184, 0.24);
-	box-shadow: 0 2.5rem 6rem rgba(2, 6, 23, 0.58);
-}
-
-.scene-desktop::after {
-	content: "";
+.mac-menubar {
 	position: absolute;
-	inset: 0;
-	background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 22%, rgba(255, 255, 255, 0.02) 100%);
-	pointer-events: none;
-}
-
-.scene-desktop-panel {
-	position: absolute;
-	inset: 0 0 auto 0;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 20px;
+	background: #000;
+	color: #fff;
 	display: flex;
-	align-items: center;
 	justify-content: space-between;
-	gap: 1rem;
-	height: 3rem;
-	padding: 0 1rem;
-	background: rgba(8, 12, 22, 0.48);
-	backdrop-filter: blur(16px);
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-	font-size: 0.75rem;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	color: rgba(226, 232, 240, 0.92);
-	font-family: var(--font-display);
-	opacity: calc(0.12 + (var(--scene-progress) * 0.88));
-	transform: translateY(calc((1 - var(--scene-progress)) * -0.65rem));
-	transition:
-		opacity 180ms linear,
-		transform 180ms linear;
+	align-items: center;
+	font-size: 12px;
+	font-family: var(--font-retro);
+	padding: 0 8px;
 }
 
-.scene-desktop-panel-left,
-.scene-desktop-panel-right {
+.mac-menubar-left,
+.mac-menubar-right {
 	display: flex;
 	align-items: center;
-	gap: 0.75rem;
+	gap: 12px;
 }
 
-.scene-desktop-canvas {
+.mac-apple {
+	font-size: 14px;
+}
+
+.mac-menu-item {
+	cursor: default;
+}
+
+.mac-menu-bold {
+	font-weight: bold;
+}
+
+.mac-desktop-area {
 	position: relative;
-	height: 100%;
-	padding: clamp(3.4rem, 5vw, 4.2rem) clamp(1rem, 4vw, 2rem) clamp(1.1rem, 3vw, 1.7rem);
+	height: calc(100% - 20px);
+	margin-top: 20px;
+	background: #fff;
+	background-image: radial-gradient(circle, #ccc 1px, transparent 1px);
+	background-size: 20px 20px;
 }
 
 .scene-window {
 	position: absolute;
+	border: 2px solid #000;
+	background: #fff;
+	box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
 	overflow: hidden;
-	border-radius: 1.2rem;
-	border: 1px solid rgba(255, 255, 255, 0.18);
-	background: rgba(7, 12, 20, 0.92);
-	box-shadow: 0 1.8rem 3.6rem rgba(2, 6, 23, 0.42);
 }
 
-.scene-window-desktop {
+.scene-terminal-window {
 	left: 50%;
-	top: 10%;
-	width: 70%;
-	height: 70%;
-	transform: translateX(-50%);
+	top: 50%;
+	width: 55%;
+	height: 65%;
+	transform: translate(-50%, -50%);
 }
 
-.scene-window-titlebar {
+.mac-titlebar {
+	height: 22px;
+	background: #fff;
+	border-bottom: 2px solid #000;
 	display: flex;
 	align-items: center;
-	gap: 0.75rem;
-	height: 2.5rem;
-	padding: 0 0.9rem;
-	font-size: 0.74rem;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	font-family: var(--font-display);
+	padding: 0 6px;
 }
 
-.scene-window-titlebar-desktop {
-	background: rgba(17, 24, 39, 0.96);
-	border-bottom: 1px solid rgba(148, 163, 184, 0.14);
-	color: rgba(226, 232, 240, 0.88);
+.mac-close-box {
+	width: 12px;
+	height: 12px;
+	border: 1px solid #000;
+	flex-shrink: 0;
 }
 
-.scene-window-controls {
-	display: flex;
-	gap: 0.4rem;
+.mac-zoom-box {
+	margin-left: auto;
+	width: 12px;
+	height: 12px;
+	border: 1px solid #000;
+	flex-shrink: 0;
 }
 
-.scene-window-dot {
-	width: 0.68rem;
-	height: 0.68rem;
-	border-radius: 9999px;
-	background: rgba(226, 232, 240, 0.24);
-}
-
-.scene-window-dot:nth-child(1) {
-	background: #ff5f56;
-}
-
-.scene-window-dot:nth-child(2) {
-	background: #ffbd2e;
-}
-
-.scene-window-dot:nth-child(3) {
-	background: #27c93f;
-}
-
-.scene-window-body {
-	position: relative;
-	height: calc(100% - 2.5rem);
-}
-
-.scene-terminal-page {
-	position: relative;
-	height: 100%;
-	overflow: hidden;
-	background: linear-gradient(180deg, rgba(3, 8, 14, 0.98) 0%, rgba(5, 11, 18, 0.99) 100%);
-	color: var(--color-phosphor-300);
-	font-family: var(--font-display);
-	text-shadow: 0 0 6px rgba(0, 255, 65, 0.2);
-}
-
-.scene-terminal-page::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background:
-		radial-gradient(circle at top right, rgba(0, 255, 65, 0.08), transparent 26%),
-		linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 16%);
+.mac-title-text {
+	flex: 1;
+	text-align: center;
+	font-size: 12px;
+	font-family: var(--font-retro);
+	text-transform: none;
+	color: #000;
 	pointer-events: none;
 }
 
-.scene-terminal-toolbar {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	padding: 0.75rem 0.9rem;
-	border-bottom: 1px solid rgba(0, 255, 65, 0.14);
-	font-size: 0.72rem;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	color: rgba(229, 231, 235, 0.82);
-}
-
-.scene-terminal-chip {
-	padding: 0.22rem 0.45rem;
-	border: 1px solid rgba(255, 255, 255, 0.15);
-	border-radius: 9999px;
-	background: rgba(255, 255, 255, 0.04);
-}
-
-.scene-terminal-chip-active {
-	border-color: rgba(0, 255, 65, 0.26);
-	color: rgba(167, 243, 208, 0.92);
-	background: rgba(0, 255, 65, 0.06);
-}
-
-.scene-terminal-path {
-	margin-left: auto;
-	color: rgba(156, 163, 175, 0.9);
-}
-
-.scene-terminal-body {
+.terminal-screen {
+	height: calc(100% - 22px);
+	background: #0a0a0a;
+	color: #00ff41;
+	font-family: var(--font-retro);
 	position: relative;
+}
+
+.terminal-content {
+	padding: 16px;
 	display: grid;
-	min-height: calc(100% - 3rem);
-	padding: 1.1rem 1.15rem 1.3rem;
-	gap: 0.8rem;
+	gap: 8px;
 	align-content: start;
-	font-size: clamp(0.8rem, 0.95vw, 0.95rem);
-	line-height: 1.65;
+	font-size: 15px;
+	line-height: 1.5;
+	height: 100%;
 }
 
-.scene-terminal-heading {
-	margin: 0;
-	font-size: clamp(1.25rem, 2.1vw, 1.95rem);
-	line-height: 1.1;
+.term-line {
+	display: flex;
+	gap: 8px;
+	color: rgba(229, 231, 235, 0.85);
+}
+
+.term-prompt {
+	color: #ffa81a;
+	min-width: 12px;
+	text-shadow:
+		0 0 4px rgba(255, 168, 26, 0.4),
+		0 0 8px rgba(255, 168, 26, 0.2);
+}
+
+.term-heading {
+	font-size: clamp(18px, 2.5vw, 28px);
+	text-transform: uppercase;
 	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	color: rgba(248, 250, 252, 0.96);
+	color: #fff;
+	text-shadow:
+		0 0 4px rgba(0, 255, 65, 0.4),
+		0 0 8px rgba(0, 255, 65, 0.2);
 }
 
-.scene-terminal-line {
-	display: flex;
-	align-items: baseline;
-	gap: 0.55rem;
-	color: rgba(229, 231, 235, 0.88);
+.term-paragraph {
+	max-width: 50ch;
+	color: rgba(0, 255, 65, 0.75);
 }
 
-.scene-terminal-paragraph {
-	max-width: 54ch;
-	color: rgba(209, 250, 229, 0.84);
+.term-block {
+	margin-top: 4px;
 }
 
-.scene-terminal-block {
-	display: grid;
-	gap: 0.45rem;
-}
-
-.scene-terminal-label {
-	font-size: 0.74rem;
-	letter-spacing: 0.12em;
-	text-transform: uppercase;
-	color: rgba(255, 176, 0, 0.88);
-}
-
-.scene-terminal-list {
-	margin: 0;
-	padding: 0;
+.term-list {
 	list-style: none;
+	padding: 0;
 	display: grid;
-	gap: 0.4rem;
-	max-width: 54ch;
+	gap: 4px;
 }
 
-.scene-terminal-list li {
+.term-list li {
 	display: flex;
-	align-items: flex-start;
-	gap: 0.55rem;
+	gap: 8px;
 }
 
-.scene-terminal-prompt {
-	min-width: 0.7rem;
-	color: var(--color-amber-400);
-	text-shadow: 0 0 6px rgba(255, 176, 0, 0.32);
-}
-
-.scene-terminal-footer {
+.term-footer {
 	margin-top: auto;
+	padding-top: 8px;
+	border-top: 1px solid rgba(0, 255, 65, 0.2);
 	display: flex;
-	align-items: center;
-	gap: 0.55rem;
-	padding-top: 0.9rem;
-	border-top: 1px solid rgba(0, 255, 65, 0.14);
+	gap: 8px;
 	color: rgba(229, 231, 235, 0.72);
 }
 
-.scene-desktop-icons {
+.mac-icons {
 	position: absolute;
-	left: 4%;
-	top: 20%;
+	right: 0;
+	top: 0;
 	display: grid;
-	gap: 1rem;
-	justify-items: center;
-	opacity: calc(var(--scene-progress) * 0.96);
-	transform: translateX(calc((1 - var(--scene-progress)) * -1.5rem));
-	transition:
-		opacity 180ms linear,
-		transform 180ms linear;
+	gap: 24px;
+	padding: 20px;
+	align-content: start;
 }
 
-.scene-desktop-icon {
-	display: grid;
-	gap: 0.35rem;
-	justify-items: center;
-	width: 4.6rem;
-	font-size: 0.72rem;
+.mac-icon {
 	text-align: center;
-	color: rgba(226, 232, 240, 0.92);
-	font-family: var(--font-display);
 }
 
-.scene-desktop-icon-glyph {
-	width: 2.7rem;
-	height: 2.9rem;
-	border-radius: 0.8rem;
-	border: 1px solid rgba(255, 255, 255, 0.24);
-	background:
-		linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
-		linear-gradient(145deg, rgba(14, 165, 233, 0.45), rgba(99, 102, 241, 0.18));
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+.mac-icon-glyph {
+	width: 32px;
+	height: 36px;
+	border: 1px solid #000;
+	background: #fff;
+	position: relative;
 }
 
-.scene-desktop-dock {
+.mac-icon-glyph::before {
+	content: "";
 	position: absolute;
-	left: 50%;
-	bottom: 4.5%;
-	display: flex;
-	gap: 0.75rem;
-	padding: 0.7rem 0.9rem;
-	border: 1px solid rgba(255, 255, 255, 0.18);
-	border-radius: 9999px;
-	background: rgba(15, 23, 42, 0.48);
-	backdrop-filter: blur(12px);
-	box-shadow: 0 1rem 2rem rgba(2, 6, 23, 0.28);
-	opacity: calc(0.08 + (var(--scene-progress) * 0.92));
-	transform: translateX(-50%) scale(calc(0.84 + (var(--scene-progress) * 0.16)));
-	transition:
-		opacity 180ms linear,
-		transform 180ms linear;
+	top: 2px;
+	left: 2px;
+	right: 2px;
+	height: 1px;
+	background: #000;
+	box-shadow: 0 4px 0 #000, 0 8px 0 #000, 0 12px 0 #000, 0 16px 0 #000;
 }
 
-.scene-desktop-dock span {
-	display: block;
-	width: 2.3rem;
-	height: 2.3rem;
-	border-radius: 0.8rem;
-	border: 1px solid rgba(255, 255, 255, 0.22);
-	background:
-		radial-gradient(circle at top left, rgba(255, 255, 255, 0.22), transparent 48%),
-		linear-gradient(145deg, rgba(15, 118, 110, 0.52), rgba(59, 130, 246, 0.3));
+.mac-icon-glyph::after {
+	content: "";
+	position: absolute;
+	bottom: 2px;
+	left: 2px;
+	right: 2px;
+	height: 1px;
+	background: #000;
+	box-shadow: 0 -20px 0 #000;
+}
+
+.mac-icon-label {
+	font-size: 10px;
+	font-family: var(--font-retro);
+	margin-top: 4px;
+	color: #000;
+	text-align: center;
 }
 
 @media (max-width: 767px) {
 	.scene-scroll-track {
-		height: 200svh;
+		height: 160vh;
 	}
 
 	.scene-world {
 		width: min(100%, 56rem);
 	}
 
-	.scene-desktop-panel {
-		height: 2.65rem;
-		padding: 0 0.75rem;
-		font-size: 0.64rem;
+	.scene-terminal-window {
+		width: 70%;
+		height: 60%;
 	}
 
-	.scene-desktop-panel-right {
-		display: none;
+	.terminal-content {
+		font-size: 12px;
+		padding: 10px;
+		gap: 6px;
 	}
 
-	.scene-desktop-canvas {
-		padding: 3rem 0.75rem 1rem;
+	.mac-menubar {
+		font-size: 10px;
+		padding: 0 4px;
 	}
 
-	.scene-window-desktop {
-		top: 12%;
-		width: 88%;
-		height: 72%;
+	.mac-menubar-left,
+	.mac-menubar-right {
+		gap: 6px;
 	}
 
-	.scene-desktop-icons {
-		left: 5%;
-		top: 18%;
-		gap: 0.75rem;
+	.mac-titlebar {
+		height: 18px;
 	}
 
-	.scene-desktop-icon:nth-child(3) {
-		display: none;
+	.mac-close-box,
+	.mac-zoom-box {
+		width: 10px;
+		height: 10px;
 	}
 
-	.scene-desktop-dock {
-		bottom: 4%;
-		gap: 0.5rem;
-		padding: 0.55rem 0.7rem;
+	.mac-title-text {
+		font-size: 10px;
 	}
 
-	.scene-desktop-dock span {
-		width: 1.9rem;
-		height: 1.9rem;
+	.mac-icons {
+		gap: 16px;
+		padding: 12px;
 	}
 
-	.scene-terminal-toolbar {
-		flex-wrap: wrap;
-		gap: 0.4rem;
+	.mac-icon-glyph {
+		width: 24px;
+		height: 28px;
 	}
 
-	.scene-terminal-path {
-		margin-left: 0;
-		width: 100%;
+	.mac-icon-label {
+		font-size: 8px;
 	}
 
-	.scene-terminal-body {
-		padding: 1rem;
-		font-size: 0.8rem;
-	}
-
-	.scene-terminal-footer {
-		align-items: flex-start;
+	.term-heading {
+		font-size: clamp(14px, 4vw, 20px);
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.scene-world,
-	.scene-desktop-panel,
-	.scene-desktop-icons,
-	.scene-desktop-dock {
+	.scene-section {
+		--scene-progress: 1;
+		--scene-scale: 1;
+	}
+
+	.scene-world {
 		transition: none;
 	}
 
 	.scene-scroll-track {
-		height: 100svh;
+		height: 100vh;
 	}
 
 	.scene-stage {
 		position: relative;
 		top: 0;
 		height: calc(100svh - 3.5rem);
-	}
-
-	.scene-section {
-		--scene-progress: 1;
-		--scene-scale: 1;
 	}
 }

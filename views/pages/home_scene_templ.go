@@ -29,49 +29,23 @@ func HomeScene() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"scene\" class=\"scene-section\" data-scene-root><div class=\"scene-scroll-track\" data-scene-track><div class=\"scene-stage\"><div class=\"scene-backdrop\"></div><div class=\"scene-camera\"><div class=\"scene-world\"><div class=\"scene-desktop\"><div class=\"scene-desktop-panel\"><div class=\"scene-desktop-panel-left\"><span class=\"w-2.5 h-2.5 rounded-full bg-phosphor-500\"></span> <span>rezus desktop // preview</span></div><div class=\"scene-desktop-panel-right\"><span>git</span> <span>nodes</span> <span>private</span></div></div><div class=\"scene-desktop-canvas\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"scene\" class=\"scene-section\" data-scene-root><div class=\"scene-scroll-track\" data-scene-track><div class=\"scene-stage\"><div class=\"scene-camera\"><div class=\"scene-world\"><div class=\"mac-desktop\"><div class=\"mac-menubar\"><div class=\"mac-menubar-left\"><span class=\"mac-apple\">&#63743;</span> <span class=\"mac-menu-item mac-menu-bold\">File</span> <span class=\"mac-menu-item\">Edit</span> <span class=\"mac-menu-item\">View</span> <span class=\"mac-menu-item\">Special</span></div><div class=\"mac-menubar-right\"><span>RezusCloud</span></div></div><div class=\"mac-desktop-area\"><div class=\"scene-terminal-window scene-window\"><div class=\"mac-titlebar\"><div class=\"mac-close-box\"></div><span class=\"mac-title-text\">personal-cloud</span><div class=\"mac-zoom-box\"></div></div><div class=\"scene-window-body\"><div class=\"terminal-screen crt-scanlines\"><div class=\"terminal-content\"><div class=\"term-line\"><span class=\"term-prompt\">$</span> <span>cat ./personal-cloud.txt</span></div><h1 class=\"term-heading\">Your Personal Cloud</h1><p class=\"term-paragraph\">They said you did not need your own computer either. Then the personal computer changed who could own, build, and publish software.</p><p class=\"term-paragraph\">RezusCloud applies that same shift to infrastructure. Your machines, your network, your rules.</p><div class=\"term-block\"><ul class=\"term-list\"><li><span class=\"term-prompt\">&gt;</span><span>private by design</span></li><li><span class=\"term-prompt\">&gt;</span><span>open source all the way down</span></li><li><span class=\"term-prompt\">&gt;</span><span>push to git, let the platform reconcile</span></li><li><span class=\"term-prompt\">&gt;</span><span>use whatever machine you already have</span></li></ul></div><div class=\"term-footer\"><span class=\"term-prompt\">&gt;</span> <span class=\"term-cursor-text\">scroll to zoom out</span> <span class=\"animate-blink\">_</span></div></div></div></div></div><div class=\"mac-icons\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-			if !templ_7745c5c3_IsBuffer {
-				defer func() {
-					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err == nil {
-						templ_7745c5c3_Err = templ_7745c5c3_BufErr
-					}
-				}()
-			}
-			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = sceneTerminalPage().Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			return nil
-		})
-		templ_7745c5c3_Err = sceneDesktopWindow("terminal", "scene-terminal-window").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = macIcon("ReadMe").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"scene-desktop-icons\">")
+		templ_7745c5c3_Err = macIcon("System").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = sceneDesktopIcon("git").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = macIcon("Trash").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = sceneDesktopIcon("mesh").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = sceneDesktopIcon("cluster").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"scene-desktop-dock\"><span></span> <span></span> <span></span> <span></span></div></div></div></div></div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div></div></div></div></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -79,7 +53,7 @@ func HomeScene() templ.Component {
 	})
 }
 
-func sceneDesktopWindow(title string, className string) templ.Component {
+func macIcon(label string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -95,122 +69,25 @@ func sceneDesktopWindow(title string, className string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var3 == nil {
-			templ_7745c5c3_Var3 = templ.NopComponent
+		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var2 == nil {
+			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var4 = []any{"scene-window scene-window-desktop", className}
-		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var4...)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"mac-icon\"><div class=\"mac-icon-glyph\"></div><span class=\"mac-icon-label\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"")
+		var templ_7745c5c3_Var3 string
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(label)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/home_scene.templ`, Line: 73, Col: 38}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var4).String())
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/home_scene.templ`, Line: 1, Col: 0}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><div class=\"scene-window-titlebar scene-window-titlebar-desktop\"><div class=\"scene-window-controls\"><span class=\"scene-window-dot\"></span> <span class=\"scene-window-dot\"></span> <span class=\"scene-window-dot\"></span></div><span>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(title)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/home_scene.templ`, Line: 54, Col: 16}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span></div><div class=\"scene-window-body\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templ_7745c5c3_Var3.Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
-}
-
-func sceneTerminalPage() templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
-		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var7 == nil {
-			templ_7745c5c3_Var7 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"scene-terminal-page crt-scanlines\"><div class=\"scene-terminal-toolbar\"><span class=\"scene-terminal-chip\">manifesto</span> <span class=\"scene-terminal-chip scene-terminal-chip-active\">ownership</span> <span class=\"scene-terminal-path\">~/rezuscloud/personal-cloud</span></div><div class=\"scene-terminal-body\"><div class=\"scene-terminal-line\"><span class=\"scene-terminal-prompt\">$</span> <span>cat ./personal-cloud.txt</span></div><h1 id=\"scene-terminal-title\" class=\"scene-terminal-heading\">Your Personal Cloud</h1><p class=\"scene-terminal-paragraph\">They said you did not need your own computer either. Then the personal computer changed who could own, build, and publish software. RezusCloud applies that same shift to infrastructure.</p><div class=\"scene-terminal-block\"><div class=\"scene-terminal-label\">Why this exists</div><ul class=\"scene-terminal-list\"><li><span class=\"scene-terminal-prompt\">&gt;</span><span>renting cloud is still renting someone else&apos;s machine</span></li><li><span class=\"scene-terminal-prompt\">&gt;</span><span>hardware you already own should be enough to run your own platform</span></li><li><span class=\"scene-terminal-prompt\">&gt;</span><span>ordinary home internet should not block infrastructure ownership</span></li></ul></div><div class=\"scene-terminal-block\"><div class=\"scene-terminal-label\">Principles</div><ul class=\"scene-terminal-list\"><li><span class=\"scene-terminal-prompt\">&gt;</span><span>private by design</span></li><li><span class=\"scene-terminal-prompt\">&gt;</span><span>open source all the way down</span></li><li><span class=\"scene-terminal-prompt\">&gt;</span><span>push to git, let the platform reconcile</span></li><li><span class=\"scene-terminal-prompt\">&gt;</span><span>use whatever machine you already have</span></li></ul></div><div class=\"scene-terminal-footer\"><span class=\"scene-terminal-prompt\">&gt;</span> <span>scroll to zoom out from the terminal into its desktop</span> <span class=\"animate-blink\">_</span></div></div></div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
-}
-
-func sceneDesktopIcon(label string) templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
-		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var8 == nil {
-			templ_7745c5c3_Var8 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"scene-desktop-icon\"><div class=\"scene-desktop-icon-glyph\"></div><span>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(label)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/home_scene.templ`, Line: 105, Col: 15}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
