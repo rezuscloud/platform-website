@@ -42,10 +42,6 @@ func newChromedpContext() (context.Context, context.CancelFunc) {
 	}
 }
 
-func TestE2EPageLoad(t *testing.T) {
-	t.Skip("Skipping page load E2E test - Chrome DevTools websocket timeout issues in CI environment. Content is tested by TestE2EProgressiveEnhancement.")
-}
-
 func TestE2EPerformance(t *testing.T) {
 	ctx, cancel := newChromedpContext()
 	defer cancel()
@@ -70,26 +66,6 @@ func TestE2EPerformance(t *testing.T) {
 		"Page should load within 5 seconds, took %fms", loadTime)
 }
 
-func TestE2EHTMXSectionLoad(t *testing.T) {
-	ctx, cancel := newChromedpContext()
-	defer cancel()
-
-	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
-	defer cancel()
-
-	var bodyText string
-
-	err := chromedp.Run(ctx,
-		chromedp.Navigate(getBaseURL()+"/sections/hero"),
-		chromedp.WaitVisible("#hero"),
-		chromedp.Evaluate(`document.body.innerText`, &bodyText),
-	)
-	require.NoError(t, err)
-
-	assert.Contains(t, bodyText, "Your Personal",
-		"Section endpoint should contain expected content")
-}
-
 func TestE2EProgressiveEnhancement(t *testing.T) {
 	ctx, cancel := newChromedpContext()
 	defer cancel()
@@ -112,13 +88,12 @@ func TestE2EProgressiveEnhancement(t *testing.T) {
 					hasTitle: document.title.includes('RezusCloud'),
 					hasH1: document.querySelector('h1') !== null,
 					hasMain: document.querySelector('main') !== null,
-					hasNav: document.querySelector('nav') === null,
-					hasFooter: document.querySelector('footer') === null,
-					hasScene: document.getElementById('scene') !== null,
-					hasTargets: ['terminal', 'mac', 'linux']
-						.every(id => document.querySelector('[data-scene-target="' + id + '"]') !== null),
+					hasSummary: document.getElementById('shell-summary') !== null,
+					hasTerminal: document.getElementById('terminal-panel') !== null,
+					hasMac: document.getElementById('mac-panel') !== null,
+					hasLinux: document.getElementById('linux-panel') !== null,
 					hasNoJSBootstrap: document.documentElement.classList.contains('js'),
-					hasSceneScript: document.querySelector('script[src="/assets/js/scene.js"]') !== null
+					hasHTMX: document.querySelector('script[src="/assets/js/htmx.min.js"]') !== null
 				};
 			})()
 		`, &contentChecks),
@@ -128,14 +103,41 @@ func TestE2EProgressiveEnhancement(t *testing.T) {
 	assert.True(t, contentChecks["hasTitle"], "Page should have title")
 	assert.True(t, contentChecks["hasH1"], "Page should have h1")
 	assert.True(t, contentChecks["hasMain"], "Page should have main")
-	assert.True(t, contentChecks["hasNav"], "Homepage should not render nav")
-	assert.True(t, contentChecks["hasFooter"], "Homepage should not render footer")
-	assert.True(t, contentChecks["hasScene"], "Scene should be present")
-	assert.True(t, contentChecks["hasTargets"], "All scene targets should exist")
+	assert.True(t, contentChecks["hasSummary"], "Shell summary should be present")
+	assert.True(t, contentChecks["hasTerminal"], "Terminal surface should be present")
+	assert.True(t, contentChecks["hasMac"], "Mac surface should be present")
+	assert.True(t, contentChecks["hasLinux"], "Linux surface should be present")
 	assert.True(t, contentChecks["hasNoJSBootstrap"], "No-JS bootstrap should switch to js class")
-	assert.True(t, contentChecks["hasSceneScript"], "Scene script should be loaded")
+	assert.True(t, contentChecks["hasHTMX"], "HTMX should be loaded")
 }
 
-func TestE2ESceneCameraPhases(t *testing.T) {
-	t.Skip("Skipping geometry-heavy scene E2E in CI until preview environment is stable enough for deterministic viewport assertions.")
+func TestE2ECrossAppFlow(t *testing.T) {
+	ctx, cancel := newChromedpContext()
+	defer cancel()
+
+	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
+	defer cancel()
+
+	var terminalText string
+	var shellText string
+	var macText string
+	var linuxText string
+
+	err := chromedp.Run(ctx,
+		chromedp.Navigate(getBaseURL()),
+		chromedp.WaitVisible("#terminal-panel"),
+		chromedp.Click(`button[name="preset"][value="rezus sync demo"]`),
+		chromedp.Sleep(800*time.Millisecond),
+		chromedp.Text("#terminal-panel", &terminalText),
+		chromedp.Text("#shell-summary", &shellText),
+		chromedp.Text("#mac-panel", &macText),
+		chromedp.Text("#linux-panel", &linuxText),
+	)
+	require.NoError(t, err)
+
+	assert.Contains(t, terminalText, "artifact.published")
+	assert.Contains(t, shellText, "One command moved through three services")
+	assert.Contains(t, macText, "Deployment dossier")
+	assert.Contains(t, linuxText, "reconciled")
+	assert.Contains(t, linuxText, "artifact.published")
 }

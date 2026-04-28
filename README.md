@@ -6,7 +6,7 @@ RezusCloud treats the homepage as a same-origin shell that composes three live a
 - `mac-app`
 - `linux-app`
 
-The shell remains marketing-first, but the proof path is built around real Dapr primitives: service invocation, pub/sub, shared state, and namespace-local deployment topology.
+The shell remains marketing-first, but the proof path is built around real Dapr primitives: service invocation, pub/sub, shared state, Redis-backed locking, and namespace-local deployment topology.
 
 ## Architecture
 
@@ -42,6 +42,13 @@ The first vertical slice proves the architecture with one session-scoped flow:
 5. `mac-app` renders the artifact from shared state
 6. `shell-app` observes the event and updates the proof rail
 
+In cluster, that flow is backed by concrete namespace-local Dapr components:
+
+- PostgreSQL V2 for `statestore`
+- NATS JetStream for `pubsub`
+- Redis for `configstore`
+- Redis for `lockstore`
+
 The shared state key is namespaced per session:
 
 - `homepage/sessions/<id>/state`
@@ -74,6 +81,12 @@ The production namespace `platform-website` also runs dedicated Dapr backends fo
 - PostgreSQL for state
 - NATS JetStream for pub/sub
 - Redis for configuration and locking
+
+The app code uses those concrete component names explicitly:
+
+- `DAPR_STATE_STORE_NAME=statestore`
+- `DAPR_PUBSUB_NAME=pubsub`
+- `DAPR_LOCK_STORE_NAME=lockstore`
 
 Preview environments use the same topology. Flux creates a fresh namespace `platform-website-pr<N>` with its own Dapr components and its own PostgreSQL, JetStream, and Redis backends for every pull request that carries the `preview-ready` label.
 

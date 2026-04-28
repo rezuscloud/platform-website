@@ -1,12 +1,16 @@
 package pages
 
-import "github.com/rezuscloud/platform-website/views"
+import (
+	model "github.com/rezuscloud/platform-website/internal/platform"
+	"github.com/rezuscloud/platform-website/views"
+	viewapps "github.com/rezuscloud/platform-website/views/apps"
+)
 
-templ Home() {
-	@views.SceneLayout(
-		"RezusCloud | Terminal to Macintosh to Linux",
-		"A scroll-driven retro computing scene: phosphor terminal, Macintosh System 1, and Linux X11/TWM.",
+templ Home(state model.SessionState) {
+	@views.Layout(
+		"RezusCloud | Live Dapr shell",
+		"A brand shell that composes terminal, Macintosh, and Linux application surfaces through real shared state and cross-app flows.",
 	) {
-		@HomeScene()
+		@viewapps.ShellPage(state)
 	}
 }

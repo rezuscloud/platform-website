@@ -2,62 +2,29 @@
 
 @source "../views/**/*.templ";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 @theme {
-	--color-cream-50: #faf8f3;
-	--color-cream-100: #f5f0e8;
-	--color-cream-200: #e8dfd0;
-	--color-cream-300: #d4c9b0;
-	--color-cream-400: #b8a88a;
-	--color-cream-500: #9c8a6a;
-	--color-cream-600: #7d6d4f;
-	--color-cream-700: #5e503b;
-	--color-cream-800: #3c2415;
-	--color-cream-900: #2a1a0e;
+	--color-shell-bg: oklch(0.17 0.016 248);
+	--color-shell-panel: oklch(0.22 0.02 248);
+	--color-shell-panel-strong: oklch(0.27 0.025 248);
+	--color-shell-border: oklch(0.42 0.025 248);
+	--color-shell-text: oklch(0.93 0.01 248);
+	--color-shell-muted: oklch(0.76 0.012 248);
+	--color-shell-accent: oklch(0.78 0.13 165);
+	--color-shell-accent-soft: oklch(0.58 0.07 165);
+	--color-shell-warn: oklch(0.77 0.12 75);
+	--color-shell-ink: oklch(0.12 0.01 248);
+	--font-shell-mono: "IBM Plex Mono", "Courier New", monospace;
+	--font-shell-display: "VT323", "Courier New", monospace;
+	--font-shell-ui: "ChicagoFLF", "Geneva", sans-serif;
+	--font-shell-x11: "Terminus", "Courier New", monospace;
+}
 
-	--color-phosphor-50: #e6ffe8;
-	--color-phosphor-100: #b3ffb8;
-	--color-phosphor-200: #80ff8f;
-	--color-phosphor-300: #4dff66;
-	--color-phosphor-400: #1aff3d;
-	--color-phosphor-500: #00ff41;
-	--color-phosphor-600: #00cc34;
-	--color-phosphor-700: #009927;
-	--color-phosphor-800: #00661a;
-	--color-phosphor-900: #00330d;
-
-	--color-amber-50: #fff8e6;
-	--color-amber-100: #ffe4b3;
-	--color-amber-200: #ffd080;
-	--color-amber-300: #ffbc4d;
-	--color-amber-400: #ffa81a;
-	--color-amber-500: #ffb000;
-	--color-amber-600: #cc8d00;
-	--color-amber-700: #996a00;
-	--color-amber-800: #664700;
-	--color-amber-900: #332400;
-
-	--color-retro-blue-50: #eef0ff;
-	--color-retro-blue-100: #c8ceff;
-	--color-retro-blue-200: #a2adff;
-	--color-retro-blue-300: #7c8cff;
-	--color-retro-blue-400: #566bff;
-	--color-retro-blue-500: #6c5ce7;
-	--color-retro-blue-600: #5040c0;
-	--color-retro-blue-700: #3a2d99;
-	--color-retro-blue-800: #271e73;
-	--color-retro-blue-900: #140f4d;
-
-	--color-terminal-bg: #0a0a1a;
-	--color-terminal-surface: #141428;
-	--color-terminal-border: #1e1e3a;
-
-	--font-retro: "VT323", "Courier New", monospace;
-	--font-display: "IBM Plex Mono", "Courier New", monospace;
-	--font-terminal: "VT323", "Courier New", monospace;
-	--font-mac: "ChicagoFLF", "Geneva", sans-serif;
-	--font-x11: "Terminus", "Courier New", monospace;
+@font-face {
+	font-family: "IBM Plex Mono";
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url("/assets/fonts/IBMPlexMono-Regular.woff2") format("woff2");
 }
 
 @font-face {
@@ -84,897 +51,565 @@
 	src: url("/assets/fonts/Terminus.ttf") format("truetype");
 }
 
-[x-cloak] {
-	display: none !important;
+* {
+	box-sizing: border-box;
 }
 
-.crt-scanlines {
-	position: relative;
-}
-
-.crt-scanlines::after {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background: repeating-linear-gradient(
-		0deg,
-		rgba(0, 0, 0, 0) 0px,
-		rgba(0, 0, 0, 0) 1px,
-		rgba(0, 0, 0, 0.03) 1px,
-		rgba(0, 0, 0, 0.03) 2px
-	);
-	pointer-events: none;
-	z-index: 1;
-}
-
-@utility crt-glow {
-	text-shadow: 0 0 4px currentColor, 0 0 8px currentColor;
-}
-
-@utility crt-glow-sm {
-	text-shadow: 0 0 2px currentColor;
-}
-
-@utility crt-glow-amber {
-	text-shadow: 0 0 4px var(--color-amber-500), 0 0 8px var(--color-amber-500);
-}
-
-@utility crt-glow-phosphor {
-	text-shadow: 0 0 4px var(--color-phosphor-500), 0 0 8px var(--color-phosphor-500);
-}
-
-@utility pixel-border {
-	box-shadow:
-		1px 0 0 0 currentColor,
-		-1px 0 0 0 currentColor,
-		0 1px 0 0 currentColor,
-		0 -1px 0 0 currentColor;
-}
-
-@utility retro-bevel {
-	border: 2px solid;
-	border-color: rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) rgba(255, 255, 255, 0.15);
-}
-
-@utility retro-bevel-inset {
-	border: 2px solid;
-	border-color: rgba(0, 0, 0, 0.15) rgba(255, 255, 255, 0.15) rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.15);
-}
-
-@keyframes blink {
-	0%, 49% { opacity: 1; }
-	50%, 100% { opacity: 0; }
-}
-
-@keyframes typewriter-cursor {
-	0%, 49% { border-color: currentColor; }
-	50%, 100% { border-color: transparent; }
-}
-
-@keyframes crt-power-on {
-	0% {
-		clip-path: inset(50% 0);
-		opacity: 0;
-		transform: scaleY(0.01);
-	}
-	30% {
-		clip-path: inset(0);
-		opacity: 1;
-		transform: scaleY(1);
-	}
-	60% {
-		transform: scaleY(1.02);
-	}
-	100% {
-		transform: scaleY(1);
-	}
-}
-
-@keyframes fade-in-up {
-	from {
-		opacity: 0;
-		transform: translateY(8px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-@utility animate-blink {
-	animation: blink 1s step-end infinite;
-}
-
-@utility animate-cursor {
-	animation: typewriter-cursor 1s step-end infinite;
-}
-
-@utility animate-crt-on {
-	animation: crt-power-on 0.6s ease-out forwards;
-}
-
-@utility animate-fade-in-up {
-	animation: fade-in-up 0.4s ease-out forwards;
-}
-
-.scene-html,
-.scene-body {
-	margin: 0;
+html,
+body {
 	min-height: 100%;
 }
 
-.scene-html,
-.scene-body,
-.scene-main {
-	min-height: 100vh;
-}
-
-.scene-body {
-	overflow-x: hidden;
-	background:
-		radial-gradient(circle at top, oklch(0.28 0.04 152) 0%, transparent 42%),
-		linear-gradient(180deg, oklch(0.17 0.018 150) 0%, oklch(0.12 0.012 140) 100%);
-	color: oklch(0.9 0.02 145);
-}
-
-.scene-main {
-	position: relative;
-	width: 100%;
-}
-
-.scene-section {
-	position: relative;
-	min-height: 100vh;
-	background: transparent;
-	--scene-translate-x: var(--scene-initial-x, 0px);
-	--scene-translate-y: var(--scene-initial-y, 0px);
-	--scene-scale: var(--scene-initial-scale, 1);
-	--scene-progress: 0;
-}
-
-.scene-scroll-track {
-	height: 360vh;
-	position: relative;
-}
-
-.scene-stage {
-	position: sticky;
-	top: 0;
-	height: 100vh;
-	overflow: clip;
-	background:
-		radial-gradient(circle at center, oklch(0.2 0.03 150) 0%, transparent 54%),
-		linear-gradient(180deg, oklch(0.13 0.014 145) 0%, oklch(0.1 0.01 140) 100%);
-}
-
-.scene-camera-viewport {
-	position: absolute;
-	inset: 0;
-	overflow: clip;
-}
-
-.scene-camera {
-	position: absolute;
-	left: 0;
-	top: 0;
-	transform-origin: 0 0;
-	transform: translate3d(var(--scene-translate-x), var(--scene-translate-y), 0) scale(var(--scene-scale));
-	will-change: transform;
-	backface-visibility: hidden;
-}
-
-.scene-world {
-	position: relative;
-	width: 1600px;
-	height: 1080px;
-	transform-origin: top left;
-	user-select: none;
-}
-
-.linux-desktop {
-	position: relative;
-	width: 1600px;
-	height: 1080px;
-	overflow: hidden;
-	background: oklch(0.58 0.014 228);
-	border: 4px solid oklch(0.36 0.014 228);
-	box-shadow:
-		0 0 0 1px oklch(0.8 0.006 225),
-		0 32px 90px rgba(0, 0, 0, 0.55);
-	font-family: var(--font-x11);
-	color: oklch(0.17 0.01 228);
-	text-rendering: optimizeLegibility;
-}
-
-.linux-root-pattern,
-.linux-desktop::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	pointer-events: none;
-}
-
-.linux-root-pattern {
-	background-image:
-		linear-gradient(45deg, rgba(255, 255, 255, 0.09) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.09) 50%, rgba(255, 255, 255, 0.09) 75%, transparent 75%, transparent),
-		linear-gradient(-45deg, rgba(0, 0, 0, 0.07) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.07) 50%, rgba(0, 0, 0, 0.07) 75%, transparent 75%, transparent);
-	background-size: 12px 12px;
-	opacity: 0.6;
-}
-
-.linux-desktop::before {
-	background: radial-gradient(circle at center, transparent 0%, transparent 54%, rgba(0, 0, 0, 0.28) 100%);
-	z-index: 1;
-}
-
-.linux-topbar {
-	position: absolute;
-	left: 0;
-	right: 0;
-	top: 0;
-	height: 36px;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0 16px;
-	background: oklch(0.81 0.008 228);
-	border-bottom: 2px solid oklch(0.35 0.014 228);
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
-	font-size: 18px;
-	letter-spacing: 0.02em;
-	z-index: 2;
-}
-
-.linux-topbar-left,
-.linux-topbar-right,
-.linux-titlebar,
-.linux-titlebar-controls {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-}
-
-.linux-badge {
-	padding: 1px 8px;
-	border: 1px solid oklch(0.42 0.012 228);
-	background: oklch(0.86 0.008 228);
-	box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.75);
-	text-transform: lowercase;
-	white-space: nowrap;
-}
-
-.linux-window {
-	position: absolute;
-	z-index: 2;
-	background: oklch(0.78 0.012 228);
-	border: 2px solid oklch(0.33 0.012 228);
-	box-shadow:
-		inset 1px 1px 0 rgba(255, 255, 255, 0.84),
-		inset -1px -1px 0 rgba(0, 0, 0, 0.2),
-		8px 8px 0 rgba(0, 0, 0, 0.2);
-	overflow: hidden;
-}
-
-.linux-titlebar {
-	justify-content: space-between;
-	height: 30px;
-	padding: 0 10px;
-	font-size: 18px;
-	background: oklch(0.82 0.008 228);
-	border-bottom: 2px solid oklch(0.33 0.012 228);
-	text-transform: lowercase;
-	letter-spacing: 0.03em;
-	white-space: nowrap;
-}
-
-.linux-control {
-	width: 12px;
-	height: 12px;
-	border: 1px solid oklch(0.35 0.014 228);
-	background: oklch(0.88 0.008 228);
-	box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.8);
-}
-
-.linux-xterm-window {
-	left: 92px;
-	top: 104px;
-	width: 432px;
-	height: 334px;
-	transform: rotate(-0.8deg);
-	z-index: 3;
-}
-
-.linux-xterm-screen {
+body {
 	margin: 0;
-	padding: 18px 20px;
-	height: calc(100% - 30px);
-	background: oklch(0.11 0.008 228);
-	color: oklch(0.93 0.012 228);
-	font-family: var(--font-x11);
-	font-size: 20px;
-	line-height: 1.15;
+	font-family: var(--font-shell-mono);
+	background:
+		radial-gradient(circle at top, oklch(0.26 0.04 220 / 0.55) 0%, transparent 28%),
+		radial-gradient(circle at 80% 20%, oklch(0.34 0.06 160 / 0.18) 0%, transparent 24%),
+		linear-gradient(180deg, oklch(0.18 0.018 248) 0%, oklch(0.12 0.012 248) 100%);
+	color: var(--color-shell-text);
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+button,
+input {
+	font: inherit;
+}
+
+button {
+	cursor: pointer;
+}
+
+.brand-main {
+	min-height: 100vh;
+}
+
+.shell-page,
+.surface-page {
+	padding: 2rem;
+	width: min(100%, 88rem);
+	margin: 0 auto;
+}
+
+.shell-page {
+	display: grid;
+	gap: 1.5rem;
+	padding-top: 2.5rem;
+	padding-bottom: 3rem;
+}
+
+.shell-hero,
+.shell-summary,
+.app-panel,
+.surface-page-copy,
+.shell-footnote {
+	background: linear-gradient(180deg, oklch(0.24 0.02 248 / 0.96), oklch(0.2 0.016 248 / 0.96));
+	border: 1px solid oklch(0.42 0.025 248 / 0.65);
+	box-shadow:
+		0 1px 0 oklch(0.95 0.002 248 / 0.08) inset,
+		0 22px 50px oklch(0.06 0.01 248 / 0.38);
+	backdrop-filter: blur(8px);
+}
+
+.shell-hero {
+	padding: 1.5rem;
+	display: grid;
+	gap: 2rem;
+	border-radius: 1.75rem;
+}
+
+.shell-brandbar {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	align-items: start;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid oklch(0.42 0.025 248 / 0.35);
+}
+
+.shell-route-list {
+	display: flex;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+}
+
+.shell-route-list a,
+.panel-link,
+.terminal-suggestions button,
+.terminal-form button {
+	border: 1px solid oklch(0.48 0.03 248 / 0.6);
+	background: oklch(0.28 0.02 248 / 0.85);
+	color: var(--color-shell-text);
+	padding: 0.6rem 0.9rem;
+	border-radius: 999px;
+	transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.shell-route-list a:hover,
+.panel-link:hover,
+.terminal-suggestions button:hover,
+.terminal-form button:hover,
+.terminal-form button:focus-visible,
+.terminal-suggestions button:focus-visible,
+.panel-link:focus-visible,
+.shell-route-list a:focus-visible {
+	background: oklch(0.34 0.03 248 / 0.95);
+	border-color: oklch(0.76 0.08 165 / 0.7);
+	transform: translateY(-1px);
+	outline: none;
+}
+
+.shell-brandline,
+.panel-eyebrow,
+.proof-label,
+.linux-service-name,
+.event-type,
+.event-ribbon-label,
+.terminal-label {
+	font-size: 0.8rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--color-shell-muted);
+}
+
+.shell-kicker {
+	margin: 0;
+	font-size: 0.85rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--color-shell-accent);
+}
+
+.shell-hero-copy {
+	max-width: 48rem;
+	display: grid;
+	gap: 0.85rem;
+}
+
+.shell-hero-copy h1,
+.surface-page-copy h1 {
+	margin: 0;
+	font-family: var(--font-shell-display);
+	font-size: clamp(2.8rem, 5vw, 5.25rem);
+	line-height: 0.92;
+	font-weight: 400;
 	letter-spacing: 0.01em;
-	overflow: hidden;
+}
+
+.shell-lead,
+.surface-page-copy p,
+.shell-summary-copy p,
+.panel-copy,
+.shell-footnote p {
+	margin: 0;
+	max-width: 70ch;
+	color: var(--color-shell-muted);
+	line-height: 1.65;
+}
+
+.shell-summary {
+	border-radius: 1.5rem;
+	padding: 1.35rem;
+	display: grid;
+	gap: 1rem;
+}
+
+.shell-summary-copy {
+	display: grid;
+	gap: 0.6rem;
+}
+
+.shell-summary-copy h2 {
+	margin: 0;
+	font-size: clamp(1.5rem, 2vw, 2.3rem);
+	line-height: 1.05;
+}
+
+.proof-grid,
+.surface-grid {
+	display: grid;
+	gap: 1rem;
+}
+
+.proof-grid {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.proof-chip {
+	padding: 1rem;
+	border-radius: 1.1rem;
+	background: linear-gradient(180deg, oklch(0.3 0.026 248 / 0.9), oklch(0.24 0.02 248 / 0.9));
+	border: 1px solid oklch(0.46 0.03 248 / 0.5);
+	min-height: 8.5rem;
 	display: grid;
 	align-content: start;
-	gap: 0;
+	gap: 0.35rem;
 }
 
-.linux-mac-window {
-	left: 404px;
-	top: 116px;
-	width: 910px;
-	height: 708px;
-	transform: rotate(0.35deg);
-	z-index: 4;
+.proof-status {
+	margin: 0;
+	font-size: 1.3rem;
+	font-family: var(--font-shell-display);
+	color: var(--color-shell-text);
 }
 
-.linux-window-body {
-	position: relative;
-	height: calc(100% - 30px);
-	padding: 18px;
-	background: oklch(0.68 0.008 228);
-	box-sizing: border-box;
+.proof-detail,
+.linux-service-detail,
+.event-message,
+.event-meta {
+	margin: 0;
+	color: var(--color-shell-muted);
+	line-height: 1.5;
 }
 
-.linux-clock-window {
-	right: 124px;
-	top: 122px;
-	width: 182px;
-	height: 196px;
-	transform: rotate(0.9deg);
-	z-index: 3;
+.event-ribbon {
+	padding: 1rem 1.1rem;
+	border-radius: 1rem;
+	background: oklch(0.28 0.02 248 / 0.92);
+	border: 1px solid oklch(0.44 0.028 248 / 0.4);
+	display: grid;
+	gap: 0.35rem;
 }
 
-.linux-clock-face {
-	position: relative;
-	margin: 26px auto 0;
-	width: 112px;
-	height: 112px;
-	border-radius: 50%;
-	border: 2px solid oklch(0.28 0.014 228);
-	background: oklch(0.93 0.006 228);
-	box-shadow: inset 0 0 0 2px oklch(0.74 0.008 228);
+.event-ribbon-text {
+	margin: 0;
+	font-family: var(--font-shell-display);
+	font-size: 1.55rem;
+	line-height: 1;
+	color: var(--color-shell-warn);
 }
 
-.linux-clock-hand,
-.linux-clock-center {
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform-origin: center bottom;
-	background: oklch(0.22 0.012 228);
+.surface-grid {
+	grid-template-columns: 1.15fr 0.95fr 1fr;
+	align-items: start;
 }
 
-.linux-clock-hour {
-	width: 4px;
-	height: 28px;
-	margin-left: -2px;
-	margin-top: -28px;
-	transform: rotate(300deg);
+.app-panel,
+.surface-page-copy,
+.shell-footnote {
+	border-radius: 1.35rem;
+	padding: 1.15rem;
 }
 
-.linux-clock-minute {
-	width: 2px;
-	height: 38px;
-	margin-left: -1px;
-	margin-top: -38px;
-	transform: rotate(62deg);
+.app-panel {
+	display: grid;
+	gap: 1rem;
+	min-height: 100%;
 }
 
-.linux-clock-center {
-	width: 10px;
-	height: 10px;
-	margin-left: -5px;
-	margin-top: -5px;
-	border-radius: 999px;
-}
-
-.mac-desktop {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
-	background: oklch(0.98 0.004 92);
-	border: 2px solid oklch(0.14 0.008 92);
-	box-shadow:
-		0 0 0 1px oklch(0.98 0.004 92),
-		0 0 0 2px oklch(0.14 0.008 92);
-	font-family: var(--font-mac);
-	color: oklch(0.15 0.008 92);
-	image-rendering: pixelated;
-}
-
-.mac-menubar {
-	position: absolute;
-	left: 0;
-	right: 0;
-	top: 0;
-	height: 30px;
+.panel-header {
 	display: flex;
-	align-items: center;
+	align-items: start;
 	justify-content: space-between;
-	padding: 0 10px;
-	background: oklch(0.98 0.004 92);
-	border-bottom: 2px solid oklch(0.15 0.008 92);
-	font-size: 18px;
-	letter-spacing: 0.01em;
-	z-index: 2;
+	gap: 1rem;
 }
 
-.mac-menubar-left,
-.mac-menubar-right {
-	display: flex;
-	align-items: center;
-	gap: 14px;
+.panel-header h2 {
+	margin: 0.25rem 0 0;
+	font-size: 1.25rem;
+	line-height: 1.15;
 }
 
-.mac-apple,
-.mac-menu-strong {
-	font-weight: 700;
+.terminal-panel {
+	background: linear-gradient(180deg, oklch(0.19 0.022 248 / 0.98), oklch(0.14 0.018 248 / 0.98));
+	border-color: oklch(0.48 0.04 165 / 0.35);
 }
 
-.mac-desktop-area {
-	position: relative;
-	margin-top: 30px;
-	height: calc(100% - 30px);
-	background-color: oklch(0.98 0.004 92);
-	background-image:
-		radial-gradient(circle, oklch(0.76 0.006 92) 0.9px, transparent 0.95px),
-		linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0));
-	background-size: 18px 18px, 100% 100%;
-	background-position: 0 0, 0 0;
-}
-
-.mac-window {
-	position: absolute;
-	background: oklch(0.98 0.004 92);
-	border: 2px solid oklch(0.14 0.008 92);
-	box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.16);
+.terminal-screen-shell {
+	border-radius: 1.1rem;
 	overflow: hidden;
+	border: 1px solid oklch(0.44 0.04 165 / 0.35);
+	background: radial-gradient(circle at top, oklch(0.28 0.06 165 / 0.22), transparent 34%), oklch(0.11 0.012 165);
+	box-shadow: inset 0 0 60px oklch(0.03 0.005 165 / 0.8);
 }
 
-.mac-titlebar {
-	height: 28px;
+.terminal-chrome {
 	display: flex;
-	align-items: center;
 	justify-content: space-between;
-	padding: 0 8px;
-	background: oklch(0.98 0.004 92);
-	border-bottom: 2px solid oklch(0.14 0.008 92);
-	font-size: 16px;
-	letter-spacing: 0.04em;
+	gap: 1rem;
+	padding: 0.8rem 1rem;
+	background: oklch(0.18 0.018 165 / 0.95);
+	color: oklch(0.87 0.06 165);
+	font-size: 0.82rem;
+	letter-spacing: 0.08em;
 	text-transform: uppercase;
+	border-bottom: 1px solid oklch(0.42 0.03 165 / 0.35);
 }
 
-.mac-box {
-	width: 13px;
-	height: 13px;
-	border: 2px solid oklch(0.14 0.008 92);
-	background: transparent;
+.terminal-scrollback {
+	padding: 1rem;
+	min-height: 16rem;
+	font-family: var(--font-shell-display);
+	font-size: 1.45rem;
+	line-height: 1;
+	color: oklch(0.86 0.1 165);
+	text-shadow: 0 0 8px oklch(0.68 0.08 165 / 0.32);
+	display: grid;
+	gap: 0.4rem;
+}
+
+.terminal-scrollback p,
+.artifact-lines p,
+.artifact-notes p,
+.linux-meta p {
+	margin: 0;
+}
+
+.terminal-form {
+	display: grid;
+	gap: 0.8rem;
+}
+
+.terminal-input-row {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 0.75rem;
+}
+
+.terminal-form input {
+	width: 100%;
+	background: oklch(0.13 0.014 248 / 0.9);
+	border: 1px solid oklch(0.43 0.03 248 / 0.5);
+	border-radius: 999px;
+	padding: 0.85rem 1rem;
+	color: var(--color-shell-text);
+	outline: none;
+}
+
+.terminal-form input:focus-visible {
+	border-color: oklch(0.76 0.08 165 / 0.8);
+	box-shadow: 0 0 0 3px oklch(0.76 0.08 165 / 0.2);
+}
+
+.terminal-suggestions {
+	display: flex;
+	gap: 0.6rem;
+	flex-wrap: wrap;
+}
+
+.mac-panel {
+	background: linear-gradient(180deg, oklch(0.95 0.003 92 / 0.97), oklch(0.91 0.004 92 / 0.97));
+	color: oklch(0.2 0.008 92);
+	border-color: oklch(0.32 0.008 92 / 0.55);
+	box-shadow: 0 18px 40px oklch(0.08 0.01 248 / 0.18);
+}
+
+.mac-panel .panel-copy,
+.mac-panel .panel-eyebrow,
+.mac-panel .artifact-notes p,
+.mac-panel .artifact-lines p,
+.mac-panel .panel-link {
+	color: oklch(0.28 0.008 92);
+}
+
+.mac-panel .panel-link,
+.mac-panel .panel-link:hover,
+.mac-panel .panel-link:focus-visible {
+	background: oklch(0.9 0.004 92);
+	border-color: oklch(0.3 0.008 92 / 0.5);
+}
+
+.mac-window-shell {
+	border: 2px solid oklch(0.24 0.008 92);
+	background: oklch(0.98 0.002 92);
+	box-shadow: 0 10px 0 oklch(0.16 0.008 92 / 0.12);
+}
+
+.mac-titlebar-shell {
+	display: flex;
+	justify-content: space-between;
+	gap: 0.8rem;
+	align-items: center;
+	padding: 0.7rem 0.9rem;
+	border-bottom: 2px solid oklch(0.24 0.008 92);
+	font-family: var(--font-shell-ui);
+	background: repeating-linear-gradient(90deg, oklch(0.96 0.003 92), oklch(0.96 0.003 92) 8px, oklch(0.9 0.003 92) 8px, oklch(0.9 0.003 92) 16px);
+}
+
+.mac-dot {
+	width: 0.8rem;
+	height: 0.8rem;
+	border: 2px solid oklch(0.22 0.008 92);
+	background: oklch(0.98 0.002 92);
 	flex: none;
 }
 
-.mac-title {
-	flex: 1;
-	text-align: center;
+.mac-window-body-shell {
+	padding: 1rem;
+	display: grid;
+	gap: 1rem;
+	min-height: 18rem;
+	background-image: radial-gradient(circle, oklch(0.78 0.003 92) 0.8px, transparent 1px);
+	background-size: 13px 13px;
+}
+
+.artifact-lines,
+.artifact-notes {
+	display: grid;
+	gap: 0.55rem;
+	padding: 0.9rem;
+	background: oklch(0.98 0.002 92 / 0.88);
+	border: 1px solid oklch(0.28 0.008 92 / 0.28);
+}
+
+.linux-panel {
+	background: linear-gradient(180deg, oklch(0.76 0.008 230 / 0.97), oklch(0.7 0.01 230 / 0.97));
+	color: oklch(0.18 0.008 230);
+	border-color: oklch(0.3 0.01 230 / 0.45);
+	box-shadow: 0 18px 40px oklch(0.08 0.01 248 / 0.18);
+}
+
+.linux-panel .panel-copy,
+.linux-panel .panel-eyebrow,
+.linux-panel .linux-service-detail,
+.linux-panel .event-message,
+.linux-panel .event-meta,
+.linux-panel .panel-link {
+	color: oklch(0.28 0.008 230);
+}
+
+.linux-panel .panel-link,
+.linux-panel .panel-link:hover,
+.linux-panel .panel-link:focus-visible {
+	background: oklch(0.82 0.008 230);
+	border-color: oklch(0.32 0.01 230 / 0.45);
+}
+
+.linux-meta,
+.linux-service-list,
+.event-log {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.linux-meta {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.8rem;
+}
+
+.linux-meta p,
+.linux-service-row,
+.event-log article {
+	padding: 0.85rem 0.95rem;
+	background: oklch(0.85 0.006 230 / 0.94);
+	border: 1px solid oklch(0.3 0.01 230 / 0.22);
+	border-radius: 0.9rem;
+}
+
+.linux-meta span {
+	display: block;
+	font-size: 0.75rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	margin-bottom: 0.3rem;
+	color: oklch(0.38 0.008 230);
+}
+
+.linux-meta strong,
+.linux-service-status {
+	font-family: var(--font-shell-x11);
+	font-size: 1rem;
+}
+
+.linux-service-row {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	align-items: start;
+}
+
+.linux-service-status {
+	margin: 0;
+	padding: 0.2rem 0.55rem;
+	background: oklch(0.93 0.006 230);
+	border: 1px solid oklch(0.32 0.01 230 / 0.25);
+	border-radius: 999px;
 	white-space: nowrap;
 }
 
-.mac-terminal-window {
-	left: 90px;
-	top: 82px;
-	width: 618px;
-	height: 430px;
-	z-index: 4;
-}
-
-.terminal-bezel {
-	position: relative;
-	padding: 18px;
-	background:
-		linear-gradient(180deg, oklch(0.28 0.02 145) 0%, oklch(0.18 0.016 145) 24%, oklch(0.1 0.01 145) 100%),
-		linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.22));
-	height: calc(100% - 28px);
-	box-sizing: border-box;
-	border-top: 2px solid rgba(255, 255, 255, 0.08);
-}
-
-.terminal-screen {
-	position: relative;
-	height: 100%;
-	overflow: hidden;
-	background:
-		radial-gradient(circle at center, rgba(50, 115, 74, 0.22) 0%, rgba(10, 18, 12, 0.96) 64%),
-		linear-gradient(180deg, rgba(16, 36, 20, 0.98) 0%, rgba(5, 11, 7, 0.98) 100%);
-	border-radius: 28px;
-	box-shadow:
-		inset 0 0 120px rgba(0, 0, 0, 0.85),
-		inset 0 0 16px rgba(41, 255, 139, 0.22),
-		0 0 24px rgba(0, 0, 0, 0.45);
-	color: var(--color-phosphor-500);
-	font-family: var(--font-terminal);
-	font-size: 24px;
-	line-height: 0.86;
-	letter-spacing: 0.045em;
-}
-
-.terminal-screen::before,
-.terminal-screen::after,
-.crt-vignette {
-	content: "";
-	position: absolute;
-	inset: 0;
-	pointer-events: none;
-}
-
-.terminal-screen::before {
-	background:
-		linear-gradient(90deg, rgba(255, 255, 255, 0.045), transparent 6%, transparent 94%, rgba(255, 255, 255, 0.045)),
-		radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.36) 100%);
-	border-radius: 28px;
-	opacity: 0.9;
-	z-index: 1;
-}
-
-.terminal-screen::after {
-	background: repeating-linear-gradient(
-		180deg,
-		rgba(255, 255, 255, 0.01) 0,
-		rgba(255, 255, 255, 0.01) 2px,
-		rgba(0, 0, 0, 0.16) 2px,
-		rgba(0, 0, 0, 0.16) 4px
-	);
-	mix-blend-mode: screen;
-	opacity: 0.65;
-	z-index: 1;
-}
-
-.crt-vignette {
-	background: radial-gradient(circle at center, transparent 54%, rgba(0, 0, 0, 0.56) 100%);
-	border-radius: 28px;
-	z-index: 1;
-}
-
-.terminal-copy {
-	position: relative;
-	margin: 0;
-	padding: 28px 34px 30px;
-	height: 100%;
-	box-sizing: border-box;
-	overflow: hidden;
+.surface-page {
 	display: grid;
-	align-content: start;
-	gap: 0;
-	text-shadow:
-		0 0 7px rgba(28, 255, 119, 0.78),
-		0 0 18px rgba(28, 255, 119, 0.32),
-		0 0 36px rgba(14, 115, 48, 0.18);
-	z-index: 2;
+	gap: 1.2rem;
+	padding-top: 2.5rem;
+	padding-bottom: 3rem;
 }
 
-.terminal-row {
-	min-height: 1em;
-	white-space: pre;
-	overflow: hidden;
-	text-overflow: clip;
-}
-
-.mac-note-window {
-	right: 78px;
-	top: 126px;
-	width: 202px;
-	min-height: 198px;
-	z-index: 3;
-	transform: rotate(-0.65deg);
-}
-
-.mac-note-body {
-	padding: 12px 14px 16px;
-	font-size: 14px;
-	line-height: 1.35;
+.surface-page-copy {
 	display: grid;
-	gap: 10px;
-	max-width: 22ch;
+	gap: 0.75rem;
+	padding: 1.5rem;
 }
 
-.mac-note-body p {
-	margin: 0;
+.shell-footnote {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	align-items: center;
+	padding: 1rem 1.15rem;
 }
 
-.mac-icons {
-	position: absolute;
-	right: 34px;
-	bottom: 26px;
-	display: grid;
-	gap: 18px;
-	justify-items: center;
-	z-index: 2;
+code {
+	font-family: var(--font-shell-mono);
+	padding: 0.15rem 0.35rem;
+	border-radius: 0.35rem;
+	background: oklch(0.28 0.02 248 / 0.5);
+	color: var(--color-shell-text);
 }
 
-.mac-icon {
-	display: grid;
-	justify-items: center;
-	gap: 6px;
-	width: 88px;
+.mac-panel code,
+.linux-panel code {
+	background: oklch(0.82 0.006 230 / 0.9);
+	color: inherit;
 }
 
-.mac-icon-glyph {
-	position: relative;
-	width: 32px;
-	height: 38px;
-	background: oklch(0.98 0.004 92);
-	border: 2px solid oklch(0.14 0.008 92);
-}
-
-.mac-icon-glyph::before,
-.mac-icon-glyph::after {
-	content: "";
-	position: absolute;
-	left: 4px;
-	right: 4px;
-	border-top: 2px solid oklch(0.14 0.008 92);
-}
-
-.mac-icon-glyph::before {
-	top: 8px;
-	box-shadow: 0 6px 0 oklch(0.14 0.008 92), 0 12px 0 oklch(0.14 0.008 92);
-}
-
-.mac-icon-glyph::after {
-	bottom: 8px;
-}
-
-.mac-icon-label {
-	max-width: 8ch;
-	font-size: 12px;
-	line-height: 1.15;
-	text-align: center;
-	text-transform: none;
-}
-
-.scene-sr-copy {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	padding: 0;
-	margin: -1px;
-	overflow: hidden;
-	clip: rect(0, 0, 0, 0);
-	white-space: nowrap;
-	border: 0;
-}
-
-@media (max-width: 900px) {
-	.scene-scroll-track {
-		height: 320vh;
+@media (max-width: 1024px) {
+	.shell-page,
+	.surface-page {
+		padding: 1.2rem;
 	}
 
-	.scene-world {
-		width: 1240px;
-		height: 920px;
+	.proof-grid,
+	.surface-grid,
+	.linux-meta {
+		grid-template-columns: 1fr;
 	}
 
-	.linux-desktop {
-		width: 1240px;
-		height: 920px;
+	.shell-brandbar,
+	.shell-footnote,
+	.panel-header,
+	.terminal-input-row,
+	.linux-service-row {
+		grid-template-columns: none;
+		flex-direction: column;
 	}
 
-	.linux-topbar {
-		font-size: 15px;
-		height: 30px;
-		padding: 0 10px;
+	.shell-route-list {
+		justify-content: flex-start;
 	}
 
-	.linux-topbar-left,
-	.linux-topbar-right,
-	.linux-titlebar,
-	.linux-titlebar-controls,
-	.mac-menubar-left,
-	.mac-menubar-right {
-		gap: 8px;
+	.shell-footnote {
+		align-items: start;
 	}
 
-	.linux-window,
-	.mac-window {
-		box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.18);
-	}
-
-	.linux-titlebar,
-	.mac-menubar {
-		font-size: 15px;
-	}
-
-	.linux-xterm-window {
-		left: 60px;
-		top: 92px;
-		width: 344px;
-		height: 278px;
-	}
-
-	.linux-xterm-screen {
-		font-size: 16px;
-		padding: 14px 15px;
-	}
-
-	.linux-mac-window {
-		left: 300px;
-		top: 98px;
-		width: 720px;
-		height: 576px;
-	}
-
-	.linux-clock-window {
-		right: 72px;
-		top: 96px;
-		width: 150px;
-		height: 162px;
-	}
-
-	.linux-clock-face {
-		width: 92px;
-		height: 92px;
-	}
-
-	.linux-clock-hour {
-		height: 22px;
-		margin-top: -22px;
-	}
-
-	.linux-clock-minute {
-		height: 32px;
-		margin-top: -32px;
-	}
-
-	.mac-menubar {
-		height: 24px;
-	}
-
-	.mac-desktop-area {
-		margin-top: 24px;
-		height: calc(100% - 24px);
-		background-size: 14px 14px, 100% 100%;
-	}
-
-	.mac-titlebar {
-		height: 24px;
-		font-size: 13px;
-	}
-
-	.mac-box {
-		width: 11px;
-		height: 11px;
-	}
-
-	.mac-terminal-window {
-		left: 62px;
-		top: 60px;
-		width: 488px;
-		height: 334px;
-	}
-
-	.terminal-bezel {
-		padding: 12px;
-	}
-
-	.terminal-screen {
-		font-size: 16px;
-	}
-
-	.terminal-copy {
-		padding: 20px 22px;
-	}
-
-	.mac-note-window {
-		right: 58px;
-		top: 98px;
-		width: 154px;
-	}
-
-	.mac-note-body {
-		font-size: 11px;
-		gap: 8px;
-		padding: 10px 10px 12px;
-	}
-
-	.mac-icons {
-		right: 18px;
-		bottom: 16px;
-		gap: 12px;
-	}
-
-	.mac-icon {
-		width: 64px;
-	}
-
-	.mac-icon-glyph {
-		width: 24px;
-		height: 30px;
-	}
-
-	.mac-icon-label {
-		font-size: 10px;
+	.terminal-form button {
+		width: 100%;
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.scene-scroll-track {
-		height: auto;
+	.shell-route-list a,
+	.panel-link,
+	.terminal-suggestions button,
+	.terminal-form button {
+		transition: none;
 	}
 
-	.scene-stage {
-		position: relative;
-		height: auto;
-		overflow: visible;
-		padding: 16px 0 32px;
-	}
-
-	.scene-camera-viewport {
-		position: relative;
-		overflow: visible;
-	}
-
-	.scene-camera {
-		position: relative;
-		transform: none !important;
-	}
-
-	.scene-world {
-		width: min(100%, 1040px);
-		height: auto;
-		margin: 0 auto;
-		display: grid;
-		gap: 20px;
-	}
-
-	.linux-desktop,
-	.mac-desktop,
-	.terminal-bezel {
-		width: 100%;
-		height: auto;
-	}
-
-	.linux-desktop {
-		display: grid;
-		grid-template-rows: auto auto;
-		padding-top: 36px;
-	}
-
-	.linux-root-pattern,
-	.linux-desktop::before {
-		display: none;
-	}
-
-	.linux-window,
-	.mac-window,
-	.linux-topbar,
-	.mac-menubar {
-		position: relative;
-		left: auto;
-		right: auto;
-		top: auto;
-		bottom: auto;
-		transform: none;
-		margin: 12px;
-	}
-
-	.linux-window-body {
-		height: auto;
-	}
-
-	.mac-desktop {
-		min-height: 520px;
-	}
-
-	.mac-desktop-area {
-		min-height: 490px;
-	}
-
-	.mac-terminal-window {
-		min-height: 280px;
-	}
-
-	.terminal-bezel {
-		min-height: 252px;
+	.scroll-smooth {
+		scroll-behavior: auto;
 	}
 }

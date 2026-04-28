@@ -1,0 +1,71 @@
+package apps
+
+import model "github.com/rezuscloud/platform-website/internal/platform"
+
+templ ShellPage(state model.SessionState) {
+	<div class="shell-page">
+		<section class="shell-hero">
+			<div class="shell-brandbar">
+				<div>
+					<p class="shell-kicker">RezusCloud</p>
+					<p class="shell-brandline">Bold underground platform shell</p>
+				</div>
+				<div class="shell-route-list">
+					<a href="/apps/terminal">/apps/terminal</a>
+					<a href="/apps/mac">/apps/mac</a>
+					<a href="/apps/linux">/apps/linux</a>
+				</div>
+			</div>
+			<div class="shell-hero-copy">
+				<p class="shell-kicker">Brand shell, live demos</p>
+				<h1>Own the machine, then watch the apps talk.</h1>
+				<p class="shell-lead">The homepage is now a shell for three real application surfaces. Terminal collects intent, Linux executes and publishes state, Mac opens the artifact, and the shell only claims what the system actually proved.</p>
+			</div>
+		</section>
+		@ShellSummary(state, true)
+		<section class="surface-grid" aria-label="Live application surfaces">
+			@TerminalEmbed(state, true, "/apps/terminal")
+			@MacEmbed(state, true, "/apps/mac")
+			@LinuxEmbed(state, true, "/apps/linux")
+		</section>
+		<section class="shell-footnote">
+			<p>Session <code>{ state.SessionID }</code></p>
+			<p>Same-origin composition under one host, shared session state, and topic <code>homepage.events</code> observed by the shell.</p>
+		</section>
+	</div>
+}
+
+templ ShellSummary(state model.SessionState, live bool) {
+	if live {
+		<section id="shell-summary" class="shell-summary" hx-get="/shell/summary" hx-trigger="load, session-updated from:body, every 8s" hx-swap="outerHTML">
+			@shellSummaryBody(state)
+		</section>
+	} else {
+		<section id="shell-summary" class="shell-summary">
+			@shellSummaryBody(state)
+		</section>
+	}
+}
+
+templ shellSummaryBody(state model.SessionState) {
+	<div class="shell-summary-copy">
+		<p class="shell-kicker">{ state.Summary.Kicker }</p>
+		<h2>{ state.Summary.Headline }</h2>
+		<p>{ state.Summary.Detail }</p>
+	</div>
+	<div class="proof-grid">
+		for _, proof := range state.Summary.Proofs {
+			<div class="proof-chip">
+				<p class="proof-label">{ proof.Label }</p>
+				<p class="proof-status">{ proof.Status }</p>
+				<p class="proof-detail">{ proof.Detail }</p>
+			</div>
+		}
+	</div>
+	<div class="event-ribbon">
+		if len(state.Events) > 0 {
+			<p class="event-ribbon-label">Latest event</p>
+			<p class="event-ribbon-text"><span>{ state.Events[0].Type }</span><span>to </span><span>{ state.Events[0].Message }</span></p>
+		}
+	</div>
+}

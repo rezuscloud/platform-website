@@ -1,4 +1,4 @@
-package handlers
+package handlers_test
 
 import (
 	"io"
@@ -6,20 +6,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/rezuscloud/platform-website/internal/platform"
+	"github.com/rezuscloud/platform-website/internal/server"
 )
 
-func setupApp() *fiber.App {
-	app := fiber.New(fiber.Config{})
-	app.Get("/", Home)
-	app.Get("/sections/:name", Section)
-	return app
-}
-
 func TestHomeHandler(t *testing.T) {
-	app := setupApp()
+	app := server.NewGatewayApp(platform.NewLocalRuntime())
 
 	req := httptest.NewRequest("GET", "/", nil)
 	resp, err := app.Test(req, -1)
@@ -31,7 +26,7 @@ func TestHomeHandler(t *testing.T) {
 }
 
 func TestHomeHandlerContainsExpectedContent(t *testing.T) {
-	app := setupApp()
+	app := server.NewGatewayApp(platform.NewLocalRuntime())
 
 	req := httptest.NewRequest("GET", "/", nil)
 	resp, err := app.Test(req, -1)
@@ -42,24 +37,28 @@ func TestHomeHandlerContainsExpectedContent(t *testing.T) {
 	require.NoError(t, err)
 
 	html := string(body)
-	assert.Contains(t, html, "RezusCloud")
-	assert.Contains(t, html, "REZUS OS ROM 1.0.0")
-	assert.Contains(t, html, "Mini vMac")
-	assert.Contains(t, html, "xterm")
+	assert.Contains(t, html, "Own the machine, then watch the apps talk")
+	assert.Contains(t, html, "/apps/terminal")
+	assert.Contains(t, html, "terminal-app")
+	assert.Contains(t, html, "linux-app")
+	assert.Contains(t, html, "mac-app")
 }
 
-func TestSectionHandler(t *testing.T) {
-	sections := []string{
-		"hero", "challenge", "architecture", "features",
-		"networking", "edge", "services", "comparison",
-		"usecases", "techstack", "getstarted",
+func TestAppSurfaceRoutes(t *testing.T) {
+	app := server.NewGatewayApp(platform.NewLocalRuntime())
+
+	routes := []string{
+		"/apps/terminal",
+		"/apps/terminal/embed",
+		"/apps/mac",
+		"/apps/mac/embed",
+		"/apps/linux",
+		"/apps/linux/embed",
 	}
 
-	app := setupApp()
-
-	for _, section := range sections {
-		t.Run(section, func(t *testing.T) {
-			req := httptest.NewRequest("GET", "/sections/"+section, nil)
+	for _, route := range routes {
+		t.Run(route, func(t *testing.T) {
+			req := httptest.NewRequest("GET", route, nil)
 			resp, err := app.Test(req, -1)
 			require.NoError(t, err)
 			defer resp.Body.Close()
@@ -70,35 +69,64 @@ func TestSectionHandler(t *testing.T) {
 	}
 }
 
-func TestSectionHandlerContainsContent(t *testing.T) {
-	app := setupApp()
+func TestTerminalActionUpdatesSharedState(t *testing.T) {
+	app := server.NewGatewayApp(platform.NewLocalRuntime())
 
-	expectedContent := map[string]string{
-		"hero":         "Your Personal",
-		"features":     "What You Get",
-		"architecture": "How It Works",
-		"getstarted":   "Start Your Cloud",
+	bootstrapReq := httptest.NewRequest("GET", "/", nil)
+	bootstrapResp, err := app.Test(bootstrapReq, -1)
+	require.NoError(t, err)
+	defer bootstrapResp.Body.Close()
+
+	cookies := bootstrapResp.Cookies()
+	require.NotEmpty(t, cookies)
+
+	actionReq := httptest.NewRequest("POST", "/apps/terminal/actions/run", strings.NewReader("preset=rezus+sync+demo"))
+	actionReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	for _, cookie := range cookies {
+		actionReq.AddCookie(cookie)
 	}
 
-	for section, expected := range expectedContent {
-		t.Run(section+"_content", func(t *testing.T) {
-			req := httptest.NewRequest("GET", "/sections/"+section, nil)
-			resp, err := app.Test(req, -1)
-			require.NoError(t, err)
-			defer resp.Body.Close()
+	actionResp, err := app.Test(actionReq, -1)
+	require.NoError(t, err)
+	defer actionResp.Body.Close()
 
-			body, err := io.ReadAll(resp.Body)
-			require.NoError(t, err)
+	body, err := io.ReadAll(actionResp.Body)
+	require.NoError(t, err)
+	html := string(body)
 
-			assert.Contains(t, string(body), expected)
-		})
+	assert.Contains(t, html, "terminal-app -&gt; linux-app")
+	assert.Contains(t, html, "artifact.published")
+	assert.Contains(t, actionResp.Header.Get("HX-Trigger"), "session-updated")
+
+	macReq := httptest.NewRequest("GET", "/apps/mac/embed", nil)
+	for _, cookie := range cookies {
+		macReq.AddCookie(cookie)
 	}
+	macResp, err := app.Test(macReq, -1)
+	require.NoError(t, err)
+	defer macResp.Body.Close()
+
+	macBody, err := io.ReadAll(macResp.Body)
+	require.NoError(t, err)
+	assert.Contains(t, string(macBody), "Deployment dossier")
+
+	shellReq := httptest.NewRequest("GET", "/shell/summary", nil)
+	for _, cookie := range cookies {
+		shellReq.AddCookie(cookie)
+	}
+	shellResp, err := app.Test(shellReq, -1)
+	require.NoError(t, err)
+	defer shellResp.Body.Close()
+
+	shellBody, err := io.ReadAll(shellResp.Body)
+	require.NoError(t, err)
+	assert.Contains(t, string(shellBody), "One command moved through three services")
 }
 
-func TestSectionHandlerNotFound(t *testing.T) {
-	app := setupApp()
+func TestLegacySectionsRemoved(t *testing.T) {
+	app := server.NewGatewayApp(platform.NewLocalRuntime())
 
-	req := httptest.NewRequest("GET", "/sections/nonexistent", nil)
+	req := httptest.NewRequest("GET", "/sections/hero", nil)
 	resp, err := app.Test(req, -1)
 	require.NoError(t, err)
 	defer resp.Body.Close()
@@ -106,32 +134,8 @@ func TestSectionHandlerNotFound(t *testing.T) {
 	assert.Equal(t, 404, resp.StatusCode)
 }
 
-func TestSectionHandlerReturnsSectionID(t *testing.T) {
-	app := setupApp()
-
-	sections := []string{"hero", "features", "architecture"}
-
-	for _, section := range sections {
-		t.Run(section+"_has_id", func(t *testing.T) {
-			req := httptest.NewRequest("GET", "/sections/"+section, nil)
-			resp, err := app.Test(req, -1)
-			require.NoError(t, err)
-			defer resp.Body.Close()
-
-			body, err := io.ReadAll(resp.Body)
-			require.NoError(t, err)
-
-			assert.Contains(t, string(body), `id="`+section+`"`)
-		})
-	}
-}
-
-func TestHomePageContainsAllSections(t *testing.T) {
-	app := setupApp()
-
-	sections := []string{
-		"scene",
-	}
+func TestHomePageContainsAllPrimarySurfaces(t *testing.T) {
+	app := server.NewGatewayApp(platform.NewLocalRuntime())
 
 	req := httptest.NewRequest("GET", "/", nil)
 	resp, err := app.Test(req, -1)
@@ -142,40 +146,8 @@ func TestHomePageContainsAllSections(t *testing.T) {
 	require.NoError(t, err)
 
 	html := string(body)
-	for _, section := range sections {
-		assert.True(t, strings.Contains(html, `id="`+section+`"`),
-			"Expected section %s to be present in home page", section)
-	}
-}
-
-func TestHomePageContainsNavigation(t *testing.T) {
-	app := setupApp()
-
-	req := httptest.NewRequest("GET", "/", nil)
-	resp, err := app.Test(req, -1)
-	require.NoError(t, err)
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	require.NoError(t, err)
-
-	html := string(body)
-	assert.NotContains(t, html, "<nav")
-	assert.NotContains(t, html, "</nav>")
-}
-
-func TestHomePageContainsFooter(t *testing.T) {
-	app := setupApp()
-
-	req := httptest.NewRequest("GET", "/", nil)
-	resp, err := app.Test(req, -1)
-	require.NoError(t, err)
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	require.NoError(t, err)
-
-	html := string(body)
-	assert.NotContains(t, html, "<footer")
-	assert.NotContains(t, html, "</footer>")
+	assert.True(t, strings.Contains(html, `id="shell-summary"`))
+	assert.True(t, strings.Contains(html, `id="terminal-panel"`))
+	assert.True(t, strings.Contains(html, `id="mac-panel"`))
+	assert.True(t, strings.Contains(html, `id="linux-panel"`))
 }
