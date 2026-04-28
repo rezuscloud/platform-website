@@ -4,35 +4,59 @@ templ HomeScene() {
 	<section id="scene" class="scene-section" data-scene-root>
 		<div class="scene-scroll-track" data-scene-track>
 			<div class="scene-stage">
-				<div class="scene-backdrop"></div>
 				<div class="scene-camera">
 					<div class="scene-world">
-						<div class="scene-desktop">
-							<div class="scene-desktop-panel">
-								<div class="scene-desktop-panel-left">
-									<span class="w-2.5 h-2.5 rounded-full bg-phosphor-500"></span>
-									<span>rezus desktop // preview</span>
+						<div class="mac-desktop">
+							<div class="mac-menubar">
+								<div class="mac-menubar-left">
+									<span class="mac-apple">&#63743;</span>
+									<span class="mac-menu-item mac-menu-bold">File</span>
+									<span class="mac-menu-item">Edit</span>
+									<span class="mac-menu-item">View</span>
+									<span class="mac-menu-item">Special</span>
 								</div>
-								<div class="scene-desktop-panel-right">
-									<span>git</span>
-									<span>nodes</span>
-									<span>private</span>
+								<div class="mac-menubar-right">
+									<span>RezusCloud</span>
 								</div>
 							</div>
-							<div class="scene-desktop-canvas">
-								@sceneDesktopWindow("terminal", "scene-terminal-window") {
-									@sceneTerminalPage()
-								}
-								<div class="scene-desktop-icons">
-									@sceneDesktopIcon("git")
-									@sceneDesktopIcon("mesh")
-									@sceneDesktopIcon("cluster")
+							<div class="mac-desktop-area">
+								<div class="scene-terminal-window scene-window">
+									<div class="mac-titlebar">
+										<div class="mac-close-box"></div>
+										<span class="mac-title-text">personal-cloud</span>
+										<div class="mac-zoom-box"></div>
+									</div>
+									<div class="scene-window-body">
+										<div class="terminal-screen crt-scanlines">
+											<div class="terminal-content">
+												<div class="term-line">
+													<span class="term-prompt">$</span>
+													<span>cat ./personal-cloud.txt</span>
+												</div>
+												<h1 class="term-heading">Your Personal Cloud</h1>
+												<p class="term-paragraph">They said you did not need your own computer either. Then the personal computer changed who could own, build, and publish software.</p>
+												<p class="term-paragraph">RezusCloud applies that same shift to infrastructure. Your machines, your network, your rules.</p>
+												<div class="term-block">
+													<ul class="term-list">
+														<li><span class="term-prompt">&gt;</span><span>private by design</span></li>
+														<li><span class="term-prompt">&gt;</span><span>open source all the way down</span></li>
+														<li><span class="term-prompt">&gt;</span><span>push to git, let the platform reconcile</span></li>
+														<li><span class="term-prompt">&gt;</span><span>use whatever machine you already have</span></li>
+													</ul>
+												</div>
+												<div class="term-footer">
+													<span class="term-prompt">&gt;</span>
+													<span class="term-cursor-text">scroll to zoom out</span>
+													<span class="animate-blink">_</span>
+												</div>
+											</div>
+										</div>
+									</div>
 								</div>
-								<div class="scene-desktop-dock">
-									<span></span>
-									<span></span>
-									<span></span>
-									<span></span>
+								<div class="mac-icons">
+									@macIcon("ReadMe")
+									@macIcon("System")
+									@macIcon("Trash")
 								</div>
 							</div>
 						</div>
@@ -43,65 +67,9 @@ templ HomeScene() {
 	</section>
 }
 
-templ sceneDesktopWindow(title string, className string) {
-	<div class={ "scene-window scene-window-desktop", className }>
-		<div class="scene-window-titlebar scene-window-titlebar-desktop">
-			<div class="scene-window-controls">
-				<span class="scene-window-dot"></span>
-				<span class="scene-window-dot"></span>
-				<span class="scene-window-dot"></span>
-			</div>
-			<span>{ title }</span>
-		</div>
-		<div class="scene-window-body">
-			{ children... }
-		</div>
-	</div>
-}
-
-templ sceneTerminalPage() {
-	<div class="scene-terminal-page crt-scanlines">
-		<div class="scene-terminal-toolbar">
-			<span class="scene-terminal-chip">manifesto</span>
-			<span class="scene-terminal-chip scene-terminal-chip-active">ownership</span>
-			<span class="scene-terminal-path">~/rezuscloud/personal-cloud</span>
-		</div>
-		<div class="scene-terminal-body">
-			<div class="scene-terminal-line">
-				<span class="scene-terminal-prompt">$</span>
-				<span>cat ./personal-cloud.txt</span>
-			</div>
-			<h1 id="scene-terminal-title" class="scene-terminal-heading">Your Personal Cloud</h1>
-			<p class="scene-terminal-paragraph">They said you did not need your own computer either. Then the personal computer changed who could own, build, and publish software. RezusCloud applies that same shift to infrastructure.</p>
-			<div class="scene-terminal-block">
-				<div class="scene-terminal-label">Why this exists</div>
-				<ul class="scene-terminal-list">
-					<li><span class="scene-terminal-prompt">&gt;</span><span>renting cloud is still renting someone else&apos;s machine</span></li>
-					<li><span class="scene-terminal-prompt">&gt;</span><span>hardware you already own should be enough to run your own platform</span></li>
-					<li><span class="scene-terminal-prompt">&gt;</span><span>ordinary home internet should not block infrastructure ownership</span></li>
-				</ul>
-			</div>
-			<div class="scene-terminal-block">
-				<div class="scene-terminal-label">Principles</div>
-				<ul class="scene-terminal-list">
-					<li><span class="scene-terminal-prompt">&gt;</span><span>private by design</span></li>
-					<li><span class="scene-terminal-prompt">&gt;</span><span>open source all the way down</span></li>
-					<li><span class="scene-terminal-prompt">&gt;</span><span>push to git, let the platform reconcile</span></li>
-					<li><span class="scene-terminal-prompt">&gt;</span><span>use whatever machine you already have</span></li>
-				</ul>
-			</div>
-			<div class="scene-terminal-footer">
-				<span class="scene-terminal-prompt">&gt;</span>
-				<span>scroll to zoom out from the terminal into its desktop</span>
-				<span class="animate-blink">_</span>
-			</div>
-		</div>
-	</div>
-}
-
-templ sceneDesktopIcon(label string) {
-	<div class="scene-desktop-icon">
-		<div class="scene-desktop-icon-glyph"></div>
-		<span>{ label }</span>
+templ macIcon(label string) {
+	<div class="mac-icon">
+		<div class="mac-icon-glyph"></div>
+		<span class="mac-icon-label">{ label }</span>
 	</div>
 }

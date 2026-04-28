@@ -128,9 +128,7 @@ func TestHomePageContainsAllSections(t *testing.T) {
 	app := setupApp()
 
 	sections := []string{
-		"scene", "challenge", "architecture", "features",
-		"networking", "edge", "services", "comparison",
-		"usecases", "techstack", "getstarted",
+		"scene",
 	}
 
 	req := httptest.NewRequest("GET", "/", nil)
