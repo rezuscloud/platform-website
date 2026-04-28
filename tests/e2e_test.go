@@ -43,6 +43,32 @@ func newChromedpContext() (context.Context, context.CancelFunc) {
 	}
 }
 
+type panelTexts struct {
+	Terminal string `json:"terminal"`
+	Shell    string `json:"shell"`
+	Mac      string `json:"mac"`
+	Linux    string `json:"linux"`
+}
+
+func readPanelTexts(ctx context.Context) (panelTexts, error) {
+	var texts panelTexts
+	err := chromedp.Run(ctx,
+		chromedp.Evaluate(`
+			(() => {
+				const text = (id) => document.getElementById(id)?.innerText || "";
+				return {
+					terminal: text("terminal-panel"),
+					shell: text("shell-summary"),
+					mac: text("mac-panel"),
+					linux: text("linux-panel")
+				};
+			})()
+		`, &texts),
+	)
+
+	return texts, err
+}
+
 func TestE2EPerformance(t *testing.T) {
 	ctx, cancel := newChromedpContext()
 	defer cancel()
@@ -119,26 +145,36 @@ func TestE2ECrossAppFlow(t *testing.T) {
 	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
-	var terminalText string
-	var shellText string
-	var macText string
-	var linuxText string
-
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(getBaseURL()),
 		chromedp.WaitVisible("#terminal-panel"),
 		chromedp.Click(`button[name="preset"][value="rezus sync demo"]`),
-		chromedp.Sleep(800*time.Millisecond),
-		chromedp.Text("#terminal-panel", &terminalText),
-		chromedp.Text("#shell-summary", &shellText),
-		chromedp.Text("#mac-panel", &macText),
-		chromedp.Text("#linux-panel", &linuxText),
 	)
 	require.NoError(t, err)
 
-	assert.Contains(t, strings.ToLower(terminalText), "artifact.published")
-	assert.Contains(t, strings.ToLower(shellText), "one command moved through three services")
-	assert.Contains(t, strings.ToLower(macText), "deployment dossier")
-	assert.Contains(t, strings.ToLower(linuxText), "reconciled")
-	assert.Contains(t, strings.ToLower(linuxText), "artifact.published")
+	var texts panelTexts
+	require.Eventually(t, func() bool {
+		var readErr error
+		texts, readErr = readPanelTexts(ctx)
+		if readErr != nil {
+			return false
+		}
+
+		terminalText := strings.ToLower(texts.Terminal)
+		shellText := strings.ToLower(texts.Shell)
+		macText := strings.ToLower(texts.Mac)
+		linuxText := strings.ToLower(texts.Linux)
+
+		return strings.Contains(terminalText, "artifact.published") &&
+			strings.Contains(shellText, "one command moved through three services") &&
+			strings.Contains(macText, "deployment dossier") &&
+			strings.Contains(linuxText, "reconciled") &&
+			strings.Contains(linuxText, "artifact.published")
+	}, 10*time.Second, 100*time.Millisecond)
+
+	assert.Contains(t, strings.ToLower(texts.Terminal), "artifact.published")
+	assert.Contains(t, strings.ToLower(texts.Shell), "one command moved through three services")
+	assert.Contains(t, strings.ToLower(texts.Mac), "deployment dossier")
+	assert.Contains(t, strings.ToLower(texts.Linux), "reconciled")
+	assert.Contains(t, strings.ToLower(texts.Linux), "artifact.published")
 }
