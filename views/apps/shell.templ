@@ -84,7 +84,7 @@ templ shellSummaryBody(state model.SessionState) {
 	<div class="event-ribbon">
 		if len(state.Events) > 0 {
 			<p class="event-ribbon-label">Latest event</p>
-			<p class="event-ribbon-text"><span>{ state.Events[0].Type }</span><span> to </span><span>{ state.Events[0].Message }</span></p>
+			<p class="event-ribbon-text"><span>{ state.Events[0].Type }</span><span>to </span><span>{ state.Events[0].Message }</span></p>
 		}
 	</div>
 }
