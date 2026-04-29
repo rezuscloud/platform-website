@@ -262,7 +262,7 @@ func shellSummaryBody(state model.SessionState) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(state.Events[0].Message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/shell.templ`, Line: 87, Col: 117}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/shell.templ`, Line: 87, Col: 116}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
