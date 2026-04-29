@@ -87,10 +87,13 @@ func TestHomePageHTMLStructure(t *testing.T) {
 		assert.Equal(t, 1, doc.Find("#terminal-panel").Length())
 		assert.Equal(t, 1, doc.Find("#mac-panel").Length())
 		assert.Equal(t, 1, doc.Find("#linux-panel").Length())
+		assert.Equal(t, 1, doc.Find("#linux-panel #mac-panel #terminal-panel").Length())
+		assert.Equal(t, 1, doc.Find("[data-scene-root]").Length())
 	})
 
-	t.Run("has htmx scripts for live shell updates", func(t *testing.T) {
+	t.Run("has htmx and scene scripts", func(t *testing.T) {
 		assert.Equal(t, 1, doc.Find(`script[src='/assets/js/htmx.min.js']`).Length())
+		assert.Equal(t, 1, doc.Find(`script[src='/assets/js/scene.js']`).Length())
 	})
 }
 
@@ -108,10 +111,12 @@ func TestHomePageShellContent(t *testing.T) {
 	t.Run("contains proof rail and session copy", func(t *testing.T) {
 		assert.Contains(t, html, "Brand shell, live demos")
 		assert.Contains(t, html, "One homepage, three cooperating application surfaces")
-		assert.Contains(t, html, "proof rail")
+		assert.Contains(t, html, "Same origin, shared state")
 		assert.Contains(t, html, "PostgreSQL V2")
 		assert.Contains(t, html, "JetStream")
 		assert.Contains(t, html, "Redis")
+		assert.Contains(t, html, "Mini vMac")
+		assert.Contains(t, html, "MacTerminal")
 	})
 }
 
@@ -119,19 +124,34 @@ func TestStandaloneAppPages(t *testing.T) {
 	app := setupIntegrationApp()
 
 	tests := []struct {
-		path     string
-		expected string
+		path            string
+		expected        string
+		hasLinux        bool
+		hasMac          bool
+		hasTerminal     bool
+		nestedMac       bool
+		nestedTerminal  bool
 	}{
-		{path: "/apps/terminal", expected: "Command surface"},
-		{path: "/apps/mac", expected: "Inspection surface"},
-		{path: "/apps/linux", expected: "Execution surface"},
+		{path: "/apps/terminal", expected: "Command surface", hasTerminal: true},
+		{path: "/apps/mac", expected: "Inspection surface", hasMac: true, hasTerminal: true, nestedTerminal: true},
+		{path: "/apps/linux", expected: "Execution surface", hasLinux: true, hasMac: true, hasTerminal: true, nestedMac: true, nestedTerminal: true},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.path, func(t *testing.T) {
+			doc := getHTMLDoc(t, app, tc.path)
 			html := getHTMLString(t, app, tc.path)
 			assert.Contains(t, html, tc.expected)
 			assert.Contains(t, html, "RezusCloud")
+			assert.Equal(t, boolToInt(tc.hasLinux), doc.Find("#linux-panel").Length())
+			assert.Equal(t, boolToInt(tc.hasMac), doc.Find("#mac-panel").Length())
+			assert.Equal(t, boolToInt(tc.hasTerminal), doc.Find("#terminal-panel").Length())
+			if tc.nestedMac {
+				assert.Equal(t, 1, doc.Find("#linux-panel #mac-panel").Length())
+			}
+			if tc.nestedTerminal {
+				assert.Equal(t, 1, doc.Find("#mac-panel #terminal-panel").Length())
+			}
 		})
 	}
 }
@@ -234,17 +254,30 @@ func TestProgressiveEnhancement(t *testing.T) {
 		assert.Equal(t, 1, doc.Find("#terminal-panel").Length())
 		assert.Equal(t, 1, doc.Find("#mac-panel").Length())
 		assert.Equal(t, 1, doc.Find("#linux-panel").Length())
+		assert.Equal(t, 1, doc.Find("#linux-panel #mac-panel #terminal-panel").Length())
 	})
 
-	t.Run("live surfaces expose htmx endpoints server-side", func(t *testing.T) {
-		assert.Contains(t, html, `hx-get="/apps/terminal/embed"`)
-		assert.Contains(t, html, `hx-get="/apps/mac/embed"`)
+	t.Run("top level routes expose htmx endpoints server-side", func(t *testing.T) {
+		macHTML := getHTMLString(t, app, "/apps/mac")
+		linuxHTML := getHTMLString(t, app, "/apps/linux")
+		terminalHTML := getHTMLString(t, app, "/apps/terminal")
 		assert.Contains(t, html, `hx-get="/apps/linux/embed"`)
+		assert.Contains(t, macHTML, `hx-get="/apps/mac/embed"`)
+		assert.Contains(t, linuxHTML, `hx-get="/apps/linux/embed"`)
+		assert.Contains(t, terminalHTML, `hx-get="/apps/terminal/embed"`)
 	})
 
 	t.Run("no javascript bootstrap class present", func(t *testing.T) {
 		assert.Contains(t, html, "brand-html no-js")
 	})
+}
+
+func boolToInt(value bool) int {
+	if value {
+		return 1
+	}
+
+	return 0
 }
 
 func getHTMLFromRequest(t *testing.T, app *fiber.App, req *http.Request) string {

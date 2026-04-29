@@ -17,25 +17,37 @@ templ MacPage(state model.SessionState, basePath string) {
 			"Mac stays narrow: it reads shared state, opens the latest artifact, and preserves the nested terminal context instead of pretending it owns execution.",
 		) {
 			<div class="route-scene route-scene-mac">
-				@MacEmbed(state, true, basePath, "/apps/terminal")
+				@MacEmbed(state, true, basePath, "/apps/terminal", "/apps/mac")
 			</div>
 		}
 	}
 }
 
-templ MacEmbed(state model.SessionState, live bool, basePath string, terminalBasePath string) {
+templ MacEmbed(state model.SessionState, live bool, basePath string, terminalBasePath string, hostRoute string) {
 	if live {
-		<section id="mac-panel" class="mac-panel" data-scene-target="mac" hx-get={ basePath + "/embed" } hx-trigger="load, session-updated from:body, every 10s" hx-swap="outerHTML">
-			@macPanelBody(state, basePath, terminalBasePath)
-		</section>
+		if hostRoute == basePath {
+			<section id="mac-panel" class="mac-panel mac-panel-standalone" data-scene-target="mac" hx-get={ basePath + "/embed" } hx-trigger="session-updated from:body, every 10s" hx-swap="outerHTML">
+				@macPanelBody(state, basePath, terminalBasePath, hostRoute)
+			</section>
+		} else {
+			<section id="mac-panel" class="mac-panel" data-scene-target="mac" hx-get={ basePath + "/embed" } hx-trigger="session-updated from:body, every 10s" hx-swap="outerHTML">
+				@macPanelBody(state, basePath, terminalBasePath, hostRoute)
+			</section>
+		}
 	} else {
-		<section id="mac-panel" class="mac-panel" data-scene-target="mac">
-			@macPanelBody(state, basePath, terminalBasePath)
-		</section>
+		if hostRoute == basePath {
+			<section id="mac-panel" class="mac-panel mac-panel-standalone" data-scene-target="mac">
+				@macPanelBody(state, basePath, terminalBasePath, hostRoute)
+			</section>
+		} else {
+			<section id="mac-panel" class="mac-panel" data-scene-target="mac">
+				@macPanelBody(state, basePath, terminalBasePath, hostRoute)
+			</section>
+		}
 	}
 }
 
-templ macPanelBody(state model.SessionState, basePath string, terminalBasePath string) {
+templ macPanelBody(state model.SessionState, basePath string, terminalBasePath string, hostRoute string) {
 	<div class="mac-menubar-shell">
 		<div class="mac-menubar-left">
 			<span class="mac-apple-mark">&#63743;</span>
@@ -44,12 +56,17 @@ templ macPanelBody(state model.SessionState, basePath string, terminalBasePath s
 			<span>View</span>
 			<span>Special</span>
 		</div>
-		<div class="mac-menubar-right">
-			<a class="window-open-link mac-open-link" href={ basePath } aria-label="Open Mac route">/apps/mac</a>
-		</div>
+		if hostRoute != "/apps/mac" {
+			<div class="mac-menubar-right">
+				<a class="window-open-link mac-open-link" href={ basePath } aria-label="Open Mac route">/apps/mac</a>
+			</div>
+		}
 	</div>
 	<div class="mac-desktop-shell">
-		<div class="mac-primary-window">
+		<div class="mac-terminal-host">
+			@TerminalEmbed(state, false, terminalBasePath, hostRoute)
+		</div>
+		<div class="mac-primary-window mac-artifact-window">
 			<div class="mac-titlebar-shell">
 				<div class="mac-titlebar-box"></div>
 				<strong>{ state.Mac.Artifact.Title }</strong>
@@ -69,9 +86,6 @@ templ macPanelBody(state model.SessionState, basePath string, terminalBasePath s
 							<p>{ note }</p>
 						}
 					</div>
-				</div>
-				<div class="mac-terminal-host">
-					@TerminalEmbed(state, false, terminalBasePath, true)
 				</div>
 			</div>
 		</div>
