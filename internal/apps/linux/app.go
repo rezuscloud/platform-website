@@ -34,7 +34,7 @@ func embed(runtime platform.Runtime, basePath string) fiber.Handler {
 			return err
 		}
 
-		return render(c, viewapps.LinuxEmbed(state, true, basePath))
+		return render(c, viewapps.LinuxEmbed(state, true, basePath, "/apps/mac", "/apps/terminal", false))
 	}
 }
 

@@ -11,7 +11,6 @@ const (
 	DefaultStateStore    = "statestore"
 	DefaultPubsubName    = "pubsub"
 	DefaultLockStore     = "lockstore"
-	DefaultConfigStore   = "configstore"
 	SessionEventsTopic   = "homepage.events"
 	ShellAppID           = "platform-website-shell"
 	TerminalAppID        = "platform-website-terminal"
@@ -127,7 +126,7 @@ func NewSessionState(sessionID string) SessionState {
 			Suggestions: []string{"rezus sync demo", "rezus fanout edge", "rezus inspect dossier"},
 			History: []string{
 				"BOOT: shell, terminal, mac, linux surfaces attached",
-				"DAPR: PostgreSQL v2 state + JetStream pubsub + Redis lock/config ready",
+				"DAPR: PostgreSQL v2 state + JetStream pubsub + Redis lock ready",
 				"TIP: run `rezus sync demo` to prove the cross-app path",
 			},
 		},

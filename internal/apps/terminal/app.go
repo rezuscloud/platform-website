@@ -35,7 +35,7 @@ func embed(runtime platform.Runtime, basePath string) fiber.Handler {
 			return err
 		}
 
-		return render(c, viewapps.TerminalEmbed(state, true, basePath))
+		return render(c, viewapps.TerminalEmbed(state, true, basePath, false))
 	}
 }
 
@@ -43,6 +43,7 @@ func run(runtime platform.Runtime, basePath string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		sessionID := platform.EnsureSessionID(c)
 		command := strings.TrimSpace(c.FormValue("command"))
+		parentRoute := nestedParentRoute(c.FormValue("nested"), c.Get("Referer"), basePath)
 		if command == "" {
 			command = strings.TrimSpace(c.FormValue("preset"))
 		}
@@ -54,11 +55,33 @@ func run(runtime platform.Runtime, basePath string) fiber.Handler {
 
 		c.Set("HX-Trigger", "session-updated")
 		if c.Get("HX-Request") == "true" {
-			return render(c, viewapps.TerminalEmbed(response.State, true, basePath))
+			return render(c, viewapps.TerminalEmbed(response.State, true, basePath, strings.TrimSpace(c.FormValue("nested")) == "true"))
 		}
 
-		return render(c, viewapps.TerminalPage(response.State, basePath))
+		switch parentRoute {
+		case "/apps/mac":
+			return render(c, viewapps.MacPage(response.State, "/apps/mac"))
+		case "/apps/linux":
+			return render(c, viewapps.LinuxPage(response.State, "/apps/linux"))
+		default:
+			return render(c, viewapps.TerminalPage(response.State, basePath))
+		}
 	}
+}
+
+func nestedParentRoute(nested string, referer string, terminalBasePath string) string {
+	if strings.TrimSpace(nested) != "true" {
+		return terminalBasePath
+	}
+
+	if strings.Contains(referer, "/apps/linux") {
+		return "/apps/linux"
+	}
+	if strings.Contains(referer, "/apps/mac") {
+		return "/apps/mac"
+	}
+
+	return terminalBasePath
 }
 
 func sessionState(c *fiber.Ctx, runtime platform.Runtime) (platform.SessionState, error) {

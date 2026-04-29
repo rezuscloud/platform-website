@@ -46,7 +46,6 @@ In cluster, that flow is backed by concrete namespace-local Dapr components:
 
 - PostgreSQL V2 for `statestore`
 - NATS JetStream for `pubsub`
-- Redis for `configstore`
 - Redis for `lockstore`
 
 The shared state key is namespaced per session:
@@ -80,13 +79,20 @@ The production namespace `platform-website` also runs dedicated Dapr backends fo
 
 - PostgreSQL for state
 - NATS JetStream for pub/sub
-- Redis for configuration and locking
+- Redis for locking
 
 The app code uses those concrete component names explicitly:
 
 - `DAPR_STATE_STORE_NAME=statestore`
 - `DAPR_PUBSUB_NAME=pubsub`
 - `DAPR_LOCK_STORE_NAME=lockstore`
+
+The GitOps Dapr configuration also narrows the runtime surface:
+
+- component `scopes` only allow the four `platform-website-*` app IDs to use the backends
+- tracing samples 10% of requests instead of 100%
+- component resiliency adds timeouts, exponential retries, and circuit breakers
+- sidecar CPU and memory are sized explicitly via annotations
 
 Preview environments use the same topology. Flux creates a fresh namespace `platform-website-pr<N>` with its own Dapr components and its own PostgreSQL, JetStream, and Redis backends for every pull request that carries the `preview-ready` label.
 

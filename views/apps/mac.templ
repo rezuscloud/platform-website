@@ -10,55 +10,82 @@ templ MacPage(state model.SessionState, basePath string) {
 		"Mac App | RezusCloud",
 		"Artifact inspection surface for the RezusCloud homepage shell.",
 	) {
-		<div class="surface-page">
-			<div class="surface-page-copy">
-				<p class="shell-kicker">mac-app</p>
-				<h1>Inspection surface</h1>
-				<p>The Mac layer reads shared state and opens what Linux already published. It does not own the execution path.</p>
+		@SurfacePageFrame(
+			"/apps/mac",
+			"mac-app",
+			"Inspection surface",
+			"Mac stays narrow: it reads shared state, opens the latest artifact, and preserves the nested terminal context instead of pretending it owns execution.",
+		) {
+			<div class="route-scene route-scene-mac">
+				@MacEmbed(state, true, basePath, "/apps/terminal")
 			</div>
-			@MacEmbed(state, false, basePath)
-		</div>
+		}
 	}
 }
 
-templ MacEmbed(state model.SessionState, live bool, basePath string) {
+templ MacEmbed(state model.SessionState, live bool, basePath string, terminalBasePath string) {
 	if live {
-		<section id="mac-panel" class="app-panel mac-panel" hx-get={ basePath + "/embed" } hx-trigger="load, session-updated from:body, every 10s" hx-swap="outerHTML">
-			@macPanelBody(state, basePath)
+		<section id="mac-panel" class="mac-panel" data-scene-target="mac" hx-get={ basePath + "/embed" } hx-trigger="load, session-updated from:body, every 10s" hx-swap="outerHTML">
+			@macPanelBody(state, basePath, terminalBasePath)
 		</section>
 	} else {
-		<section id="mac-panel" class="app-panel mac-panel">
-			@macPanelBody(state, basePath)
+		<section id="mac-panel" class="mac-panel" data-scene-target="mac">
+			@macPanelBody(state, basePath, terminalBasePath)
 		</section>
 	}
 }
 
-templ macPanelBody(state model.SessionState, basePath string) {
-	<div class="panel-header">
-		<div>
-			<p class="panel-eyebrow">mac-app</p>
-			<h2>Readable artifact state</h2>
+templ macPanelBody(state model.SessionState, basePath string, terminalBasePath string) {
+	<div class="mac-menubar-shell">
+		<div class="mac-menubar-left">
+			<span class="mac-apple-mark">&#63743;</span>
+			<span class="mac-menu-strong">File</span>
+			<span>Edit</span>
+			<span>View</span>
+			<span>Special</span>
 		</div>
-		<a class="panel-link" href={ basePath }>Open full surface</a>
+		<div class="mac-menubar-right">
+			<a class="window-open-link mac-open-link" href={ basePath } aria-label="Open Mac route">/apps/mac</a>
+		</div>
 	</div>
-	<p class="panel-copy">Mac stays narrow: readable artifacts, human-scale notes, and proof that inspection reads shared state instead of fabricating its own story.</p>
-	<div class="mac-window-shell">
-		<div class="mac-titlebar-shell">
-			<span class="mac-dot"></span>
-			<strong>{ state.Mac.Artifact.Title }</strong>
-			<span>{ state.Mac.Artifact.UpdatedAt }</span>
-		</div>
-		<div class="mac-window-body-shell">
-			<div class="artifact-lines">
-				for _, line := range state.Mac.Artifact.Lines {
-					<p>{ line }</p>
-				}
+	<div class="mac-desktop-shell">
+		<div class="mac-primary-window">
+			<div class="mac-titlebar-shell">
+				<div class="mac-titlebar-box"></div>
+				<strong>{ state.Mac.Artifact.Title }</strong>
+				<div class="mac-titlebar-box"></div>
 			</div>
-			<div class="artifact-notes">
-				for _, note := range state.Mac.Notes {
-					<p>{ note }</p>
-				}
+			<div class="mac-window-body-shell">
+				<div class="artifact-inspector">
+					<p class="window-eyebrow">mac-app</p>
+					<p class="artifact-updated">Updated { state.Mac.Artifact.UpdatedAt }</p>
+					<div class="artifact-lines">
+						for _, line := range state.Mac.Artifact.Lines {
+							<p>{ line }</p>
+						}
+					</div>
+					<div class="artifact-notes">
+						for _, note := range state.Mac.Notes {
+							<p>{ note }</p>
+						}
+					</div>
+				</div>
+				<div class="mac-terminal-host">
+					@TerminalEmbed(state, false, terminalBasePath, true)
+				</div>
 			</div>
 		</div>
+		<div class="mac-icons">
+			@desktopIcon("Macintosh HD")
+			@desktopIcon("System")
+			@desktopIcon("Artifacts")
+		</div>
+	</div>
+}
+
+templ desktopIcon(label string) {
+	<div class="desktop-icon">
+		<div class="desktop-icon-glyph"></div>
+		<span class="desktop-icon-label">{ label }</span>
 	</div>
 }
