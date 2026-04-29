@@ -17,25 +17,37 @@ templ LinuxPage(state model.SessionState, basePath string) {
 			"Linux owns execution, shared topology, and event publication. This route keeps the full nested machine visible so the inspection and command layers stay in context.",
 		) {
 			<div class="route-scene route-scene-linux">
-				@LinuxEmbed(state, true, basePath, "/apps/mac", "/apps/terminal", false)
+				@LinuxEmbed(state, true, basePath, "/apps/mac", "/apps/terminal", false, "/apps/linux")
 			</div>
 		}
 	}
 }
 
-templ LinuxEmbed(state model.SessionState, live bool, basePath string, macBasePath string, terminalBasePath string, showShellDepth bool) {
+templ LinuxEmbed(state model.SessionState, live bool, basePath string, macBasePath string, terminalBasePath string, showShellDepth bool, hostRoute string) {
 	if live {
-		<section id="linux-panel" class="linux-panel" data-scene-target="linux" hx-get={ basePath + "/embed" } hx-trigger="load, session-updated from:body, every 10s" hx-swap="outerHTML">
-			@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, showShellDepth)
-		</section>
+		if hostRoute == basePath {
+			<section id="linux-panel" class="linux-panel linux-panel-standalone" data-scene-target="linux" hx-get={ basePath + "/embed" } hx-trigger="session-updated from:body, every 10s" hx-swap="outerHTML">
+				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, showShellDepth, hostRoute)
+			</section>
+		} else {
+			<section id="linux-panel" class="linux-panel" data-scene-target="linux" hx-get={ basePath + "/embed" } hx-trigger="session-updated from:body, every 10s" hx-swap="outerHTML">
+				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, showShellDepth, hostRoute)
+			</section>
+		}
 	} else {
-		<section id="linux-panel" class="linux-panel" data-scene-target="linux">
-			@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, showShellDepth)
-		</section>
+		if hostRoute == basePath {
+			<section id="linux-panel" class="linux-panel linux-panel-standalone" data-scene-target="linux">
+				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, showShellDepth, hostRoute)
+			</section>
+		} else {
+			<section id="linux-panel" class="linux-panel" data-scene-target="linux">
+				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, showShellDepth, hostRoute)
+			</section>
+		}
 	}
 }
 
-templ linuxPanelBody(state model.SessionState, basePath string, macBasePath string, terminalBasePath string, showShellDepth bool) {
+templ linuxPanelBody(state model.SessionState, basePath string, macBasePath string, terminalBasePath string, showShellDepth bool, hostRoute string) {
 	<div class="linux-topbar-shell">
 		<div class="linux-topbar-left">
 			<span class="linux-badge">x11</span>
@@ -44,7 +56,9 @@ templ linuxPanelBody(state model.SessionState, basePath string, macBasePath stri
 		</div>
 		<div class="linux-topbar-right">
 			<span>{ state.Linux.Mode }</span>
-			<a class="window-open-link linux-open-link" href={ basePath } aria-label="Open Linux route">/apps/linux</a>
+			if hostRoute != "/apps/linux" {
+				<a class="window-open-link linux-open-link" href={ basePath } aria-label="Open Linux route">/apps/linux</a>
+			}
 		</div>
 	</div>
 	<div class="linux-root-pattern"></div>
@@ -85,7 +99,7 @@ templ linuxPanelBody(state model.SessionState, basePath string, macBasePath stri
 			</div>
 		</div>
 		<div class="linux-window-body">
-			@MacEmbed(state, false, macBasePath, terminalBasePath)
+			@MacEmbed(state, false, macBasePath, terminalBasePath, hostRoute)
 		</div>
 	</div>
 	<div class="linux-window linux-event-window">

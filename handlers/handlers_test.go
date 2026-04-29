@@ -39,6 +39,8 @@ func TestHomeHandlerContainsExpectedContent(t *testing.T) {
 	html := string(body)
 	assert.Contains(t, html, "Own the machine, then watch the apps talk")
 	assert.Contains(t, html, "/apps/terminal")
+	assert.Contains(t, html, "Mini vMac")
+	assert.Contains(t, html, "MacTerminal")
 	assert.Contains(t, html, "terminal-app")
 	assert.Contains(t, html, "linux-app")
 	assert.Contains(t, html, "mac-app")
@@ -150,4 +152,9 @@ func TestHomePageContainsAllPrimarySurfaces(t *testing.T) {
 	assert.True(t, strings.Contains(html, `id="terminal-panel"`))
 	assert.True(t, strings.Contains(html, `id="mac-panel"`))
 	assert.True(t, strings.Contains(html, `id="linux-panel"`))
+	assert.True(t, strings.Contains(html, `data-scene-root`))
+	assert.True(t, strings.Contains(html, `id="linux-panel"`))
+	assert.True(t, strings.Contains(html, `id="mac-panel"`))
+	assert.True(t, strings.Contains(html, `id="terminal-panel"`))
+	assert.True(t, strings.Contains(html, `MacTerminal`))
 }

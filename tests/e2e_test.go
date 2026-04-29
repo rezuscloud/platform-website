@@ -30,7 +30,6 @@ func newChromedpContext() (context.Context, context.CancelFunc) {
 		chromedp.Flag("disable-gpu", true),
 		chromedp.Flag("disable-dev-shm-usage", true),
 		chromedp.Flag("disable-software-rasterizer", true),
-		chromedp.Flag("remote-debugging-port", "9222"),
 	)
 	if chromePath := os.Getenv("CHROME_PATH"); chromePath != "" {
 		opts = append(opts, chromedp.ExecPath(chromePath))
@@ -69,6 +68,29 @@ func readPanelTexts(ctx context.Context) (panelTexts, error) {
 	return texts, err
 }
 
+func readBoolChecks(ctx context.Context, script string) (map[string]bool, error) {
+	var checks map[string]bool
+	err := chromedp.Run(ctx, chromedp.Evaluate(script, &checks))
+	return checks, err
+}
+
+func waitForBoolChecks(t *testing.T, ctx context.Context, script string, predicate func(map[string]bool) bool) map[string]bool {
+	t.Helper()
+
+	var checks map[string]bool
+	require.Eventually(t, func() bool {
+		var err error
+		checks, err = readBoolChecks(ctx, script)
+		if err != nil {
+			return false
+		}
+
+		return predicate(checks)
+	}, 10*time.Second, 100*time.Millisecond)
+
+	return checks
+}
+
 func TestE2EPerformance(t *testing.T) {
 	ctx, cancel := newChromedpContext()
 	defer cancel()
@@ -103,29 +125,47 @@ func TestE2EProgressiveEnhancement(t *testing.T) {
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(getBaseURL()),
 		chromedp.WaitVisible("body"),
-		chromedp.Sleep(700*time.Millisecond),
+		chromedp.WaitVisible("#linux-panel"),
+		chromedp.WaitVisible("#terminal-panel"),
 	)
 	require.NoError(t, err)
 
-	var contentChecks map[string]bool
-	err = chromedp.Run(ctx,
-		chromedp.Evaluate(`
+	contentChecks := waitForBoolChecks(t, ctx, `
 			(function() {
+				const linux = document.getElementById('linux-panel');
+				const mac = document.getElementById('mac-panel');
+				const terminal = document.getElementById('terminal-panel');
 				return {
 					hasTitle: document.title.includes('RezusCloud'),
 					hasH1: document.querySelector('h1') !== null,
 					hasMain: document.querySelector('main') !== null,
 					hasSummary: document.getElementById('shell-summary') !== null,
-					hasTerminal: document.getElementById('terminal-panel') !== null,
-					hasMac: document.getElementById('mac-panel') !== null,
-					hasLinux: document.getElementById('linux-panel') !== null,
+					hasTerminal: terminal !== null,
+					hasMac: mac !== null,
+					hasLinux: linux !== null,
+					hasSceneRoot: document.querySelector('[data-scene-root]') !== null,
+					hasSceneScript: document.querySelector('script[src="/assets/js/scene.js"]') !== null,
+					hasNestedTerminal: !!(mac && terminal && mac.contains(terminal)),
+					hasNestedMac: !!(linux && mac && linux.contains(mac)),
 					hasNoJSBootstrap: document.documentElement.classList.contains('js'),
 					hasHTMX: document.querySelector('script[src="/assets/js/htmx.min.js"]') !== null
 				};
 			})()
-		`, &contentChecks),
-	)
-	require.NoError(t, err)
+		`, func(checks map[string]bool) bool {
+			return checks["hasTitle"] &&
+				checks["hasH1"] &&
+				checks["hasMain"] &&
+				checks["hasSummary"] &&
+				checks["hasTerminal"] &&
+				checks["hasMac"] &&
+				checks["hasLinux"] &&
+				checks["hasSceneRoot"] &&
+				checks["hasSceneScript"] &&
+				checks["hasNestedTerminal"] &&
+				checks["hasNestedMac"] &&
+				checks["hasNoJSBootstrap"] &&
+				checks["hasHTMX"]
+		})
 
 	assert.True(t, contentChecks["hasTitle"], "Page should have title")
 	assert.True(t, contentChecks["hasH1"], "Page should have h1")
@@ -134,8 +174,98 @@ func TestE2EProgressiveEnhancement(t *testing.T) {
 	assert.True(t, contentChecks["hasTerminal"], "Terminal surface should be present")
 	assert.True(t, contentChecks["hasMac"], "Mac surface should be present")
 	assert.True(t, contentChecks["hasLinux"], "Linux surface should be present")
+	assert.True(t, contentChecks["hasSceneRoot"], "Scene root should be present")
+	assert.True(t, contentChecks["hasSceneScript"], "Scene script should be loaded")
+	assert.True(t, contentChecks["hasNestedTerminal"], "Terminal should be nested inside Mac")
+	assert.True(t, contentChecks["hasNestedMac"], "Mac should be nested inside Linux")
 	assert.True(t, contentChecks["hasNoJSBootstrap"], "No-JS bootstrap should switch to js class")
 	assert.True(t, contentChecks["hasHTMX"], "HTMX should be loaded")
+}
+
+func TestE2EDirectRoutesPreserveNesting(t *testing.T) {
+	tests := []struct {
+		name    string
+		path    string
+		script  string
+		expects map[string]bool
+	}{
+		{
+			name: "terminal route stays leaf only",
+			path: "/apps/terminal",
+			script: `(() => {
+				const linux = document.getElementById('linux-panel');
+				const mac = document.getElementById('mac-panel');
+				const terminal = document.getElementById('terminal-panel');
+				return {
+					hasLinux: !!linux,
+					hasMac: !!mac,
+					hasTerminal: !!terminal
+				};
+			})()`,
+			expects: map[string]bool{"hasLinux": false, "hasMac": false, "hasTerminal": true},
+		},
+		{
+			name: "mac route keeps nested terminal",
+			path: "/apps/mac",
+			script: `(() => {
+				const mac = document.getElementById('mac-panel');
+				const terminal = document.getElementById('terminal-panel');
+				return {
+					hasMac: !!mac,
+					hasTerminal: !!terminal,
+					hasNestedTerminal: !!(mac && terminal && mac.contains(terminal)),
+					hasLinux: !!document.getElementById('linux-panel')
+				};
+			})()`,
+			expects: map[string]bool{"hasMac": true, "hasTerminal": true, "hasNestedTerminal": true, "hasLinux": false},
+		},
+		{
+			name: "linux route keeps nested mac and terminal",
+			path: "/apps/linux",
+			script: `(() => {
+				const linux = document.getElementById('linux-panel');
+				const mac = document.getElementById('mac-panel');
+				const terminal = document.getElementById('terminal-panel');
+				return {
+					hasLinux: !!linux,
+					hasMac: !!mac,
+					hasTerminal: !!terminal,
+					hasNestedMac: !!(linux && mac && linux.contains(mac)),
+					hasNestedTerminal: !!(mac && terminal && mac.contains(terminal))
+				};
+			})()`,
+			expects: map[string]bool{"hasLinux": true, "hasMac": true, "hasTerminal": true, "hasNestedMac": true, "hasNestedTerminal": true},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx, cancel := newChromedpContext()
+			defer cancel()
+
+			ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
+			defer cancel()
+
+			require.NoError(t, chromedp.Run(ctx,
+				chromedp.Navigate(getBaseURL()+tc.path),
+				chromedp.WaitVisible("body"),
+			))
+
+			checks := waitForBoolChecks(t, ctx, tc.script, func(checks map[string]bool) bool {
+				for key, expected := range tc.expects {
+					if checks[key] != expected {
+						return false
+					}
+				}
+
+				return true
+			})
+
+			for key, expected := range tc.expects {
+				assert.Equal(t, expected, checks[key], key)
+			}
+		})
+	}
 }
 
 func TestE2ECrossAppFlow(t *testing.T) {
@@ -148,7 +278,12 @@ func TestE2ECrossAppFlow(t *testing.T) {
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(getBaseURL()),
 		chromedp.WaitVisible("#terminal-panel"),
-		chromedp.Click(`button[name="preset"][value="rezus sync demo"]`),
+		chromedp.Evaluate(`(() => {
+			const button = document.querySelector('button[name="preset"][value="rezus sync demo"]');
+			if (!button) return false;
+			button.click();
+			return true;
+		})()`, nil),
 	)
 	require.NoError(t, err)
 
