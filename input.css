@@ -675,6 +675,84 @@ button {
 	box-shadow: 0 18px 40px oklch(0.03 0.01 232 / 0.28);
 }
 
+.linux-service-row {
+	transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+
+.linux-service-row:hover,
+.linux-service-row:focus-visible {
+	background: oklch(0.94 0.007 232);
+	box-shadow: inset 2px 0 0 oklch(0.55 0.08 168);
+	outline: none;
+}
+
+.linux-service-expand {
+	padding: 0.5rem 0 0;
+	font-size: 0.8rem;
+	line-height: 1.4;
+	color: oklch(0.28 0.008 232);
+	max-width: 32ch;
+	animation: svc-expand 180ms var(--ease-out-expo) both;
+}
+
+@keyframes svc-expand {
+	from {
+		opacity: 0;
+		max-height: 0;
+	}
+	to {
+		opacity: 1;
+		max-height: 8rem;
+	}
+}
+
+.linux-status-healthy,
+.linux-status-reading,
+.linux-status-routing {
+	border-color: oklch(0.55 0.1 155 / 0.6);
+	background: oklch(0.92 0.02 155 / 0.25);
+	color: oklch(0.35 0.08 155);
+}
+
+.linux-status-invoked,
+.linux-status-rendered,
+.linux-status-updated,
+.linux-status-reconciled {
+	border-color: oklch(0.6 0.09 168 / 0.5);
+	background: oklch(0.92 0.02 168 / 0.2);
+}
+
+.linux-status-edge-active {
+	border-color: oklch(0.65 0.1 85 / 0.5);
+	background: oklch(0.94 0.025 85 / 0.2);
+}
+
+.linux-control:hover {
+	background: oklch(0.78 0.015 232);
+	border-color: oklch(0.28 0.012 232);
+}
+
+.linux-window.is-minimized .linux-status-body,
+.linux-window.is-minimized .linux-window-body,
+.linux-window.is-minimized .event-log {
+	display: none;
+}
+
+.linux-window.is-minimized {
+	height: auto !important;
+	overflow: hidden;
+}
+
+.linux-window.is-maximized {
+	left: 4px !important;
+	right: 4px !important;
+	top: 42px !important;
+	width: auto !important;
+	height: calc(100% - 46px) !important;
+	transform: none !important;
+	z-index: 10 !important;
+}
+
 .mac-panel {
 	position: relative;
 	width: 100%;
@@ -895,6 +973,111 @@ button {
 	text-align: center;
 }
 
+.desktop-icon:focus-visible {
+	outline: 2px solid var(--color-mac-line);
+	outline-offset: 2px;
+}
+
+.desktop-icon:hover .desktop-icon-glyph {
+	background: oklch(0.92 0.004 95);
+	box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.12);
+	transform: translateY(-1px);
+}
+
+.desktop-icon-glyph {
+	transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.mac-dropdown {
+	position: absolute;
+	z-index: 20;
+	min-width: 160px;
+	background: var(--color-mac-paper);
+	border: 2px solid var(--color-mac-line);
+	box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.14);
+	padding: 2px 0;
+	font-size: 14px;
+}
+
+.mac-dropdown-item {
+	display: block;
+	width: 100%;
+	text-align: left;
+	padding: 4px 12px;
+	border: none;
+	background: transparent;
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+}
+
+.mac-dropdown-item:hover {
+	background: var(--color-mac-line);
+	color: var(--color-mac-paper);
+}
+
+.mac-toast {
+	position: absolute;
+	bottom: 72px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 30;
+	padding: 8px 14px;
+	background: var(--color-mac-line);
+	color: var(--color-mac-paper);
+	border: 2px solid oklch(0.12 0.005 96);
+	font-size: 13px;
+	line-height: 1.35;
+	max-width: 260px;
+	text-align: center;
+	animation: mac-toast-in 300ms var(--ease-out-expo) both;
+	pointer-events: none;
+}
+
+@keyframes mac-toast-in {
+	from {
+		opacity: 0;
+		transform: translateX(-50%) translateY(6px);
+	}
+}
+
+.mac-dialog {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 25;
+	width: min(280px, 80%);
+	animation: mac-dlg-in 200ms var(--ease-out-expo) both;
+}
+
+@keyframes mac-dlg-in {
+	from {
+		opacity: 0;
+		transform: translate(-50%, -50%) scale(0.94);
+	}
+}
+
+.mac-artifact-window.is-expanded {
+	width: min(420px, calc(100% - 24px)) !important;
+	height: auto !important;
+	min-height: 250px;
+	z-index: 6;
+	transform: none !important;
+}
+
+.mac-menubar-left > span {
+	cursor: default;
+	transition: background-color 100ms ease;
+	padding: 2px 4px;
+	margin: -2px -4px;
+}
+
+.mac-menubar-left > span:not(.mac-apple-mark):hover {
+	background: var(--color-mac-line);
+	color: var(--color-mac-paper);
+}
+
 .terminal-panel {
 	inset: 0;
 	background: linear-gradient(180deg, oklch(0.29 0.022 155) 0%, oklch(0.19 0.016 155) 24%, oklch(0.11 0.012 155) 100%);
@@ -961,12 +1144,6 @@ button {
 	padding: 1rem;
 }
 
-.terminal-copy-lead {
-	font-size: 0.92rem;
-	color: oklch(0.84 0.03 160);
-	max-width: none;
-}
-
 .terminal-screen-shell {
 	border: 1px solid oklch(0.43 0.04 165 / 0.35);
 	border-radius: 1.35rem;
@@ -978,6 +1155,16 @@ button {
 		inset 0 0 120px rgba(0, 0, 0, 0.82),
 		inset 0 0 16px rgba(41, 255, 139, 0.18);
 	min-height: 16rem;
+	cursor: text;
+	outline: none;
+}
+
+.terminal-screen-shell.term-focused {
+	border-color: oklch(0.76 0.08 165 / 0.55);
+	box-shadow:
+		inset 0 0 120px rgba(0, 0, 0, 0.82),
+		inset 0 0 16px rgba(41, 255, 139, 0.28),
+		0 0 0 2px oklch(0.76 0.08 165 / 0.18);
 }
 
 .terminal-panel-standalone .terminal-screen-shell {
@@ -1046,34 +1233,79 @@ code {
 	margin: 0;
 }
 
+.terminal-prompt-line {
+	display: flex;
+	align-items: baseline;
+	gap: 0;
+	white-space: pre;
+}
+
+.terminal-prompt-prefix {
+	color: oklch(0.87 0.06 168);
+	opacity: 0.9;
+}
+
+.terminal-cursor {
+	display: inline-block;
+	width: 0.65em;
+	height: 1em;
+	background: var(--color-terminal-glow);
+	margin-left: 1px;
+	vertical-align: text-bottom;
+	animation: term-blink 1s steps(2, start) infinite;
+}
+
+.term-focused .terminal-cursor {
+	animation: term-blink 1s steps(2, start) infinite;
+}
+
+.terminal-cursor[hidden] {
+	display: none;
+}
+
+[data-term-busy] .terminal-cursor {
+	display: none;
+}
+
+@keyframes term-blink {
+	to {
+		visibility: hidden;
+	}
+}
+
+.term-line {
+	animation: term-line-in 200ms var(--ease-out-expo) both;
+}
+
+@keyframes term-line-in {
+	from {
+		opacity: 0;
+		transform: translateY(3px);
+	}
+}
+
+.term-waiting {
+	color: oklch(0.7 0.06 168);
+	opacity: 0.7;
+	animation: term-pulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes term-pulse {
+	from {
+		opacity: 0.4;
+	}
+	to {
+		opacity: 0.9;
+	}
+}
+
 .terminal-form {
 	display: grid;
 	gap: 0.7rem;
 }
 
-.terminal-label {
-	color: oklch(0.82 0.03 160);
-}
-
-.terminal-input-row {
-	display: grid;
-	grid-template-columns: 1fr auto;
-	gap: 0.65rem;
-}
-
-.terminal-form input {
-	width: 100%;
-	padding: 0.8rem 1rem;
-	border-radius: 999px;
-	border: 1px solid oklch(0.45 0.03 165 / 0.45);
-	background: oklch(0.13 0.014 160 / 0.92);
-	color: oklch(0.94 0.02 160);
-	outline: none;
-}
-
-.terminal-form input:focus-visible {
-	border-color: oklch(0.76 0.08 165 / 0.85);
-	box-shadow: 0 0 0 3px oklch(0.76 0.08 165 / 0.2);
+.terminal-form input[type="hidden"] {
+	display: none;
 }
 
 .terminal-form button,
@@ -1099,7 +1331,79 @@ code {
 	color: inherit;
 }
 
+.shell-rail {
+	position: fixed;
+	left: 1rem;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 12;
+	display: grid;
+	align-items: center;
+	gap: 0.5rem;
+	pointer-events: none;
+	writing-mode: vertical-rl;
+	text-orientation: mixed;
+	transition: writing-mode 600ms var(--ease-out-expo), transform 600ms var(--ease-out-expo);
+}
+
+.shell-rail[data-state="horizontal"] {
+	writing-mode: horizontal-tb;
+	top: auto;
+	bottom: 1.5rem;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.shell-rail-track {
+	width: 3px;
+	height: 72px;
+	background: oklch(0.28 0.02 232 / 0.55);
+	border-radius: 999px;
+	position: relative;
+	overflow: hidden;
+}
+
+.shell-rail[data-state="horizontal"] .shell-rail-track {
+	width: 120px;
+	height: 3px;
+}
+
+.shell-rail-fill {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+	background: var(--color-shell-accent);
+	border-radius: 999px;
+	transform: scaleY(0);
+	transform-origin: bottom;
+	transition: transform 120ms linear;
+}
+
+.shell-rail[data-state="horizontal"] .shell-rail-fill {
+	transform-origin: left;
+}
+
+.shell-rail-text {
+	display: grid;
+	gap: 0.1rem;
+}
+
+.shell-rail-line {
+	font-size: 0.68rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: oklch(0.55 0.025 232);
+	white-space: nowrap;
+	transition: opacity 300ms ease;
+}
+
 @media (max-width: 1100px) {
+	.shell-rail {
+		display: none;
+	}
+
 	.shell-hud {
 		position: relative;
 		top: auto;
@@ -1259,14 +1563,12 @@ code {
 	}
 
 	.shell-status-strip,
-	.terminal-input-row,
 	.linux-meta,
 	.linux-service-row {
 		grid-template-columns: 1fr;
 	}
 
-	.linux-service-row,
-	.terminal-input-row {
+	.linux-service-row {
 		display: flex;
 		flex-direction: column;
 	}
@@ -1287,6 +1589,22 @@ code {
 }
 
 @media (prefers-reduced-motion: reduce) {
+	.shell-rail {
+		display: none;
+	}
+
+	.terminal-cursor {
+		animation: none;
+		opacity: 1;
+	}
+
+	.term-line,
+	.svc-expand,
+	.mac-dialog,
+	.mac-toast {
+		animation: none;
+	}
+
 	.shell-stage {
 		padding-top: 1rem;
 	}

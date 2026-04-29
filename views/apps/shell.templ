@@ -4,6 +4,15 @@ import model "github.com/rezuscloud/platform-website/internal/platform"
 
 templ ShellPage(state model.SessionState) {
 	<section id="scene" class="shell-stage" data-scene-root aria-label="Nested Linux, Mac, and terminal scene">
+		<div class="shell-rail" aria-hidden="true">
+			<div class="shell-rail-track">
+				<span class="shell-rail-fill" data-scene-rail-fill></span>
+			</div>
+			<div class="shell-rail-text">
+				<span class="shell-rail-line" data-rail-a>Own the machine,</span>
+				<span class="shell-rail-line" data-rail-b>then watch the apps talk.</span>
+			</div>
+		</div>
 		<div class="shell-hud">
 			<div class="shell-brandbar">
 				<div class="shell-brandcopy">
@@ -40,6 +49,8 @@ templ ShellPage(state model.SessionState) {
 			<p>Scroll from the terminal outward into the Mac inspection layer and then the Linux execution desktop.</p>
 		</div>
 		<script src="/assets/js/scene.js"></script>
+		<script src="/assets/js/terminal.js"></script>
+		<script src="/assets/js/desktop.js"></script>
 	</section>
 }
 
@@ -73,7 +84,7 @@ templ shellSummaryBody(state model.SessionState) {
 	<div class="event-ribbon">
 		if len(state.Events) > 0 {
 			<p class="event-ribbon-label">Latest event</p>
-			<p class="event-ribbon-text"><span>{ state.Events[0].Type }</span><span>to </span><span>{ state.Events[0].Message }</span></p>
+			<p class="event-ribbon-text"><span>{ state.Events[0].Type }</span><span> to </span><span>{ state.Events[0].Message }</span></p>
 		}
 	</div>
 }

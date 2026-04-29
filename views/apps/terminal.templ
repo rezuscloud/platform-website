@@ -58,30 +58,27 @@ templ terminalPanelBody(state model.SessionState, basePath string, hostRoute str
 		}
 	</div>
 	<div class="terminal-window-body">
-		<p class="terminal-copy-lead">Run one of the scripted commands. Linux owns execution, Mac reads the artifact, and the shell only updates from the same shared session state.</p>
-		<div class="terminal-screen-shell">
+		<div class="terminal-screen-shell" tabindex="0" role="textbox" aria-label="Terminal input. Type a command and press Enter.">
 			<div class="terminal-chrome">
 				<span>{ state.Terminal.Prompt }</span>
 				<span>session { state.SessionID }</span>
 			</div>
 			<div class="terminal-scrollback" role="log" aria-live="polite">
 				for _, line := range state.Terminal.History {
-					<p>{ line }</p>
+					<p class="term-line">{ line }</p>
 				}
+				<p class="terminal-prompt-line" data-term-prompt>
+					<span class="terminal-prompt-prefix">{ state.Terminal.Prompt } $&nbsp;</span><span data-term-input></span><span class="terminal-cursor" aria-hidden="true"></span>
+				</p>
 			</div>
 		</div>
 		<form class="terminal-form" method="post" action={ basePath + "/actions/run" } hx-post={ basePath + "/actions/run" } hx-target="#terminal-panel" hx-swap="outerHTML">
-			if hostRoute != "" {
-				<input type="hidden" name="parent" value={ hostRoute }/>
-			}
-			<label class="terminal-label" for="terminal-command">Command</label>
-			<div class="terminal-input-row">
-				<input id="terminal-command" name="command" type="text" value={ state.Terminal.LastCommand } placeholder="rezus sync demo" autocomplete="off" spellcheck="false"/>
-				<button type="submit">Run command</button>
-			</div>
+			<input type="hidden" name="parent" value={ hostRoute } data-term-parent/>
+			<input type="hidden" name="hostRoute" value={ hostRoute } data-term-host/>
+			<input type="hidden" name="command" value="" data-term-cmd/>
 			<div class="terminal-suggestions">
 				for _, suggestion := range state.Terminal.Suggestions {
-					<button type="submit" name="preset" value={ suggestion }>{ suggestion }</button>
+					<button type="submit" name="preset" value={ suggestion } data-cmd={ suggestion }>{ suggestion }</button>
 				}
 			</div>
 		</form>
