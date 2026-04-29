@@ -124,13 +124,13 @@ func TestStandaloneAppPages(t *testing.T) {
 	app := setupIntegrationApp()
 
 	tests := []struct {
-		path            string
-		expected        string
-		hasLinux        bool
-		hasMac          bool
-		hasTerminal     bool
-		nestedMac       bool
-		nestedTerminal  bool
+		path           string
+		expected       string
+		hasLinux       bool
+		hasMac         bool
+		hasTerminal    bool
+		nestedMac      bool
+		nestedTerminal bool
 	}{
 		{path: "/apps/terminal", expected: "Command surface", hasTerminal: true},
 		{path: "/apps/mac", expected: "Inspection surface", hasMac: true, hasTerminal: true, nestedTerminal: true},

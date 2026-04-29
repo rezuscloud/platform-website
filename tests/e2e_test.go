@@ -152,20 +152,20 @@ func TestE2EProgressiveEnhancement(t *testing.T) {
 				};
 			})()
 		`, func(checks map[string]bool) bool {
-			return checks["hasTitle"] &&
-				checks["hasH1"] &&
-				checks["hasMain"] &&
-				checks["hasSummary"] &&
-				checks["hasTerminal"] &&
-				checks["hasMac"] &&
-				checks["hasLinux"] &&
-				checks["hasSceneRoot"] &&
-				checks["hasSceneScript"] &&
-				checks["hasNestedTerminal"] &&
-				checks["hasNestedMac"] &&
-				checks["hasNoJSBootstrap"] &&
-				checks["hasHTMX"]
-		})
+		return checks["hasTitle"] &&
+			checks["hasH1"] &&
+			checks["hasMain"] &&
+			checks["hasSummary"] &&
+			checks["hasTerminal"] &&
+			checks["hasMac"] &&
+			checks["hasLinux"] &&
+			checks["hasSceneRoot"] &&
+			checks["hasSceneScript"] &&
+			checks["hasNestedTerminal"] &&
+			checks["hasNestedMac"] &&
+			checks["hasNoJSBootstrap"] &&
+			checks["hasHTMX"]
+	})
 
 	assert.True(t, contentChecks["hasTitle"], "Page should have title")
 	assert.True(t, contentChecks["hasH1"], "Page should have h1")
