@@ -81,11 +81,13 @@ templ macPanelBody(state model.SessionState, basePath string, terminalBasePath s
 							<p>{ line }</p>
 						}
 					</div>
-					<div class="artifact-notes">
-						for _, note := range state.Mac.Notes {
-							<p>{ note }</p>
-						}
-					</div>
+					if len(state.Mac.Notes) > 0 {
+						<div class="artifact-notes">
+							for _, note := range state.Mac.Notes {
+								<p>{ note }</p>
+							}
+						</div>
+					}
 				</div>
 			</div>
 		</div>
@@ -98,7 +100,7 @@ templ macPanelBody(state model.SessionState, basePath string, terminalBasePath s
 }
 
 templ desktopIcon(label string) {
-	<div class="desktop-icon">
+	<div class="desktop-icon" tabindex="0" role="button" aria-label={ "Open " + label }>
 		<div class="desktop-icon-glyph"></div>
 		<span class="desktop-icon-label">{ label }</span>
 	</div>

@@ -66,25 +66,23 @@ templ linuxPanelBody(state model.SessionState, basePath string, macBasePath stri
 		<div class="linux-titlebar-shell">
 			<span>service-map</span>
 			<div class="linux-titlebar-controls">
-				<span class="linux-control"></span>
-				<span class="linux-control"></span>
+				<span class="linux-control" role="button" aria-label="Minimize" tabindex="0"></span>
+				<span class="linux-control" role="button" aria-label="Maximize" tabindex="0"></span>
 			</div>
 		</div>
 		<div class="linux-status-body">
-			<p class="window-eyebrow">linux-app</p>
-			<p class="linux-copy-lead">Linux accepts invokes, owns shared topology, writes PostgreSQL-backed state, and publishes the event trail the rest of the system reacts to.</p>
 			<div class="linux-meta">
 				<p><span>mode</span><strong>{ state.Linux.Mode }</strong></p>
 				<p><span>last action</span><strong>{ state.Linux.LastAction }</strong></p>
 			</div>
 			<div class="linux-service-list">
 				for _, service := range state.Linux.Services {
-					<div class="linux-service-row">
+					<div class="linux-service-row" tabindex="0" role="button" aria-label={ "Details for " + service.Name }>
 						<div>
 							<p class="linux-service-name">{ service.Name }</p>
 							<p class="linux-service-detail">{ service.Detail }</p>
 						</div>
-						<p class="linux-service-status">{ service.Status }</p>
+						<p class={ "linux-service-status", "linux-status-" + service.Status }>{ service.Status }</p>
 					</div>
 				}
 			</div>
@@ -94,8 +92,8 @@ templ linuxPanelBody(state model.SessionState, basePath string, macBasePath stri
 		<div class="linux-titlebar-shell">
 			<span>Mini vMac</span>
 			<div class="linux-titlebar-controls">
-				<span class="linux-control"></span>
-				<span class="linux-control"></span>
+				<span class="linux-control" role="button" aria-label="Minimize" tabindex="0"></span>
+				<span class="linux-control" role="button" aria-label="Maximize" tabindex="0"></span>
 			</div>
 		</div>
 		<div class="linux-window-body">
@@ -106,7 +104,7 @@ templ linuxPanelBody(state model.SessionState, basePath string, macBasePath stri
 		<div class="linux-titlebar-shell">
 			<span>event-log</span>
 			<div class="linux-titlebar-controls">
-				<span class="linux-control"></span>
+				<span class="linux-control" role="button" aria-label="Minimize" tabindex="0"></span>
 			</div>
 		</div>
 		<div class="event-log">
@@ -114,14 +112,14 @@ templ linuxPanelBody(state model.SessionState, basePath string, macBasePath stri
 				<article>
 					<p class="event-type">{ event.Type }</p>
 					<p class="event-message">{ event.Message }</p>
-					<p class="event-meta"><span>{ event.Source }</span><span>at </span><span>{ event.Timestamp }</span></p>
+					<p class="event-meta"><span>{ event.Source }</span><span> at </span><span>{ event.Timestamp }</span></p>
 				</article>
 			}
 		</div>
 	</div>
 	if showShellDepth {
 		<div class="linux-scene-caption">
-			<p>Linux is the outer machine. Scroll to move from the terminal leaf, through Mac inspection, to Linux execution.</p>
+			<p>Scroll to move from terminal, through Mac inspection, to Linux execution.</p>
 		</div>
 	}
 }
