@@ -103,9 +103,6 @@
   }
 
   function overscanFor(state) {
-    if (state.phase === 0 && state.mix === 0) return 1.08;
-    if (state.phase === 0) return 1.04;
-    if (state.phase === 1 && state.mix === 0) return 1.02;
     return 1;
   }
 

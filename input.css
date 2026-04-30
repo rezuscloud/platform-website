@@ -361,8 +361,8 @@ button {
 
 .scene-world {
 	position: relative;
-	width: 1680px;
-	height: 1080px;
+	width: 100%;
+	height: 100%;
 	transform-origin: top left;
 	user-select: none;
 }
@@ -403,20 +403,19 @@ button {
 
 .linux-panel {
 	position: relative;
-	width: 1680px;
-	height: 1080px;
+	width: 100%;
+	height: 100%;
 	overflow: hidden;
 	background: var(--color-linux-surface);
-	border: 4px solid var(--color-linux-border);
-	box-shadow:
-		0 0 0 1px oklch(0.88 0.005 232),
-		0 30px 90px oklch(0.02 0.01 235 / 0.45);
 	font-family: var(--font-shell-x11);
 	color: var(--color-linux-ink);
 }
 
 .linux-panel-standalone {
+	width: 1680px;
+	height: 1080px;
 	margin-inline: auto;
+	border: 4px solid var(--color-linux-border);
 	box-shadow:
 		0 0 0 1px oklch(0.88 0.005 232),
 		0 36px 110px oklch(0.02 0.01 235 / 0.55);
@@ -617,11 +616,10 @@ button {
 }
 
 .linux-mac-window-shell {
-	left: 398px;
-	top: 118px;
-	width: 928px;
-	height: 726px;
-	transform: rotate(0.22deg);
+	left: 3%;
+	top: 10%;
+	width: 94%;
+	height: 84%;
 	z-index: 4;
 }
 
@@ -630,7 +628,6 @@ button {
 	top: 88px;
 	width: 940px;
 	height: 820px;
-	transform: none;
 }
 
 .linux-window-body {
@@ -759,10 +756,6 @@ button {
 	height: 100%;
 	overflow: hidden;
 	background: var(--color-mac-paper);
-	border: 2px solid var(--color-mac-line);
-	box-shadow:
-		0 0 0 1px var(--color-mac-paper),
-		0 0 0 2px var(--color-mac-line);
 	font-family: var(--font-shell-ui);
 	color: var(--color-mac-line);
 	image-rendering: pixelated;
@@ -772,6 +765,7 @@ button {
 	width: min(1120px, 100%);
 	height: 760px;
 	margin-inline: auto;
+	border: 2px solid var(--color-mac-line);
 	box-shadow:
 		0 0 0 1px var(--color-mac-paper),
 		0 0 0 2px var(--color-mac-line),
@@ -837,10 +831,10 @@ button {
 
 .mac-terminal-host {
 	position: absolute;
-	left: 84px;
-	top: 72px;
-	width: 598px;
-	height: 432px;
+	left: 2%;
+	top: 5%;
+	width: 96%;
+	height: 90%;
 	z-index: 4;
 }
 
@@ -858,6 +852,10 @@ button {
 	min-height: 250px;
 	z-index: 3;
 	transform: rotate(-0.65deg);
+}
+
+.mac-panel:not(.mac-panel-standalone) .mac-artifact-window {
+	display: none;
 }
 
 .mac-panel-standalone .mac-artifact-window {
@@ -1493,11 +1491,6 @@ code {
 		height: 920px;
 	}
 
-	.linux-panel {
-		width: 1240px;
-		height: 920px;
-	}
-
 	.linux-panel-standalone,
 	.mac-panel-standalone,
 	.terminal-panel-standalone {
@@ -1509,13 +1502,6 @@ code {
 		top: 94px;
 		width: 312px;
 		height: 336px;
-	}
-
-	.linux-mac-window-shell {
-		left: 276px;
-		top: 100px;
-		width: 722px;
-		height: 590px;
 	}
 
 	.linux-event-window {
@@ -1534,18 +1520,6 @@ code {
 	.mac-menubar-shell,
 	.mac-titlebar-shell {
 		font-size: 14px;
-	}
-
-	.mac-terminal-host {
-		left: 54px;
-		top: 52px;
-		width: 460px;
-		height: 320px;
-	}
-
-	.mac-panel-standalone .mac-terminal-host {
-		width: 500px;
-		height: 360px;
 	}
 
 	.mac-artifact-window {
