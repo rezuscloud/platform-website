@@ -31,6 +31,26 @@ func applyCommand(state SessionState, request CommandRequest) CommandResponse {
 	now := time.Now().UTC().Format(time.RFC3339)
 
 	switch command {
+	case "help":
+		next.Terminal.LastCommand = command
+		next.Terminal.History = appendHistory(next.Terminal.History,
+			ansiBold+"> "+command+ansiReset,
+			"",
+			"  Available commands:",
+			"",
+			"  rezus sync demo        Prove the cross-app path",
+			"  rezus fanout edge      Shift edge state and broadcast",
+			"  rezus inspect dossier  Open the latest dossier",
+			"",
+		)
+		return acceptCommand(next, SessionEvent{
+			SessionID: request.SessionID,
+			Type:      "command.help",
+			Source:    TerminalAppID,
+			Message:   "Displayed available commands.",
+			Details:   []string{"No state change.", "Commands are demo flows."},
+			Timestamp: now,
+		})
 	case "rezus sync demo":
 		next.Summary = SummaryState{
 			Kicker:   "Cross-app proof",
