@@ -16,7 +16,7 @@ const (
 	TerminalAppID        = "platform-website-terminal"
 	MacAppID             = "platform-website-mac"
 	LinuxAppID           = "platform-website-linux"
-	MaxTerminalHistory   = 18
+	MaxTerminalHistory   = 100
 	MaxSessionEventCount = 8
 )
 
@@ -122,12 +122,47 @@ func NewSessionState(sessionID string) SessionState {
 			},
 		},
 		Terminal: TerminalState{
-			Prompt:      "rezus@terminal",
+			Prompt:      "rezus@node-01",
 			Suggestions: []string{"rezus sync demo", "rezus fanout edge", "rezus inspect dossier"},
 			History: []string{
-				"\x1b[32mBOOT:\x1b[0m shell, terminal, mac, linux surfaces attached",
-				"\x1b[36mDAPR:\x1b[0m PostgreSQL v2 state + JetStream pubsub + Redis lock ready",
-				"\x1b[2mTIP: run `rezus sync demo` to prove the cross-app path\x1b[0m",
+				"",
+				"\x1b[1m RezusCloud BIOS v3.12\x1b[0m",
+				" Mem: 640K base, 15360K ext OK",
+				"",
+				"\x1b[1m RezusCloud UNIX v2.11 (GENESIS)\x1b[0m",
+				" Copyright (c) 1987 RezusCloud Systems. All rights reserved.",
+				"",
+				" real mem  = 16777216 (16384K)",
+				" avail mem = 15392768 (15032K)",
+				"",
+				" pc0 at isa0 port 0x3f8-0x3ff irq 4: ns16550a",
+				" wd0 at isa0 port 0x1f0-0x1f7 irq 14",
+				" wd0: QUANTUM PRODRIVE 105S (1024/8/33)",
+				" ne0 at isa0 port 0x300-0x31f irq 10: ne2000",
+				"",
+				" root on wd0a dump on wd0b",
+				" checking quotas: done.",
+				" starting daemons: update cron",
+				" starting network: RezusCloud-node-01",
+				" starting RezusCloud: control-plane ready.",
+				"",
+				" \x1b[7m/etc/motd\x1b[0m",
+				"",
+				"  R E Z U S C L O U D   P E R S O N A L   C L O U D",
+				"",
+				"  The control plane runs on machines you own.",
+				"  No managed service. No vendor dependency.",
+				"",
+				"  +----------+    +----------+    +----------+",
+				"  |   YOUR   |    | CONTROL  |    |   YOUR   |",
+				"  | MACHINE  |--->| PLANE    |--->| WORKLOADS|",
+				"  +----------+    +----------+    +----------+",
+				"   your metal       kubernetes      your rules",
+				"",
+				"  State: PostgreSQL V2 / NATS JetStream / Redis",
+				"  Surfaces: shell terminal mac linux",
+				"",
+				"  \x1b[2mType 'help' for available commands.\x1b[0m",
 			},
 		},
 		Mac: MacState{

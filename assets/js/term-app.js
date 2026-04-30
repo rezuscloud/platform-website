@@ -4,7 +4,7 @@
   let history = [];
   let histIdx = -1;
   let currentLine = "";
-  let prompt = "rezus@terminal $ ";
+  let prompt = "rezus@node-01 $ ";
   let busy = false;
 
   function apiBase() {
