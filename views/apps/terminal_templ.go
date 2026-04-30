@@ -223,7 +223,7 @@ func terminalPanelBody(state model.SessionState, basePath string, hostRoute stri
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"terminal-window-body\"><div class=\"xterm-screen\"><div id=\"xterm-mount\" data-term-boot=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"terminal-window-body\"><div class=\"term-screen\"><div id=\"xterm-mount\" data-term-boot=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -1134,7 +1134,7 @@ button {
 	display: grid;
 	gap: 0.8rem;
 	padding: 0.85rem;
-	height: calc(100% - 64px);
+	height: 100%;
 }
 
 .terminal-panel-standalone .terminal-window-body {
@@ -1165,7 +1165,7 @@ button {
 		0 0 0 2px oklch(0.76 0.08 165 / 0.18);
 }
 
-.xterm-screen {
+.term-screen {
 	border: 1px solid oklch(0.43 0.04 165 / 0.35);
 	border-radius: 1.35rem;
 	overflow: hidden;
@@ -1179,7 +1179,7 @@ button {
 	position: relative;
 }
 
-.terminal-panel-standalone .xterm-screen {
+.terminal-panel-standalone .term-screen {
 	min-height: 0;
 	height: 100%;
 }
@@ -1203,7 +1203,7 @@ button {
 	height: 100% !important;
 }
 
-.xterm-screen::after {
+.term-screen::after {
 	content: "";
 	position: absolute;
 	inset: 0;

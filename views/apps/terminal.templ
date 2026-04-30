@@ -47,9 +47,9 @@ templ TerminalEmbed(state model.SessionState, live bool, basePath string, hostRo
 	}
 }
 
-templ terminalPanelBody(state model.SessionState, basePath string, hostRoute string) {
+ templ terminalPanelBody(state model.SessionState, basePath string, hostRoute string) {
 	<div class="terminal-window-body">
-		<div class="xterm-screen">
+		<div class="term-screen">
 			<div id="xterm-mount" data-term-boot={ jsonHistory(state) } data-term-api={ basePath + "/api/run" }></div>
 		</div>
 	</div>
