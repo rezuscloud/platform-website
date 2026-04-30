@@ -137,14 +137,13 @@ func TestE2EProgressiveEnhancement(t *testing.T) {
 				const terminal = document.getElementById('terminal-panel');
 				return {
 					hasTitle: document.title.includes('RezusCloud'),
-					hasH1: document.querySelector('h1') !== null,
 					hasMain: document.querySelector('main') !== null,
-					hasSummary: document.getElementById('shell-summary') !== null,
 					hasTerminal: terminal !== null,
 					hasMac: mac !== null,
 					hasLinux: linux !== null,
 					hasSceneRoot: document.querySelector('[data-scene-root]') !== null,
 					hasSceneScript: document.querySelector('script[src="/assets/js/scene.js"]') !== null,
+					hasXtermMount: document.getElementById('xterm-mount') !== null,
 					hasNestedTerminal: !!(mac && terminal && mac.contains(terminal)),
 					hasNestedMac: !!(linux && mac && linux.contains(mac)),
 					hasNoJSBootstrap: document.documentElement.classList.contains('js'),
@@ -153,14 +152,13 @@ func TestE2EProgressiveEnhancement(t *testing.T) {
 			})()
 		`, func(checks map[string]bool) bool {
 		return checks["hasTitle"] &&
-			checks["hasH1"] &&
 			checks["hasMain"] &&
-			checks["hasSummary"] &&
 			checks["hasTerminal"] &&
 			checks["hasMac"] &&
 			checks["hasLinux"] &&
 			checks["hasSceneRoot"] &&
 			checks["hasSceneScript"] &&
+			checks["hasXtermMount"] &&
 			checks["hasNestedTerminal"] &&
 			checks["hasNestedMac"] &&
 			checks["hasNoJSBootstrap"] &&
@@ -168,14 +166,13 @@ func TestE2EProgressiveEnhancement(t *testing.T) {
 	})
 
 	assert.True(t, contentChecks["hasTitle"], "Page should have title")
-	assert.True(t, contentChecks["hasH1"], "Page should have h1")
 	assert.True(t, contentChecks["hasMain"], "Page should have main")
-	assert.True(t, contentChecks["hasSummary"], "Shell summary should be present")
 	assert.True(t, contentChecks["hasTerminal"], "Terminal surface should be present")
 	assert.True(t, contentChecks["hasMac"], "Mac surface should be present")
 	assert.True(t, contentChecks["hasLinux"], "Linux surface should be present")
 	assert.True(t, contentChecks["hasSceneRoot"], "Scene root should be present")
 	assert.True(t, contentChecks["hasSceneScript"], "Scene script should be loaded")
+	assert.True(t, contentChecks["hasXtermMount"], "Xterm mount should be present")
 	assert.True(t, contentChecks["hasNestedTerminal"], "Terminal should be nested inside Mac")
 	assert.True(t, contentChecks["hasNestedMac"], "Mac should be nested inside Linux")
 	assert.True(t, contentChecks["hasNoJSBootstrap"], "No-JS bootstrap should switch to js class")
@@ -277,11 +274,18 @@ func TestE2ECrossAppFlow(t *testing.T) {
 
 	err := chromedp.Run(ctx,
 		chromedp.Navigate(getBaseURL()),
-		chromedp.WaitVisible("#terminal-panel"),
+		chromedp.WaitVisible("#xterm-mount"),
 		chromedp.Evaluate(`(() => {
-			const button = document.querySelector('button[name="preset"][value="rezus sync demo"]');
-			if (!button) return false;
-			button.click();
+			const mount = document.getElementById("xterm-mount");
+			if (!mount) return false;
+			fetch(mount.getAttribute("data-term-api") + "?command=" + encodeURIComponent("rezus sync demo"), {
+				method: "POST",
+				credentials: "same-origin"
+			}).then(r => r.json()).then(data => {
+				if (typeof htmx !== "undefined") {
+					htmx.trigger(document.body, "session-updated");
+				}
+			});
 			return true;
 		})()`, nil),
 	)
@@ -295,21 +299,17 @@ func TestE2ECrossAppFlow(t *testing.T) {
 			return false
 		}
 
-		terminalText := strings.ToLower(texts.Terminal)
-		shellText := strings.ToLower(texts.Shell)
 		macText := strings.ToLower(texts.Mac)
 		linuxText := strings.ToLower(texts.Linux)
 
-		return strings.Contains(terminalText, "artifact.published") &&
-			strings.Contains(shellText, "one command moved through three services") &&
-			strings.Contains(macText, "deployment dossier") &&
-			strings.Contains(linuxText, "reconciled") &&
-			strings.Contains(linuxText, "artifact.published")
-	}, 10*time.Second, 100*time.Millisecond)
+		if testing.Verbose() {
+			t.Logf("mac=%q linux=%q", macText[:min(300, len(macText))], linuxText[:min(300, len(linuxText))])
+		}
 
-	assert.Contains(t, strings.ToLower(texts.Terminal), "artifact.published")
-	assert.Contains(t, strings.ToLower(texts.Shell), "one command moved through three services")
+		return strings.Contains(macText, "deployment dossier") &&
+			strings.Contains(linuxText, "reconciled")
+	}, 10*time.Second, 500*time.Millisecond)
+
 	assert.Contains(t, strings.ToLower(texts.Mac), "deployment dossier")
 	assert.Contains(t, strings.ToLower(texts.Linux), "reconciled")
-	assert.Contains(t, strings.ToLower(texts.Linux), "artifact.published")
 }

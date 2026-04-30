@@ -68,40 +68,15 @@ templ macPanelBody(state model.SessionState, basePath string, terminalBasePath s
 		</div>
 		<div class="mac-primary-window mac-artifact-window">
 			<div class="mac-titlebar-shell">
-				<div class="mac-titlebar-box"></div>
 				<strong>{ state.Mac.Artifact.Title }</strong>
-				<div class="mac-titlebar-box"></div>
 			</div>
 			<div class="mac-window-body-shell">
-				<div class="artifact-inspector">
-					<p class="window-eyebrow">mac-app</p>
-					<p class="artifact-updated">Updated { state.Mac.Artifact.UpdatedAt }</p>
-					<div class="artifact-lines">
-						for _, line := range state.Mac.Artifact.Lines {
-							<p>{ line }</p>
-						}
-					</div>
-					if len(state.Mac.Notes) > 0 {
-						<div class="artifact-notes">
-							for _, note := range state.Mac.Notes {
-								<p>{ note }</p>
-							}
-						</div>
+				<div class="artifact-lines">
+					for _, line := range state.Mac.Artifact.Lines {
+						<p>{ line }</p>
 					}
 				</div>
 			</div>
 		</div>
-		<div class="mac-icons">
-			@desktopIcon("Macintosh HD")
-			@desktopIcon("System")
-			@desktopIcon("Artifacts")
-		</div>
-	</div>
-}
-
-templ desktopIcon(label string) {
-	<div class="desktop-icon" tabindex="0" role="button" aria-label={ "Open " + label }>
-		<div class="desktop-icon-glyph"></div>
-		<span class="desktop-icon-label">{ label }</span>
 	</div>
 }

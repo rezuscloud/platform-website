@@ -125,9 +125,9 @@ func NewSessionState(sessionID string) SessionState {
 			Prompt:      "rezus@terminal",
 			Suggestions: []string{"rezus sync demo", "rezus fanout edge", "rezus inspect dossier"},
 			History: []string{
-				"BOOT: shell, terminal, mac, linux surfaces attached",
-				"DAPR: PostgreSQL v2 state + JetStream pubsub + Redis lock ready",
-				"TIP: run `rezus sync demo` to prove the cross-app path",
+				"\x1b[32mBOOT:\x1b[0m shell, terminal, mac, linux surfaces attached",
+				"\x1b[36mDAPR:\x1b[0m PostgreSQL v2 state + JetStream pubsub + Redis lock ready",
+				"\x1b[2mTIP: run `rezus sync demo` to prove the cross-app path\x1b[0m",
 			},
 		},
 		Mac: MacState{

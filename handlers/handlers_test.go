@@ -37,13 +37,11 @@ func TestHomeHandlerContainsExpectedContent(t *testing.T) {
 	require.NoError(t, err)
 
 	html := string(body)
-	assert.Contains(t, html, "Own the machine, then watch the apps talk")
 	assert.Contains(t, html, "/apps/terminal")
 	assert.Contains(t, html, "Mini vMac")
-	assert.Contains(t, html, "MacTerminal")
-	assert.Contains(t, html, "terminal-app")
-	assert.Contains(t, html, "linux-app")
-	assert.Contains(t, html, "mac-app")
+	assert.Contains(t, html, "data-term-api")
+	assert.Contains(t, html, "linux-panel")
+	assert.Contains(t, html, "mac-panel")
 }
 
 func TestAppSurfaceRoutes(t *testing.T) {
@@ -96,7 +94,7 @@ func TestTerminalActionUpdatesSharedState(t *testing.T) {
 	require.NoError(t, err)
 	html := string(body)
 
-	assert.Contains(t, html, "terminal-app -&gt; linux-app")
+	assert.Contains(t, html, "linux-app")
 	assert.Contains(t, html, "artifact.published")
 	assert.Contains(t, actionResp.Header.Get("HX-Trigger"), "session-updated")
 
@@ -148,13 +146,9 @@ func TestHomePageContainsAllPrimarySurfaces(t *testing.T) {
 	require.NoError(t, err)
 
 	html := string(body)
-	assert.True(t, strings.Contains(html, `id="shell-summary"`))
 	assert.True(t, strings.Contains(html, `id="terminal-panel"`))
 	assert.True(t, strings.Contains(html, `id="mac-panel"`))
 	assert.True(t, strings.Contains(html, `id="linux-panel"`))
 	assert.True(t, strings.Contains(html, `data-scene-root`))
-	assert.True(t, strings.Contains(html, `id="linux-panel"`))
-	assert.True(t, strings.Contains(html, `id="mac-panel"`))
-	assert.True(t, strings.Contains(html, `id="terminal-panel"`))
-	assert.True(t, strings.Contains(html, `MacTerminal`))
+	assert.True(t, strings.Contains(html, `xterm-mount`))
 }

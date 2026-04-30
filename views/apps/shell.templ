@@ -4,52 +4,21 @@ import model "github.com/rezuscloud/platform-website/internal/platform"
 
 templ ShellPage(state model.SessionState) {
 	<section id="scene" class="shell-stage" data-scene-root aria-label="Nested Linux, Mac, and terminal scene">
-		<div class="shell-rail" aria-hidden="true">
-			<div class="shell-rail-track">
-				<span class="shell-rail-fill" data-scene-rail-fill></span>
-			</div>
-			<div class="shell-rail-text">
-				<span class="shell-rail-line" data-rail-a>Own the machine,</span>
-				<span class="shell-rail-line" data-rail-b>then watch the apps talk.</span>
-			</div>
-		</div>
-		<div class="shell-hud">
-			<div class="shell-brandbar">
-				<div class="shell-brandcopy">
-					<p class="shell-kicker">RezusCloud</p>
-					<h1>Own the machine, then watch the apps talk.</h1>
-					<p class="shell-lead">A same-origin Dapr shell framing one believable machine: terminal intent, Linux execution, Mac inspection, and proof the shell only claims after the system actually moved.</p>
-				</div>
-				@AppRouteNav("/")
-			</div>
-			@ShellSummary(state, true)
-			<section class="shell-status-strip" aria-label="Session status">
-				<div class="shell-status-card">
-					<p class="shell-status-label">Session</p>
-					<p class="shell-status-text"><code>{ state.SessionID }</code></p>
-				</div>
-				<div class="shell-status-card">
-					<p class="shell-status-label">Topology</p>
-					<p class="shell-status-text">Same origin, shared state, <code>homepage.events</code></p>
-				</div>
-			</section>
-		</div>
 		<div class="scene-scroll-track" data-scene-track>
 			<div class="scene-stage-pane">
 				<div class="scene-camera-viewport">
 					<div class="scene-camera" data-scene-camera>
 						<div class="scene-world" data-scene-world>
-							@LinuxEmbed(state, true, "/apps/linux", "/apps/mac", "/apps/terminal", true, "/")
+							@LinuxEmbed(state, true, "/apps/linux", "/apps/mac", "/apps/terminal", false, "/")
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="scene-sr-copy">
-			<p>Scroll from the terminal outward into the Mac inspection layer and then the Linux execution desktop.</p>
-		</div>
 		<script src="/assets/js/scene.js"></script>
-		<script src="/assets/js/terminal.js"></script>
+		<script src="/assets/js/vendor/xterm.min.js"></script>
+		<script src="/assets/js/vendor/addon-fit.min.js"></script>
+		<script src="/assets/js/term-app.js"></script>
 		<script src="/assets/js/desktop.js"></script>
 	</section>
 }

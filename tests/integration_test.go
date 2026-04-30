@@ -83,12 +83,12 @@ func TestHomePageHTMLStructure(t *testing.T) {
 	})
 
 	t.Run("has shell summary and app surfaces", func(t *testing.T) {
-		assert.Equal(t, 1, doc.Find("#shell-summary").Length())
 		assert.Equal(t, 1, doc.Find("#terminal-panel").Length())
 		assert.Equal(t, 1, doc.Find("#mac-panel").Length())
 		assert.Equal(t, 1, doc.Find("#linux-panel").Length())
 		assert.Equal(t, 1, doc.Find("#linux-panel #mac-panel #terminal-panel").Length())
 		assert.Equal(t, 1, doc.Find("[data-scene-root]").Length())
+		assert.Equal(t, 1, doc.Find("#xterm-mount").Length())
 	})
 
 	t.Run("has htmx and scene scripts", func(t *testing.T) {
@@ -101,22 +101,17 @@ func TestHomePageShellContent(t *testing.T) {
 	app := setupIntegrationApp()
 	html := getHTMLString(t, app, "/")
 
-	t.Run("contains shell headline and route map", func(t *testing.T) {
-		assert.Contains(t, html, "Own the machine, then watch the apps talk")
+	t.Run("contains route links and nested surfaces", func(t *testing.T) {
 		assert.Contains(t, html, "/apps/terminal")
 		assert.Contains(t, html, "/apps/mac")
 		assert.Contains(t, html, "/apps/linux")
 	})
 
-	t.Run("contains proof rail and session copy", func(t *testing.T) {
-		assert.Contains(t, html, "Brand shell, live demos")
-		assert.Contains(t, html, "One homepage, three cooperating application surfaces")
-		assert.Contains(t, html, "Same origin, shared state")
-		assert.Contains(t, html, "PostgreSQL V2")
-		assert.Contains(t, html, "JetStream")
-		assert.Contains(t, html, "Redis")
+	t.Run("contains terminal boot data and nested panels", func(t *testing.T) {
+		assert.Contains(t, html, "data-term-api")
 		assert.Contains(t, html, "Mini vMac")
-		assert.Contains(t, html, "MacTerminal")
+		assert.Contains(t, html, "idle")
+		assert.Contains(t, html, "Artifact drawer empty")
 	})
 }
 
@@ -250,11 +245,11 @@ func TestProgressiveEnhancement(t *testing.T) {
 	html := getHTMLString(t, app, "/")
 
 	t.Run("page works without client-side execution", func(t *testing.T) {
-		assert.Equal(t, 1, doc.Find("#shell-summary").Length())
 		assert.Equal(t, 1, doc.Find("#terminal-panel").Length())
 		assert.Equal(t, 1, doc.Find("#mac-panel").Length())
 		assert.Equal(t, 1, doc.Find("#linux-panel").Length())
 		assert.Equal(t, 1, doc.Find("#linux-panel #mac-panel #terminal-panel").Length())
+		assert.Equal(t, 1, doc.Find("#xterm-mount").Length())
 	})
 
 	t.Run("top level routes expose htmx endpoints server-side", func(t *testing.T) {
