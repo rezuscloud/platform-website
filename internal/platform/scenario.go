@@ -5,6 +5,18 @@ import (
 	"time"
 )
 
+const (
+	ansiReset   = "\x1b[0m"
+	ansiCyan    = "\x1b[36m"
+	ansiYellow  = "\x1b[33m"
+	ansiBlue    = "\x1b[34m"
+	ansiMagenta = "\x1b[35m"
+	ansiRed     = "\x1b[31m"
+	ansiGreen   = "\x1b[32m"
+	ansiBold    = "\x1b[1m"
+	ansiDim     = "\x1b[2m"
+)
+
 func applyCommand(state SessionState, request CommandRequest) CommandResponse {
 	command := normalizeCommand(request.Command)
 	if state.SessionID == "" {
@@ -33,12 +45,12 @@ func applyCommand(state SessionState, request CommandRequest) CommandResponse {
 		}
 		next.Terminal.LastCommand = command
 		next.Terminal.History = appendHistory(next.Terminal.History,
-			"> "+command,
-			"[invoke] terminal-app -> linux-app /internal/execute",
-			"[lock] redis lockstore claimed "+SessionStateKey(request.SessionID),
-			"[state] PostgreSQL v2 persisted topology under "+SessionStateKey(request.SessionID),
-			"[pubsub] JetStream homepage.events <- artifact.published",
-			"[shell] proof rail is now live and derived",
+			ansiBold+"> "+command+ansiReset,
+			ansiCyan+"[invoke]"+ansiReset+" terminal-app -> linux-app /internal/execute",
+			ansiYellow+"[lock]"+ansiReset+" redis lockstore claimed "+SessionStateKey(request.SessionID),
+			ansiBlue+"[state]"+ansiReset+" PostgreSQL v2 persisted topology under "+SessionStateKey(request.SessionID),
+			ansiMagenta+"[pubsub]"+ansiReset+" JetStream homepage.events <- artifact.published",
+			ansiGreen+"[shell]"+ansiReset+" proof rail is now live and derived",
 		)
 		next.Mac.Artifact = Artifact{
 			Title: "Deployment dossier",
@@ -86,11 +98,11 @@ func applyCommand(state SessionState, request CommandRequest) CommandResponse {
 		}
 		next.Terminal.LastCommand = command
 		next.Terminal.History = appendHistory(next.Terminal.History,
-			"> "+command,
-			"[lock] redis lockstore serialized edge state",
-			"[invoke] linux-app accepted edge shift",
-			"[state] PostgreSQL promoted the edge gateway to active",
-			"[pubsub] JetStream homepage.events <- edge.shifted",
+			ansiBold+"> "+command+ansiReset,
+			ansiYellow+"[lock]"+ansiReset+" redis lockstore serialized edge state",
+			ansiCyan+"[invoke]"+ansiReset+" linux-app accepted edge shift",
+			ansiBlue+"[state]"+ansiReset+" PostgreSQL promoted the edge gateway to active",
+			ansiMagenta+"[pubsub]"+ansiReset+" JetStream homepage.events <- edge.shifted",
 		)
 		next.Mac.Artifact = Artifact{
 			Title: "Edge failover memo",
@@ -138,11 +150,11 @@ func applyCommand(state SessionState, request CommandRequest) CommandResponse {
 		}
 		next.Terminal.LastCommand = command
 		next.Terminal.History = appendHistory(next.Terminal.History,
-			"> "+command,
-			"[lock] redis lockstore guarded dossier inspection",
-			"[invoke] linux-app prepared the inspection payload",
-			"[state] mac-app reading the current PostgreSQL dossier",
-			"[pubsub] JetStream homepage.events <- artifact.inspected",
+			ansiBold+"> "+command+ansiReset,
+			ansiYellow+"[lock]"+ansiReset+" redis lockstore guarded dossier inspection",
+			ansiCyan+"[invoke]"+ansiReset+" linux-app prepared the inspection payload",
+			ansiBlue+"[state]"+ansiReset+" mac-app reading the current PostgreSQL dossier",
+			ansiMagenta+"[pubsub]"+ansiReset+" JetStream homepage.events <- artifact.inspected",
 		)
 		next.Mac.Artifact = Artifact{
 			Title: "Inspection transcript",
@@ -170,9 +182,9 @@ func applyCommand(state SessionState, request CommandRequest) CommandResponse {
 	default:
 		next.Terminal.LastCommand = command
 		next.Terminal.History = appendHistory(next.Terminal.History,
-			"> "+command,
-			"[error] unknown command",
-			"Try one of: rezus sync demo, rezus fanout edge, rezus inspect dossier",
+			ansiBold+"> "+command+ansiReset,
+			ansiRed+"[error]"+ansiReset+" unknown command",
+			ansiDim+"Try one of: rezus sync demo, rezus fanout edge, rezus inspect dossier"+ansiReset,
 		)
 		return rejectCommand(next, "Unknown command. Use one of the suggested flows.")
 	}

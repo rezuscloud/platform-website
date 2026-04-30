@@ -27,32 +27,30 @@ templ LinuxEmbed(state model.SessionState, live bool, basePath string, macBasePa
 	if live {
 		if hostRoute == basePath {
 			<section id="linux-panel" class="linux-panel linux-panel-standalone" data-scene-target="linux" hx-get={ basePath + "/embed" } hx-trigger="session-updated from:body, every 10s" hx-swap="outerHTML">
-				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, showShellDepth, hostRoute)
+				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute)
 			</section>
 		} else {
 			<section id="linux-panel" class="linux-panel" data-scene-target="linux" hx-get={ basePath + "/embed" } hx-trigger="session-updated from:body, every 10s" hx-swap="outerHTML">
-				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, showShellDepth, hostRoute)
+				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute)
 			</section>
 		}
 	} else {
 		if hostRoute == basePath {
 			<section id="linux-panel" class="linux-panel linux-panel-standalone" data-scene-target="linux">
-				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, showShellDepth, hostRoute)
+				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute)
 			</section>
 		} else {
 			<section id="linux-panel" class="linux-panel" data-scene-target="linux">
-				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, showShellDepth, hostRoute)
+				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute)
 			</section>
 		}
 	}
 }
 
-templ linuxPanelBody(state model.SessionState, basePath string, macBasePath string, terminalBasePath string, showShellDepth bool, hostRoute string) {
+templ linuxPanelBody(state model.SessionState, basePath string, macBasePath string, terminalBasePath string, hostRoute string) {
 	<div class="linux-topbar-shell">
 		<div class="linux-topbar-left">
-			<span class="linux-badge">x11</span>
-			<span class="linux-badge">twm</span>
-			<span class="linux-badge">rezus workstation</span>
+			<span class="linux-badge">rezus</span>
 		</div>
 		<div class="linux-topbar-right">
 			<span>{ state.Linux.Mode }</span>
@@ -62,64 +60,12 @@ templ linuxPanelBody(state model.SessionState, basePath string, macBasePath stri
 		</div>
 	</div>
 	<div class="linux-root-pattern"></div>
-	<div class="linux-window linux-status-window">
-		<div class="linux-titlebar-shell">
-			<span>service-map</span>
-			<div class="linux-titlebar-controls">
-				<span class="linux-control" role="button" aria-label="Minimize" tabindex="0"></span>
-				<span class="linux-control" role="button" aria-label="Maximize" tabindex="0"></span>
-			</div>
-		</div>
-		<div class="linux-status-body">
-			<div class="linux-meta">
-				<p><span>mode</span><strong>{ state.Linux.Mode }</strong></p>
-				<p><span>last action</span><strong>{ state.Linux.LastAction }</strong></p>
-			</div>
-			<div class="linux-service-list">
-				for _, service := range state.Linux.Services {
-					<div class="linux-service-row" tabindex="0" role="button" aria-label={ "Details for " + service.Name }>
-						<div>
-							<p class="linux-service-name">{ service.Name }</p>
-							<p class="linux-service-detail">{ service.Detail }</p>
-						</div>
-						<p class={ "linux-service-status", "linux-status-" + service.Status }>{ service.Status }</p>
-					</div>
-				}
-			</div>
-		</div>
-	</div>
 	<div class="linux-window linux-mac-window-shell">
 		<div class="linux-titlebar-shell">
 			<span>Mini vMac</span>
-			<div class="linux-titlebar-controls">
-				<span class="linux-control" role="button" aria-label="Minimize" tabindex="0"></span>
-				<span class="linux-control" role="button" aria-label="Maximize" tabindex="0"></span>
-			</div>
 		</div>
 		<div class="linux-window-body">
 			@MacEmbed(state, false, macBasePath, terminalBasePath, hostRoute)
 		</div>
 	</div>
-	<div class="linux-window linux-event-window">
-		<div class="linux-titlebar-shell">
-			<span>event-log</span>
-			<div class="linux-titlebar-controls">
-				<span class="linux-control" role="button" aria-label="Minimize" tabindex="0"></span>
-			</div>
-		</div>
-		<div class="event-log">
-			for _, event := range state.Events {
-				<article>
-					<p class="event-type">{ event.Type }</p>
-					<p class="event-message">{ event.Message }</p>
-					<p class="event-meta"><span>{ event.Source }</span><span>at </span><span>{ event.Timestamp }</span></p>
-				</article>
-			}
-		</div>
-	</div>
-	if showShellDepth {
-		<div class="linux-scene-caption">
-			<p>Scroll to move from terminal, through Mac inspection, to Linux execution.</p>
-		</div>
-	}
 }

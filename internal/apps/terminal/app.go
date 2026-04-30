@@ -16,6 +16,8 @@ func Register(router fiber.Router, runtime platform.Runtime, basePath string) {
 	router.Get(basePath+"/", page(runtime, basePath))
 	router.Get(basePath+"/embed", embed(runtime, basePath))
 	router.Post(basePath+"/actions/run", run(runtime, basePath))
+	router.Get(basePath+"/api/run", apiRun(runtime))
+	router.Post(basePath+"/api/run", apiRun(runtime))
 }
 
 func page(runtime platform.Runtime, basePath string) fiber.Handler {
@@ -69,6 +71,33 @@ func run(runtime platform.Runtime, basePath string) fiber.Handler {
 		default:
 			return render(c, viewapps.TerminalPage(response.State, basePath))
 		}
+	}
+}
+
+func apiRun(runtime platform.Runtime) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		sessionID := platform.EnsureSessionID(c)
+		command := strings.TrimSpace(c.Query("command"))
+		if command == "" {
+			command = strings.TrimSpace(c.FormValue("command"))
+		}
+		if command == "" {
+			command = strings.TrimSpace(c.FormValue("preset"))
+		}
+
+		response, err := runtime.RunCommand(c.Context(), sessionID, command)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		}
+
+		c.Set("HX-Trigger", "session-updated")
+		return c.JSON(fiber.Map{
+			"accepted":  response.Accepted,
+			"message":   response.Message,
+			"history":   response.State.Terminal.History,
+			"prompt":    response.State.Terminal.Prompt,
+			"sessionId": response.State.SessionID,
+		})
 	}
 }
 

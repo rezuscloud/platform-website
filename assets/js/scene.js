@@ -109,27 +109,6 @@
     return 1;
   }
 
-  function applyRail(progress) {
-    const rail = root.querySelector(".shell-rail");
-    const fill = root.querySelector("[data-scene-rail-fill]");
-    const railA = root.querySelector("[data-rail-a]");
-    const railB = root.querySelector("[data-rail-b]");
-    if (!rail || !fill) return;
-
-    const p = clamp(progress);
-    fill.style.transform = "scaleY(" + p.toFixed(4) + ")";
-
-    if (p < 0.5) {
-      rail.dataset.state = "vertical";
-      if (railA) railA.style.opacity = 1;
-      if (railB) railB.style.opacity = 0.35 + p;
-    } else {
-      rail.dataset.state = "horizontal";
-      if (railA) railA.style.opacity = 1 - (p - 0.5) * 2;
-      if (railB) railB.style.opacity = 1;
-    }
-  }
-
   function applyScene(scrollY) {
     if (prefersReducedMotion.matches || window.innerWidth <= 1100) {
       root.dataset.sceneMotion = "reduced";
@@ -137,7 +116,6 @@
       root.style.setProperty("--scene-scale", "1");
       root.style.setProperty("--scene-translate-x", "0px");
       root.style.setProperty("--scene-translate-y", "0px");
-      applyRail(1);
       return;
     }
 
@@ -158,8 +136,6 @@
       "--scene-translate-y",
       Math.round(fitted.translateY) + "px"
     );
-
-    applyRail(state.overall);
   }
 
   function measure() {
