@@ -24,11 +24,21 @@ templ TerminalPage(state model.SessionState, basePath string) {
 }
 
 templ TerminalEmbed(state model.SessionState, live bool, basePath string) {
-	<section id="terminal-panel" class="terminal-panel" data-scene-target="terminal">
-		<div class="terminal-window-body">
-			<div class="term-screen">
-				<div id="xterm-mount" data-term-boot={ jsonHistory(state) } data-term-api={ basePath + "/api/run" }></div>
+	if live {
+		<section id="terminal-panel" class="terminal-panel" data-scene-target="terminal" hx-get={ basePath + "/embed" } hx-trigger="session-updated from:body" hx-swap="outerHTML">
+			<div class="terminal-window-body">
+				<div class="term-screen">
+					<div id="xterm-mount" data-term-boot={ jsonHistory(state) } data-term-api={ basePath + "/api/run" }></div>
+				</div>
 			</div>
-		</div>
-	</section>
+		</section>
+	} else {
+		<section id="terminal-panel" class="terminal-panel" data-scene-target="terminal">
+			<div class="terminal-window-body">
+				<div class="term-screen">
+					<div id="xterm-mount" data-term-boot={ jsonHistory(state) } data-term-api={ basePath + "/api/run" }></div>
+				</div>
+			</div>
+		</section>
+	}
 }
