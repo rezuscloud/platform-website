@@ -17,40 +17,18 @@ templ TerminalPage(state model.SessionState, basePath string) {
 			"The terminal accepts intent, hands real work to linux-app, and stays usable both standalone and nested inside the Mac inspection layer.",
 		) {
 			<div class="route-scene route-scene-terminal">
-				@TerminalEmbed(state, true, basePath, basePath)
+				@TerminalEmbed(state, true, basePath)
 			</div>
 		}
 	}
 }
 
-templ TerminalEmbed(state model.SessionState, live bool, basePath string, hostRoute string) {
-	if live {
-		if hostRoute == basePath {
-			<section id="terminal-panel" class="terminal-panel terminal-panel-standalone" data-scene-target="terminal" hx-get={ basePath + "/embed" } hx-trigger="session-updated from:body, every 10s" hx-swap="outerHTML">
-				@terminalPanelBody(state, basePath, hostRoute)
-			</section>
-		} else {
-			<section id="terminal-panel" class="terminal-panel" data-scene-target="terminal" hx-get={ basePath + "/embed" } hx-trigger="session-updated from:body, every 10s" hx-swap="outerHTML">
-				@terminalPanelBody(state, basePath, hostRoute)
-			</section>
-		}
-	} else {
-		if hostRoute == basePath {
-			<section id="terminal-panel" class="terminal-panel terminal-panel-standalone" data-scene-target="terminal">
-				@terminalPanelBody(state, basePath, hostRoute)
-			</section>
-		} else {
-			<section id="terminal-panel" class="terminal-panel" data-scene-target="terminal">
-				@terminalPanelBody(state, basePath, hostRoute)
-			</section>
-		}
-	}
-}
-
-templ terminalPanelBody(state model.SessionState, basePath string, hostRoute string) {
-	<div class="terminal-window-body">
-		<div class="term-screen">
-			<div id="xterm-mount" data-term-boot={ jsonHistory(state) } data-term-api={ basePath + "/api/run" }></div>
+templ TerminalEmbed(state model.SessionState, live bool, basePath string) {
+	<section id="terminal-panel" class="terminal-panel" data-scene-target="terminal">
+		<div class="terminal-window-body">
+			<div class="term-screen">
+				<div id="xterm-mount" data-term-boot={ jsonHistory(state) } data-term-api={ basePath + "/api/run" }></div>
+			</div>
 		</div>
-	</div>
+	</section>
 }

@@ -38,7 +38,7 @@ func embed(runtime platform.Runtime, basePath string) fiber.Handler {
 			return err
 		}
 
-		return render(c, viewapps.TerminalEmbed(state, true, basePath, basePath))
+		return render(c, viewapps.TerminalEmbed(state, true, basePath))
 	}
 }
 
@@ -58,7 +58,7 @@ func run(runtime platform.Runtime, basePath string) fiber.Handler {
 
 		c.Set("HX-Trigger", "session-updated")
 		if c.Get("HX-Request") == "true" {
-			return render(c, viewapps.TerminalEmbed(response.State, true, basePath, parentRoute))
+			return render(c, viewapps.TerminalEmbed(response.State, true, basePath))
 		}
 
 		switch parentRoute {

@@ -8,27 +8,23 @@
   if (!track || !camera || !world) return;
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const targetNames = ["terminal", "mac", "linux"];
+  const targetNames = ["linux", "mac", "terminal"];
 
   let viewport = { width: 1, height: 1 };
   let metrics = { start: 0, span: 1 };
   let targets = new Map();
   let ticking = false;
 
-  function clamp(value, min, max) {
-    if (min === undefined) min = 0;
-    if (max === undefined) max = 1;
-    return Math.min(max, Math.max(min, value));
+  function clamp(v, lo, hi) {
+    return Math.min(hi !== undefined ? hi : 1, Math.max(lo !== undefined ? lo : 0, v));
   }
 
   function lerp(a, b, t) {
     return a + (b - a) * t;
   }
 
-  function easeOutExpo(value) {
-    if (value <= 0) return 0;
-    if (value >= 1) return 1;
-    return 1 - Math.pow(2, -10 * value);
+  function easeOutExpo(v) {
+    return v <= 0 ? 0 : v >= 1 ? 1 : 1 - Math.pow(2, -10 * v);
   }
 
   function blendRect(a, b, t) {
@@ -41,71 +37,80 @@
   }
 
   function fitRect(rect, overscan) {
-    const scale = Math.max(viewport.width / rect.width, viewport.height / rect.height);
-    const fittedScale = scale * overscan;
-    const translateX = viewport.width / 2 - (rect.left + rect.width / 2) * fittedScale;
-    const translateY = viewport.height / 2 - (rect.top + rect.height / 2) * fittedScale;
-    return { scale: fittedScale, translateX, translateY };
+    var w = rect.width || 1;
+    var h = rect.height || 1;
+    var scale = Math.max(viewport.width / w, viewport.height / h) * (overscan || 1);
+    return {
+      scale: scale,
+      translateX: viewport.width / 2 - (rect.left + w / 2) * scale,
+      translateY: viewport.height / 2 - (rect.top + h / 2) * scale,
+    };
   }
 
-  function worldRectFor(element) {
-    let left = 0;
-    let top = 0;
-    let node = element;
+  function worldRectFor(el) {
+    var left = 0;
+    var top = 0;
+    var node = el;
     while (node && node !== world) {
-      left += node.offsetLeft;
-      top += node.offsetTop;
+      left += node.offsetLeft || 0;
+      top += node.offsetTop || 0;
       node = node.offsetParent;
     }
     return {
       left: left,
       top: top,
-      width: element.offsetWidth,
-      height: element.offsetHeight,
+      width: el.offsetWidth || 1,
+      height: el.offsetHeight || 1,
     };
   }
 
   function captureTargets() {
     targets = new Map();
-    for (const name of targetNames) {
-      const element = root.querySelector('[data-scene-target="' + name + '"]');
-      if (!element) continue;
-      targets.set(name, worldRectFor(element));
+    for (var i = 0; i < targetNames.length; i++) {
+      var name = targetNames[i];
+      var el = root.querySelector('[data-scene-target="' + name + '"]');
+      if (!el) continue;
+      var rect = worldRectFor(el);
+      if (rect.width < 2 || rect.height < 2) continue;
+      targets.set(name, rect);
     }
   }
 
   function computeProgress(scrollY) {
-    const raw = clamp((scrollY - metrics.start) / metrics.span);
+    var raw = clamp((scrollY - metrics.start) / metrics.span);
 
-    if (raw < 0.14) return { phase: 0, mix: 0, overall: 0 };
-    if (raw < 0.44) {
-      const local = easeOutExpo((raw - 0.14) / 0.3);
-      return { phase: 0, mix: local, overall: raw };
+    if (raw < 0.15) return { phase: 0, mix: 0 };
+    if (raw < 0.45) {
+      return { phase: 0, mix: easeOutExpo((raw - 0.15) / 0.3) };
     }
-    if (raw < 0.58) return { phase: 1, mix: 0, overall: raw };
-    if (raw < 0.9) {
-      const local = easeOutExpo((raw - 0.58) / 0.32);
-      return { phase: 1, mix: local, overall: raw };
+    if (raw < 0.55) return { phase: 1, mix: 0 };
+    if (raw < 0.85) {
+      return { phase: 1, mix: easeOutExpo((raw - 0.55) / 0.3) };
     }
-
-    return { phase: 2, mix: 0, overall: raw };
+    return { phase: 2, mix: 0 };
   }
 
   function activeRectFor(state) {
-    const terminal = targets.get("terminal");
-    const mac = targets.get("mac");
-    const linux = targets.get("linux");
-    if (!terminal || !mac || !linux) return null;
+    var linux = targets.get("linux");
+    var mac = targets.get("mac");
+    var terminal = targets.get("terminal");
+    if (!linux) return null;
 
-    if (state.phase === 0 && state.mix > 0) return blendRect(terminal, mac, state.mix);
-    if (state.phase === 1 && state.mix === 0) return mac;
-    if (state.phase === 1 && state.mix > 0) return blendRect(mac, linux, state.mix);
-    if (state.phase === 2) return linux;
-    return terminal;
-  }
-
-  function overscanFor() {
-    return 1;
+    if (state.phase === 0 && state.mix > 0) {
+      if (mac) return blendRect(linux, mac, state.mix);
+      return linux;
+    }
+    if (state.phase === 1 && state.mix === 0) {
+      return mac || linux;
+    }
+    if (state.phase === 1 && state.mix > 0) {
+      if (mac && terminal) return blendRect(mac, terminal, state.mix);
+      return mac || linux;
+    }
+    if (state.phase === 2) {
+      return terminal || mac || linux;
+    }
+    return linux;
   }
 
   function applyScene(scrollY) {
@@ -119,12 +124,11 @@
 
     delete root.dataset.sceneMotion;
 
-    const state = computeProgress(scrollY);
-    const rect = activeRectFor(state);
+    var state = computeProgress(scrollY);
+    var rect = activeRectFor(state);
     if (!rect) return;
 
-    const fitted = fitRect(rect, overscanFor());
-    root.style.setProperty("--scene-progress", state.overall.toFixed(4));
+    var fitted = fitRect(rect, 1);
     root.style.setProperty("--scene-scale", fitted.scale.toFixed(5));
     root.style.setProperty("--scene-translate-x", Math.round(fitted.translateX) + "px");
     root.style.setProperty("--scene-translate-y", Math.round(fitted.translateY) + "px");
@@ -133,10 +137,9 @@
   function measure() {
     viewport = { width: window.innerWidth, height: window.innerHeight };
 
-    const rect = track.getBoundingClientRect();
-    const top = window.scrollY + rect.top;
+    var rect = track.getBoundingClientRect();
     metrics = {
-      start: top,
+      start: window.scrollY + rect.top,
       span: Math.max(1, track.offsetHeight - window.innerHeight),
     };
 
@@ -165,12 +168,12 @@
   window.addEventListener("load", refresh);
 
   if (typeof ResizeObserver !== "undefined") {
-    const observer = new ResizeObserver(refresh);
-    observer.observe(track);
-    observer.observe(world);
-    for (const name of targetNames) {
-      const element = root.querySelector('[data-scene-target="' + name + '"]');
-      if (element) observer.observe(element);
+    var obs = new ResizeObserver(refresh);
+    obs.observe(track);
+    obs.observe(world);
+    for (var i = 0; i < targetNames.length; i++) {
+      var el = root.querySelector('[data-scene-target="' + targetNames[i] + '"]');
+      if (el) obs.observe(el);
     }
   }
 
