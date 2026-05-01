@@ -4,6 +4,7 @@ templ UseCases() {
 	<section id="usecases" class="py-16 sm:py-24 bg-paper dark:bg-next-black">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-12">
+				<div class="w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4"></div>
 				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white">What Will You Build?</h2>
 				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body dark:font-next">
 					Your own platform, your own rules. Here's some inspiration to get you started.
@@ -63,7 +64,7 @@ type UseCaseItem struct {
 
 templ useCaseCard(title string, description string, items []UseCaseItem, icon templ.Component) {
 	<div class="bg-surface-warm dark:bg-next-dark p-6 border border-rule dark:next-raised hover:border-accent-gold dark:hover:border-next-light transition-colors duration-120">
-		<div class="w-12 h-12 bg-paper dark:bg-next-mid flex items-center justify-center mb-4 border border-rule dark:next-raised">
+		<div class="w-12 h-12 bg-accent-gold dark:bg-next-light flex items-center justify-center mb-4 border border-ink dark:next-raised">
 			@icon
 		</div>
 		<h3 class="text-xl font-bold mb-2 font-mac dark:font-next text-ink dark:text-next-white">{ title }</h3>
@@ -89,19 +90,19 @@ templ inspirationCard(label string) {
 }
 
 templ homeserverIcon() {
-	<svg class="w-6 h-6 text-accent-gold dark:text-next-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+	<svg class="w-5 h-5 text-ink dark:text-next-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 		<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205l3 1m1.5.5l-1.5-.5M6.75 7.364V3h-3v18m3-13.636l10.5-3.819"></path>
 	</svg>
 }
 
 templ projectsIcon() {
-	<svg class="w-6 h-6 text-accent-gold dark:text-next-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+	<svg class="w-5 h-5 text-ink dark:text-next-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 		<path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"></path>
 	</svg>
 }
 
 templ storageIcon() {
-	<svg class="w-6 h-6 text-accent-gold dark:text-next-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+	<svg class="w-5 h-5 text-ink dark:text-next-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 		<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"></path>
 	</svg>
 }

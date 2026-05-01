@@ -13,6 +13,8 @@
 	--color-rule: #d4c9b0;
 	--color-accent-gold: #ffb000;
 	--color-accent-gold-dark: #cc8d00;
+	--color-amber-surface: #f5efe3;
+	--color-amber-glow: #f59e0b;
 
 	/* NeXT mode: The NeXTSTEP Palette */
 	--color-next-black: #1a1a1a;
@@ -120,4 +122,43 @@
 
 @utility animate-fade-in-up {
 	animation: fade-in-up 0.4s ease-out forwards;
+}
+
+/* ===== NeXT CRT scanlines (retro feel) ===== */
+
+@utility next-scanlines {
+	background-image: repeating-linear-gradient(
+		0deg,
+		transparent 0px, transparent 3px,
+		rgba(255, 255, 255, 0.03) 3px, rgba(255, 255, 255, 0.03) 4px
+	);
+}
+
+/* ===== Mac dot grid pattern ===== */
+
+@utility mac-dots {
+	background-image: radial-gradient(circle, var(--color-ink) 0.5px, transparent 0.5px);
+	background-size: 12px 12px;
+}
+
+/* ===== Staggered reveal animation ===== */
+
+@utility animate-reveal {
+	animation: fade-in-up 0.5s ease-out forwards;
+	opacity: 0;
+}
+
+@utility animate-reveal-d1 {
+	animation: fade-in-up 0.5s ease-out 0.1s forwards;
+	opacity: 0;
+}
+
+@utility animate-reveal-d2 {
+	animation: fade-in-up 0.5s ease-out 0.2s forwards;
+	opacity: 0;
+}
+
+@utility animate-reveal-d3 {
+	animation: fade-in-up 0.5s ease-out 0.3s forwards;
+	opacity: 0;
 }

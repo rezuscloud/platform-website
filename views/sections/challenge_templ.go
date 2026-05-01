@@ -29,7 +29,7 @@ func Challenge() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"challenge\" class=\"py-16 sm:py-24 bg-surface-warm dark:bg-next-dark\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white\">The Mainframe Moment</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body dark:font-next\">In the 1970s, computers were room-sized machines owned by a handful of corporations. Companies rented time on them. When people proposed putting a computer on every desk, the industry said it was absurd. Sound familiar?</p></div><div class=\"max-w-4xl mx-auto mb-12\"><div class=\"overflow-x-auto border border-rule dark:next-raised\"><table class=\"w-full text-left font-mac-body dark:font-next\"><thead><tr class=\"border-b border-rule dark:border-next-mid bg-rule dark:bg-next-mid\"><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle font-semibold font-mac dark:font-next\">Then (1970s)</th><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle font-semibold font-mac dark:font-next\">Now</th></tr></thead> <tbody class=\"divide-y divide-rule dark:divide-next-dark\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"challenge\" class=\"py-16 sm:py-24 bg-surface-warm dark:bg-next-dark\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><div class=\"w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4\"></div><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white\">The Mainframe Moment</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body dark:font-next\">In the 1970s, computers were room-sized machines owned by a handful of corporations. Companies rented time on them. When people proposed putting a computer on every desk, the industry said it was absurd. Sound familiar?</p></div><div class=\"max-w-4xl mx-auto mb-12\"><div class=\"overflow-x-auto border border-rule dark:next-raised\"><table class=\"w-full text-left font-mac-body dark:font-next\"><thead><tr class=\"border-b border-rule dark:border-next-mid bg-rule dark:bg-next-mid\"><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle font-semibold font-mac dark:font-next\">Then (1970s)</th><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle font-semibold font-mac dark:font-next\">Now</th></tr></thead> <tbody class=\"divide-y divide-rule dark:divide-next-dark\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -89,7 +89,7 @@ func challengeRow(then string, now string) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(then)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 46, Col: 104}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 47, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -102,7 +102,7 @@ func challengeRow(then string, now string) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(now)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 47, Col: 105}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 48, Col: 105}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
