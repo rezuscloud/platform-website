@@ -29,7 +29,7 @@ func Comparison() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"comparison\" class=\"py-16 sm:py-24 bg-surface dark:bg-next-dark\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><div class=\"w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4\"></div><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white\">Own vs. Rent</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body\">Renting cloud infrastructure is like renting an apartment forever. At some point, you might want to own.</p></div><div class=\"max-w-4xl mx-auto\"><div class=\"bg-paper dark:bg-next-black border border-rule dark:next-raised overflow-hidden\"><table class=\"w-full text-left font-mac-body\"><thead><tr class=\"bg-rule dark:bg-next-mid uppercase tracking-wider text-xs font-mac\"><th class=\"py-3 px-4 sm:px-6 font-semibold text-ink-muted dark:text-next-subtle\">What</th><th class=\"py-3 px-4 sm:px-6 font-semibold text-ink-muted dark:text-next-subtle\">Renting</th><th class=\"py-3 px-4 sm:px-6 font-semibold text-ink-muted dark:text-next-subtle\">Owning</th></tr></thead> <tbody class=\"divide-y divide-rule dark:divide-next-dark\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"comparison\" class=\"py-20 sm:py-28 bg-surface dark:bg-next-dark relative\"><div class=\"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-14\"><span class=\"inline-block px-3 py-1 text-xs font-mac uppercase tracking-widest text-ink-muted dark:text-next-subtle border border-rule dark:border-next-mid mb-6\">The Argument</span><h2 class=\"text-4xl sm:text-5xl font-extrabold tracking-tighter mb-4 font-mac text-ink dark:text-next-white\">Own vs. Rent</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-xl mx-auto font-mac-body leading-relaxed\">Renting cloud infrastructure is like renting an apartment forever. At some point, you might want to own.</p></div><div class=\"border-2 border-ink dark:border-next-white overflow-hidden\"><table class=\"w-full text-left font-mac-body\"><thead><tr class=\"bg-ink dark:bg-next-mid uppercase tracking-wider text-xs font-mac\"><th class=\"py-3.5 px-5 sm:px-8 font-semibold text-paper dark:text-next-white\">What</th><th class=\"py-3.5 px-5 sm:px-8 font-semibold text-paper/60 dark:text-next-white/60\">Renting</th><th class=\"py-3.5 px-5 sm:px-8 font-semibold text-accent-gold dark:text-next-light\">Owning</th></tr></thead> <tbody class=\"divide-y divide-rule dark:divide-next-mid/40\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -65,7 +65,7 @@ func Comparison() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</tbody></table></div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</tbody></table></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -94,40 +94,40 @@ func compRow(what string, renting string, owning string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-surface dark:hover:bg-next-dark transition-colors duration-120\"><td class=\"py-3 px-4 sm:px-6 font-semibold text-ink dark:text-next-white font-mac-body\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-paper dark:hover:bg-next-dark transition-colors duration-120\"><td class=\"py-4 px-5 sm:px-8 font-bold text-ink dark:text-next-white font-mac-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(what)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 44, Col: 96}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 42, Col: 92}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</td><td class=\"py-3 px-4 sm:px-6 text-negative dark:text-negative-next font-mac-body\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</td><td class=\"py-4 px-5 sm:px-8 text-negative dark:text-negative-next font-mac-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(renting)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 45, Col: 93}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 43, Col: 93}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</td><td class=\"py-3 px-4 sm:px-6 text-positive dark:text-positive-next font-semibold font-mac-body\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</td><td class=\"py-4 px-5 sm:px-8 text-positive dark:text-positive-next font-bold font-mac-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(owning)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 46, Col: 106}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 44, Col: 102}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {

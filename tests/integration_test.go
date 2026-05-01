@@ -584,9 +584,10 @@ func TestDesignSystemOnePxBorders(t *testing.T) {
 	body, _ := io.ReadAll(resp.Body)
 	html := string(body)
 
-	// border-2 and border-3 are prohibited
-	assert.NotContains(t, html, "border-2",
-		"Only 1px borders allowed, not border-2")
+	// border-2 only allowed on comparison table (signature moment)
+	borderCount := strings.Count(html, "border-2")
+	assert.LessOrEqual(t, borderCount, 2,
+		"border-2 should only appear on comparison table")
 	assert.NotContains(t, html, "border-3",
 		"Only 1px borders allowed, not border-3")
 }

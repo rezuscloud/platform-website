@@ -66,7 +66,7 @@ func Layout(title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Active section observer --><script>\n\t\t\t\tdocument.addEventListener(\"alpine:init\", () => {\n\t\t\t\t\tconst sections = document.querySelectorAll(\"section[id]\");\n\t\t\t\t\tif (!sections.length) return;\n\t\t\t\t\tconst observer = new IntersectionObserver((entries) => {\n\t\t\t\t\t\tentries.forEach((entry) => {\n\t\t\t\t\t\t\tif (entry.isIntersecting) {\n\t\t\t\t\t\t\t\tAlpine.store(\"scroll\").active = entry.target.id;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t}, { rootMargin: \"-20% 0px -60% 0px\" });\n\t\t\t\t\tsections.forEach((s) => observer.observe(s));\n\t\t\t\t});\n\t\t\t</script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Active section observer --><script>\n\t\t\t\tdocument.addEventListener(\"alpine:init\", () => {\n\t\t\t\t\tconst sections = document.querySelectorAll(\"section[id]\");\n\t\t\t\t\tif (!sections.length) return;\n\t\t\t\t\tconst observer = new IntersectionObserver(\n\t\t\t\t\t\t(entries) => {\n\t\t\t\t\t\t\tentries.forEach((entry) => {\n\t\t\t\t\t\t\t\tif (entry.isIntersecting) {\n\t\t\t\t\t\t\t\t\tAlpine.store(\"scroll\").active = entry.target.id;\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{ rootMargin: \"-20% 0px -60% 0px\" },\n\t\t\t\t\t);\n\t\t\t\t\tsections.forEach((s) => observer.observe(s));\n\t\t\t\t});\n\t\t\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
