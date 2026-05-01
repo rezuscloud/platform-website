@@ -24,7 +24,11 @@ templ LinuxPage(state model.SessionState, basePath string) {
 }
 
 templ LinuxEmbed(state model.SessionState, live bool, basePath string) {
-	<section id="linux-panel" class="linux-panel" data-scene-target="linux">
+	<section id="linux-panel" class="linux-panel" data-scene-target="linux" if live {
+	hx-get={ basePath + "/embed" }
+	hx-trigger="session-updated from:body, every 10s"
+	hx-swap="outerHTML"
+}>
 		<div class="linux-topbar-shell">
 			<div class="linux-topbar-left">
 				<span class="linux-badge">rezus</span>

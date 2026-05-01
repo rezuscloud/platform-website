@@ -1,11 +1,13 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"os"
 
+	"github.com/gofiber/contrib/otelfiber"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -63,7 +65,7 @@ func NewLinuxApp(runtime platform.Runtime) *fiber.App {
 	return app
 }
 
-func Listen(app *fiber.App) {
+func Listen(app *fiber.App) error {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "3000"
@@ -73,9 +75,9 @@ func Listen(app *fiber.App) {
 	log.Printf("Starting server on %s", addr)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
-		log.Fatalf("Failed to create listener: %v", err)
+		return fmt.Errorf("create listener: %w", err)
 	}
-	log.Fatal(app.Listener(ln))
+	return app.Listener(ln)
 }
 
 func newBaseApp(appName string) *fiber.App {
@@ -85,6 +87,7 @@ func newBaseApp(appName string) *fiber.App {
 	})
 
 	app.Use(recover.New())
+	app.Use(otelfiber.Middleware())
 	app.Use(logger.New())
 	app.Use(compress.New())
 
