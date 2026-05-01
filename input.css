@@ -361,8 +361,8 @@ button {
 
 .scene-world {
 	position: relative;
-	width: 100%;
-	height: 100%;
+	width: 1680px;
+	height: 1080px;
 	transform-origin: top left;
 	user-select: none;
 }
@@ -402,9 +402,11 @@ button {
 }
 
 .linux-panel {
-	position: relative;
-	width: 100%;
-	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 1680px;
+	height: 1080px;
 	overflow: hidden;
 	background: var(--color-linux-surface);
 	font-family: var(--font-shell-x11);
@@ -412,6 +414,7 @@ button {
 }
 
 .linux-panel-standalone {
+	position: relative;
 	width: 1680px;
 	height: 1080px;
 	margin-inline: auto;
@@ -616,10 +619,10 @@ button {
 }
 
 .linux-mac-window-shell {
-	left: 3%;
-	top: 10%;
-	width: 94%;
-	height: 84%;
+	left: 336px;
+	top: 88px;
+	width: 940px;
+	height: 820px;
 	z-index: 4;
 }
 
@@ -751,17 +754,19 @@ button {
 }
 
 .mac-panel {
-	position: relative;
+	position: absolute;
+	left: 0;
+	top: 0;
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
 	background: var(--color-mac-paper);
 	font-family: var(--font-shell-ui);
 	color: var(--color-mac-line);
-	image-rendering: pixelated;
 }
 
 .mac-panel-standalone {
+	position: relative;
 	width: min(1120px, 100%);
 	height: 760px;
 	margin-inline: auto;
@@ -831,10 +836,10 @@ button {
 
 .mac-terminal-host {
 	position: absolute;
-	left: 2%;
-	top: 5%;
-	width: 96%;
-	height: 90%;
+	left: 74px;
+	top: 64px;
+	width: 648px;
+	height: 470px;
 	z-index: 4;
 }
 
@@ -1077,6 +1082,7 @@ button {
 }
 
 .terminal-panel {
+	position: absolute;
 	inset: 0;
 	background: linear-gradient(180deg, oklch(0.29 0.022 155) 0%, oklch(0.19 0.016 155) 24%, oklch(0.11 0.012 155) 100%);
 	border-color: oklch(0.12 0.008 155);
@@ -1494,7 +1500,19 @@ code {
 	.linux-panel-standalone,
 	.mac-panel-standalone,
 	.terminal-panel-standalone {
+		position: relative;
 		width: min(100%, 1240px);
+	}
+
+	.linux-panel-standalone {
+		height: 920px;
+	}
+
+	.linux-panel-standalone .linux-mac-window-shell {
+		left: 280px;
+		top: 80px;
+		width: 680px;
+		height: 640px;
 	}
 
 	.linux-status-window {
@@ -1573,8 +1591,34 @@ code {
 	.linux-panel-standalone,
 	.mac-panel-standalone,
 	.terminal-panel-standalone {
+		position: relative;
 		min-height: 0;
 		height: auto;
+	}
+
+	.linux-panel-standalone {
+		width: 100%;
+		height: auto;
+	}
+
+	.linux-panel-standalone .linux-mac-window-shell {
+		position: relative;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 500px;
+	}
+
+	.linux-panel-standalone .linux-status-window,
+	.linux-panel-standalone .linux-event-window {
+		position: relative;
+		left: 0;
+		top: 0;
+		right: auto;
+		width: 100%;
+		height: auto;
+		transform: none;
+		margin-top: 0.5rem;
 	}
 
 	.terminal-panel-standalone {
