@@ -23,7 +23,6 @@
 	--color-next-subtle: #888888;
 	--color-next-bevel-hi: #555555;
 	--color-next-bevel-lo: #050505;
-	--color-next-phosphor: #33ff33;
 
 	/* Semantic accent colors (used sparingly for data contrast) */
 	--color-positive: #009900;
@@ -31,12 +30,13 @@
 	--color-negative: #cc0000;
 	--color-negative-next: #cc3333;
 
-	/* Font families */
-	--font-mac: "Silkscreen", "Chicago", system-ui, sans-serif;
-	--font-mac-body: "Silkscreen", system-ui, sans-serif;
-	--font-mac-mono: "VT323", "Monaco", "Courier New", monospace;
-	--font-next: "Courier New", Menlo, Consolas, monospace;
-	--font-next-mono: "VT323", "Courier New", Menlo, Consolas, monospace;
+	/* Font families — same in both modes, only colors change */
+	--font-mac: "Silkscreen", system-ui, sans-serif;
+	--font-mac-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+	--font-mac-mono: "VT323", "Courier New", monospace;
+	--font-next: "Silkscreen", system-ui, sans-serif;
+	--font-next-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+	--font-next-mono: "VT323", "Courier New", monospace;
 }
 
 /* Font face declarations */

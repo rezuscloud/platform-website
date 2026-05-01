@@ -5,8 +5,8 @@ templ Services() {
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-12">
 				<div class="w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4"></div>
-				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white">What You Can Run</h2>
-				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac dark:font-next">
+				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white">What You Can Run</h2>
+				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body">
 					Everything you need comes in the box — networking, monitoring, app deployment, and storage. All bundled, all ready to go.
 				</p>
 			</div>
@@ -41,8 +41,8 @@ templ capabilityCard(title string, description string, icon templ.Component) {
 		<div class="w-12 h-12 bg-accent-gold dark:bg-next-light flex items-center justify-center mb-4 border border-ink dark:next-raised">
 			@icon
 		</div>
-		<h3 class="text-lg font-bold mb-2 font-mac dark:font-next text-ink dark:text-next-white">{ title }</h3>
-		<p class="text-sm text-ink-muted dark:text-next-subtle leading-relaxed font-mac dark:font-next">{ description }</p>
+		<h3 class="text-lg font-bold mb-2 font-mac text-ink dark:text-next-white">{ title }</h3>
+		<p class="text-sm text-ink-muted dark:text-next-subtle leading-relaxed font-mac-body">{ description }</p>
 	</div>
 }
 

@@ -69,11 +69,14 @@ templ Layout(title string) {
 							localStorage.setItem("theme", this.dark ? "dark" : "light");
 						},
 					});
+					Alpine.store("scroll", {
+						active: "hero",
+					});
 				});
 			</script>
 			<script defer src="/assets/js/alpine.min.js"></script>
 		</head>
-		<body class="bg-paper dark:bg-next-black text-ink dark:text-next-white font-mac dark:font-next transition-colors duration-150">
+		<body class="bg-paper dark:bg-next-black text-ink dark:text-next-white font-mac-body transition-colors duration-150">
 			<!-- NeXT mode CRT scanline overlay -->
 			<div class="fixed inset-0 pointer-events-none z-[9999] hidden dark:block next-scanlines" aria-hidden="true"></div>
 			@Nav()
@@ -81,6 +84,24 @@ templ Layout(title string) {
 				{ children... }
 			</main>
 			@Footer()
+			<!-- Active section observer -->
+			<script>
+				document.addEventListener("alpine:init", () => {
+					const sections = document.querySelectorAll("section[id]");
+					if (!sections.length) return;
+					const observer = new IntersectionObserver(
+						(entries) => {
+							entries.forEach((entry) => {
+								if (entry.isIntersecting) {
+									Alpine.store("scroll").active = entry.target.id;
+								}
+							});
+						},
+						{ rootMargin: "-20% 0px -60% 0px" },
+					);
+					sections.forEach((s) => observer.observe(s));
+				});
+			</script>
 		</body>
 	</html>
 }
@@ -100,14 +121,14 @@ templ Nav() {
 							<rect x="8" y="22" width="16" height="2" rx="0.5"></rect>
 						</svg>
 					</div>
-					<span class="text-lg font-bold font-mac dark:font-next text-ink dark:text-next-white tracking-wide">Rezus<span class="text-accent-gold dark:text-next-light">Cloud</span></span>
+					<span class="text-lg font-bold font-mac text-ink dark:text-next-white tracking-wide">Rezus<span class="text-accent-gold dark:text-next-light">Cloud</span></span>
 				</div>
-				<div class="hidden md:flex items-center gap-1 text-sm font-mac dark:font-next">
-					<a href="#hero" class="px-3 py-1 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Home</a>
-					<a href="#architecture" class="px-3 py-1 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Architecture</a>
-					<a href="#features" class="px-3 py-1 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Features</a>
-					<a href="#comparison" class="px-3 py-1 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Compare</a>
-					<a href="#getstarted" class="px-3 py-1 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Get Started</a>
+				<div class="hidden md:flex items-center gap-1 text-sm font-mac">
+					<a href="#hero" x-bind:class="$store.scroll.active === 'hero' ? 'px-3 py-1 text-ink dark:text-next-white bg-paper dark:bg-next-mid' : 'px-3 py-1 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'">Home</a>
+					<a href="#architecture" x-bind:class="$store.scroll.active === 'architecture' ? 'px-3 py-1 text-ink dark:text-next-white bg-paper dark:bg-next-mid' : 'px-3 py-1 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'">Architecture</a>
+					<a href="#features" x-bind:class="$store.scroll.active === 'features' ? 'px-3 py-1 text-ink dark:text-next-white bg-paper dark:bg-next-mid' : 'px-3 py-1 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'">Features</a>
+					<a href="#comparison" x-bind:class="$store.scroll.active === 'comparison' ? 'px-3 py-1 text-ink dark:text-next-white bg-paper dark:bg-next-mid' : 'px-3 py-1 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'">Compare</a>
+					<a href="#getstarted" x-bind:class="$store.scroll.active === 'getstarted' ? 'px-3 py-1 text-ink dark:text-next-white bg-paper dark:bg-next-mid' : 'px-3 py-1 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'">Get Started</a>
 				</div>
 				<div class="flex items-center gap-3">
 					@ThemeToggle()
@@ -137,7 +158,7 @@ templ Nav() {
 				x-transition:leave-end="opacity-0 -translate-y-2"
 				class="md:hidden pb-4"
 			>
-				<div class="flex flex-col gap-1 text-sm font-mac dark:font-next">
+				<div class="flex flex-col gap-1 text-sm font-mac">
 					<a href="#hero" @click="mobileOpen = false" class="block px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Home</a>
 					<a href="#architecture" @click="mobileOpen = false" class="block px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Architecture</a>
 					<a href="#features" @click="mobileOpen = false" class="block px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Features</a>
@@ -178,15 +199,15 @@ templ Footer() {
 								<rect x="8" y="22" width="16" height="2" rx="0.5"></rect>
 							</svg>
 						</div>
-						<span class="text-lg font-bold font-mac dark:font-next text-ink dark:text-next-white tracking-wide">Rezus<span class="text-accent-gold dark:text-next-light">Cloud</span></span>
+						<span class="text-lg font-bold font-mac text-ink dark:text-next-white tracking-wide">Rezus<span class="text-accent-gold dark:text-next-light">Cloud</span></span>
 					</div>
-					<p class="text-sm text-ink-muted dark:text-next-subtle font-mac dark:font-next">
+					<p class="text-sm text-ink-muted dark:text-next-subtle font-mac-body">
 						Your Personal Cloud. Own it.
 					</p>
 				</div>
 				<div>
-					<h3 class="font-semibold mb-3 font-mac dark:font-next text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle">Platform</h3>
-					<ul class="space-y-2 text-sm font-mac dark:font-next text-ink-muted dark:text-next-subtle">
+					<h3 class="font-semibold mb-3 font-mac text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle">Platform</h3>
+					<ul class="space-y-2 text-sm font-mac-body text-ink-muted dark:text-next-subtle">
 						<li><a href="#features" class="hover:text-accent-gold dark:hover:text-next-white transition-colors">Features</a></li>
 						<li><a href="#architecture" class="hover:text-accent-gold dark:hover:text-next-white transition-colors">Architecture</a></li>
 						<li><a href="#comparison" class="hover:text-accent-gold dark:hover:text-next-white transition-colors">Compare</a></li>
@@ -194,14 +215,14 @@ templ Footer() {
 					</ul>
 				</div>
 				<div>
-					<h3 class="font-semibold mb-3 font-mac dark:font-next text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle">Resources</h3>
-					<ul class="space-y-2 text-sm font-mac dark:font-next text-ink-muted dark:text-next-subtle">
+					<h3 class="font-semibold mb-3 font-mac text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle">Resources</h3>
+					<ul class="space-y-2 text-sm font-mac-body text-ink-muted dark:text-next-subtle">
 						<li><a href="#getstarted" class="hover:text-accent-gold dark:hover:text-next-white transition-colors">Getting Started</a></li>
 						<li><a href="#techstack" class="hover:text-accent-gold dark:hover:text-next-white transition-colors">Technology Stack</a></li>
 					</ul>
 				</div>
 			</div>
-			<div class="mt-8 pt-8 border-t border-rule dark:border-next-mid text-center text-xs text-ink-muted dark:text-next-subtle font-mac-mono dark:font-next-mono">
+			<div class="mt-8 pt-8 border-t border-rule dark:border-next-mid text-center text-xs text-ink-muted dark:text-next-subtle font-mac-mono">
 				<p>MODEL RC-001 // SERIAL: OPEN-SOURCE // <span class="text-accent-gold dark:text-next-light">Built with Go, templ, HTMX, Alpine.js, Tailwind CSS</span></p>
 			</div>
 		</div>

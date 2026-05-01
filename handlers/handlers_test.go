@@ -257,11 +257,9 @@ func TestHomePageFontFamilies(t *testing.T) {
 
 	html := string(body)
 
-	// Verify Mac mode font classes (Silkscreen for all text)
-	assert.Contains(t, html, "font-mac", "Mac mode font class should be present")
-
-	// Verify NeXT mode font classes (Courier New for retro terminal feel)
-	assert.Contains(t, html, "dark:font-next", "NeXT mode font class should be present")
+	// Verify font hierarchy: Silkscreen headings + system-ui body (same in both modes)
+	assert.Contains(t, html, "font-mac", "Display font (Silkscreen) should be present")
+	assert.Contains(t, html, "font-mac-body", "Body font (system-ui) should be present")
 
 	// Verify old font class is gone
 	assert.NotContains(t, html, "font-retro", "Old font-retro class should be removed")
