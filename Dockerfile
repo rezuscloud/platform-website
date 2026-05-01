@@ -8,7 +8,7 @@ COPY views/ ./views/
 RUN npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
 
 # Stage 2: Generate templ + Build Go binary with cross-compilation
-FROM --platform=$BUILDPLATFORM golang:1.24-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.25-alpine AS builder
 RUN apk add --no-cache git
 RUN go install github.com/a-h/templ/cmd/templ@latest
 WORKDIR /app
