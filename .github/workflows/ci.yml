@@ -135,18 +135,38 @@ jobs:
 
   docker-pr:
     needs: [build, test, e2e-test]
-    if: always() && github.event_name == 'pull_request' && needs.build.result == 'success' && needs.test.result == 'success'
+    if: always() && needs.build.result == 'success' && needs.test.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v6
+      - name: Resolve PR context
+        id: pr
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+            echo "sha=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            PR_DATA=$(gh pr list --repo ${{ github.repository }} --head ${{ github.ref_name }} --state open --json number --jq '.[0]')
+            PR_NUMBER=$(echo "$PR_DATA" | jq -r '.number')
+            if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
+              echo "No open PR found for branch ${{ github.ref_name }}, skipping docker-pr"
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+              echo "sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: ./.github/actions/docker-multiarch
+        if: steps.pr.outputs.skip != 'true'
         with:
           push_image: true
           tag_list: |
-            pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
-          version: pr-${{ github.event.pull_request.number }}
-          git_commit: ${{ github.event.pull_request.head.sha }}
+            pr-${{ steps.pr.outputs.number }}-${{ steps.pr.outputs.sha }}
+          version: pr-${{ steps.pr.outputs.number }}
+          git_commit: ${{ steps.pr.outputs.sha }}
           build_time: ""
