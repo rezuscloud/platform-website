@@ -6,7 +6,7 @@ templ UseCases() {
 			<div class="text-center mb-12">
 				<div class="w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4"></div>
 				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white">What Will You Build?</h2>
-				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body dark:font-next">
+				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac dark:font-next">
 					Your own platform, your own rules. Here's some inspiration to get you started.
 				</p>
 			</div>
@@ -63,17 +63,17 @@ type UseCaseItem struct {
 }
 
 templ useCaseCard(title string, description string, items []UseCaseItem, icon templ.Component) {
-	<div class="bg-surface-warm dark:bg-next-dark p-6 border border-rule dark:next-raised hover:border-accent-gold dark:hover:border-next-light transition-colors duration-120">
+	<div class="bg-surface dark:bg-next-dark p-6 border border-rule dark:next-raised hover:border-accent-gold dark:hover:border-next-light transition-colors duration-120">
 		<div class="w-12 h-12 bg-accent-gold dark:bg-next-light flex items-center justify-center mb-4 border border-ink dark:next-raised">
 			@icon
 		</div>
 		<h3 class="text-xl font-bold mb-2 font-mac dark:font-next text-ink dark:text-next-white">{ title }</h3>
-		<p class="text-sm text-ink-muted dark:text-next-subtle mb-4 font-mac-body dark:font-next">{ description }</p>
+		<p class="text-sm text-ink-muted dark:text-next-subtle mb-4 font-mac dark:font-next">{ description }</p>
 		<ul class="space-y-2">
 			for _, item := range items {
 				<li class="flex items-start gap-2 text-sm">
 					<span class="mt-1.5 w-1.5 h-1.5 bg-accent-gold dark:bg-next-light shrink-0"></span>
-					<span class="font-mac-body dark:font-next"><span class="font-medium text-ink dark:text-next-white">{ item.Title }</span> <span class="text-ink-muted dark:text-next-subtle">— { item.Description }</span></span>
+					<span class="font-mac dark:font-next"><span class="font-medium text-ink dark:text-next-white">{ item.Title }</span> <span class="text-ink-muted dark:text-next-subtle">— { item.Description }</span></span>
 				</li>
 			}
 		</ul>
@@ -81,7 +81,7 @@ templ useCaseCard(title string, description string, items []UseCaseItem, icon te
 }
 
 templ inspirationCard(label string) {
-	<div class="bg-surface-warm dark:bg-next-dark p-4 border border-rule dark:next-raised font-mac-body dark:font-next text-sm text-ink dark:text-next-white">
+	<div class="bg-surface dark:bg-next-dark p-4 border border-rule dark:next-raised font-mac dark:font-next text-sm text-ink dark:text-next-white">
 		<div class="flex items-center gap-2">
 			<span class="w-1.5 h-1.5 bg-accent-gold dark:bg-next-light shrink-0"></span>
 			<span>{ label }</span>

@@ -1,14 +1,14 @@
 package sections
 
 templ Edge() {
-	<section id="edge" class="py-16 sm:py-24 bg-surface-warm dark:bg-next-dark">
+	<section id="edge" class="py-16 sm:py-24 bg-surface dark:bg-next-dark">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-12">
 				<div class="w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4"></div>
 				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white">
 					Runs on Anything
 				</h2>
-				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body dark:font-next">
+				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac dark:font-next">
 					The orchestration layer abstracts the hardware beneath it. Your cluster doesn't care whether
 					a node is a rack server or a laptop gathering dust — it just schedules workloads.
 				</p>
@@ -24,7 +24,7 @@ templ Edge() {
 					Why Your Old Hardware Is Enough
 				</h3>
 				<div class="overflow-x-auto border border-rule dark:next-raised">
-					<table class="w-full text-left font-mac-body dark:font-next">
+					<table class="w-full text-left font-mac dark:font-next">
 						<thead>
 							<tr class="border-b border-rule dark:border-next-mid bg-rule dark:bg-next-mid">
 								<th class="py-3 px-4 sm:px-6 text-ink-muted dark:text-next-subtle uppercase tracking-wider text-xs font-semibold font-mac dark:font-next">Metric</th>
@@ -48,7 +48,7 @@ templ Edge() {
 templ edgeNode(name string, tagline string) {
 	<div class="bg-paper dark:bg-next-black p-4 border border-rule dark:next-raised text-center">
 		<div class="font-bold text-ink dark:text-next-white font-mac dark:font-next">{ name }</div>
-		<div class="text-sm text-ink-muted dark:text-next-subtle font-mac-body dark:font-next mt-1">{ tagline }</div>
+		<div class="text-sm text-ink-muted dark:text-next-subtle font-mac dark:font-next mt-1">{ tagline }</div>
 	</div>
 }
 
