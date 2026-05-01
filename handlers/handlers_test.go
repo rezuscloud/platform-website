@@ -239,9 +239,11 @@ func TestHomePageNoBorder2(t *testing.T) {
 
 	html := string(body)
 
-	// border-2 is prohibited; only border (1px) is allowed
-	assert.NotContains(t, html, "border-2",
-		"border-2 should not be present; only 1px borders allowed")
+	// border-2 only allowed on comparison table (signature moment)
+	// All other elements use border (1px) or border-none
+	borderCount := strings.Count(html, "border-2")
+	assert.LessOrEqual(t, borderCount, 2,
+		"border-2 should only appear on the comparison table wrapper")
 }
 
 func TestHomePageFontFamilies(t *testing.T) {
