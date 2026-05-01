@@ -1,27 +1,27 @@
 package sections
 
 templ Comparison() {
-	<section id="comparison" class="py-16 sm:py-24 bg-cream-100 dark:bg-terminal-surface">
+	<section id="comparison" class="py-16 sm:py-24 bg-surface-warm dark:bg-next-dark">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-12">
-				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-display text-cream-800 dark:text-gray-300">
+				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white">
 					Own vs. Rent
 				</h2>
-				<p class="text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display">
+				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body dark:font-next">
 					Renting cloud infrastructure is like renting an apartment forever. At some point, you might want to own.
 				</p>
 			</div>
 			<div class="max-w-4xl mx-auto">
-				<div class="bg-cream-50 dark:bg-terminal-bg rounded-xl border border-cream-300 dark:border-terminal-border overflow-hidden">
-					<table class="w-full text-left font-display">
+				<div class="bg-paper dark:bg-next-black border border-rule dark:next-raised overflow-hidden">
+					<table class="w-full text-left font-mac-body dark:font-next">
 						<thead>
-							<tr class="bg-cream-200 dark:bg-terminal-bg uppercase tracking-wider text-sm text-cream-500 dark:text-gray-500">
-								<th class="py-3 px-4 sm:px-6 font-semibold">What</th>
-								<th class="py-3 px-4 sm:px-6 font-semibold">Renting</th>
-								<th class="py-3 px-4 sm:px-6 font-semibold">Owning</th>
+							<tr class="bg-rule dark:bg-next-mid uppercase tracking-wider text-xs font-mac dark:font-next">
+								<th class="py-3 px-4 sm:px-6 font-semibold text-ink-muted dark:text-next-subtle">What</th>
+								<th class="py-3 px-4 sm:px-6 font-semibold text-ink-muted dark:text-next-subtle">Renting</th>
+								<th class="py-3 px-4 sm:px-6 font-semibold text-ink-muted dark:text-next-subtle">Owning</th>
 							</tr>
 						</thead>
-						<tbody class="divide-y divide-cream-300 dark:divide-terminal-border">
+						<tbody class="divide-y divide-rule dark:divide-next-dark">
 							@compRow("Monthly cost", "Grows with usage", "Electricity you already pay")
 							@compRow("Your data", "On their servers, their encryption", "Your hardware, your encryption keys")
 							@compRow("Vendor lock-in", "Stuck in their ecosystem", "Open source, replaceable")
@@ -39,9 +39,9 @@ templ Comparison() {
 }
 
 templ compRow(what string, renting string, owning string) {
-	<tr class="hover:bg-amber-50/50 dark:hover:bg-amber-900/10 transition-colors">
-		<td class="py-3 px-4 sm:px-6 font-semibold text-cream-700 dark:text-gray-400">{ what }</td>
-		<td class="py-3 px-4 sm:px-6 text-red-600 dark:text-red-400">{ renting }</td>
-		<td class="py-3 px-4 sm:px-6 text-phosphor-600 dark:text-phosphor-400 font-semibold">{ owning }</td>
+	<tr class="hover:bg-surface-warm dark:hover:bg-next-dark transition-colors duration-120">
+		<td class="py-3 px-4 sm:px-6 font-semibold text-ink dark:text-next-white font-mac dark:font-next">{ what }</td>
+		<td class="py-3 px-4 sm:px-6 text-negative dark:text-negative-next font-mac-body dark:font-next">{ renting }</td>
+		<td class="py-3 px-4 sm:px-6 text-positive dark:text-positive-next font-semibold font-mac dark:font-next">{ owning }</td>
 	</tr>
 }

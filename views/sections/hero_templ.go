@@ -29,7 +29,7 @@ func Hero() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"hero\" class=\"pt-24 pb-16 sm:pt-32 sm:pb-24\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center max-w-4xl mx-auto\"><div class=\"inline-flex items-center gap-2 px-4 py-1.5 bg-cream-200 dark:bg-terminal-surface border border-cream-300 dark:border-terminal-border text-cream-700 dark:text-phosphor-400 text-sm font-display mb-6\"><span class=\"w-2 h-2 bg-amber-500 dark:bg-phosphor-500 animate-pulse\"></span> Open Source Cloud Infrastructure</div><h1 class=\"text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 font-display\"><span class=\"text-amber-600 dark:text-phosphor-400\">Your Personal</span><br><span class=\"text-cream-900 dark:text-gray-100\">Cloud</span></h1><p class=\"text-lg sm:text-xl text-cream-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto font-display\">They said you didn't need your own computer either.<br class=\"hidden sm:block\">Then the personal computer changed everything. Now it's the cloud's turn.</p><div class=\"flex flex-col sm:flex-row items-center justify-center gap-4 mb-16\"><span class=\"inline-flex items-center px-6 py-3 bg-cream-300 dark:bg-terminal-surface text-cream-500 dark:text-gray-500 font-bold font-display border-2 border-cream-400 dark:border-terminal-border cursor-not-allowed select-none\">Coming Soon <svg class=\"ml-2 w-4 h-4 opacity-50\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2.5\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg></span> <a href=\"#architecture\" class=\"inline-flex items-center px-6 py-3 border-2 border-cream-300 dark:border-terminal-border font-bold font-display hover:bg-cream-200 dark:hover:bg-terminal-border transition-colors\">See How It Works</a></div></div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"hero\" class=\"pt-24 pb-16 sm:pt-32 sm:pb-24\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center max-w-4xl mx-auto\"><div class=\"inline-flex items-center gap-2 px-4 py-1.5 bg-surface-warm dark:bg-next-dark border border-rule dark:next-raised text-ink-muted dark:text-next-subtle text-sm font-mac dark:font-next mb-6\"><span class=\"w-2 h-2 bg-accent-gold dark:bg-next-light animate-pulse\"></span> Open Source Cloud Infrastructure</div><h1 class=\"text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 font-mac dark:font-next\"><span class=\"text-accent-gold dark:text-next-white\">Your Personal</span><br><span class=\"text-ink dark:text-next-white\">Cloud</span></h1><p class=\"text-lg sm:text-xl text-ink-muted dark:text-next-subtle mb-10 max-w-2xl mx-auto font-mac-body dark:font-next\">They said you didn't need your own computer either.<br class=\"hidden sm:block\">Then the personal computer changed everything. Now it's the cloud's turn.</p><div class=\"flex flex-col sm:flex-row items-center justify-center gap-4 mb-16\"><span class=\"inline-flex items-center px-6 py-3 bg-surface-warm dark:bg-next-dark text-ink-muted dark:text-next-subtle font-bold font-mac dark:font-next border border-rule dark:next-raised cursor-not-allowed select-none\">Coming Soon <svg class=\"ml-2 w-4 h-4 opacity-50\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2.5\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg></span> <a href=\"#architecture\" class=\"inline-flex items-center px-6 py-3 border border-ink dark:next-raised font-bold font-mac dark:font-next text-ink dark:text-next-white hover:bg-surface-warm dark:hover:bg-next-mid transition-colors duration-120\">See How It Works</a></div></div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -78,7 +78,7 @@ func statCard(value string, unit string, label string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-cream-200 dark:bg-terminal-surface p-5 text-center border border-cream-300 dark:border-terminal-border retro-bevel-inset\"><div class=\"text-2xl sm:text-3xl font-bold font-retro text-amber-600 dark:text-phosphor-400\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-surface-warm dark:bg-next-dark p-5 text-center border border-rule dark:next-raised\"><div class=\"text-2xl sm:text-3xl font-bold font-mac dark:font-next text-accent-gold dark:text-next-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -91,27 +91,27 @@ func statCard(value string, unit string, label string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"text-sm font-medium font-display text-cream-600 dark:text-gray-400\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><div class=\"text-sm font-medium font-mac dark:font-next text-ink-muted dark:text-next-subtle\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(unit)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/hero.templ`, Line: 48, Col: 88}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/hero.templ`, Line: 48, Col: 102}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div class=\"text-xs font-display text-cream-400 dark:text-gray-500 mt-1\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div class=\"text-xs font-mac-body dark:font-next text-ink-muted dark:text-next-subtle mt-1\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/hero.templ`, Line: 49, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/hero.templ`, Line: 49, Col: 101}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {

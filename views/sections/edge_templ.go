@@ -29,7 +29,7 @@ func Edge() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"edge\" class=\"py-16 sm:py-24 bg-cream-100 dark:bg-terminal-surface\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-display text-cream-800 dark:text-gray-300\">Runs on Anything</h2><p class=\"text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display\">The orchestration layer abstracts the hardware beneath it. Your cluster doesn't care whether a node is a rack server or a laptop gathering dust — it just schedules workloads.</p></div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto mb-16\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"edge\" class=\"py-16 sm:py-24 bg-surface-warm dark:bg-next-dark\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white\">Runs on Anything</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body dark:font-next\">The orchestration layer abstracts the hardware beneath it. Your cluster doesn't care whether a node is a rack server or a laptop gathering dust — it just schedules workloads.</p></div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto mb-16\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -49,7 +49,7 @@ func Edge() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"max-w-4xl mx-auto\"><h3 class=\"text-2xl sm:text-3xl font-bold text-center mb-8 font-display text-cream-800 dark:text-gray-300\">Why Your Old Hardware Is Enough</h3><div class=\"overflow-x-auto border-2 border-cream-300 dark:border-terminal-border rounded-xl\"><table class=\"w-full text-left font-display\"><thead><tr class=\"border-b border-cream-300 dark:border-terminal-border\"><th class=\"py-3 px-4 sm:px-6 text-cream-500 dark:text-gray-500 uppercase tracking-wider text-sm font-semibold\">Metric</th><th class=\"py-3 px-4 sm:px-6 text-cream-500 dark:text-gray-500 uppercase tracking-wider text-sm font-semibold\">Regular Linux</th><th class=\"py-3 px-4 sm:px-6 text-cream-500 dark:text-gray-500 uppercase tracking-wider text-sm font-semibold\">This Platform</th></tr></thead> <tbody class=\"divide-y divide-cream-300 dark:divide-terminal-border\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"max-w-4xl mx-auto\"><h3 class=\"text-2xl sm:text-3xl font-bold text-center mb-8 font-mac dark:font-next text-ink dark:text-next-white\">Why Your Old Hardware Is Enough</h3><div class=\"overflow-x-auto border border-rule dark:next-raised\"><table class=\"w-full text-left font-mac-body dark:font-next\"><thead><tr class=\"border-b border-rule dark:border-next-mid bg-rule dark:bg-next-mid\"><th class=\"py-3 px-4 sm:px-6 text-ink-muted dark:text-next-subtle uppercase tracking-wider text-xs font-semibold font-mac dark:font-next\">Metric</th><th class=\"py-3 px-4 sm:px-6 text-ink-muted dark:text-next-subtle uppercase tracking-wider text-xs font-semibold font-mac dark:font-next\">Regular Linux</th><th class=\"py-3 px-4 sm:px-6 text-ink-muted dark:text-next-subtle uppercase tracking-wider text-xs font-semibold font-mac dark:font-next\">This Platform</th></tr></thead> <tbody class=\"divide-y divide-rule dark:divide-next-dark\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -98,27 +98,27 @@ func edgeNode(name string, tagline string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"bg-cream-50 dark:bg-terminal-bg rounded-xl p-4 border border-cream-300 dark:border-terminal-border text-center\"><div class=\"font-bold text-cream-800 dark:text-gray-300 font-display\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"bg-paper dark:bg-next-black p-4 border border-rule dark:next-raised text-center\"><div class=\"font-bold text-ink dark:text-next-white font-mac dark:font-next\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/edge.templ`, Line: 49, Col: 78}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/edge.templ`, Line: 49, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div class=\"text-sm text-cream-600 dark:text-gray-500 font-display mt-1\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><div class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body dark:font-next mt-1\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(tagline)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/edge.templ`, Line: 50, Col: 84}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/edge.templ`, Line: 50, Col: 103}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -153,40 +153,40 @@ func efficiencyRow(metric string, regular string, platform string) templ.Compone
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<tr class=\"hover:bg-cream-200/50 dark:hover:bg-terminal-border/30 transition-colors\"><td class=\"py-4 px-4 sm:px-6 text-cream-700 dark:text-gray-400 font-semibold\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<tr class=\"hover:bg-paper dark:hover:bg-next-dark transition-colors duration-120\"><td class=\"py-4 px-4 sm:px-6 text-ink dark:text-next-white font-semibold font-mac dark:font-next\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(metric)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/edge.templ`, Line: 56, Col: 88}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/edge.templ`, Line: 56, Col: 108}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</td><td class=\"py-4 px-4 sm:px-6 text-red-600 dark:text-red-400 font-retro\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</td><td class=\"py-4 px-4 sm:px-6 text-negative dark:text-negative-next font-mac-mono dark:font-next-mono\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(regular)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/edge.templ`, Line: 57, Col: 83}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/edge.templ`, Line: 57, Col: 113}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</td><td class=\"py-4 px-4 sm:px-6 text-phosphor-600 dark:text-phosphor-400 font-semibold font-retro\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</td><td class=\"py-4 px-4 sm:px-6 text-positive dark:text-positive-next font-semibold font-mac-mono dark:font-next-mono\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(platform)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/edge.templ`, Line: 58, Col: 108}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/edge.templ`, Line: 58, Col: 128}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
