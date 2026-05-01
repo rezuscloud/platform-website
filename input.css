@@ -855,7 +855,7 @@ button {
 }
 
 .mac-panel:not(.mac-panel-standalone) .mac-artifact-window {
-	display: none;
+	pointer-events: none;
 }
 
 .mac-panel-standalone .mac-artifact-window {
