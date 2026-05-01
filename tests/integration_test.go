@@ -86,9 +86,9 @@ func TestHomePageHTMLStructure(t *testing.T) {
 		assert.Equal(t, 1, doc.Find("#terminal-panel").Length())
 		assert.Equal(t, 1, doc.Find("#mac-panel").Length())
 		assert.Equal(t, 1, doc.Find("#linux-panel").Length())
-		assert.Equal(t, 1, doc.Find("#linux-panel #mac-panel #terminal-panel").Length())
 		assert.Equal(t, 1, doc.Find("[data-scene-root]").Length())
 		assert.Equal(t, 1, doc.Find("#xterm-mount").Length())
+		assert.Equal(t, 1, doc.Find(".snap-track").Length())
 	})
 
 	t.Run("has htmx and scene scripts", func(t *testing.T) {
@@ -107,9 +107,8 @@ func TestHomePageShellContent(t *testing.T) {
 		assert.Contains(t, html, "/apps/linux")
 	})
 
-	t.Run("contains terminal boot data and nested panels", func(t *testing.T) {
+	t.Run("contains terminal boot data and panels", func(t *testing.T) {
 		assert.Contains(t, html, "data-term-api")
-		assert.Contains(t, html, "Mini vMac")
 		assert.Contains(t, html, "idle")
 		assert.Contains(t, html, "Artifact drawer empty")
 	})
@@ -129,7 +128,7 @@ func TestStandaloneAppPages(t *testing.T) {
 	}{
 		{path: "/apps/terminal", expected: "Command surface", hasTerminal: true},
 		{path: "/apps/mac", expected: "Inspection surface", hasMac: true, hasTerminal: true, nestedTerminal: true},
-		{path: "/apps/linux", expected: "Execution surface", hasLinux: true, hasMac: true, hasTerminal: true, nestedMac: true, nestedTerminal: true},
+		{path: "/apps/linux", expected: "Execution surface", hasLinux: true},
 	}
 
 	for _, tc := range tests {
@@ -248,15 +247,14 @@ func TestProgressiveEnhancement(t *testing.T) {
 		assert.Equal(t, 1, doc.Find("#terminal-panel").Length())
 		assert.Equal(t, 1, doc.Find("#mac-panel").Length())
 		assert.Equal(t, 1, doc.Find("#linux-panel").Length())
-		assert.Equal(t, 1, doc.Find("#linux-panel #mac-panel #terminal-panel").Length())
 		assert.Equal(t, 1, doc.Find("#xterm-mount").Length())
+		assert.Equal(t, 1, doc.Find(".snap-track").Length())
 	})
 
 	t.Run("top level routes expose htmx endpoints server-side", func(t *testing.T) {
 		macHTML := getHTMLString(t, app, "/apps/mac")
 		linuxHTML := getHTMLString(t, app, "/apps/linux")
 		terminalHTML := getHTMLString(t, app, "/apps/terminal")
-		assert.Contains(t, html, `hx-get="/apps/linux/embed"`)
 		assert.Contains(t, macHTML, `hx-get="/apps/mac/embed"`)
 		assert.Contains(t, linuxHTML, `hx-get="/apps/linux/embed"`)
 		assert.Contains(t, terminalHTML, `hx-get="/apps/terminal/embed"`)

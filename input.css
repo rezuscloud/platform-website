@@ -98,14 +98,89 @@ button {
 	min-height: 100vh;
 }
 
-.shell-stage {
+.snap-shell {
 	position: relative;
-	min-height: 100vh;
-	padding: 1rem;
-	--scene-translate-x: 0px;
-	--scene-translate-y: 0px;
-	--scene-scale: 1;
-	--scene-progress: 0;
+	height: 100vh;
+	overflow: hidden;
+}
+
+.snap-track {
+	display: flex;
+	height: 100%;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.snap-track::-webkit-scrollbar {
+	display: none;
+}
+
+.snap-panel {
+	flex: 0 0 100%;
+	width: 100%;
+	height: 100%;
+	scroll-snap-align: start;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.snap-panel-fill {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.snap-dots {
+	position: fixed;
+	bottom: 1.5rem;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 50;
+	display: flex;
+	gap: 0.6rem;
+	padding: 0.5rem 0.8rem;
+	background: oklch(0.12 0.015 235 / 0.85);
+	border: 1px solid oklch(0.3 0.015 231 / 0.5);
+	border-radius: 999px;
+	backdrop-filter: blur(8px);
+}
+
+.snap-dot {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.3rem 0.65rem;
+	border-radius: 999px;
+	font-size: 0.7rem;
+	line-height: 1;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: oklch(0.55 0.015 220);
+	background: transparent;
+	border: 1px solid transparent;
+	transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+	text-decoration: none;
+}
+
+.snap-dot:hover {
+	color: oklch(0.78 0.015 220);
+	background: oklch(0.2 0.015 235 / 0.6);
+}
+
+.snap-dot.is-active {
+	color: oklch(0.95 0.01 210);
+	background: oklch(0.25 0.02 232 / 0.8);
+	border-color: oklch(0.45 0.02 231 / 0.4);
+}
+
+.snap-dot-label {
+	white-space: nowrap;
 }
 
 .shell-hud {
@@ -325,48 +400,6 @@ button {
 	background: oklch(0.23 0.017 231 / 0.92);
 }
 
-.scene-scroll-track {
-	height: 360vh;
-	position: relative;
-}
-
-.scene-stage-pane {
-	position: sticky;
-	top: 0;
-	height: 100vh;
-	overflow: clip;
-	border-radius: 1.5rem;
-	background:
-		radial-gradient(circle at center, oklch(0.2 0.03 226 / 0.42) 0%, transparent 46%),
-		linear-gradient(180deg, oklch(0.14 0.016 235) 0%, oklch(0.1 0.012 235) 100%);
-	box-shadow: inset 0 0 0 1px oklch(0.32 0.014 232 / 0.7);
-}
-
-.scene-camera-viewport {
-	position: absolute;
-	inset: 0;
-	overflow: clip;
-}
-
-.scene-camera {
-	position: absolute;
-	left: 0;
-	top: 0;
-	transform-origin: 0 0;
-	transform: translate3d(var(--scene-translate-x), var(--scene-translate-y), 0) scale(var(--scene-scale));
-	will-change: transform;
-	backface-visibility: hidden;
-	transition: transform 120ms linear;
-}
-
-.scene-world {
-	position: relative;
-	width: 1680px;
-	height: 1080px;
-	transform-origin: top left;
-	user-select: none;
-}
-
 .scene-sr-copy {
 	position: absolute;
 	width: 1px;
@@ -402,11 +435,9 @@ button {
 }
 
 .linux-panel {
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 1680px;
-	height: 1080px;
+	position: relative;
+	width: 100%;
+	height: 100%;
 	overflow: hidden;
 	background: var(--color-linux-surface);
 	font-family: var(--font-shell-x11);
@@ -422,6 +453,14 @@ button {
 	box-shadow:
 		0 0 0 1px oklch(0.88 0.005 232),
 		0 36px 110px oklch(0.02 0.01 235 / 0.55);
+}
+
+.snap-panel-linux .linux-panel-standalone {
+	width: 100%;
+	height: 100%;
+	border: none;
+	box-shadow: none;
+	border-radius: 0;
 }
 
 .linux-root-pattern,
@@ -754,9 +793,7 @@ button {
 }
 
 .mac-panel {
-	position: absolute;
-	left: 0;
-	top: 0;
+	position: relative;
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
@@ -832,6 +869,15 @@ button {
 	border: 2px solid var(--color-mac-line);
 	box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.16);
 	overflow: hidden;
+}
+
+.snap-panel-terminal .terminal-panel {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	border: none;
+	box-shadow: none;
+	border-radius: 0;
 }
 
 .mac-terminal-host {
@@ -1082,8 +1128,9 @@ button {
 }
 
 .terminal-panel {
-	position: absolute;
-	inset: 0;
+	position: relative;
+	width: 100%;
+	height: 100%;
 	background: linear-gradient(180deg, oklch(0.29 0.022 155) 0%, oklch(0.19 0.016 155) 24%, oklch(0.11 0.012 155) 100%);
 	border-color: oklch(0.12 0.008 155);
 	box-shadow:
@@ -1091,6 +1138,12 @@ button {
 		0 10px 26px rgba(0, 0, 0, 0.36);
 	font-family: var(--font-shell-mono);
 	color: var(--color-shell-ink);
+}
+
+.snap-panel-terminal .terminal-panel {
+	border: none;
+	box-shadow: none;
+	border-radius: 0;
 }
 
 .terminal-panel-standalone {
@@ -1104,6 +1157,14 @@ button {
 	box-shadow:
 		inset 1px 1px 0 rgba(255, 255, 255, 0.08),
 		0 28px 80px rgba(0, 0, 0, 0.42);
+}
+
+.snap-panel-terminal .terminal-panel-standalone {
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	border-radius: 0;
+	box-shadow: none;
 }
 
 .terminal-window-chrome {
@@ -1148,6 +1209,11 @@ button {
 	padding: 1rem;
 }
 
+.snap-panel-terminal .terminal-window-body {
+	padding: 0;
+	height: 100%;
+}
+
 .terminal-screen-shell {
 	border: 1px solid oklch(0.43 0.04 165 / 0.35);
 	border-radius: 1.35rem;
@@ -1188,6 +1254,13 @@ button {
 .terminal-panel-standalone .term-screen {
 	min-height: 0;
 	height: 100%;
+}
+
+.snap-panel-terminal .term-screen {
+	min-height: 0;
+	height: 100%;
+	border-radius: 0;
+	border: none;
 }
 
 #xterm-mount {
@@ -1463,6 +1536,29 @@ code {
 		display: none;
 	}
 
+	.snap-shell {
+		height: auto;
+		overflow: visible;
+	}
+
+	.snap-track {
+		flex-direction: column;
+		overflow-x: visible;
+		scroll-snap-type: none;
+	}
+
+	.snap-panel {
+		flex: 0 0 auto;
+		width: 100%;
+		height: auto;
+		min-height: 80vh;
+		scroll-snap-align: none;
+	}
+
+	.snap-dots {
+		display: none;
+	}
+
 	.shell-hud {
 		position: relative;
 		top: auto;
@@ -1471,48 +1567,22 @@ code {
 		margin-bottom: 1rem;
 	}
 
-	.scene-scroll-track {
-		height: auto;
-	}
-
-	.scene-stage-pane {
-		position: relative;
-		height: auto;
-		padding: 1rem;
-	}
-
-	.scene-camera-viewport {
-		position: relative;
-		overflow: auto;
-	}
-
-	.scene-camera {
-		position: relative;
-		transform: none !important;
-		transition: none;
-	}
-
-	.scene-world {
-		width: 1240px;
-		height: 920px;
-	}
-
 	.linux-panel-standalone,
 	.mac-panel-standalone,
 	.terminal-panel-standalone {
 		position: relative;
-		width: min(100%, 1240px);
+		width: 100%;
+		min-height: 80vh;
 	}
 
 	.linux-panel-standalone {
-		height: 920px;
+		height: auto;
+		min-height: 80vh;
 	}
 
-	.linux-panel-standalone .linux-mac-window-shell {
-		left: 280px;
-		top: 80px;
-		width: 680px;
-		height: 640px;
+	.snap-panel-linux .linux-panel-standalone {
+		width: 100%;
+		height: auto;
 	}
 
 	.linux-status-window {
@@ -1568,9 +1638,13 @@ code {
 }
 
 @media (max-width: 720px) {
-	.shell-stage,
+	.snap-shell,
 	.route-page {
-		padding: 0.8rem;
+		padding: 0;
+	}
+
+	.snap-panel {
+		min-height: 70vh;
 	}
 
 	.shell-brandcopy h1,
@@ -1646,8 +1720,7 @@ code {
 		flex-direction: column;
 	}
 
-	.route-scene,
-	.scene-camera-viewport {
+	.route-scene {
 		padding-bottom: 0.2rem;
 	}
 
@@ -1678,37 +1751,27 @@ code {
 		animation: none;
 	}
 
-	.shell-stage {
-		padding-top: 1rem;
+	.snap-shell {
+		height: auto;
+		overflow: visible;
 	}
 
-	.shell-hud {
-		position: relative;
-		top: auto;
-		left: auto;
+	.snap-track {
+		flex-direction: column;
+		overflow-x: visible;
+		scroll-snap-type: none;
+	}
+
+	.snap-panel {
+		flex: 0 0 auto;
 		width: 100%;
-		margin-bottom: 1rem;
-	}
-
-	.scene-scroll-track {
 		height: auto;
+		min-height: 80vh;
+		scroll-snap-align: none;
 	}
 
-	.scene-stage-pane {
-		position: relative;
-		height: auto;
-		padding: 1rem;
-	}
-
-	.scene-camera-viewport {
-		position: relative;
-		overflow: auto;
-	}
-
-	.scene-camera {
-		position: relative;
-		transform: none !important;
-		transition: none;
+	.snap-dots {
+		display: none;
 	}
 
 	.app-route-link,
