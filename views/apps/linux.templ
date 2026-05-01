@@ -60,8 +60,55 @@ templ linuxPanelBody(state model.SessionState, basePath string, macBasePath stri
 		</div>
 	</div>
 	<div class="linux-root-pattern"></div>
+	<div class="linux-window linux-status-window">
+		<div class="linux-titlebar-shell">
+			<div class="linux-titlebar-controls">
+				<span class="linux-control"></span>
+				<span class="linux-control"></span>
+			</div>
+			<span>Topology</span>
+		</div>
+		<div class="linux-status-body">
+			<div class="linux-meta">
+				<p><span>Mode</span><strong>{ state.Linux.Mode }</strong></p>
+				<p><span>Last action</span><strong>{ state.Linux.LastAction }</strong></p>
+			</div>
+			<div class="linux-service-list">
+				for _, svc := range state.Linux.Services {
+					<div class="linux-service-row">
+						<div>
+							<p class="linux-service-name">{ svc.Name }</p>
+							<p class="linux-service-detail">{ svc.Detail }</p>
+						</div>
+						<span class="linux-service-status">{ svc.Status }</span>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+	<div class="linux-window linux-event-window">
+		<div class="linux-titlebar-shell">
+			<div class="linux-titlebar-controls">
+				<span class="linux-control"></span>
+				<span class="linux-control"></span>
+			</div>
+			<span>Events</span>
+		</div>
+		<div class="event-log">
+			for _, evt := range state.Events {
+				<article>
+					<p class="event-type">{ evt.Type }</p>
+					<p class="event-message">{ evt.Message }</p>
+				</article>
+			}
+		</div>
+	</div>
 	<div class="linux-window linux-mac-window-shell">
 		<div class="linux-titlebar-shell">
+			<div class="linux-titlebar-controls">
+				<span class="linux-control"></span>
+				<span class="linux-control"></span>
+			</div>
 			<span>Mini vMac</span>
 		</div>
 		<div class="linux-window-body">

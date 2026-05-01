@@ -50,16 +50,19 @@
   }
 
   function worldRectFor(element) {
-    const worldBox = world.getBoundingClientRect();
-    const box = element.getBoundingClientRect();
-    const scaleX = world.offsetWidth / worldBox.width;
-    const scaleY = world.offsetHeight / worldBox.height;
-
+    let left = 0;
+    let top = 0;
+    let node = element;
+    while (node && node !== world) {
+      left += node.offsetLeft;
+      top += node.offsetTop;
+      node = node.offsetParent;
+    }
     return {
-      left: (box.left - worldBox.left) * scaleX,
-      top: (box.top - worldBox.top) * scaleY,
-      width: box.width * scaleX,
-      height: box.height * scaleY,
+      left: left,
+      top: top,
+      width: element.offsetWidth,
+      height: element.offsetHeight,
     };
   }
 
