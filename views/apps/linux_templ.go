@@ -62,7 +62,7 @@ func LinuxPage(state model.SessionState, basePath string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = LinuxEmbed(state, true, basePath, "", "", false, "/apps/linux").Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = LinuxEmbed(state, true, basePath, "/apps/mac", "/apps/terminal", false, "/apps/linux").Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -76,7 +76,7 @@ func LinuxPage(state model.SessionState, basePath string) templ.Component {
 				"/apps/linux",
 				"linux-app",
 				"Execution surface",
-				"Linux owns execution, shared topology, and event publication.",
+				"Linux owns execution, shared topology, and event publication. This route keeps the full nested machine visible so the inspection and command layers stay in context.",
 			).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -134,7 +134,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string, macBasePat
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = linuxPanelBody(state, basePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -160,7 +160,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string, macBasePat
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = linuxPanelBody(state, basePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -175,7 +175,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string, macBasePat
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = linuxPanelBody(state, basePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -188,7 +188,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string, macBasePat
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = linuxPanelBody(state, basePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -202,7 +202,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string, macBasePat
 	})
 }
 
-func linuxPanelBody(state model.SessionState, basePath string, hostRoute string) templ.Component {
+func linuxPanelBody(state model.SessionState, basePath string, macBasePath string, terminalBasePath string, hostRoute string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -259,7 +259,7 @@ func linuxPanelBody(state model.SessionState, basePath string, hostRoute string)
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</div></div><div class=\"linux-root-pattern\"></div><div class=\"linux-window linux-status-window\"><div class=\"linux-titlebar-shell\"><div class=\"linux-titlebar-controls\"><span class=\"linux-control\"></span> <span class=\"linux-control\"></span></div><span>Topology</span></div><div class=\"linux-status-body\"><div class=\"linux-meta\"><p><span>Mode</span><strong>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</div></div><div class=\"linux-root-pattern\"></div><div class=\"linux-window linux-status-window\" x-data=\"{ minimized: false, maximized: false }\" :class=\"{ 'is-minimized': minimized, 'is-maximized': maximized }\"><div class=\"linux-titlebar-shell\"><div class=\"linux-titlebar-controls\"><span class=\"linux-control\" @click=\"minimized = !minimized; maximized = false\"></span> <span class=\"linux-control\" @click=\"maximized = !maximized; minimized = false\"></span></div><span>Topology</span></div><div class=\"linux-status-body\"><div class=\"linux-meta\"><p><span>Mode</span><strong>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -290,7 +290,7 @@ func linuxPanelBody(state model.SessionState, basePath string, hostRoute string)
 			return templ_7745c5c3_Err
 		}
 		for _, svc := range state.Linux.Services {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div class=\"linux-service-row\"><div><p class=\"linux-service-name\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div class=\"linux-service-row\" x-data=\"{ expanded: false }\" @click=\"expanded = !expanded\" :class=\"{ 'is-expanded': expanded }\"><div><p class=\"linux-service-name\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -316,61 +316,82 @@ func linuxPanelBody(state model.SessionState, basePath string, hostRoute string)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</p></div><span class=\"linux-service-status\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</p><template x-if=\"expanded\"><div class=\"linux-service-expand\"><p linux-service-expand-text=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var14 string
-			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Status)
+			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 84, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 85, Col: 48}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</span></div>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</div></div></div><div class=\"linux-window linux-event-window\"><div class=\"linux-titlebar-shell\"><div class=\"linux-titlebar-controls\"><span class=\"linux-control\"></span> <span class=\"linux-control\"></span></div><span>Events</span></div><div class=\"event-log\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		for _, evt := range state.Events {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<article><p class=\"event-type\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\"></p></div></template></div><span class=\"linux-service-status\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var15 string
-			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(evt.Type)
+			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Status)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 101, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 89, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</p><p class=\"event-message\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</span></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</div></div></div><div class=\"linux-window linux-event-window\" x-data=\"{ minimized: false, maximized: false }\" :class=\"{ 'is-minimized': minimized, 'is-maximized': maximized }\"><div class=\"linux-titlebar-shell\"><div class=\"linux-titlebar-controls\"><span class=\"linux-control\" @click=\"minimized = !minimized; maximized = false\"></span> <span class=\"linux-control\" @click=\"maximized = !maximized; minimized = false\"></span></div><span>Events</span></div><div class=\"event-log\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, evt := range state.Events {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<article><p class=\"event-type\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var16 string
-			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(evt.Message)
+			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(evt.Type)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 102, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 106, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</p></article>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</p><p class=\"event-message\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var17 string
+			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(evt.Message)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 107, Col: 43}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</p></article>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div></div><div class=\"linux-scene-caption\"><p>Execution surface. Services, topology, and event publication.</p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</div></div><div class=\"linux-window linux-mac-window-shell\" x-data=\"{ minimized: false, maximized: false }\" :class=\"{ 'is-minimized': minimized, 'is-maximized': maximized }\"><div class=\"linux-titlebar-shell\"><div class=\"linux-titlebar-controls\"><span class=\"linux-control\" @click=\"minimized = !minimized; maximized = false\"></span> <span class=\"linux-control\" @click=\"maximized = !maximized; minimized = false\"></span></div><span>Mini vMac</span></div><div class=\"linux-window-body\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = MacEmbed(state, false, macBasePath, terminalBasePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</div></div><div class=\"linux-scene-caption\"><p>Execution surface. Services, topology, and event publication.</p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

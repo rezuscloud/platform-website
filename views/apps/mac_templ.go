@@ -223,7 +223,7 @@ func macPanelBody(state model.SessionState, basePath string, terminalBasePath st
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"mac-menubar-shell\"><div class=\"mac-menubar-left\"><span class=\"mac-apple-mark\">&#63743;</span> <span class=\"mac-menu-strong\">File</span> <span>Edit</span> <span>View</span> <span>Special</span></div><div class=\"mac-menubar-right\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"mac-menubar-shell\" x-data=\"{ openMenu: null }\" @click.away=\"openMenu = null\"><div class=\"mac-menubar-left\"><span class=\"mac-apple-mark\">&#63743;</span> <span class=\"mac-menu-strong\" @click=\"openMenu = openMenu === 'File' ? null : 'File'\">File</span> <span @click=\"openMenu = openMenu === 'Edit' ? null : 'Edit'\">Edit</span> <span @click=\"openMenu = openMenu === 'View' ? null : 'View'\">View</span> <span @click=\"openMenu = openMenu === 'Special' ? null : 'Special'\">Special</span><template x-if=\"openMenu === 'File'\"><div class=\"mac-dropdown\"><button class=\"mac-dropdown-item\" @click=\"openMenu = null\">Open State</button> <button class=\"mac-dropdown-item\" @click=\"openMenu = null\">Close Window</button></div></template><template x-if=\"openMenu === 'Edit'\"><div class=\"mac-dropdown\"><button class=\"mac-dropdown-item\" @click=\"openMenu = null\">Copy Session ID</button></div></template><template x-if=\"openMenu === 'View'\"><div class=\"mac-dropdown\"><button class=\"mac-dropdown-item\" @click=\"openMenu = null\">Refresh State</button> <button class=\"mac-dropdown-item\" @click=\"openMenu = null\">View Source</button></div></template><template x-if=\"openMenu === 'Special'\"><div class=\"mac-dropdown\"><button class=\"mac-dropdown-item\" @click=\"openMenu = null\">Inspect Dapr</button> <button class=\"mac-dropdown-item\" @click=\"openMenu = null\">Check Topology</button> <button class=\"mac-dropdown-item\" @click=\"openMenu = null\">Publish Event</button></div></template></div><div class=\"mac-menubar-right\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -235,7 +235,7 @@ func macPanelBody(state model.SessionState, basePath string, terminalBasePath st
 			var templ_7745c5c3_Var8 templ.SafeURL
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinURLErrs(basePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 61, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 85, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -246,66 +246,64 @@ func macPanelBody(state model.SessionState, basePath string, terminalBasePath st
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div></div><div class=\"mac-desktop-shell\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div></div><div class=\"mac-desktop-shell\"><div class=\"mac-terminal-host\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if hostRoute == "/" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"mac-terminal-host\"><div class=\"mac-primary-window\" style=\"inset:0;border:2px solid var(--color-mac-line);overflow:hidden;background:linear-gradient(180deg, oklch(0.29 0.022 155) 0%, oklch(0.19 0.016 155) 24%, oklch(0.11 0.012 155) 100%)\"><div class=\"mac-titlebar-shell\"><strong>Terminal</strong></div><div style=\"padding:1rem;font-family:var(--font-shell-mono);font-size:0.85rem;color:oklch(0.6 0.04 165);line-height:1.4\"><p>rezus@node-01 $</p></div></div></div>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"mac-terminal-host\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = TerminalEmbed(state, false, terminalBasePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
+		templ_7745c5c3_Err = TerminalEmbed(state, false, terminalBasePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div class=\"mac-primary-window mac-artifact-window\"><div class=\"mac-titlebar-shell\"><strong>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</div><div class=\"mac-primary-window mac-artifact-window\" x-data=\"{ expanded: false }\" :class=\"{ 'is-expanded': expanded }\"><div class=\"mac-titlebar-shell\" @click=\"expanded = !expanded\" style=\"cursor:pointer\"><strong>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(state.Mac.Artifact.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 84, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 95, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</strong></div><div class=\"mac-window-body-shell\"><div class=\"artifact-lines\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</strong></div><div class=\"mac-window-body-shell\"><div class=\"artifact-lines\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, line := range state.Mac.Artifact.Lines {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(line)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 89, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 100, Col: 15}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</div></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div></div></div><div class=\"mac-icons\"><div class=\"desktop-icon\" x-data=\"{ showDialog: false }\" @dblclick=\"showDialog = true\"><div class=\"desktop-icon-glyph\"></div><span class=\"desktop-icon-label\">Macintosh HD</span><template x-if=\"showDialog\"><div class=\"mac-dialog mac-primary-window\" @click.outside=\"showDialog = false\"><div class=\"mac-titlebar-shell\"><div class=\"mac-titlebar-box\" @click=\"showDialog = false\" style=\"cursor:pointer\"></div><strong>Macintosh HD</strong><div class=\"mac-titlebar-box\"></div></div><div class=\"mac-window-body-shell\"><p>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var11 string
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs("PostgreSQL V2 State Store. Session data persisted at homepage/sessions/" + "{id}" + "/state.")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 117, Col: 105}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</p></div></div></template></div><div class=\"desktop-icon\" x-data=\"{ showDialog: false }\" @dblclick=\"showDialog = true\"><div class=\"desktop-icon-glyph\"></div><span class=\"desktop-icon-label\">System</span><template x-if=\"showDialog\"><div class=\"mac-dialog mac-primary-window\" @click.outside=\"showDialog = false\"><div class=\"mac-titlebar-shell\"><div class=\"mac-titlebar-box\" @click=\"showDialog = false\" style=\"cursor:pointer\"></div><strong>System</strong><div class=\"mac-titlebar-box\"></div></div><div class=\"mac-window-body-shell\"><p>Dapr Sidecar. Service invocation, pub/sub, state management, and distributed locking.</p></div></div></template></div><div class=\"desktop-icon\" x-data=\"{ showDialog: false }\" @dblclick=\"showDialog = true\"><div class=\"desktop-icon-glyph\"></div><span class=\"desktop-icon-label\">Artifacts</span><template x-if=\"showDialog\"><div class=\"mac-dialog mac-primary-window\" @click.outside=\"showDialog = false\"><div class=\"mac-titlebar-shell\"><div class=\"mac-titlebar-box\" @click=\"showDialog = false\" style=\"cursor:pointer\"></div><strong>Artifacts</strong><div class=\"mac-titlebar-box\"></div></div><div class=\"mac-window-body-shell\"><p>Open the artifact viewer to inspect the latest dossier published by linux-app.</p></div></div></template></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
