@@ -1,9 +1,9 @@
 name: 'Setup Build Environment'
 description: 'Sets up Go, Node.js, templ, and generates assets'
 inputs:
-  go-version:
+    go-version:
     description: 'Go version'
-    default: '1.24'
+    default: '1.25'
   node-version:
     description: 'Node.js version'
     default: '22'
