@@ -3,23 +3,30 @@ package apps
 import model "github.com/rezuscloud/platform-website/internal/platform"
 
 templ ShellPage(state model.SessionState) {
-	<section id="scene" class="shell-stage" data-scene-root aria-label="Nested Linux, Mac, and terminal scene">
-		<div class="scene-scroll-track" data-scene-track>
-			<div class="scene-stage-pane">
-				<div class="scene-camera-viewport">
-					<div class="scene-camera" data-scene-camera>
-						<div class="scene-world" data-scene-world>
-							@LinuxEmbed(state, true, "/apps/linux", "/apps/mac", "/apps/terminal", false, "/")
-						</div>
-					</div>
+	<section id="scene" class="snap-shell" data-scene-root aria-label="Terminal, Mac, and Linux application surfaces">
+		<div class="snap-track">
+			<div class="snap-panel snap-panel-terminal" data-snap-index="0" aria-label="Terminal application">
+				<div class="snap-panel-fill">
+					@TerminalEmbed(state, false, "/apps/terminal", "/")
+				</div>
+			</div>
+			<div class="snap-panel snap-panel-mac" data-snap-index="1" aria-label="Macintosh application">
+				<div class="snap-panel-fill">
+					@MacEmbed(state, false, "/apps/mac", "/apps/terminal", "/")
+				</div>
+			</div>
+			<div class="snap-panel snap-panel-linux" data-snap-index="2" aria-label="Linux application">
+				<div class="snap-panel-fill">
+					@LinuxEmbed(state, false, "/apps/linux", "", "", false, "/")
 				</div>
 			</div>
 		</div>
+		<nav class="snap-dots" aria-label="Surface navigation">
+			<a class="snap-dot is-active" href="#snap-terminal" data-snap-goto="0" aria-label="Terminal surface"><span class="snap-dot-label">Terminal</span></a>
+			<a class="snap-dot" href="#snap-mac" data-snap-goto="1" aria-label="Mac surface"><span class="snap-dot-label">Mac</span></a>
+			<a class="snap-dot" href="#snap-linux" data-snap-goto="2" aria-label="Linux surface"><span class="snap-dot-label">Linux</span></a>
+		</nav>
 		<script src="/assets/js/scene.js"></script>
-		<script src="/assets/js/vendor/xterm.min.js"></script>
-		<script src="/assets/js/vendor/addon-fit.min.js"></script>
-		<script src="/assets/js/term-app.js"></script>
-		<script src="/assets/js/desktop.js"></script>
 	</section>
 }
 

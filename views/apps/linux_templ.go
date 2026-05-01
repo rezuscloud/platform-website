@@ -62,7 +62,7 @@ func LinuxPage(state model.SessionState, basePath string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = LinuxEmbed(state, true, basePath, "/apps/mac", "/apps/terminal", false, "/apps/linux").Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = LinuxEmbed(state, true, basePath, "", "", false, "/apps/linux").Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -76,7 +76,7 @@ func LinuxPage(state model.SessionState, basePath string) templ.Component {
 				"/apps/linux",
 				"linux-app",
 				"Execution surface",
-				"Linux owns execution, shared topology, and event publication. This route keeps the full nested machine visible so the inspection and command layers stay in context.",
+				"Linux owns execution, shared topology, and event publication.",
 			).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -134,7 +134,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string, macBasePat
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = linuxPanelBody(state, basePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -160,7 +160,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string, macBasePat
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = linuxPanelBody(state, basePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -175,7 +175,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string, macBasePat
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = linuxPanelBody(state, basePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -188,7 +188,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string, macBasePat
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = linuxPanelBody(state, basePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -202,7 +202,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string, macBasePat
 	})
 }
 
-func linuxPanelBody(state model.SessionState, basePath string, macBasePath string, terminalBasePath string, hostRoute string) templ.Component {
+func linuxPanelBody(state model.SessionState, basePath string, hostRoute string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -223,14 +223,14 @@ func linuxPanelBody(state model.SessionState, basePath string, macBasePath strin
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"linux-topbar-shell\"><div class=\"linux-topbar-left\"><span class=\"linux-badge\">rezus</span></div><div class=\"linux-topbar-right\"><span>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"linux-topbar-shell\"><div class=\"linux-topbar-left\"><span class=\"linux-badge\">rezus</span> <span>Activities</span></div><div class=\"linux-topbar-right\"><span class=\"linux-topbar-mode\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(state.Linux.Mode)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 56, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 57, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -248,7 +248,7 @@ func linuxPanelBody(state model.SessionState, basePath string, macBasePath strin
 			var templ_7745c5c3_Var9 templ.SafeURL
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinURLErrs(basePath)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 58, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 59, Col: 63}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -266,7 +266,7 @@ func linuxPanelBody(state model.SessionState, basePath string, macBasePath strin
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(state.Linux.Mode)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 73, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 74, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -279,7 +279,7 @@ func linuxPanelBody(state model.SessionState, basePath string, macBasePath strin
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(state.Linux.LastAction)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 74, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 75, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -297,7 +297,7 @@ func linuxPanelBody(state model.SessionState, basePath string, macBasePath strin
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 80, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 81, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -310,7 +310,7 @@ func linuxPanelBody(state model.SessionState, basePath string, macBasePath strin
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Detail)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 81, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 82, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -323,7 +323,7 @@ func linuxPanelBody(state model.SessionState, basePath string, macBasePath strin
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Status)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 83, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 84, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -346,7 +346,7 @@ func linuxPanelBody(state model.SessionState, basePath string, macBasePath strin
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(evt.Type)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 100, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 101, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -359,7 +359,7 @@ func linuxPanelBody(state model.SessionState, basePath string, macBasePath strin
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(evt.Message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 101, Col: 43}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 102, Col: 43}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -370,15 +370,7 @@ func linuxPanelBody(state model.SessionState, basePath string, macBasePath strin
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div></div><div class=\"linux-window linux-mac-window-shell\"><div class=\"linux-titlebar-shell\"><div class=\"linux-titlebar-controls\"><span class=\"linux-control\"></span> <span class=\"linux-control\"></span></div><span>Mini vMac</span></div><div class=\"linux-window-body\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = MacEmbed(state, false, macBasePath, terminalBasePath, hostRoute).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div></div><div class=\"linux-scene-caption\"><p>Execution surface. Services, topology, and event publication.</p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

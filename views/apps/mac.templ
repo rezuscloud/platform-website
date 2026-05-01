@@ -14,7 +14,7 @@ templ MacPage(state model.SessionState, basePath string) {
 			"/apps/mac",
 			"mac-app",
 			"Inspection surface",
-			"Mac stays narrow: it reads shared state, opens the latest artifact, and preserves the nested terminal context instead of pretending it owns execution.",
+			"Mac reads shared state, opens the latest artifact, and preserves the terminal context.",
 		) {
 			<div class="route-scene route-scene-mac">
 				@MacEmbed(state, true, basePath, "/apps/terminal", "/apps/mac")
@@ -56,16 +56,29 @@ templ macPanelBody(state model.SessionState, basePath string, terminalBasePath s
 			<span>View</span>
 			<span>Special</span>
 		</div>
-		if hostRoute != "/apps/mac" {
-			<div class="mac-menubar-right">
+		<div class="mac-menubar-right">
+			if hostRoute != "/apps/mac" {
 				<a class="window-open-link mac-open-link" href={ basePath } aria-label="Open Mac route">/apps/mac</a>
-			</div>
-		}
+			}
+		</div>
 	</div>
 	<div class="mac-desktop-shell">
-		<div class="mac-terminal-host">
-			@TerminalEmbed(state, false, terminalBasePath, hostRoute)
-		</div>
+		if hostRoute == "/" {
+			<div class="mac-terminal-host">
+				<div class="mac-primary-window" style="inset:0;border:2px solid var(--color-mac-line);overflow:hidden;background:linear-gradient(180deg, oklch(0.29 0.022 155) 0%, oklch(0.19 0.016 155) 24%, oklch(0.11 0.012 155) 100%)">
+					<div class="mac-titlebar-shell">
+						<strong>Terminal</strong>
+					</div>
+					<div style="padding:1rem;font-family:var(--font-shell-mono);font-size:0.85rem;color:oklch(0.6 0.04 165);line-height:1.4">
+						<p>rezus@node-01 $</p>
+					</div>
+				</div>
+			</div>
+		} else {
+			<div class="mac-terminal-host">
+				@TerminalEmbed(state, false, terminalBasePath, hostRoute)
+			</div>
+		}
 		<div class="mac-primary-window mac-artifact-window">
 			<div class="mac-titlebar-shell">
 				<strong>{ state.Mac.Artifact.Title }</strong>

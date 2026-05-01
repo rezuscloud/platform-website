@@ -2,193 +2,156 @@
   const root = document.querySelector("[data-scene-root]");
   if (!root) return;
 
-  const track = root.querySelector("[data-scene-track]");
-  const camera = root.querySelector("[data-scene-camera]");
-  const world = root.querySelector("[data-scene-world]");
-  if (!track || !camera || !world) return;
+  const track = root.querySelector(".snap-track");
+  if (!track) return;
 
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const targetNames = ["terminal", "mac", "linux"];
+  const panels = Array.from(track.querySelectorAll(".snap-panel"));
+  const dots = Array.from(root.querySelectorAll(".snap-dot"));
+  if (panels.length === 0) return;
 
-  let viewport = { width: 1, height: 1 };
-  let metrics = { start: 0, span: 1 };
-  let targets = new Map();
-  let ticking = false;
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  );
+  let currentIndex = 0;
+  let isScrolling = false;
+  let scrollTimeout = null;
+  let wheelAccum = 0;
+  const WHEEL_THRESHOLD = 60;
+  const WHEEL_COOLDOWN = 600;
 
-  function clamp(value, min, max) {
-    if (min === undefined) min = 0;
-    if (max === undefined) max = 1;
-    return Math.min(max, Math.max(min, value));
+  function updateDots(index) {
+    dots.forEach((dot, i) => {
+      dot.classList.toggle("is-active", i === index);
+    });
   }
 
-  function lerp(a, b, t) {
-    return a + (b - a) * t;
-  }
+  function scrollToPanel(index) {
+    if (index < 0 || index >= panels.length) return;
+    if (index === currentIndex && isScrolling) return;
 
-  function easeOutExpo(value) {
-    if (value <= 0) return 0;
-    if (value >= 1) return 1;
-    return 1 - Math.pow(2, -10 * value);
-  }
+    isScrolling = true;
+    currentIndex = index;
+    updateDots(index);
 
-  function blendRect(a, b, t) {
-    return {
-      left: lerp(a.left, b.left, t),
-      top: lerp(a.top, b.top, t),
-      width: lerp(a.width, b.width, t),
-      height: lerp(a.height, b.height, t),
-    };
-  }
+    const panel = panels[index];
+    const offset = panel.offsetLeft;
 
-  function fitRect(rect, overscan) {
-    const scale = Math.max(viewport.width / rect.width, viewport.height / rect.height);
-    const fittedScale = scale * overscan;
-    const translateX = viewport.width / 2 - (rect.left + rect.width / 2) * fittedScale;
-    const translateY = viewport.height / 2 - (rect.top + rect.height / 2) * fittedScale;
-
-    return { scale: fittedScale, translateX: translateX, translateY: translateY };
-  }
-
-  function worldRectFor(element) {
-    let left = 0;
-    let top = 0;
-    let node = element;
-    while (node && node !== world) {
-      left += node.offsetLeft;
-      top += node.offsetTop;
-      node = node.offsetParent;
-    }
-    return {
-      left: left,
-      top: top,
-      width: element.offsetWidth,
-      height: element.offsetHeight,
-    };
-  }
-
-  function captureTargets() {
-    targets = new Map();
-    for (const name of targetNames) {
-      const element = root.querySelector('[data-scene-target="' + name + '"]');
-      if (!element) continue;
-      targets.set(name, worldRectFor(element));
-    }
-  }
-
-  function computeProgress(scrollY) {
-    const raw = clamp((scrollY - metrics.start) / metrics.span);
-
-    if (raw < 0.14) return { phase: 0, mix: 0, overall: 0 };
-    if (raw < 0.44) {
-      const local = easeOutExpo((raw - 0.14) / 0.3);
-      return { phase: 0, mix: local, overall: raw };
-    }
-    if (raw < 0.58) return { phase: 1, mix: 0, overall: raw };
-    if (raw < 0.9) {
-      const local = easeOutExpo((raw - 0.58) / 0.32);
-      return { phase: 1, mix: local, overall: raw };
-    }
-
-    return { phase: 2, mix: 0, overall: raw };
-  }
-
-  function activeRectFor(state) {
-    const terminal = targets.get("terminal");
-    const mac = targets.get("mac");
-    const linux = targets.get("linux");
-    if (!terminal || !mac || !linux) return null;
-
-    if (state.phase === 0 && state.mix > 0) return blendRect(terminal, mac, state.mix);
-    if (state.phase === 1 && state.mix === 0) return mac;
-    if (state.phase === 1 && state.mix > 0) return blendRect(mac, linux, state.mix);
-    if (state.phase === 2) return linux;
-    return terminal;
-  }
-
-  function overscanFor(state) {
-    return 1;
-  }
-
-  function applyScene(scrollY) {
     if (prefersReducedMotion.matches || window.innerWidth <= 1100) {
-      root.dataset.sceneMotion = "reduced";
-      root.style.setProperty("--scene-progress", "1");
-      root.style.setProperty("--scene-scale", "1");
-      root.style.setProperty("--scene-translate-x", "0px");
-      root.style.setProperty("--scene-translate-y", "0px");
+      panel.scrollIntoView({ behavior: "auto", block: "nearest", inline: "start" });
+      setTimeout(() => { isScrolling = false; }, 100);
       return;
     }
 
-    delete root.dataset.sceneMotion;
+    track.scrollTo({
+      left: offset,
+      behavior: "smooth",
+    });
 
-    const state = computeProgress(scrollY);
-    const rect = activeRectFor(state);
-    if (!rect) return;
-
-    const fitted = fitRect(rect, overscanFor(state));
-    root.style.setProperty("--scene-progress", state.overall.toFixed(4));
-    root.style.setProperty("--scene-scale", fitted.scale.toFixed(5));
-    root.style.setProperty(
-      "--scene-translate-x",
-      Math.round(fitted.translateX) + "px"
-    );
-    root.style.setProperty(
-      "--scene-translate-y",
-      Math.round(fitted.translateY) + "px"
-    );
+    setTimeout(() => { isScrolling = false; }, WHEEL_COOLDOWN);
   }
 
-  function measure() {
-    viewport = { width: window.innerWidth, height: window.innerHeight };
+  function handleWheel(e) {
+    if (window.innerWidth <= 1100) return;
+    if (isScrolling) {
+      e.preventDefault();
+      return;
+    }
 
-    const rect = track.getBoundingClientRect();
-    const top = window.scrollY + rect.top;
-    metrics = {
-      start: top,
-      span: Math.max(1, track.offsetHeight - window.innerHeight),
-    };
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    wheelAccum += delta;
 
-    captureTargets();
-    applyScene(window.scrollY);
+    if (Math.abs(wheelAccum) >= WHEEL_THRESHOLD) {
+      e.preventDefault();
+      const direction = wheelAccum > 0 ? 1 : -1;
+      wheelAccum = 0;
+      scrollToPanel(currentIndex + direction);
+    }
+
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => { wheelAccum = 0; }, 200);
   }
 
-  function update() {
-    ticking = false;
-    applyScene(window.scrollY);
-  }
-
-  function schedule() {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(update);
-  }
-
-  function refresh() {
-    measure();
-    schedule();
-  }
-
-  window.addEventListener("scroll", schedule, { passive: true });
-  window.addEventListener("resize", refresh, { passive: true });
-  window.addEventListener("load", refresh);
-
-  if (typeof ResizeObserver !== "undefined") {
-    const observer = new ResizeObserver(refresh);
-    observer.observe(track);
-    observer.observe(world);
-    for (const name of targetNames) {
-      const element = root.querySelector('[data-scene-target="' + name + '"]');
-      if (element) observer.observe(element);
+  function handleKey(e) {
+    if (window.innerWidth <= 1100) return;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      e.preventDefault();
+      scrollToPanel(currentIndex + 1);
+    }
+    if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      e.preventDefault();
+      scrollToPanel(currentIndex - 1);
     }
   }
 
-  if (typeof prefersReducedMotion.addEventListener === "function") {
-    prefersReducedMotion.addEventListener("change", refresh);
+  function handleDotClick(e) {
+    e.preventDefault();
+    const dot = e.currentTarget;
+    const index = parseInt(dot.dataset.snapGoto, 10);
+    if (!isNaN(index)) scrollToPanel(index);
   }
 
-  document.body.addEventListener("htmx:afterSwap", function () {
-    requestAnimationFrame(refresh);
+  function handleScrollEnd() {
+    if (!track) return;
+    const scrollLeft = track.scrollLeft;
+    let closest = 0;
+    let closestDist = Infinity;
+    panels.forEach((panel, i) => {
+      const dist = Math.abs(panel.offsetLeft - scrollLeft);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closest = i;
+      }
+    });
+    if (closest !== currentIndex) {
+      currentIndex = closest;
+      updateDots(closest);
+    }
+  }
+
+  function handleTouchStart(e) {
+    if (window.innerWidth <= 1100) return;
+    const touch = e.touches[0];
+    track._touchStartX = touch.clientX;
+    track._touchStartY = touch.clientY;
+  }
+
+  function handleTouchEnd(e) {
+    if (window.innerWidth <= 1100) return;
+    if (!track._touchStartX) return;
+    const touch = e.changedTouches[0];
+    const dx = touch.clientX - track._touchStartX;
+    const dy = touch.clientY - track._touchStartY;
+
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx < 0) scrollToPanel(currentIndex + 1);
+      else scrollToPanel(currentIndex - 1);
+    }
+    track._touchStartX = null;
+  }
+
+  root.addEventListener("wheel", handleWheel, { passive: false });
+  root.addEventListener("keydown", handleKey);
+  dots.forEach((dot) => dot.addEventListener("click", handleDotClick));
+  track.addEventListener("touchstart", handleTouchStart, { passive: true });
+  track.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+  let scrollEndTimer = null;
+  track.addEventListener("scroll", () => {
+    clearTimeout(scrollEndTimer);
+    scrollEndTimer = setTimeout(handleScrollEnd, 100);
+  }, { passive: true });
+
+  if (typeof prefersReducedMotion.addEventListener === "function") {
+    prefersReducedMotion.addEventListener("change", () => scrollToPanel(currentIndex));
+  }
+
+  document.body.addEventListener("htmx:afterSwap", () => {
+    requestAnimationFrame(() => scrollToPanel(currentIndex));
   });
 
-  refresh();
+  updateDots(0);
+
+  if (typeof ResizeObserver !== "undefined") {
+    new ResizeObserver(() => scrollToPanel(currentIndex)).observe(track);
+  }
 })();
