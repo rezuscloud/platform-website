@@ -465,11 +465,11 @@ func TestDesignSystemMacTokens(t *testing.T) {
 	})
 
 	t.Run("body has Mac mode font", func(t *testing.T) {
-		assert.Contains(t, html, "font-mac-body", "Body should use Mac body font")
+		assert.Contains(t, html, "font-mac", "Body should use Mac body font")
 	})
 
 	t.Run("navigation uses Mac tokens", func(t *testing.T) {
-		assert.Contains(t, html, "bg-surface-warm", "Nav should use Mac surface-warm background")
+		assert.Contains(t, html, "bg-surface", "Nav should use Mac surface background")
 		assert.Contains(t, html, "border-rule", "Nav should use Mac rule border")
 	})
 
@@ -613,7 +613,7 @@ func TestDesignSystemDualModeToggle(t *testing.T) {
 	})
 
 	t.Run("fonts switch between modes", func(t *testing.T) {
-		assert.Contains(t, html, "font-mac-body", "Mac font should be default")
+		assert.Contains(t, html, "font-mac", "Mac font should be default")
 		assert.Contains(t, html, "dark:font-next", "NeXT font should activate in dark mode")
 	})
 }

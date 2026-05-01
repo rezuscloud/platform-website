@@ -29,7 +29,7 @@ func Services() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"services\" class=\"py-16 sm:py-24 bg-paper dark:bg-next-black\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><div class=\"w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4\"></div><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white\">What You Can Run</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body dark:font-next\">Everything you need comes in the box — networking, monitoring, app deployment, and storage. All bundled, all ready to go.</p></div><div class=\"grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"services\" class=\"py-16 sm:py-24 bg-paper dark:bg-next-black\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><div class=\"w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4\"></div><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white\">What You Can Run</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac dark:font-next\">Everything you need comes in the box — networking, monitoring, app deployment, and storage. All bundled, all ready to go.</p></div><div class=\"grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -94,7 +94,7 @@ func capabilityCard(title string, description string, icon templ.Component) temp
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-surface-warm dark:bg-next-dark p-6 border border-rule dark:next-raised hover:border-accent-gold dark:hover:border-next-light transition-colors duration-120\"><div class=\"w-12 h-12 bg-accent-gold dark:bg-next-light flex items-center justify-center mb-4 border border-ink dark:next-raised\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"bg-surface dark:bg-next-dark p-6 border border-rule dark:next-raised hover:border-accent-gold dark:hover:border-next-light transition-colors duration-120\"><div class=\"w-12 h-12 bg-accent-gold dark:bg-next-light flex items-center justify-center mb-4 border border-ink dark:next-raised\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -115,14 +115,14 @@ func capabilityCard(title string, description string, icon templ.Component) temp
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</h3><p class=\"text-sm text-ink-muted dark:text-next-subtle leading-relaxed font-mac-body dark:font-next\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</h3><p class=\"text-sm text-ink-muted dark:text-next-subtle leading-relaxed font-mac dark:font-next\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/services.templ`, Line: 45, Col: 116}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/services.templ`, Line: 45, Col: 111}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {

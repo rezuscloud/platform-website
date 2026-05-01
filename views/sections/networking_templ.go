@@ -29,7 +29,7 @@ func Networking() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"networking\" class=\"py-16 sm:py-24 bg-paper dark:bg-next-black\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><div class=\"w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4\"></div><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white\">Always Connected</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body dark:font-next\">Your machines talk to each other securely, no matter what ISP they're on.</p></div><div class=\"max-w-4xl mx-auto mb-12\"><div class=\"bg-surface-warm dark:bg-next-dark border border-rule dark:next-raised p-8\"><div class=\"text-center text-sm font-semibold text-ink-muted dark:text-next-subtle mb-6 uppercase tracking-wider font-mac dark:font-next\">Your Network</div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"networking\" class=\"py-16 sm:py-24 bg-paper dark:bg-next-black\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><div class=\"w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4\"></div><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white\">Always Connected</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac dark:font-next\">Your machines talk to each other securely, no matter what ISP they're on.</p></div><div class=\"max-w-4xl mx-auto mb-12\"><div class=\"bg-surface dark:bg-next-dark border border-rule dark:next-raised p-8\"><div class=\"text-center text-sm font-semibold text-ink-muted dark:text-next-subtle mb-6 uppercase tracking-wider font-mac dark:font-next\">Your Network</div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -49,7 +49,7 @@ func Networking() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"flex items-center justify-center gap-2 mt-6\"><span class=\"w-2 h-2 bg-accent-gold dark:bg-next-light\"></span> <span class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body dark:font-next\">All connected through encrypted tunnels</span></div></div></div><div class=\"grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto\"><div class=\"bg-surface-warm dark:bg-next-dark p-6 border border-rule dark:next-raised\"><h3 class=\"text-xl font-bold mb-4 font-mac dark:font-next text-accent-gold dark:text-next-white\">How It Connects</h3><ul class=\"space-y-3\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"flex items-center justify-center gap-2 mt-6\"><span class=\"w-2 h-2 bg-accent-gold dark:bg-next-light\"></span> <span class=\"text-sm text-ink-muted dark:text-next-subtle font-mac dark:font-next\">All connected through encrypted tunnels</span></div></div></div><div class=\"grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto\"><div class=\"bg-surface dark:bg-next-dark p-6 border border-rule dark:next-raised\"><h3 class=\"text-xl font-bold mb-4 font-mac dark:font-next text-accent-gold dark:text-next-white\">How It Connects</h3><ul class=\"space-y-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -65,7 +65,7 @@ func Networking() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</ul></div><div class=\"bg-surface-warm dark:bg-next-dark p-6 border border-rule dark:next-raised\"><h3 class=\"text-xl font-bold mb-4 font-mac dark:font-next text-accent-gold dark:text-next-white\">What You Get</h3><ul class=\"space-y-3\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</ul></div><div class=\"bg-surface dark:bg-next-dark p-6 border border-rule dark:next-raised\"><h3 class=\"text-xl font-bold mb-4 font-mac dark:font-next text-accent-gold dark:text-next-white\">What You Get</h3><ul class=\"space-y-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -152,7 +152,7 @@ func networkBullet(text string) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<li class=\"flex items-start gap-3 font-mac-body dark:font-next\"><span class=\"mt-1.5 w-2 h-2 bg-accent-gold dark:bg-next-light shrink-0\"></span> <span class=\"text-ink dark:text-next-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<li class=\"flex items-start gap-3 font-mac dark:font-next\"><span class=\"mt-1.5 w-2 h-2 bg-accent-gold dark:bg-next-light shrink-0\"></span> <span class=\"text-ink dark:text-next-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -191,7 +191,7 @@ func TestHomePageNewDesignTokens(t *testing.T) {
 	html := string(body)
 
 	// Verify Mac mode tokens are present
-	macTokens := []string{"bg-paper", "bg-surface-warm", "text-ink", "text-ink-muted", "border-rule", "text-accent-gold"}
+	macTokens := []string{"bg-paper", "bg-surface", "text-ink", "text-ink-muted", "border-rule", "text-accent-gold"}
 	for _, token := range macTokens {
 		assert.Contains(t, html, token,
 			"Expected Mac mode token '%s' to be present", token)
@@ -257,11 +257,10 @@ func TestHomePageFontFamilies(t *testing.T) {
 
 	html := string(body)
 
-	// Verify Mac mode font classes
+	// Verify Mac mode font classes (Silkscreen for all text)
 	assert.Contains(t, html, "font-mac", "Mac mode font class should be present")
-	assert.Contains(t, html, "font-mac-body", "Mac body font class should be present")
 
-	// Verify NeXT mode font classes
+	// Verify NeXT mode font classes (Courier New for retro terminal feel)
 	assert.Contains(t, html, "dark:font-next", "NeXT mode font class should be present")
 
 	// Verify old font class is gone

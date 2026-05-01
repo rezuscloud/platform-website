@@ -29,7 +29,7 @@ func Comparison() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"comparison\" class=\"py-16 sm:py-24 bg-surface-warm dark:bg-next-dark\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><div class=\"w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4\"></div><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white\">Own vs. Rent</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body dark:font-next\">Renting cloud infrastructure is like renting an apartment forever. At some point, you might want to own.</p></div><div class=\"max-w-4xl mx-auto\"><div class=\"bg-paper dark:bg-next-black border border-rule dark:next-raised overflow-hidden\"><table class=\"w-full text-left font-mac-body dark:font-next\"><thead><tr class=\"bg-rule dark:bg-next-mid uppercase tracking-wider text-xs font-mac dark:font-next\"><th class=\"py-3 px-4 sm:px-6 font-semibold text-ink-muted dark:text-next-subtle\">What</th><th class=\"py-3 px-4 sm:px-6 font-semibold text-ink-muted dark:text-next-subtle\">Renting</th><th class=\"py-3 px-4 sm:px-6 font-semibold text-ink-muted dark:text-next-subtle\">Owning</th></tr></thead> <tbody class=\"divide-y divide-rule dark:divide-next-dark\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"comparison\" class=\"py-16 sm:py-24 bg-surface dark:bg-next-dark\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><div class=\"w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4\"></div><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white\">Own vs. Rent</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac dark:font-next\">Renting cloud infrastructure is like renting an apartment forever. At some point, you might want to own.</p></div><div class=\"max-w-4xl mx-auto\"><div class=\"bg-paper dark:bg-next-black border border-rule dark:next-raised overflow-hidden\"><table class=\"w-full text-left font-mac dark:font-next\"><thead><tr class=\"bg-rule dark:bg-next-mid uppercase tracking-wider text-xs font-mac dark:font-next\"><th class=\"py-3 px-4 sm:px-6 font-semibold text-ink-muted dark:text-next-subtle\">What</th><th class=\"py-3 px-4 sm:px-6 font-semibold text-ink-muted dark:text-next-subtle\">Renting</th><th class=\"py-3 px-4 sm:px-6 font-semibold text-ink-muted dark:text-next-subtle\">Owning</th></tr></thead> <tbody class=\"divide-y divide-rule dark:divide-next-dark\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -94,7 +94,7 @@ func compRow(what string, renting string, owning string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-surface-warm dark:hover:bg-next-dark transition-colors duration-120\"><td class=\"py-3 px-4 sm:px-6 font-semibold text-ink dark:text-next-white font-mac dark:font-next\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-surface dark:hover:bg-next-dark transition-colors duration-120\"><td class=\"py-3 px-4 sm:px-6 font-semibold text-ink dark:text-next-white font-mac dark:font-next\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -107,14 +107,14 @@ func compRow(what string, renting string, owning string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</td><td class=\"py-3 px-4 sm:px-6 text-negative dark:text-negative-next font-mac-body dark:font-next\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</td><td class=\"py-3 px-4 sm:px-6 text-negative dark:text-negative-next font-mac dark:font-next\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(renting)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 45, Col: 108}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 45, Col: 103}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {

@@ -1,14 +1,14 @@
 package sections
 
 templ Challenge() {
-	<section id="challenge" class="py-16 sm:py-24 bg-surface-warm dark:bg-next-dark">
+	<section id="challenge" class="py-16 sm:py-24 bg-surface dark:bg-next-dark">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-12">
 				<div class="w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4"></div>
 				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white">
 					The Mainframe Moment
 				</h2>
-				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body dark:font-next">
+				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac dark:font-next">
 					In the 1970s, computers were room-sized machines owned by a handful of corporations.
 					Companies rented time on them. When people proposed putting a computer on every desk,
 					the industry said it was absurd. Sound familiar?
@@ -16,7 +16,7 @@ templ Challenge() {
 			</div>
 			<div class="max-w-4xl mx-auto mb-12">
 				<div class="overflow-x-auto border border-rule dark:next-raised">
-					<table class="w-full text-left font-mac-body dark:font-next">
+					<table class="w-full text-left font-mac dark:font-next">
 						<thead>
 							<tr class="border-b border-rule dark:border-next-mid bg-rule dark:bg-next-mid">
 								<th class="py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle font-semibold font-mac dark:font-next">Then (1970s)</th>
@@ -44,7 +44,7 @@ templ Challenge() {
 
 templ challengeRow(then string, now string) {
 	<tr class="hover:bg-paper dark:hover:bg-next-dark transition-colors duration-120">
-		<td class="py-4 px-4 sm:px-6 text-ink-muted dark:text-next-subtle font-mac-body dark:font-next">{ then }</td>
+		<td class="py-4 px-4 sm:px-6 text-ink-muted dark:text-next-subtle font-mac dark:font-next">{ then }</td>
 		<td class="py-4 px-4 sm:px-6 text-ink dark:text-next-white font-semibold font-mac dark:font-next">{ now }</td>
 	</tr>
 }

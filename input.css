@@ -5,39 +5,38 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-	/* Mac mode: The Macintosh Palette */
-	--color-paper: #faf8f3;
-	--color-surface-warm: #f5f0e8;
-	--color-ink: #2a1a0e;
-	--color-ink-muted: #5e503b;
-	--color-rule: #d4c9b0;
+	/* Mac mode: True System 1 — stark black and white */
+	--color-paper: #ffffff;
+	--color-surface: #e0e0e0;
+	--color-ink: #000000;
+	--color-ink-muted: #555555;
+	--color-rule: #aaaaaa;
 	--color-accent-gold: #ffb000;
 	--color-accent-gold-dark: #cc8d00;
-	--color-amber-surface: #f5efe3;
-	--color-amber-glow: #f59e0b;
 
-	/* NeXT mode: The NeXTSTEP Palette */
-	--color-next-black: #1a1a1a;
-	--color-next-dark: #2d2d2d;
-	--color-next-mid: #4a4a4a;
-	--color-next-light: #6e6e6e;
-	--color-next-white: #d4d4d4;
-	--color-next-subtle: #999999;
-	--color-next-bevel-hi: #666666;
-	--color-next-bevel-lo: #111111;
+	/* NeXT mode: CRT phosphor grayscale */
+	--color-next-black: #0a0a0a;
+	--color-next-dark: #1a1a1a;
+	--color-next-mid: #3a3a3a;
+	--color-next-light: #5a5a5a;
+	--color-next-white: #c8c8c8;
+	--color-next-subtle: #888888;
+	--color-next-bevel-hi: #555555;
+	--color-next-bevel-lo: #050505;
+	--color-next-phosphor: #33ff33;
 
 	/* Semantic accent colors (used sparingly for data contrast) */
-	--color-positive: #339933;
-	--color-positive-next: #55aa55;
-	--color-negative: #cc3333;
-	--color-negative-next: #aa4444;
+	--color-positive: #009900;
+	--color-positive-next: #33cc33;
+	--color-negative: #cc0000;
+	--color-negative-next: #cc3333;
 
 	/* Font families */
 	--font-mac: "Silkscreen", "Chicago", system-ui, sans-serif;
-	--font-mac-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+	--font-mac-body: "Silkscreen", system-ui, sans-serif;
 	--font-mac-mono: "VT323", "Monaco", "Courier New", monospace;
-	--font-next: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
-	--font-next-mono: "Courier New", Menlo, Consolas, monospace;
+	--font-next: "Courier New", Menlo, Consolas, monospace;
+	--font-next-mono: "VT323", "Courier New", Menlo, Consolas, monospace;
 }
 
 /* Font face declarations */
@@ -73,12 +72,12 @@
 /* ===== NeXT mode bevels ===== */
 
 @utility next-raised {
-	border: 1px solid;
+	border: 2px solid;
 	border-color: var(--color-next-bevel-hi) var(--color-next-bevel-lo) var(--color-next-bevel-lo) var(--color-next-bevel-hi);
 }
 
 @utility next-sunken {
-	border: 1px solid;
+	border: 2px solid;
 	border-color: var(--color-next-bevel-lo) var(--color-next-bevel-hi) var(--color-next-bevel-hi) var(--color-next-bevel-lo);
 }
 
@@ -87,15 +86,15 @@
 @utility mac-title-bar {
 	background: repeating-linear-gradient(
 		to bottom,
-		var(--color-rule) 0px, var(--color-rule) 1px,
-		var(--color-surface-warm) 1px, var(--color-surface-warm) 2px
+		#000000 0px, #000000 1px,
+		#ffffff 1px, #ffffff 2px
 	);
 }
 
 /* ===== Mac mode window shadow ===== */
 
 @utility mac-window-shadow {
-	box-shadow: 1px 1px 0 var(--color-ink);
+	box-shadow: 1px 1px 0 #000000;
 }
 
 /* ===== Animations ===== */
@@ -124,20 +123,23 @@
 	animation: fade-in-up 0.4s ease-out forwards;
 }
 
-/* ===== NeXT CRT scanlines (retro feel) ===== */
+/* ===== NeXT CRT scanlines ===== */
 
 @utility next-scanlines {
-	background-image: repeating-linear-gradient(
-		0deg,
-		transparent 0px, transparent 3px,
-		rgba(255, 255, 255, 0.03) 3px, rgba(255, 255, 255, 0.03) 4px
-	);
+	background-image:
+		repeating-linear-gradient(
+			0deg,
+			rgba(255, 255, 255, 0.0) 0px,
+			rgba(255, 255, 255, 0.0) 1px,
+			rgba(255, 255, 255, 0.06) 1px,
+			rgba(255, 255, 255, 0.06) 2px
+		);
 }
 
 /* ===== Mac dot grid pattern ===== */
 
 @utility mac-dots {
-	background-image: radial-gradient(circle, var(--color-ink) 0.5px, transparent 0.5px);
+	background-image: radial-gradient(circle, #000000 0.5px, transparent 0.5px);
 	background-size: 12px 12px;
 }
 
