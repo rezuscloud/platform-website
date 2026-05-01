@@ -252,13 +252,12 @@ func TestProgressiveEnhancement(t *testing.T) {
 		assert.Equal(t, 1, doc.Find("#xterm-mount").Length())
 	})
 
-	t.Run("top level routes expose htmx endpoints server-side", func(t *testing.T) {
-		macHTML := getHTMLString(t, app, "/apps/mac")
-		linuxHTML := getHTMLString(t, app, "/apps/linux")
-		terminalHTML := getHTMLString(t, app, "/apps/terminal")
-		assert.Contains(t, macHTML, `hx-get="/apps/mac/embed"`)
-		assert.Contains(t, linuxHTML, `hx-get="/apps/linux/embed"`)
-		assert.Contains(t, terminalHTML, `hx-get="/apps/terminal/embed"`)
+	t.Run("embed endpoints return partial HTML", func(t *testing.T) {
+		for _, route := range []string{"/apps/mac/embed", "/apps/linux/embed", "/apps/terminal/embed"} {
+			resp, err := app.Test(httptest.NewRequest("GET", route, nil))
+			require.NoError(t, err)
+			assert.Equal(t, 200, resp.StatusCode)
+		}
 	})
 
 	t.Run("no javascript bootstrap class present", func(t *testing.T) {

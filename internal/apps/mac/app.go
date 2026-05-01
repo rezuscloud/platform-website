@@ -32,7 +32,7 @@ func embed(runtime platform.Runtime, basePath string) fiber.Handler {
 			return err
 		}
 
-		return render(c, viewapps.MacEmbed(state, true, basePath, "/apps/terminal", "/apps/mac"))
+		return render(c, viewapps.MacEmbed(state, true, basePath))
 	}
 }
 
