@@ -148,6 +148,165 @@ func TestHomePageContainsAllSections(t *testing.T) {
 	}
 }
 
+func TestHomePageNoOldDesignTokens(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+
+	// Verify old color tokens are completely removed
+	oldTokens := []string{
+		"cream-50", "cream-100", "cream-200", "cream-300",
+		"cream-400", "cream-500", "cream-600", "cream-700", "cream-800", "cream-900",
+		"phosphor-", "retro-blue-",
+		"terminal-bg", "terminal-surface", "terminal-border",
+	}
+	for _, token := range oldTokens {
+		assert.NotContains(t, html, token,
+			"Old design token '%s' should be removed from HTML", token)
+	}
+}
+
+func TestHomePageNewDesignTokens(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+
+	// Verify Mac mode tokens are present
+	macTokens := []string{"bg-paper", "bg-surface-warm", "text-ink", "text-ink-muted", "border-rule", "text-accent-gold"}
+	for _, token := range macTokens {
+		assert.Contains(t, html, token,
+			"Expected Mac mode token '%s' to be present", token)
+	}
+
+	// Verify NeXT mode tokens are present
+	nextTokens := []string{"dark:bg-next-black", "dark:bg-next-dark", "dark:text-next-white", "dark:text-next-subtle"}
+	for _, token := range nextTokens {
+		assert.Contains(t, html, token,
+			"Expected NeXT mode token '%s' to be present", token)
+	}
+}
+
+func TestHomePageNoRoundedCorners(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+
+	// Verify no rounded corner classes
+	roundedClasses := []string{"rounded-xl", "rounded-2xl", "rounded-lg", "rounded-md", "rounded-full"}
+	for _, cls := range roundedClasses {
+		assert.NotContains(t, html, cls,
+			"Rounded corner class '%s' should not be present", cls)
+	}
+}
+
+func TestHomePageNoBorder2(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+
+	// border-2 is prohibited; only border (1px) is allowed
+	assert.NotContains(t, html, "border-2",
+		"border-2 should not be present; only 1px borders allowed")
+}
+
+func TestHomePageFontFamilies(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+
+	// Verify Mac mode font classes
+	assert.Contains(t, html, "font-mac", "Mac mode font class should be present")
+	assert.Contains(t, html, "font-mac-body", "Mac body font class should be present")
+
+	// Verify NeXT mode font classes
+	assert.Contains(t, html, "dark:font-next", "NeXT mode font class should be present")
+
+	// Verify old font class is gone
+	assert.NotContains(t, html, "font-retro", "Old font-retro class should be removed")
+	assert.NotContains(t, html, "IBM Plex Mono", "IBM Plex Mono should be removed")
+}
+
+func TestHomePageNoCRTEffects(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+
+	// CRT effects should be removed
+	crtClasses := []string{"crt-scanlines", "crt-glow", "retro-bevel"}
+	for _, cls := range crtClasses {
+		assert.NotContains(t, html, cls,
+			"CRT/retro effect '%s' should be removed", cls)
+	}
+}
+
+func TestHomePageNeXTBevels(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+
+	// NeXT bevel utilities should be present in dark mode
+	assert.Contains(t, html, "dark:next-raised",
+		"NeXT raised bevel should be used in dark mode")
+	assert.Contains(t, html, "dark:next-sunken",
+		"NeXT sunken bevel should be used in dark mode")
+}
+
 func TestHomePageContainsNavigation(t *testing.T) {
 	app := setupApp()
 
