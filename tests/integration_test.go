@@ -498,8 +498,9 @@ func TestDesignSystemNeXTTokens(t *testing.T) {
 		assert.Contains(t, html, "dark:bg-next-black", "Body should have NeXT black in dark mode")
 	})
 
-	t.Run("body has NeXT font in dark mode", func(t *testing.T) {
-		assert.Contains(t, html, "dark:font-next", "Body should switch to NeXT font in dark mode")
+	t.Run("fonts are consistent across modes", func(t *testing.T) {
+		assert.Contains(t, html, "font-mac-body", "Body should use system-ui font")
+		assert.Contains(t, html, "font-mac", "Headings should use Silkscreen font")
 	})
 
 	t.Run("navigation has NeXT dark tokens", func(t *testing.T) {
@@ -612,9 +613,9 @@ func TestDesignSystemDualModeToggle(t *testing.T) {
 		assert.Contains(t, html, "dark:bg-next-black", "NeXT mode background should be present")
 	})
 
-	t.Run("fonts switch between modes", func(t *testing.T) {
-		assert.Contains(t, html, "font-mac", "Mac font should be default")
-		assert.Contains(t, html, "dark:font-next", "NeXT font should activate in dark mode")
+	t.Run("fonts stay consistent between modes", func(t *testing.T) {
+		assert.Contains(t, html, "font-mac-body", "Body font is same in both modes")
+		assert.Contains(t, html, "font-mac", "Display font is same in both modes")
 	})
 }
 

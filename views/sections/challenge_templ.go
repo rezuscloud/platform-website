@@ -29,7 +29,7 @@ func Challenge() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"challenge\" class=\"py-16 sm:py-24 bg-surface dark:bg-next-dark\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><div class=\"w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4\"></div><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white\">The Mainframe Moment</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac dark:font-next\">In the 1970s, computers were room-sized machines owned by a handful of corporations. Companies rented time on them. When people proposed putting a computer on every desk, the industry said it was absurd. Sound familiar?</p></div><div class=\"max-w-4xl mx-auto mb-12\"><div class=\"overflow-x-auto border border-rule dark:next-raised\"><table class=\"w-full text-left font-mac dark:font-next\"><thead><tr class=\"border-b border-rule dark:border-next-mid bg-rule dark:bg-next-mid\"><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle font-semibold font-mac dark:font-next\">Then (1970s)</th><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle font-semibold font-mac dark:font-next\">Now</th></tr></thead> <tbody class=\"divide-y divide-rule dark:divide-next-dark\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"challenge\" class=\"py-20 sm:py-32 bg-ink dark:bg-next-black relative overflow-hidden\"><!-- Subtle diagonal hash texture --><div class=\"absolute inset-0 opacity-[0.03] dark:opacity-[0.02]\" aria-hidden=\"true\" style=\"background-image: repeating-linear-gradient(45deg, #ffffff 0px, #ffffff 1px, transparent 1px, transparent 12px);\"></div><div class=\"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative\"><div class=\"text-center mb-10\"><span class=\"inline-block px-3 py-1 text-xs font-mac uppercase tracking-widest text-accent-gold dark:text-next-light border border-accent-gold dark:border-next-light mb-6\">1984 // Then vs Now</span><h2 class=\"text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tighter leading-[0.9] mb-6 font-mac text-paper dark:text-next-white\">The Mainframe<br>Moment</h2><p class=\"text-lg sm:text-xl text-rule dark:text-next-subtle max-w-2xl mx-auto font-mac-body leading-relaxed\">In the 1970s, computers were room-sized machines owned by a handful of corporations. Companies rented time on them. When people proposed putting a computer on every desk, the industry said it was absurd.</p></div><div class=\"max-w-3xl mx-auto mb-12\"><div class=\"border border-rule/30 dark:border-next-mid/30 overflow-hidden\"><table class=\"w-full text-left font-mac-body\"><thead><tr class=\"border-b border-rule/30 dark:border-next-mid/30\"><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-rule/60 dark:text-next-subtle/60 font-semibold font-mac\">Then (1970s)</th><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-accent-gold dark:text-next-light font-semibold font-mac\">Now</th></tr></thead> <tbody class=\"divide-y divide-rule/20 dark:divide-next-mid/20\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -53,7 +53,7 @@ func Challenge() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</tbody></table></div></div><div class=\"text-center max-w-3xl mx-auto\"><p class=\"text-xl sm:text-2xl font-bold font-mac dark:font-next text-accent-gold dark:text-next-white\">The Personal Computer changed everything. The Personal Cloud will too.</p></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</tbody></table></div></div><div class=\"text-center max-w-3xl mx-auto\"><p class=\"text-2xl sm:text-3xl font-bold font-mac text-accent-gold dark:text-next-white leading-snug\">The Personal Computer changed everything.<br><span class=\"text-paper dark:text-next-subtle\">The Personal Cloud will too.</span></p></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -82,27 +82,27 @@ func challengeRow(then string, now string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-paper dark:hover:bg-next-dark transition-colors duration-120\"><td class=\"py-4 px-4 sm:px-6 text-ink-muted dark:text-next-subtle font-mac dark:font-next\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-paper/5 dark:hover:bg-next-white/5 transition-colors duration-120\"><td class=\"py-4 px-4 sm:px-6 text-rule/70 dark:text-next-subtle/70 font-mac-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(then)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 47, Col: 99}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 50, Col: 90}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</td><td class=\"py-4 px-4 sm:px-6 text-ink dark:text-next-white font-semibold font-mac dark:font-next\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</td><td class=\"py-4 px-4 sm:px-6 text-paper dark:text-next-white font-semibold font-mac-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(now)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 48, Col: 105}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 51, Col: 97}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {

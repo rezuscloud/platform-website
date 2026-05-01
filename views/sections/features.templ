@@ -5,7 +5,7 @@ templ Features() {
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-12">
 				<div class="w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4"></div>
-				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white">What You Get</h2>
+				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white">What You Get</h2>
 			</div>
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-8 max-w-5xl mx-auto">
 				@featureItem(
@@ -49,8 +49,8 @@ templ featureItem(title string, description string, icon templ.Component) {
 			@icon
 		</div>
 		<div>
-			<h3 class="text-lg font-bold font-mac dark:font-next text-ink dark:text-next-white">{ title }</h3>
-			<p class="text-sm text-ink-muted dark:text-next-subtle leading-relaxed font-mac dark:font-next mt-1">{ description }</p>
+			<h3 class="text-lg font-bold font-mac text-ink dark:text-next-white">{ title }</h3>
+			<p class="text-sm text-ink-muted dark:text-next-subtle leading-relaxed font-mac-body mt-1">{ description }</p>
 		</div>
 	</div>
 }
