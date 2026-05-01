@@ -127,7 +127,7 @@ func MacEmbed(state model.SessionState, live bool, basePath string) templ.Compon
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(basePath + "/embed")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 27, Col: 105}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 32, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -145,7 +145,7 @@ func MacEmbed(state model.SessionState, live bool, basePath string) templ.Compon
 		var templ_7745c5c3_Var6 templ.SafeURL
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinURLErrs(basePath)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 37, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 46, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -166,7 +166,7 @@ func MacEmbed(state model.SessionState, live bool, basePath string) templ.Compon
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(state.Mac.Artifact.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 47, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 56, Col: 39}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -184,7 +184,7 @@ func MacEmbed(state model.SessionState, live bool, basePath string) templ.Compon
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(line)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 53, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/mac.templ`, Line: 62, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {

@@ -127,7 +127,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string) templ.Comp
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(basePath + "/embed")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 27, Col: 111}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 32, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -145,7 +145,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string) templ.Comp
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(state.Linux.Mode)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 34, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 43, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -158,7 +158,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string) templ.Comp
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(state.Linux.Mode)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 49, Col: 51}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 58, Col: 51}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -171,7 +171,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string) templ.Comp
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(state.Linux.LastAction)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 50, Col: 64}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 59, Col: 64}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -189,7 +189,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string) templ.Comp
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 54, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 63, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -202,7 +202,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string) templ.Comp
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 56, Col: 48}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 65, Col: 48}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -215,7 +215,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string) templ.Comp
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Detail)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 57, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 66, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -228,7 +228,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string) templ.Comp
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Status)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 59, Col: 54}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 68, Col: 54}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -251,7 +251,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string) templ.Comp
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(evt.Type)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 76, Col: 38}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 85, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -264,7 +264,7 @@ func LinuxEmbed(state model.SessionState, live bool, basePath string) templ.Comp
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(evt.Message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 77, Col: 44}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/apps/linux.templ`, Line: 86, Col: 44}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {

@@ -24,11 +24,16 @@ templ MacPage(state model.SessionState, basePath string) {
 }
 
 templ MacEmbed(state model.SessionState, live bool, basePath string) {
-	<section id="mac-panel" class="mac-panel" data-scene-target="mac" if live {
-	hx-get={ basePath + "/embed" }
-	hx-trigger="session-updated from:body"
-	hx-swap="outerHTML"
-}>
+	<section
+		id="mac-panel"
+		class="mac-panel"
+		data-scene-target="mac"
+		if live {
+			hx-get={ basePath + "/embed" }
+			hx-trigger="session-updated from:body"
+			hx-swap="outerHTML"
+		}
+	>
 		<div class="mac-menubar-shell">
 			<div class="mac-menubar-left">
 				<span class="mac-apple-mark">&#63743;</span>
