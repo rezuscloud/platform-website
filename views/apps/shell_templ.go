@@ -35,7 +35,7 @@ func ShellPage(state model.SessionState) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = LinuxEmbed(state, false, "/apps/linux", "/apps/mac", "/apps/terminal", false, "/").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = LinuxEmbed(state, true, "/apps/linux", "/apps/mac", "/apps/terminal", false, "/").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
