@@ -98,89 +98,58 @@ button {
 	min-height: 100vh;
 }
 
-.snap-shell {
+.scene-stage {
 	position: relative;
+	min-height: 100vh;
+	--scene-translate-x: 0px;
+	--scene-translate-y: 0px;
+	--scene-scale: 1;
+	--scene-progress: 0;
+}
+
+.scene-scroll-track {
+	height: 360vh;
+	position: relative;
+}
+
+.scene-stage-pane {
+	position: sticky;
+	top: 0;
 	height: 100vh;
-	overflow: hidden;
+	overflow: clip;
+	background:
+		radial-gradient(circle at center, oklch(0.2 0.03 226 / 0.42) 0%, transparent 46%),
+		linear-gradient(180deg, oklch(0.14 0.016 235) 0%, oklch(0.1 0.012 235) 100%);
+	box-shadow: inset 0 0 0 1px oklch(0.32 0.014 232 / 0.7);
 }
 
-.snap-track {
-	display: flex;
-	height: 100%;
-	overflow-x: auto;
-	scroll-snap-type: x mandatory;
-	scrollbar-width: none;
-	-ms-overflow-style: none;
+.scene-camera-viewport {
+	position: absolute;
+	inset: 0;
+	overflow: clip;
 }
 
-.snap-track::-webkit-scrollbar {
-	display: none;
+.scene-camera {
+	position: absolute;
+	left: 0;
+	top: 0;
+	transform-origin: 0 0;
+	transform: translate3d(var(--scene-translate-x), var(--scene-translate-y), 0) scale(var(--scene-scale));
+	will-change: transform;
+	backface-visibility: hidden;
+	transition: transform 120ms linear;
 }
 
-.snap-panel {
-	flex: 0 0 100%;
-	width: 100%;
-	height: 100%;
-	scroll-snap-align: start;
-	overflow: hidden;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+.scene-world {
+	position: relative;
+	width: 1680px;
+	height: 1080px;
+	transform-origin: top left;
+	user-select: none;
 }
 
-.snap-panel-fill {
-	width: 100%;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.snap-dots {
-	position: fixed;
-	bottom: 1.5rem;
-	left: 50%;
-	transform: translateX(-50%);
-	z-index: 50;
-	display: flex;
-	gap: 0.6rem;
-	padding: 0.5rem 0.8rem;
-	background: oklch(0.12 0.015 235 / 0.85);
-	border: 1px solid oklch(0.3 0.015 231 / 0.5);
-	border-radius: 999px;
-	backdrop-filter: blur(8px);
-}
-
-.snap-dot {
-	display: flex;
-	align-items: center;
-	gap: 0.35rem;
-	padding: 0.3rem 0.65rem;
-	border-radius: 999px;
-	font-size: 0.7rem;
-	line-height: 1;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	color: oklch(0.55 0.015 220);
-	background: transparent;
-	border: 1px solid transparent;
-	transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
-	text-decoration: none;
-}
-
-.snap-dot:hover {
-	color: oklch(0.78 0.015 220);
-	background: oklch(0.2 0.015 235 / 0.6);
-}
-
-.snap-dot.is-active {
-	color: oklch(0.95 0.01 210);
-	background: oklch(0.25 0.02 232 / 0.8);
-	border-color: oklch(0.45 0.02 231 / 0.4);
-}
-
-.snap-dot-label {
-	white-space: nowrap;
+.snap-shell, .snap-track, .snap-panel, .snap-panel-fill, .snap-dots, .snap-dot, .snap-dot-label {
+	display: none !important;
 }
 
 .shell-hud {
@@ -435,9 +404,11 @@ button {
 }
 
 .linux-panel {
-	position: relative;
-	width: 100%;
-	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 1680px;
+	height: 1080px;
 	overflow: hidden;
 	background: var(--color-linux-surface);
 	font-family: var(--font-shell-x11);
@@ -456,11 +427,7 @@ button {
 }
 
 .snap-panel-linux .linux-panel-standalone {
-	width: 100%;
-	height: 100%;
-	border: none;
-	box-shadow: none;
-	border-radius: 0;
+	display: none;
 }
 
 .linux-root-pattern,
@@ -793,13 +760,16 @@ button {
 }
 
 .mac-panel {
-	position: relative;
+	position: absolute;
+	left: 0;
+	top: 0;
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
 	background: var(--color-mac-paper);
 	font-family: var(--font-shell-ui);
 	color: var(--color-mac-line);
+	image-rendering: pixelated;
 }
 
 .mac-panel-standalone {
@@ -812,6 +782,10 @@ button {
 		0 0 0 1px var(--color-mac-paper),
 		0 0 0 2px var(--color-mac-line),
 		0 28px 80px oklch(0.03 0.008 96 / 0.3);
+}
+
+.snap-panel-mac .mac-panel-standalone {
+	display: none;
 }
 
 .mac-menubar-shell {
@@ -872,12 +846,7 @@ button {
 }
 
 .snap-panel-terminal .terminal-panel {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	border: none;
-	box-shadow: none;
-	border-radius: 0;
+	display: none;
 }
 
 .mac-terminal-host {
@@ -1128,9 +1097,8 @@ button {
 }
 
 .terminal-panel {
-	position: relative;
-	width: 100%;
-	height: 100%;
+	position: absolute;
+	inset: 0;
 	background: linear-gradient(180deg, oklch(0.29 0.022 155) 0%, oklch(0.19 0.016 155) 24%, oklch(0.11 0.012 155) 100%);
 	border-color: oklch(0.12 0.008 155);
 	box-shadow:
@@ -1141,9 +1109,7 @@ button {
 }
 
 .snap-panel-terminal .terminal-panel {
-	border: none;
-	box-shadow: none;
-	border-radius: 0;
+	display: none;
 }
 
 .terminal-panel-standalone {
@@ -1160,11 +1126,7 @@ button {
 }
 
 .snap-panel-terminal .terminal-panel-standalone {
-	width: 100%;
-	height: 100%;
-	min-height: 0;
-	border-radius: 0;
-	box-shadow: none;
+	display: none;
 }
 
 .terminal-window-chrome {
@@ -1210,8 +1172,7 @@ button {
 }
 
 .snap-panel-terminal .terminal-window-body {
-	padding: 0;
-	height: 100%;
+	display: none;
 }
 
 .terminal-screen-shell {
@@ -1257,10 +1218,7 @@ button {
 }
 
 .snap-panel-terminal .term-screen {
-	min-height: 0;
-	height: 100%;
-	border-radius: 0;
-	border: none;
+	display: none;
 }
 
 #xterm-mount {
@@ -1536,27 +1494,30 @@ code {
 		display: none;
 	}
 
-	.snap-shell {
+	.scene-scroll-track {
 		height: auto;
-		overflow: visible;
 	}
 
-	.snap-track {
-		flex-direction: column;
-		overflow-x: visible;
-		scroll-snap-type: none;
-	}
-
-	.snap-panel {
-		flex: 0 0 auto;
-		width: 100%;
+	.scene-stage-pane {
+		position: relative;
 		height: auto;
-		min-height: 80vh;
-		scroll-snap-align: none;
+		padding: 1rem;
 	}
 
-	.snap-dots {
-		display: none;
+	.scene-camera-viewport {
+		position: relative;
+		overflow: auto;
+	}
+
+	.scene-camera {
+		position: relative;
+		transform: none !important;
+		transition: none;
+	}
+
+	.scene-world {
+		width: 1240px;
+		height: 920px;
 	}
 
 	.shell-hud {
@@ -1571,18 +1532,18 @@ code {
 	.mac-panel-standalone,
 	.terminal-panel-standalone {
 		position: relative;
-		width: 100%;
-		min-height: 80vh;
+		width: min(100%, 1240px);
 	}
 
 	.linux-panel-standalone {
-		height: auto;
-		min-height: 80vh;
+		height: 920px;
 	}
 
-	.snap-panel-linux .linux-panel-standalone {
-		width: 100%;
-		height: auto;
+	.linux-panel-standalone .linux-mac-window-shell {
+		left: 280px;
+		top: 80px;
+		width: 680px;
+		height: 640px;
 	}
 
 	.linux-status-window {
@@ -1638,13 +1599,9 @@ code {
 }
 
 @media (max-width: 720px) {
-	.snap-shell,
+	.scene-stage,
 	.route-page {
-		padding: 0;
-	}
-
-	.snap-panel {
-		min-height: 70vh;
+		padding: 0.8rem;
 	}
 
 	.shell-brandcopy h1,
@@ -1720,7 +1677,8 @@ code {
 		flex-direction: column;
 	}
 
-	.route-scene {
+	.route-scene,
+	.scene-camera-viewport {
 		padding-bottom: 0.2rem;
 	}
 
@@ -1751,27 +1709,37 @@ code {
 		animation: none;
 	}
 
-	.snap-shell {
-		height: auto;
-		overflow: visible;
+	.scene-stage {
+		padding-top: 1rem;
 	}
 
-	.snap-track {
-		flex-direction: column;
-		overflow-x: visible;
-		scroll-snap-type: none;
-	}
-
-	.snap-panel {
-		flex: 0 0 auto;
+	.shell-hud {
+		position: relative;
+		top: auto;
+		left: auto;
 		width: 100%;
-		height: auto;
-		min-height: 80vh;
-		scroll-snap-align: none;
+		margin-bottom: 1rem;
 	}
 
-	.snap-dots {
-		display: none;
+	.scene-scroll-track {
+		height: auto;
+	}
+
+	.scene-stage-pane {
+		position: relative;
+		height: auto;
+		padding: 1rem;
+	}
+
+	.scene-camera-viewport {
+		position: relative;
+		overflow: auto;
+	}
+
+	.scene-camera {
+		position: relative;
+		transform: none !important;
+		transition: none;
 	}
 
 	.app-route-link,

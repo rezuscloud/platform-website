@@ -14,10 +14,10 @@ templ LinuxPage(state model.SessionState, basePath string) {
 			"/apps/linux",
 			"linux-app",
 			"Execution surface",
-			"Linux owns execution, shared topology, and event publication.",
+			"Linux owns execution, shared topology, and event publication. This route keeps the full nested machine visible so the inspection and command layers stay in context.",
 		) {
 			<div class="route-scene route-scene-linux">
-				@LinuxEmbed(state, true, basePath, "", "", false, "/apps/linux")
+				@LinuxEmbed(state, true, basePath, "/apps/mac", "/apps/terminal", false, "/apps/linux")
 			</div>
 		}
 	}
@@ -27,27 +27,27 @@ templ LinuxEmbed(state model.SessionState, live bool, basePath string, macBasePa
 	if live {
 		if hostRoute == basePath {
 			<section id="linux-panel" class="linux-panel linux-panel-standalone" data-scene-target="linux" hx-get={ basePath + "/embed" } hx-trigger="session-updated from:body, every 10s" hx-swap="outerHTML">
-				@linuxPanelBody(state, basePath, hostRoute)
+				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute)
 			</section>
 		} else {
 			<section id="linux-panel" class="linux-panel" data-scene-target="linux" hx-get={ basePath + "/embed" } hx-trigger="session-updated from:body, every 10s" hx-swap="outerHTML">
-				@linuxPanelBody(state, basePath, hostRoute)
+				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute)
 			</section>
 		}
 	} else {
 		if hostRoute == basePath {
 			<section id="linux-panel" class="linux-panel linux-panel-standalone" data-scene-target="linux">
-				@linuxPanelBody(state, basePath, hostRoute)
+				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute)
 			</section>
 		} else {
 			<section id="linux-panel" class="linux-panel" data-scene-target="linux">
-				@linuxPanelBody(state, basePath, hostRoute)
+				@linuxPanelBody(state, basePath, macBasePath, terminalBasePath, hostRoute)
 			</section>
 		}
 	}
 }
 
-templ linuxPanelBody(state model.SessionState, basePath string, hostRoute string) {
+templ linuxPanelBody(state model.SessionState, basePath string, macBasePath string, terminalBasePath string, hostRoute string) {
 	<div class="linux-topbar-shell">
 		<div class="linux-topbar-left">
 			<span class="linux-badge">rezus</span>
@@ -61,11 +61,11 @@ templ linuxPanelBody(state model.SessionState, basePath string, hostRoute string
 		</div>
 	</div>
 	<div class="linux-root-pattern"></div>
-	<div class="linux-window linux-status-window">
+	<div class="linux-window linux-status-window" x-data="{ minimized: false, maximized: false }" :class="{ 'is-minimized': minimized, 'is-maximized': maximized }">
 		<div class="linux-titlebar-shell">
 			<div class="linux-titlebar-controls">
-				<span class="linux-control"></span>
-				<span class="linux-control"></span>
+				<span class="linux-control" @click="minimized = !minimized; maximized = false"></span>
+				<span class="linux-control" @click="maximized = !maximized; minimized = false"></span>
 			</div>
 			<span>Topology</span>
 		</div>
@@ -76,10 +76,15 @@ templ linuxPanelBody(state model.SessionState, basePath string, hostRoute string
 			</div>
 			<div class="linux-service-list">
 				for _, svc := range state.Linux.Services {
-					<div class="linux-service-row">
+					<div class="linux-service-row" x-data="{ expanded: false }" @click="expanded = !expanded" :class="{ 'is-expanded': expanded }">
 						<div>
 							<p class="linux-service-name">{ svc.Name }</p>
 							<p class="linux-service-detail">{ svc.Detail }</p>
+							<template x-if="expanded">
+								<div class="linux-service-expand">
+									<p linux-service-expand-text={ svc.Name }></p>
+								</div>
+							</template>
 						</div>
 						<span class="linux-service-status">{ svc.Status }</span>
 					</div>
@@ -87,11 +92,11 @@ templ linuxPanelBody(state model.SessionState, basePath string, hostRoute string
 			</div>
 		</div>
 	</div>
-	<div class="linux-window linux-event-window">
+	<div class="linux-window linux-event-window" x-data="{ minimized: false, maximized: false }" :class="{ 'is-minimized': minimized, 'is-maximized': maximized }">
 		<div class="linux-titlebar-shell">
 			<div class="linux-titlebar-controls">
-				<span class="linux-control"></span>
-				<span class="linux-control"></span>
+				<span class="linux-control" @click="minimized = !minimized; maximized = false"></span>
+				<span class="linux-control" @click="maximized = !maximized; minimized = false"></span>
 			</div>
 			<span>Events</span>
 		</div>
@@ -102,6 +107,18 @@ templ linuxPanelBody(state model.SessionState, basePath string, hostRoute string
 					<p class="event-message">{ evt.Message }</p>
 				</article>
 			}
+		</div>
+	</div>
+	<div class="linux-window linux-mac-window-shell" x-data="{ minimized: false, maximized: false }" :class="{ 'is-minimized': minimized, 'is-maximized': maximized }">
+		<div class="linux-titlebar-shell">
+			<div class="linux-titlebar-controls">
+				<span class="linux-control" @click="minimized = !minimized; maximized = false"></span>
+				<span class="linux-control" @click="maximized = !maximized; minimized = false"></span>
+			</div>
+			<span>Mini vMac</span>
+		</div>
+		<div class="linux-window-body">
+			@MacEmbed(state, false, macBasePath, terminalBasePath, hostRoute)
 		</div>
 	</div>
 	<div class="linux-scene-caption">
