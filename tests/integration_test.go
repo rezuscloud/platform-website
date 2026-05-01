@@ -450,6 +450,214 @@ func TestDarkModeSupport(t *testing.T) {
 	})
 }
 
+func TestDesignSystemMacTokens(t *testing.T) {
+	app := setupIntegrationApp()
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	html := string(body)
+
+	t.Run("body has Mac mode background", func(t *testing.T) {
+		assert.Contains(t, html, "bg-paper", "Body should use Mac paper background")
+	})
+
+	t.Run("body has Mac mode font", func(t *testing.T) {
+		assert.Contains(t, html, "font-mac-body", "Body should use Mac body font")
+	})
+
+	t.Run("navigation uses Mac tokens", func(t *testing.T) {
+		assert.Contains(t, html, "bg-surface-warm", "Nav should use Mac surface-warm background")
+		assert.Contains(t, html, "border-rule", "Nav should use Mac rule border")
+	})
+
+	t.Run("no old cream tokens in nav", func(t *testing.T) {
+		// The nav used cream-100 and cream-300 — verify they're gone
+		navHTML := docFindNav(t, html)
+		oldTokens := []string{"cream-100", "cream-200", "cream-300"}
+		for _, token := range oldTokens {
+			assert.NotContains(t, navHTML, token,
+				"Nav should not contain old token '%s'", token)
+		}
+	})
+}
+
+func TestDesignSystemNeXTTokens(t *testing.T) {
+	app := setupIntegrationApp()
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	html := string(body)
+
+	t.Run("body has NeXT dark background", func(t *testing.T) {
+		assert.Contains(t, html, "dark:bg-next-black", "Body should have NeXT black in dark mode")
+	})
+
+	t.Run("body has NeXT font in dark mode", func(t *testing.T) {
+		assert.Contains(t, html, "dark:font-next", "Body should switch to NeXT font in dark mode")
+	})
+
+	t.Run("navigation has NeXT dark tokens", func(t *testing.T) {
+		assert.Contains(t, html, "dark:bg-next-dark", "Nav should have NeXT dark background")
+	})
+
+	t.Run("NeXT bevel utilities present", func(t *testing.T) {
+		assert.Contains(t, html, "dark:next-raised", "Raised bevel should appear in dark mode")
+	})
+}
+
+func TestDesignSystemZeroRoundedCorners(t *testing.T) {
+	app := setupIntegrationApp()
+
+	t.Run("no rounded corners on home page", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/", nil)
+		resp, err := app.Test(req, -1)
+		require.NoError(t, err)
+		defer resp.Body.Close()
+
+		body, _ := io.ReadAll(resp.Body)
+		html := string(body)
+
+		roundedClasses := []string{"rounded-xl", "rounded-2xl", "rounded-lg", "rounded-md", "rounded-full"}
+		for _, cls := range roundedClasses {
+			assert.NotContains(t, html, cls,
+				"Rounded class '%s' should not be present anywhere", cls)
+		}
+	})
+
+	t.Run("no rounded corners on section endpoints", func(t *testing.T) {
+		sections := []string{"hero", "features", "architecture", "networking", "edge", "services", "comparison", "usecases", "techstack", "getstarted"}
+
+		for _, section := range sections {
+			req := httptest.NewRequest("GET", "/sections/"+section, nil)
+			resp, err := app.Test(req, -1)
+			require.NoError(t, err)
+			defer resp.Body.Close()
+
+			body, _ := io.ReadAll(resp.Body)
+			html := string(body)
+
+			for _, cls := range []string{"rounded-xl", "rounded-2xl", "rounded-lg"} {
+				assert.NotContains(t, html, cls,
+					"Section '%s' should not contain rounded class '%s'", section, cls)
+			}
+		}
+	})
+}
+
+func TestDesignSystemNoOldTokens(t *testing.T) {
+	app := setupIntegrationApp()
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	html := string(body)
+
+	oldTokens := []string{
+		"cream-50", "cream-100", "cream-200", "cream-300", "cream-400",
+		"cream-500", "cream-600", "cream-700", "cream-800", "cream-900",
+		"phosphor-400", "phosphor-500", "phosphor-600",
+		"terminal-bg", "terminal-surface", "terminal-border",
+		"retro-blue-",
+	}
+	for _, token := range oldTokens {
+		assert.NotContains(t, html, token,
+			"Old design token '%s' should be completely removed", token)
+	}
+}
+
+func TestDesignSystemOnePxBorders(t *testing.T) {
+	app := setupIntegrationApp()
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	html := string(body)
+
+	// border-2 and border-3 are prohibited
+	assert.NotContains(t, html, "border-2",
+		"Only 1px borders allowed, not border-2")
+	assert.NotContains(t, html, "border-3",
+		"Only 1px borders allowed, not border-3")
+}
+
+func TestDesignSystemDualModeToggle(t *testing.T) {
+	app := setupIntegrationApp()
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	html := string(body)
+
+	t.Run("theme toggle exists", func(t *testing.T) {
+		assert.Contains(t, html, "Toggle theme",
+			"Theme toggle button should exist")
+	})
+
+	t.Run("both mode classes present", func(t *testing.T) {
+		// Mac mode (default, no dark: prefix)
+		assert.Contains(t, html, "bg-paper", "Mac mode background should be present")
+		// NeXT mode (dark: prefix)
+		assert.Contains(t, html, "dark:bg-next-black", "NeXT mode background should be present")
+	})
+
+	t.Run("fonts switch between modes", func(t *testing.T) {
+		assert.Contains(t, html, "font-mac-body", "Mac font should be default")
+		assert.Contains(t, html, "dark:font-next", "NeXT font should activate in dark mode")
+	})
+}
+
+func TestDesignSystemTables(t *testing.T) {
+	app := setupIntegrationApp()
+
+	t.Run("comparison table uses new tokens", func(t *testing.T) {
+		doc := getHTMLDoc(t, app, "/sections/comparison")
+
+		// Table should exist
+		table := doc.Find("table")
+		assert.Equal(t, 1, table.Length(), "Comparison section should have a table")
+
+		// Table rows should exist
+		rows := doc.Find("table tbody tr")
+		assert.GreaterOrEqual(t, rows.Length(), 5, "Table should have comparison rows")
+	})
+
+	t.Run("edge table uses new tokens", func(t *testing.T) {
+		doc := getHTMLDoc(t, app, "/sections/edge")
+
+		table := doc.Find("table")
+		assert.Equal(t, 1, table.Length(), "Edge section should have a table")
+	})
+
+	t.Run("challenge table uses new tokens", func(t *testing.T) {
+		doc := getHTMLDoc(t, app, "/sections/challenge")
+
+		table := doc.Find("table")
+		assert.Equal(t, 1, table.Length(), "Challenge section should have a table")
+	})
+}
+
+func docFindNav(t *testing.T, html string) string {
+	t.Helper()
+	start := strings.Index(html, "<nav")
+	end := strings.Index(html, "</nav>")
+	if start == -1 || end == -1 {
+		return ""
+	}
+	return html[start : end+6]
+}
+
 func TestProgressiveEnhancement(t *testing.T) {
 	app := setupIntegrationApp()
 	doc := getHTMLDoc(t, app, "/")
