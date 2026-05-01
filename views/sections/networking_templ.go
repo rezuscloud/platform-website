@@ -29,27 +29,27 @@ func Networking() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"networking\" class=\"py-16 sm:py-24\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-display\">Always Connected</h2><p class=\"text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display\">Your machines talk to each other securely, no matter what ISP they're on.</p></div><div class=\"max-w-4xl mx-auto mb-12\"><div class=\"bg-cream-100 dark:bg-terminal-surface rounded-2xl border-2 border-cream-300 dark:border-terminal-border p-8\"><div class=\"text-center text-sm font-semibold text-cream-500 dark:text-gray-500 mb-6 uppercase tracking-wider font-display\">Your Network</div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"networking\" class=\"py-16 sm:py-24 bg-paper dark:bg-next-black\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white\">Always Connected</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body dark:font-next\">Your machines talk to each other securely, no matter what ISP they're on.</p></div><div class=\"max-w-4xl mx-auto mb-12\"><div class=\"bg-surface-warm dark:bg-next-dark border border-rule dark:next-raised p-8\"><div class=\"text-center text-sm font-semibold text-ink-muted dark:text-next-subtle mb-6 uppercase tracking-wider font-mac dark:font-next\">Your Network</div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = networkNode("Your Home", "wifi").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = networkNode("Your Home").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = networkNode("Office", "building").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = networkNode("Office").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = networkNode("VPS", "server").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = networkNode("VPS").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = networkNode("Parents' House", "home").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = networkNode("Parents' House").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"flex items-center justify-center gap-2 mt-6\"><span class=\"w-2 h-2 bg-phosphor-500 rounded-full animate-pulse\"></span> <span class=\"text-sm text-cream-600 dark:text-gray-400 font-display\">All connected through encrypted tunnels</span></div></div></div><div class=\"grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto\"><div class=\"bg-cream-100 dark:bg-terminal-surface rounded-xl p-6 border border-cream-300 dark:border-terminal-border\"><h3 class=\"text-xl font-bold mb-4 font-display text-amber-600 dark:text-amber-400\">How It Connects</h3><ul class=\"space-y-3\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><div class=\"flex items-center justify-center gap-2 mt-6\"><span class=\"w-2 h-2 bg-accent-gold dark:bg-next-light\"></span> <span class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body dark:font-next\">All connected through encrypted tunnels</span></div></div></div><div class=\"grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto\"><div class=\"bg-surface-warm dark:bg-next-dark p-6 border border-rule dark:next-raised\"><h3 class=\"text-xl font-bold mb-4 font-mac dark:font-next text-accent-gold dark:text-next-white\">How It Connects</h3><ul class=\"space-y-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -65,7 +65,7 @@ func Networking() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</ul></div><div class=\"bg-cream-100 dark:bg-terminal-surface rounded-xl p-6 border border-cream-300 dark:border-terminal-border\"><h3 class=\"text-xl font-bold mb-4 font-display text-amber-600 dark:text-amber-400\">What You Get</h3><ul class=\"space-y-3\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</ul></div><div class=\"bg-surface-warm dark:bg-next-dark p-6 border border-rule dark:next-raised\"><h3 class=\"text-xl font-bold mb-4 font-mac dark:font-next text-accent-gold dark:text-next-white\">What You Get</h3><ul class=\"space-y-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -89,7 +89,7 @@ func Networking() templ.Component {
 	})
 }
 
-func networkNode(name string, icon string) templ.Component {
+func networkNode(name string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -110,45 +110,20 @@ func networkNode(name string, icon string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"bg-cream-50 dark:bg-terminal-bg rounded-xl p-4 border border-cream-300 dark:border-terminal-border text-center\"><div class=\"text-2xl mb-2\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if icon == "wifi" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "&#x1F4F6;")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else if icon == "building" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "&#x1F3E2;")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else if icon == "server" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "&#x1F5A5;&#xFE0F;")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else if icon == "home" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "&#x1F3E0;")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"text-sm font-bold font-display\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"bg-paper dark:bg-next-black p-4 border border-rule dark:next-raised text-center\"><div class=\"text-sm font-bold font-mac dark:font-next text-ink dark:text-next-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 64, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 53, Col: 93}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -177,20 +152,20 @@ func networkBullet(text string) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<li class=\"flex items-start gap-3 font-display\"><span class=\"mt-1.5 w-2 h-2 bg-amber-500 rounded-full shrink-0\"></span> <span class=\"text-cream-700 dark:text-gray-300\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<li class=\"flex items-start gap-3 font-mac-body dark:font-next\"><span class=\"mt-1.5 w-2 h-2 bg-accent-gold dark:bg-next-light shrink-0\"></span> <span class=\"text-ink dark:text-next-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 71, Col: 56}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 60, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</span></li>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span></li>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

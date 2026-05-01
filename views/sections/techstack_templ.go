@@ -29,7 +29,7 @@ func TechStack() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"techstack\" class=\"py-16 sm:py-24 bg-cream-100 dark:bg-terminal-surface\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-display\">What's Inside</h2><p class=\"text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display\">For the curious — the open source components that make it work.</p></div><div class=\"flex flex-wrap justify-center gap-3 max-w-3xl mx-auto\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"techstack\" class=\"py-16 sm:py-24 bg-surface-warm dark:bg-next-dark\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white\">What's Inside</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body dark:font-next\">For the curious — the open source components that make it work.</p></div><div class=\"flex flex-wrap justify-center gap-3 max-w-3xl mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -102,7 +102,7 @@ func techBadge(name string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span class=\"inline-flex items-center px-4 py-2 bg-cream-50 dark:bg-terminal-bg border border-cream-300 dark:border-terminal-border rounded-lg text-sm font-display hover:border-amber-400 dark:hover:border-phosphor-500 transition-colors\"><span class=\"w-1.5 h-1.5 bg-amber-500 rounded-full mr-2 shrink-0\"></span> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span class=\"inline-flex items-center px-4 py-2 bg-paper dark:bg-next-black border border-rule dark:next-raised text-sm font-mac dark:font-next text-ink dark:text-next-white hover:border-accent-gold dark:hover:border-next-light transition-colors duration-120\"><span class=\"w-1.5 h-1.5 bg-accent-gold dark:bg-next-light mr-2 shrink-0\"></span> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

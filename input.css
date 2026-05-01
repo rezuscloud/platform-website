@@ -5,64 +5,54 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-	--color-cream-50: #faf8f3;
-	--color-cream-100: #f5f0e8;
-	--color-cream-200: #e8dfd0;
-	--color-cream-300: #d4c9b0;
-	--color-cream-400: #b8a88a;
-	--color-cream-500: #9c8a6a;
-	--color-cream-600: #7d6d4f;
-	--color-cream-700: #5e503b;
-	--color-cream-800: #3c2415;
-	--color-cream-900: #2a1a0e;
+	/* Mac mode: The Macintosh Palette */
+	--color-paper: #faf8f3;
+	--color-surface-warm: #f5f0e8;
+	--color-ink: #2a1a0e;
+	--color-ink-muted: #5e503b;
+	--color-rule: #d4c9b0;
+	--color-accent-gold: #ffb000;
+	--color-accent-gold-dark: #cc8d00;
 
-	--color-phosphor-50: #e6ffe8;
-	--color-phosphor-100: #b3ffb8;
-	--color-phosphor-200: #80ff8f;
-	--color-phosphor-300: #4dff66;
-	--color-phosphor-400: #1aff3d;
-	--color-phosphor-500: #00ff41;
-	--color-phosphor-600: #00cc34;
-	--color-phosphor-700: #009927;
-	--color-phosphor-800: #00661a;
-	--color-phosphor-900: #00330d;
+	/* NeXT mode: The NeXTSTEP Palette */
+	--color-next-black: #1a1a1a;
+	--color-next-dark: #2d2d2d;
+	--color-next-mid: #4a4a4a;
+	--color-next-light: #6e6e6e;
+	--color-next-white: #d4d4d4;
+	--color-next-subtle: #999999;
+	--color-next-bevel-hi: #666666;
+	--color-next-bevel-lo: #111111;
 
-	--color-amber-50: #fff8e6;
-	--color-amber-100: #ffe4b3;
-	--color-amber-200: #ffd080;
-	--color-amber-300: #ffbc4d;
-	--color-amber-400: #ffa81a;
-	--color-amber-500: #ffb000;
-	--color-amber-600: #cc8d00;
-	--color-amber-700: #996a00;
-	--color-amber-800: #664700;
-	--color-amber-900: #332400;
+	/* Semantic accent colors (used sparingly for data contrast) */
+	--color-positive: #339933;
+	--color-positive-next: #55aa55;
+	--color-negative: #cc3333;
+	--color-negative-next: #aa4444;
 
-	--color-retro-blue-50: #eef0ff;
-	--color-retro-blue-100: #c8ceff;
-	--color-retro-blue-200: #a2adff;
-	--color-retro-blue-300: #7c8cff;
-	--color-retro-blue-400: #566bff;
-	--color-retro-blue-500: #6c5ce7;
-	--color-retro-blue-600: #5040c0;
-	--color-retro-blue-700: #3a2d99;
-	--color-retro-blue-800: #271e73;
-	--color-retro-blue-900: #140f4d;
+	/* Font families */
+	--font-mac: "Silkscreen", "Chicago", system-ui, sans-serif;
+	--font-mac-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+	--font-mac-mono: "VT323", "Monaco", "Courier New", monospace;
+	--font-next: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	--font-next-mono: "Courier New", Menlo, Consolas, monospace;
+}
 
-	--color-terminal-bg: #0a0a1a;
-	--color-terminal-surface: #141428;
-	--color-terminal-border: #1e1e3a;
-
-	--font-retro: "VT323", "Courier New", monospace;
-	--font-display: "IBM Plex Mono", "Courier New", monospace;
+/* Font face declarations */
+@font-face {
+	font-family: "Silkscreen";
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url("/assets/fonts/Silkscreen-Regular.woff2") format("woff2");
 }
 
 @font-face {
-	font-family: "IBM Plex Mono";
+	font-family: "Silkscreen";
 	font-style: normal;
-	font-weight: 100 700;
+	font-weight: 700;
 	font-display: swap;
-	src: url("/assets/fonts/IBMPlexMono-Regular.woff2") format("woff2");
+	src: url("/assets/fonts/Silkscreen-Bold.woff2") format("woff2");
 }
 
 @font-face {
@@ -73,90 +63,44 @@
 	src: url("/assets/fonts/VT323-Regular.woff2") format("woff2");
 }
 
+/* Alpine cloak */
 [x-cloak] {
 	display: none !important;
 }
 
-.crt-scanlines {
-	position: relative;
+/* ===== NeXT mode bevels ===== */
+
+@utility next-raised {
+	border: 1px solid;
+	border-color: var(--color-next-bevel-hi) var(--color-next-bevel-lo) var(--color-next-bevel-lo) var(--color-next-bevel-hi);
 }
 
-.crt-scanlines::after {
-	content: "";
-	position: absolute;
-	inset: 0;
+@utility next-sunken {
+	border: 1px solid;
+	border-color: var(--color-next-bevel-lo) var(--color-next-bevel-hi) var(--color-next-bevel-hi) var(--color-next-bevel-lo);
+}
+
+/* ===== Mac mode title bar pattern ===== */
+
+@utility mac-title-bar {
 	background: repeating-linear-gradient(
-		0deg,
-		rgba(0, 0, 0, 0) 0px,
-		rgba(0, 0, 0, 0) 1px,
-		rgba(0, 0, 0, 0.03) 1px,
-		rgba(0, 0, 0, 0.03) 2px
+		to bottom,
+		var(--color-rule) 0px, var(--color-rule) 1px,
+		var(--color-surface-warm) 1px, var(--color-surface-warm) 2px
 	);
-	pointer-events: none;
-	z-index: 1;
 }
 
-@utility crt-glow {
-	text-shadow: 0 0 4px currentColor, 0 0 8px currentColor;
+/* ===== Mac mode window shadow ===== */
+
+@utility mac-window-shadow {
+	box-shadow: 1px 1px 0 var(--color-ink);
 }
 
-@utility crt-glow-sm {
-	text-shadow: 0 0 2px currentColor;
-}
-
-@utility crt-glow-amber {
-	text-shadow: 0 0 4px var(--color-amber-500), 0 0 8px var(--color-amber-500);
-}
-
-@utility crt-glow-phosphor {
-	text-shadow: 0 0 4px var(--color-phosphor-500), 0 0 8px var(--color-phosphor-500);
-}
-
-@utility pixel-border {
-	box-shadow:
-		1px 0 0 0 currentColor,
-		-1px 0 0 0 currentColor,
-		0 1px 0 0 currentColor,
-		0 -1px 0 0 currentColor;
-}
-
-@utility retro-bevel {
-	border: 2px solid;
-	border-color: rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.15) rgba(255, 255, 255, 0.15);
-}
-
-@utility retro-bevel-inset {
-	border: 2px solid;
-	border-color: rgba(0, 0, 0, 0.15) rgba(255, 255, 255, 0.15) rgba(255, 255, 255, 0.15) rgba(0, 0, 0, 0.15);
-}
+/* ===== Animations ===== */
 
 @keyframes blink {
 	0%, 49% { opacity: 1; }
 	50%, 100% { opacity: 0; }
-}
-
-@keyframes typewriter-cursor {
-	0%, 49% { border-color: currentColor; }
-	50%, 100% { border-color: transparent; }
-}
-
-@keyframes crt-power-on {
-	0% {
-		clip-path: inset(50% 0);
-		opacity: 0;
-		transform: scaleY(0.01);
-	}
-	30% {
-		clip-path: inset(0);
-		opacity: 1;
-		transform: scaleY(1);
-	}
-	60% {
-		transform: scaleY(1.02);
-	}
-	100% {
-		transform: scaleY(1);
-	}
 }
 
 @keyframes fade-in-up {
@@ -172,14 +116,6 @@
 
 @utility animate-blink {
 	animation: blink 1s step-end infinite;
-}
-
-@utility animate-cursor {
-	animation: typewriter-cursor 1s step-end infinite;
-}
-
-@utility animate-crt-on {
-	animation: crt-power-on 0.6s ease-out forwards;
 }
 
 @utility animate-fade-in-up {

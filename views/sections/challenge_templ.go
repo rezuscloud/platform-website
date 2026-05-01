@@ -29,7 +29,7 @@ func Challenge() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"challenge\" class=\"py-16 sm:py-24 bg-cream-100 dark:bg-terminal-surface\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-display text-cream-800 dark:text-gray-300\">The Mainframe Moment</h2><p class=\"text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display\">In the 1970s, computers were room-sized machines owned by a handful of corporations. Companies rented time on them. When people proposed putting a computer on every desk, the industry said it was absurd. Sound familiar?</p></div><div class=\"max-w-4xl mx-auto mb-12\"><div class=\"overflow-x-auto border-2 border-cream-300 dark:border-terminal-border rounded-xl\"><table class=\"w-full text-left font-display\"><thead><tr class=\"border-b border-cream-300 dark:border-terminal-border\"><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-cream-500 dark:text-gray-500 font-semibold\">Then (1970s)</th><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-cream-500 dark:text-gray-500 font-semibold\">Now</th></tr></thead> <tbody class=\"divide-y divide-cream-300 dark:divide-terminal-border\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"challenge\" class=\"py-16 sm:py-24 bg-surface-warm dark:bg-next-dark\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac dark:font-next text-ink dark:text-next-white\">The Mainframe Moment</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body dark:font-next\">In the 1970s, computers were room-sized machines owned by a handful of corporations. Companies rented time on them. When people proposed putting a computer on every desk, the industry said it was absurd. Sound familiar?</p></div><div class=\"max-w-4xl mx-auto mb-12\"><div class=\"overflow-x-auto border border-rule dark:next-raised\"><table class=\"w-full text-left font-mac-body dark:font-next\"><thead><tr class=\"border-b border-rule dark:border-next-mid bg-rule dark:bg-next-mid\"><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle font-semibold font-mac dark:font-next\">Then (1970s)</th><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle font-semibold font-mac dark:font-next\">Now</th></tr></thead> <tbody class=\"divide-y divide-rule dark:divide-next-dark\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -53,7 +53,7 @@ func Challenge() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</tbody></table></div></div><div class=\"text-center max-w-3xl mx-auto\"><p class=\"text-xl sm:text-2xl font-bold font-display text-amber-600 dark:text-phosphor-500\">The Personal Computer changed everything. The Personal Cloud will too.</p></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</tbody></table></div></div><div class=\"text-center max-w-3xl mx-auto\"><p class=\"text-xl sm:text-2xl font-bold font-mac dark:font-next text-accent-gold dark:text-next-white\">The Personal Computer changed everything. The Personal Cloud will too.</p></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -82,27 +82,27 @@ func challengeRow(then string, now string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-cream-200/50 dark:hover:bg-terminal-border/30 transition-colors\"><td class=\"py-4 px-4 sm:px-6 text-cream-700 dark:text-gray-400\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-paper dark:hover:bg-next-dark transition-colors duration-120\"><td class=\"py-4 px-4 sm:px-6 text-ink-muted dark:text-next-subtle font-mac-body dark:font-next\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(then)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 46, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 46, Col: 104}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</td><td class=\"py-4 px-4 sm:px-6 text-cream-800 dark:text-gray-300 font-semibold\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</td><td class=\"py-4 px-4 sm:px-6 text-ink dark:text-next-white font-semibold font-mac dark:font-next\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(now)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 47, Col: 85}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 47, Col: 105}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
