@@ -102,7 +102,7 @@ func techBadge(name string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span class=\"inline-flex items-center px-3 py-1.5 bg-surface dark:bg-next-dark border border-rule dark:next-raised text-xs font-mac text-ink dark:text-next-white hover:border-accent-gold dark:hover:border-next-light next-bevel-hover transition-colors duration-120\"><span class=\"w-1 h-1 bg-accent-gold dark:bg-next-light mr-1.5 shrink-0\"></span> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<span class=\"inline-flex items-center px-3 py-2 bg-surface dark:bg-next-dark border border-rule dark:next-raised text-xs font-mac text-ink dark:text-next-white hover:border-accent-gold dark:hover:border-next-light next-bevel-hover transition-colors duration-120\"><span class=\"w-1 h-1 bg-accent-gold dark:bg-next-light mr-1.5 shrink-0\"></span> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
