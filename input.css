@@ -5,30 +5,39 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-	/* Mac mode: True System 1 — stark black and white */
-	--color-paper: #ffffff;
-	--color-surface: #e0e0e0;
-	--color-ink: #000000;
-	--color-ink-muted: #555555;
-	--color-rule: #aaaaaa;
-	--color-accent-gold: #ffb000;
-	--color-accent-gold-dark: #cc8d00;
+	/*
+	 * Color strategy: Committed (brand register).
+	 * Mac mode: warm-tinted neutrals (amber hue 85°) + amber gold accent.
+	 * Reads as B&W, feels like Mac CRT phosphor and paper.
+	 * NeXT mode: cool-tinted neutrals (slate hue 270°), pure grayscale accent.
+	 * Reads as grayscale, feels like NeXT workstation display.
+	 * Chroma is 0.003–0.008: imperceptible per-element, warm/cool in aggregate.
+	 */
 
-	/* NeXT mode: CRT phosphor grayscale */
-	--color-next-black: #0a0a0a;
-	--color-next-dark: #1a1a1a;
-	--color-next-mid: #3a3a3a;
-	--color-next-light: #5a5a5a;
-	--color-next-white: #c8c8c8;
-	--color-next-subtle: #888888;
-	--color-next-bevel-hi: #555555;
-	--color-next-bevel-lo: #050505;
+	/* Mac mode: Warm-tinted B&W (amber hue ~85°) */
+	--color-paper: oklch(99.5% 0.004 85);
+	--color-surface: oklch(88.5% 0.006 85);
+	--color-ink: oklch(14% 0.008 65);
+	--color-ink-muted: oklch(42% 0.008 65);
+	--color-rule: oklch(72% 0.005 85);
+	--color-accent-gold: oklch(78% 0.16 75);
+	--color-accent-gold-dark: oklch(65% 0.14 75);
 
-	/* Semantic accent colors (used sparingly for data contrast) */
-	--color-positive: #009900;
-	--color-positive-next: #33cc33;
-	--color-negative: #cc0000;
-	--color-negative-next: #cc3333;
+	/* NeXT mode: Cool-tinted grayscale (slate hue ~270°) */
+	--color-next-black: oklch(8% 0.004 270);
+	--color-next-dark: oklch(15% 0.004 270);
+	--color-next-mid: oklch(30% 0.005 270);
+	--color-next-light: oklch(44% 0.005 270);
+	--color-next-white: oklch(82% 0.005 270);
+	--color-next-subtle: oklch(60% 0.005 270);
+	--color-next-bevel-hi: oklch(44% 0.005 270);
+	--color-next-bevel-lo: oklch(4% 0.003 270);
+
+	/* Semantic colors: warm-tinted for Mac, cool-tinted for NeXT */
+	--color-positive: oklch(55% 0.12 150);
+	--color-positive-next: oklch(70% 0.14 150);
+	--color-negative: oklch(50% 0.12 25);
+	--color-negative-next: oklch(55% 0.12 25);
 
 	/* Font families — same in both modes, only colors change */
 	--font-mac: "Silkscreen", system-ui, sans-serif;
@@ -94,7 +103,7 @@
 /* ===== Mac mode window shadow ===== */
 
 @utility mac-window-shadow {
-	box-shadow: 1px 1px 0 #000000;
+	box-shadow: 1px 1px 0 var(--color-ink);
 }
 
 /* ===== Animations ===== */
@@ -139,7 +148,7 @@
 /* ===== Mac dot grid pattern ===== */
 
 @utility mac-dots {
-	background-image: radial-gradient(circle, #000000 0.5px, transparent 0.5px);
+	background-image: radial-gradient(circle, var(--color-ink) 0.5px, transparent 0.5px);
 	background-size: 12px 12px;
 }
 
