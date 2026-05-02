@@ -82,7 +82,7 @@ func challengeRow(then string, now string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-paper/5 dark:hover:bg-next-white/5 transition-colors duration-120\"><td class=\"py-4 px-4 sm:px-6 text-paper/70 dark:text-next-subtle/70 font-mac-body\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-paper/5 dark:hover:bg-next-white/5 transition-colors duration-120\"><td class=\"py-4 px-4 sm:px-6 text-paper/75 dark:text-next-subtle/75 font-mac-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
