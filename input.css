@@ -25,8 +25,8 @@
 
 	/* NeXT mode: Cool-tinted grayscale with dramatic CRT contrast */
 	--color-next-black: oklch(6% 0.005 270);
-	--color-next-dark: oklch(13% 0.005 270);
-	--color-next-mid: oklch(28% 0.006 270);
+	--color-next-dark: oklch(20% 0.006 270);
+	--color-next-mid: oklch(34% 0.006 270);
 	--color-next-light: oklch(58% 0.006 270);
 	--color-next-white: oklch(88% 0.004 270);
 	--color-next-subtle: oklch(65% 0.006 270);
