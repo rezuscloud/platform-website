@@ -1,230 +1,72 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-05-01T00:00:00Z",
+  "generatedAt": "2026-05-02T00:00:00Z",
   "title": "Design System: RezusCloud",
-  "extensions": {
-    "colorMeta": {
-      "paper": {
-        "role": "background",
-        "displayName": "Paper",
-        "canonical": "oklch(96% 0.01 80)",
-        "tonalRamp": ["#1a0f06", "#2a1a0e", "#3c2415", "#5e503b", "#7d6d4f", "#9c8a6a", "#b8a88a", "#d4c9b0", "#e8dfd0", "#f5f0e8"]
-      },
-      "surface-warm": {
-        "role": "surface",
-        "displayName": "Warm Surface",
-        "canonical": "oklch(93% 0.01 80)",
-        "tonalRamp": ["#1a0f06", "#2a1a0e", "#3c2415", "#5e503b", "#7d6d4f", "#9c8a6a", "#b8a88a", "#d4c9b0", "#e8dfd0", "#f5f0e8"]
-      },
-      "ink": {
-        "role": "text",
-        "displayName": "Ink",
-        "canonical": "oklch(22% 0.03 60)",
-        "tonalRamp": ["#1a0f06", "#2a1a0e", "#3c2415", "#5e503b", "#7d6d4f", "#9c8a6a", "#b8a88a", "#d4c9b0", "#e8dfd0", "#f5f0e8"]
-      },
-      "accent-gold": {
-        "role": "accent",
-        "displayName": "Accent Gold",
-        "canonical": "oklch(78% 0.16 75)",
-        "tonalRamp": ["#332400", "#664700", "#996a00", "#cc8d00", "#ffb000", "#ffc233", "#ffd466", "#ffe699", "#fff2cc", "#fffbf0"]
-      },
-      "next-black": {
-        "role": "background-dark",
-        "displayName": "NeXT Black",
-        "canonical": "oklch(14% 0.005 60)",
-        "tonalRamp": ["#0a0a0a", "#1a1a1a", "#2d2d2d", "#3a3a3a", "#4a4a4a", "#5a5a5a", "#6e6e6e", "#888888", "#999999", "#aaaaaa"]
-      },
-      "next-dark": {
-        "role": "surface-dark",
-        "displayName": "NeXT Dark",
-        "canonical": "oklch(22% 0.005 60)",
-        "tonalRamp": ["#0a0a0a", "#1a1a1a", "#2d2d2d", "#3a3a3a", "#4a4a4a", "#5a5a5a", "#6e6e6e", "#888888", "#999999", "#aaaaaa"]
-      },
-      "next-mid": {
-        "role": "elevated-dark",
-        "displayName": "NeXT Mid",
-        "canonical": "oklch(36% 0.005 60)",
-        "tonalRamp": ["#0a0a0a", "#1a1a1a", "#2d2d2d", "#3a3a3a", "#4a4a4a", "#5a5a5a", "#6e6e6e", "#888888", "#999999", "#aaaaaa"]
-      },
-      "next-white": {
-        "role": "text-dark",
-        "displayName": "NeXT White",
-        "canonical": "oklch(82% 0.005 60)",
-        "tonalRamp": ["#2d2d2d", "#3a3a3a", "#4a4a4a", "#5a5a5a", "#6e6e6e", "#888888", "#999999", "#aaaaaa", "#cccccc", "#d4d4d4"]
-      }
+  "source": "input.css @theme block",
+  "modes": {
+    "mac": {
+      "name": "Mac System 1 (1984)",
+      "description": "Stark black and white, 1px flat borders, bitmap textures, amber gold accent.",
+      "background": "#ffffff (paper)",
+      "surface": "#e0e0e0 (surface)",
+      "text": "#000000 (ink)",
+      "textMuted": "#555555 (ink-muted)",
+      "border": "#aaaaaa (rule)",
+      "accent": "#ffb000 (accent-gold)"
     },
-    "typographyMeta": {
-      "mac-display": {
-        "displayName": "Mac Display",
-        "purpose": "Hero headlines in Mac day mode. Chicago bitmap font, large and bold."
-      },
-      "mac-body": {
-        "displayName": "Mac Body",
-        "purpose": "Body text in Mac mode. Geneva bitmap sans at 14px."
-      },
-      "next-display": {
-        "displayName": "NeXT Display",
-        "purpose": "Hero headlines in NeXT night mode. Smooth Helvetica, bold, tight tracking."
-      },
-      "next-body": {
-        "displayName": "NeXT Body",
-        "purpose": "Body text in NeXT mode. Smooth Helvetica at 14px, same size as Mac but anti-aliased."
-      }
-    },
-    "shadows": [
-      {
-        "name": "mac-window",
-        "value": "1px 1px 0 #2a1a0e",
-        "purpose": "Original Mac window shadow. Window-level containers in Mac mode only."
-      }
-    ],
-    "motion": [
-      {
-        "name": "theme-switch",
-        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
-        "purpose": "Theme toggle transition. 150ms ease-out for all property changes."
-      },
-      {
-        "name": "state-change",
-        "value": "cubic-bezier(0, 0, 0.2, 1)",
-        "purpose": "Hover and active state transitions. 120ms."
-      },
-      {
-        "name": "cursor-blink",
-        "value": "step-end",
-        "purpose": "Terminal cursor blink. 1s step function, instant on/off."
-      }
-    ],
-    "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "1024px" }
-    ]
-  },
-  "components": [
-    {
-      "name": "Mac Primary Button",
-      "kind": "button",
-      "refersTo": "mac-button-primary",
-      "description": "Action button in Mac day mode. Ink fill, paper text, sharp corners, flat border.",
-      "html": "<button class=\"ds-mac-btn-primary\">Get Started</button>",
-      "css": ".ds-mac-btn-primary { background: #2a1a0e; color: #faf8f3; padding: 8px 24px; border: none; border-radius: 0; font-family: 'Geneva', 'Chicago', system-ui, sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; transition: background 120ms cubic-bezier(0, 0, 0.2, 1), color 120ms cubic-bezier(0, 0, 0.2, 1); } .ds-mac-btn-primary:hover { background: #ffb000; color: #2a1a0e; } .ds-mac-btn-primary:focus-visible { outline: 2px solid #ffb000; outline-offset: 2px; }"
-    },
-    {
-      "name": "NeXT Primary Button",
-      "kind": "button",
-      "refersTo": "next-button-primary",
-      "description": "Action button in NeXT night mode. Raised 3D bevel, mid-gray fill, sharp corners.",
-      "html": "<button class=\"ds-next-btn-primary\">Get Started</button>",
-      "css": ".ds-next-btn-primary { background: #4a4a4a; color: #d4d4d4; padding: 8px 24px; border: 1px solid; border-color: #666666 #111111 #111111 #666666; border-radius: 0; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; transition: background 120ms cubic-bezier(0, 0, 0.2, 1); } .ds-next-btn-primary:hover { background: #6e6e6e; } .ds-next-btn-primary:focus-visible { outline: 2px solid #999999; outline-offset: 2px; }"
-    },
-    {
-      "name": "Mac Card",
-      "kind": "card",
-      "refersTo": "mac-card",
-      "description": "Content container in Mac day mode. Warm surface, flat 1px rule border, sharp corners.",
-      "html": "<div class=\"ds-mac-card\">\n  <h3 class=\"ds-mac-card-title\">Feature Title</h3>\n  <p class=\"ds-mac-card-body\">Description of the feature.</p>\n</div>",
-      "css": ".ds-mac-card { background: #f5f0e8; border: 1px solid #d4c9b0; border-radius: 0; padding: 16px; box-shadow: none; transition: border-color 120ms cubic-bezier(0, 0, 0.2, 1); } .ds-mac-card:hover { border-color: #ffb000; } .ds-mac-card-title { font-family: 'Geneva', 'Chicago', system-ui, sans-serif; font-size: 18px; font-weight: 600; color: #2a1a0e; margin: 0 0 8px 0; } .ds-mac-card-body { font-family: 'Geneva', 'Chicago', system-ui, sans-serif; font-size: 14px; color: #5e503b; line-height: 1.5; margin: 0; max-width: 65ch; }"
-    },
-    {
-      "name": "NeXT Card",
-      "kind": "card",
-      "refersTo": "next-card",
-      "description": "Content container in NeXT night mode. Dark surface with raised 3D bevel, sharp corners.",
-      "html": "<div class=\"ds-next-card\">\n  <h3 class=\"ds-next-card-title\">Feature Title</h3>\n  <p class=\"ds-next-card-body\">Description in smooth grayscale.</p>\n</div>",
-      "css": ".ds-next-card { background: #2d2d2d; border: 1px solid; border-color: #666666 #111111 #111111 #666666; border-radius: 0; padding: 16px; box-shadow: none; transition: border-color 120ms cubic-bezier(0, 0, 0.2, 1); } .ds-next-card:hover { border-color: #888888 #222222 #222222 #888888; } .ds-next-card-title { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 600; color: #d4d4d4; margin: 0 0 8px 0; } .ds-next-card-body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; color: #999999; line-height: 1.5; margin: 0; max-width: 65ch; }"
-    },
-    {
-      "name": "Mac Navigation",
-      "kind": "nav",
-      "refersTo": "mac-nav",
-      "description": "Fixed top nav in Mac day mode. Warm surface, flat 1px border bottom.",
-      "html": "<nav class=\"ds-mac-nav\">\n  <a href=\"#\" class=\"ds-mac-nav-link active\">Home</a>\n  <a href=\"#\" class=\"ds-mac-nav-link\">Architecture</a>\n</nav>",
-      "css": ".ds-mac-nav { display: flex; align-items: center; gap: 4px; background: #f5f0e8; border-bottom: 1px solid #d4c9b0; padding: 0 16px; height: 40px; position: fixed; top: 0; width: 100%; z-index: 50; box-shadow: none; } .ds-mac-nav-link { font-family: 'Geneva', 'Chicago', system-ui, sans-serif; font-size: 12px; font-weight: 600; color: #5e503b; letter-spacing: 0.05em; text-transform: uppercase; text-decoration: none; padding: 4px 12px; border-radius: 0; transition: background 120ms cubic-bezier(0, 0, 0.2, 1); } .ds-mac-nav-link:hover { background: #e8dfd0; } .ds-mac-nav-link.active { color: #2a1a0e; }"
-    },
-    {
-      "name": "NeXT Navigation",
-      "kind": "nav",
-      "refersTo": "next-nav",
-      "description": "Fixed top nav in NeXT night mode. Dark surface with raised bevel bottom edge.",
-      "html": "<nav class=\"ds-next-nav\">\n  <a href=\"#\" class=\"ds-next-nav-link active\">Home</a>\n  <a href=\"#\" class=\"ds-next-nav-link\">Architecture</a>\n</nav>",
-      "css": ".ds-next-nav { display: flex; align-items: center; gap: 4px; background: #2d2d2d; border-bottom: 1px solid; border-color: #666666 #111111 #111111 #666666; padding: 0 16px; height: 40px; position: fixed; top: 0; width: 100%; z-index: 50; box-shadow: none; } .ds-next-nav-link { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 600; color: #999999; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none; padding: 4px 12px; border-radius: 0; transition: background 120ms cubic-bezier(0, 0, 0.2, 1); } .ds-next-nav-link:hover { background: #3a3a3a; } .ds-next-nav-link.active { color: #d4d4d4; }"
-    },
-    {
-      "name": "Mac Table",
-      "kind": "custom",
-      "refersTo": "mac-table-header",
-      "description": "Comparison table in Mac mode. Flat 1px borders, rule-color header.",
-      "html": "<table class=\"ds-mac-table\">\n  <thead>\n    <tr><th class=\"ds-mac-table-th\">Metric</th><th class=\"ds-mac-table-th\">Before</th><th class=\"ds-mac-table-th\">After</th></tr>\n  </thead>\n  <tbody>\n    <tr class=\"ds-mac-table-row\"><td class=\"ds-mac-table-td\">Setup</td><td class=\"ds-mac-table-td-neg\">Hours</td><td class=\"ds-mac-table-td-pos\">One afternoon</td></tr>\n  </tbody>\n</table>",
-      "css": ".ds-mac-table { width: 100%; border-collapse: collapse; border: 1px solid #d4c9b0; border-radius: 0; font-family: 'Geneva', 'Chicago', system-ui, sans-serif; } .ds-mac-table th { background: #d4c9b0; font-size: 12px; font-weight: 600; color: #5e503b; letter-spacing: 0.05em; text-transform: uppercase; text-align: left; padding: 6px 16px; border-bottom: 1px solid #b8a88a; } .ds-mac-table-row { border-bottom: 1px solid #d4c9b0; transition: background 120ms cubic-bezier(0, 0, 0.2, 1); } .ds-mac-table-row:hover { background: #f5f0e8; } .ds-mac-table-td { font-size: 14px; color: #2a1a0e; padding: 8px 16px; } .ds-mac-table-td-pos { font-size: 14px; color: #339933; font-weight: 600; padding: 8px 16px; } .ds-mac-table-td-neg { font-size: 14px; color: #cc3333; padding: 8px 16px; }"
-    },
-    {
-      "name": "NeXT Table",
-      "kind": "custom",
-      "refersTo": "next-table-header",
-      "description": "Comparison table in NeXT mode. Raised bevel header, pure grayscale.",
-      "html": "<table class=\"ds-next-table\">\n  <thead>\n    <tr><th class=\"ds-next-table-th\">Metric</th><th class=\"ds-next-table-th\">Before</th><th class=\"ds-next-table-th\">After</th></tr>\n  </thead>\n  <tbody>\n    <tr class=\"ds-next-table-row\"><td class=\"ds-next-table-td\">Setup</td><td class=\"ds-next-table-td-neg\">Hours</td><td class=\"ds-next-table-td-pos\">One afternoon</td></tr>\n  </tbody>\n</table>",
-      "css": ".ds-next-table { width: 100%; border-collapse: collapse; border: 1px solid; border-color: #666666 #111111 #111111 #666666; border-radius: 0; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif; } .ds-next-table th { background: #4a4a4a; border: 1px solid; border-color: #666666 #111111 #111111 #666666; font-size: 11px; font-weight: 600; color: #999999; letter-spacing: 0.04em; text-transform: uppercase; text-align: left; padding: 6px 16px; } .ds-next-table-row { border-bottom: 1px solid #2d2d2d; transition: background 120ms cubic-bezier(0, 0, 0.2, 1); } .ds-next-table-row:hover { background: #2d2d2d; } .ds-next-table-td { font-size: 14px; color: #d4d4d4; padding: 8px 16px; } .ds-next-table-td-pos { font-size: 14px; color: #55aa55; padding: 8px 16px; } .ds-next-table-td-neg { font-size: 14px; color: #aa4444; padding: 8px 16px; }"
-    },
-    {
-      "name": "Mac Terminal Widget",
-      "kind": "custom",
-      "refersTo": null,
-      "description": "Terminal emulator in Mac mode. Paper background, horizontal-line title bar, window shadow.",
-      "html": "<div class=\"ds-mac-terminal\">\n  <div class=\"ds-mac-terminal-bar\">\n    <span class=\"ds-mac-terminal-dot\" style=\"background:#cc3333\"></span>\n    <span class=\"ds-mac-terminal-dot\" style=\"background:#ccaa00\"></span>\n    <span class=\"ds-mac-terminal-dot\" style=\"background:#339933\"></span>\n    <span class=\"ds-mac-terminal-bar-title\">terminal</span>\n  </div>\n  <div class=\"ds-mac-terminal-body\">\n    <p><span class=\"ds-mac-prompt\">&gt;</span> Ready.</p>\n  </div>\n</div>",
-      "css": ".ds-mac-terminal { background: #faf8f3; border: 1px solid #2a1a0e; border-radius: 0; overflow: hidden; box-shadow: 1px 1px 0 #2a1a0e; } .ds-mac-terminal-bar { background: repeating-linear-gradient(to bottom, #d4c9b0 0px, #d4c9b0 1px, #e8dfd0 1px, #e8dfd0 2px); padding: 8px 12px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid #2a1a0e; } .ds-mac-terminal-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; border: 1px solid #5e503b; } .ds-mac-terminal-bar-title { font-family: 'Geneva', system-ui, sans-serif; font-size: 11px; color: #5e503b; margin-left: 8px; } .ds-mac-terminal-body { padding: 16px; font-family: 'Monaco', 'VT323', 'Courier New', monospace; font-size: 13px; line-height: 1.4; color: #5e503b; } .ds-mac-prompt { color: #ffb000; margin-right: 8px; }"
-    },
-    {
-      "name": "NeXT Terminal Widget",
-      "kind": "custom",
-      "refersTo": null,
-      "description": "Terminal emulator in NeXT mode. Sunken bevel, no title bar dots, Courier New.",
-      "html": "<div class=\"ds-next-terminal\">\n  <div class=\"ds-next-terminal-bar\">terminal</div>\n  <div class=\"ds-next-terminal-body\">\n    <p><span class=\"ds-next-prompt\">&gt;</span> Ready.</p>\n  </div>\n</div>",
-      "css": ".ds-next-terminal { background: #1a1a1a; border: 1px solid; border-color: #111111 #666666 #666666 #111111; border-radius: 0; overflow: hidden; box-shadow: none; } .ds-next-terminal-bar { background: #4a4a4a; border-bottom: 1px solid; border-color: #666666 #111111 #111111 #666666; padding: 4px 12px; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 600; color: #999999; letter-spacing: 0.04em; text-transform: uppercase; } .ds-next-terminal-body { padding: 16px; font-family: 'Courier New', Menlo, Consolas, monospace; font-size: 13px; line-height: 1.4; color: #d4d4d4; } .ds-next-prompt { color: #6e6e6e; margin-right: 8px; }"
+    "next": {
+      "name": "NeXTSTEP (1988)",
+      "description": "Deep black, 2px 3D beveled edges, CRT scanlines, pure grayscale, no chromatic accent.",
+      "background": "#0a0a0a (next-black)",
+      "surface": "#1a1a1a (next-dark)",
+      "elevated": "#3a3a3a (next-mid)",
+      "text": "#c8c8c8 (next-white)",
+      "textMuted": "#888888 (next-subtle)",
+      "bevelHi": "#555555",
+      "bevelLo": "#050505"
     }
-  ],
-  "narrative": {
-    "northStar": "The First Macintosh",
-    "overview": "This design system inhabits two eras from the same lineage. Day mode speaks the visual language of the 1984 Macintosh: paper-white surfaces, 1px black borders, Chicago bitmap type, offset drop shadows, and zero border-radius. Night mode transforms into NeXTSTEP (1988): dark gray surfaces, 3D beveled edges, smooth anti-aliased Helvetica, pure grayscale palette, and the same strict rectangular geometry. The theme toggle is not dark/light. It is a shift between two computing revolutions from the same visionary.\n\nThe two modes share the same DNA (Steve Jobs created both Mac and NeXT) but express it differently. Mac mode is warm, approachable, bitmap-textured. NeXT mode is cool, precise, beveled. Both reject modern web conventions. No rounded corners, no gradient text, no floating card shadows, no hero metrics.",
-    "keyCharacteristics": [
-      "Dual personality: Mac System 1 (day) and NeXTSTEP (night). Not dark mode but a shift between two computing eras from the same lineage.",
-      "Zero border-radius everywhere. Neither the 1984 Mac nor the 1988 NeXT had curves.",
-      "Flat 1px borders in Mac mode. 3D beveled edges in NeXT mode. The border strategy IS the mode signal.",
-      "Bitmap fonts (Chicago, Geneva) in Mac mode. Anti-aliased Helvetica in NeXT mode.",
-      "One accent color in Mac mode: amber gold under 10%. No accent in NeXT mode: pure grayscale.",
-      "Comparison tables as the canonical content format.",
-      "Offset drop shadows (1px 1px 0) for Mac windows only. NeXT uses bevels instead of shadows."
-    ],
-    "rules": [
-      { "name": "The Dual Era Rule", "body": "Day mode and night mode are not light/dark variants. Mac mode uses warm browns and gold on paper with flat borders. NeXT mode uses pure grayscale on dark surfaces with 3D bevels. Do not blend them.", "section": "colors" },
-      { "name": "The One Accent Rule", "body": "Mac mode gets amber gold on max 10% of viewport. NeXT mode gets zero accent colors. The bevel is the emphasis.", "section": "colors" },
-      { "name": "The Era Fidelity Rule", "body": "Mac mode uses bitmap Chicago/Geneva. NeXT mode uses smooth Helvetica. The font is the strongest era signal.", "section": "typography" },
-      { "name": "The Flat-By-Default Rule", "body": "Mac surfaces are flat with 1px borders. Shadows only on window-level containers.", "section": "elevation" },
-      { "name": "The Bevel-Is-Elevation Rule", "body": "Every NeXT surface has a bevel. Raised for protruding elements, sunken for recessed. If a NeXT element has no bevel, it is wrong.", "section": "elevation" }
-    ],
-    "dos": [
-      "Do use 1px flat borders in Mac mode. Every container has a border.",
-      "Do use 3D beveled edges in NeXT mode. Raised and sunken bevels carry all emphasis.",
-      "Do use zero border-radius on every element.",
-      "Do alternate section backgrounds for visual rhythm.",
-      "Do use bitmap fonts in Mac mode, smooth Helvetica in NeXT mode.",
-      "Do use comparison tables as the primary content format.",
-      "Do keep Mac accent gold under 10% of viewport.",
-      "Do keep NeXT mode pure grayscale. No chromatic color."
-    ],
-    "donts": [
-      "Don't use border-radius anywhere.",
-      "Don't use gradient text.",
-      "Don't use glassmorphism or backdrop blur.",
-      "Don't create identical card grids.",
-      "Don't use the hero-metric template.",
-      "Don't use side-stripe borders greater than 1px.",
-      "Don't use 2px or 3px borders.",
-      "Don't apply box-shadow to cards or buttons.",
-      "Don't use IBM Plex Mono or modern tech sans-serif.",
-      "Don't blend the two modes.",
-      "Don't treat night mode as dark mode. It is NeXTSTEP.",
-      "Don't introduce chromatic color in NeXT mode."
-    ]
+  },
+  "fonts": {
+    "note": "Same font families in both modes. Only colors change between light and dark.",
+    "headings": {
+      "family": "Silkscreen, system-ui, sans-serif",
+      "token": "--font-mac / --font-next (aliases)",
+      "purpose": "Headings, navigation, labels, badges"
+    },
+    "body": {
+      "family": "system-ui, -apple-system, Segoe UI, sans-serif",
+      "token": "--font-mac-body / --font-next-body (aliases)",
+      "purpose": "Body paragraphs, descriptions, table content"
+    },
+    "mono": {
+      "family": "VT323, Courier New, monospace",
+      "token": "--font-mac-mono / --font-next-mono (aliases)",
+      "purpose": "Terminal output, code, boot sequences"
+    }
+  },
+  "borders": {
+    "mac": "1px flat solid borders (border-rule color)",
+    "next": "2px 3D beveled edges (raised: top-left light, bottom-right dark; sunken: inverted)",
+    "zeroRadius": "No border-radius anywhere in either mode"
+  },
+  "utilities": {
+    "next-raised": "2px bevel: top/left #555, bottom/right #050505",
+    "next-sunken": "2px bevel: top/left #050505, bottom/right #555",
+    "mac-title-bar": "Repeating horizontal black/white stripe pattern",
+    "mac-window-shadow": "box-shadow: 1px 1px 0 #000",
+    "mac-dots": "Radial gradient dot grid pattern (12px spacing)",
+    "next-scanlines": "1px bright lines every 2px at 6% opacity"
+  },
+  "animation": {
+    "pageLoad": "Staggered fade-in-up reveals (animate-reveal, animate-reveal-d1 through d8). 0.3s ease-out-quart.",
+    "scrollReveal": "data-reveal attribute on sections. IntersectionObserver triggers .revealed class. 0.2s ease-out-quart, 4px shift.",
+    "terminalTypewriter": "data-terminal container with data-line children. Lines appear one by one (baseDelay + i * lineDelay). CSS opacity toggle via .typed class.",
+    "cursorBlink": "1s step-end infinite. Terminal cursor blink.",
+    "crtFlicker": "Theme toggle: double-flash white overlay (flash-off-flash-switch-off) over 200ms. Simulates CRT monitor input change.",
+    "reducedMotion": "Full prefers-reduced-motion support. All animations disabled, terminals show all lines instantly."
+  },
+  "semanticColors": {
+    "positive": "#009900 (Mac) / #33cc33 (NeXT)",
+    "negative": "#cc0000 (Mac) / #cc3333 (NeXT)"
   }
 }
