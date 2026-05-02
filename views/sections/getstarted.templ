@@ -1,7 +1,7 @@
 package sections
 
 templ GetStarted() {
-	<section id="getstarted" class="py-20 sm:py-28 bg-paper dark:bg-next-black">
+	<section id="getstarted" data-reveal class="py-20 sm:py-28 bg-paper dark:bg-next-black">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-12">
 				<div class="w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4"></div>
@@ -19,20 +19,20 @@ templ GetStarted() {
 						<span class="ml-2 text-xs text-ink-muted dark:text-next-subtle font-mac hidden dark:inline">TERMINAL</span>
 						<span class="ml-2 text-xs text-ink-muted font-mac dark:hidden">terminal</span>
 					</div>
-					<div class="p-6 space-y-2 font-mac-mono text-sm">
-						<p class="text-ink-muted dark:text-next-subtle">
+					<div data-terminal data-base-delay="300" data-line-delay="350" class="p-6 space-y-2 font-mac-mono text-sm">
+						<p data-line class="text-ink-muted dark:text-next-subtle">
 							<span class="text-accent-gold dark:text-next-light">*</span> SYSTEM CHECK: ALL CLEAR
 						</p>
-						<p class="text-ink-muted dark:text-next-subtle">
+						<p data-line class="text-ink-muted dark:text-next-subtle">
 							<span class="text-accent-gold dark:text-next-light">*</span> HARDWARE: FOUND
 						</p>
-						<p class="text-ink-muted dark:text-next-subtle">
+						<p data-line class="text-ink-muted dark:text-next-subtle">
 							<span class="text-accent-gold dark:text-next-light">*</span> NETWORK: READY
 						</p>
-						<p class="text-ink-muted dark:text-next-subtle">
+						<p data-line class="text-ink-muted dark:text-next-subtle">
 							<span class="text-accent-gold dark:text-next-light">*</span> PUBLIC INSTALLER: LOADING<span class="animate-blink">...</span>
 						</p>
-						<p class="text-ink-muted dark:text-next-subtle mt-4">
+						<p data-line class="text-ink-muted dark:text-next-subtle mt-4">
 							<span class="text-accent-gold dark:text-next-light">$</span> <span class="animate-blink text-ink dark:text-next-white">_</span>
 						</p>
 					</div>

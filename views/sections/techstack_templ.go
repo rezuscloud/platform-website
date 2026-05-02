@@ -29,7 +29,7 @@ func TechStack() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"techstack\" class=\"py-10 sm:py-12 bg-paper dark:bg-next-black border-y border-rule dark:border-next-mid\"><div class=\"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6\"><h2 class=\"text-sm font-bold font-mac uppercase tracking-widest text-ink-muted dark:text-next-subtle whitespace-nowrap\">What's Inside</h2><div class=\"w-12 h-px bg-rule dark:bg-next-mid hidden sm:block shrink-0\"></div><div class=\"flex flex-wrap gap-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"techstack\" data-reveal class=\"py-10 sm:py-12 bg-paper dark:bg-next-black border-y border-rule dark:border-next-mid\"><div class=\"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6\"><h2 class=\"text-sm font-bold font-mac uppercase tracking-widest text-ink-muted dark:text-next-subtle whitespace-nowrap\">What's Inside</h2><div class=\"w-12 h-px bg-rule dark:bg-next-mid hidden sm:block shrink-0\"></div><div class=\"flex flex-wrap gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -65,8 +65,20 @@ templ Layout(title string) {
 							(!localStorage.getItem("theme") &&
 								window.matchMedia("(prefers-color-scheme: dark)").matches),
 						toggle() {
-							this.dark = !this.dark;
-							localStorage.setItem("theme", this.dark ? "dark" : "light");
+							const overlay = document.getElementById("crt-overlay");
+							if (overlay) {
+								overlay.style.opacity = "0.8";
+								setTimeout(() => (overlay.style.opacity = "0"), 40);
+								setTimeout(() => (overlay.style.opacity = "1"), 80);
+								setTimeout(() => {
+									this.dark = !this.dark;
+									localStorage.setItem("theme", this.dark ? "dark" : "light");
+								}, 120);
+								setTimeout(() => (overlay.style.opacity = "0"), 200);
+							} else {
+								this.dark = !this.dark;
+								localStorage.setItem("theme", this.dark ? "dark" : "light");
+							}
 						},
 					});
 					Alpine.store("scroll", {
@@ -76,7 +88,9 @@ templ Layout(title string) {
 			</script>
 			<script defer src="/assets/js/alpine.min.js"></script>
 		</head>
-		<body class="bg-paper dark:bg-next-black text-ink dark:text-next-white font-mac-body transition-colors duration-150">
+		<body class="bg-paper dark:bg-next-black text-ink dark:text-next-white font-mac-body">
+			<!-- CRT flicker overlay for theme toggle -->
+			<div id="crt-overlay" class="fixed inset-0 z-[99999] pointer-events-none bg-white" style="opacity:0;transition:opacity 0.06s step-end;" aria-hidden="true"></div>
 			<!-- NeXT mode CRT scanline overlay -->
 			<div class="fixed inset-0 pointer-events-none z-[9999] hidden dark:block next-scanlines" aria-hidden="true"></div>
 			@Nav()
@@ -84,7 +98,7 @@ templ Layout(title string) {
 				{ children... }
 			</main>
 			@Footer()
-			<!-- Active section observer -->
+			<!-- Active section observer, scroll reveals, terminal typewriter -->
 			<script>
 				document.addEventListener("alpine:init", () => {
 					const sections = document.querySelectorAll("section[id]");
@@ -100,6 +114,64 @@ templ Layout(title string) {
 						{ rootMargin: "-20% 0px -60% 0px" },
 					);
 					sections.forEach((s) => observer.observe(s));
+				});
+
+				document.addEventListener("DOMContentLoaded", () => {
+					// Scroll reveals for below-fold sections
+					const revealEls = document.querySelectorAll("[data-reveal]");
+					if (revealEls.length) {
+						const revealObserver = new IntersectionObserver(
+							(entries) => {
+								entries.forEach((entry) => {
+									if (entry.isIntersecting) {
+										entry.target.classList.add("revealed");
+										revealObserver.unobserve(entry.target);
+									}
+								});
+							},
+							{ threshold: 0.05, rootMargin: "0px 0px -40px 0px" },
+						);
+						revealEls.forEach((el) => {
+							const rect = el.getBoundingClientRect();
+							if (rect.top < window.innerHeight) {
+								el.classList.add("revealed");
+							} else {
+								revealObserver.observe(el);
+							}
+						});
+					}
+
+					// Terminal typewriter effect
+					document.querySelectorAll("[data-terminal]").forEach((terminal) => {
+						const lines = terminal.querySelectorAll("[data-line]");
+						const baseDelay = parseInt(terminal.dataset.baseDelay || "800");
+						const lineDelay = parseInt(terminal.dataset.lineDelay || "250");
+
+						const startTyping = () => {
+							lines.forEach((line, i) => {
+								setTimeout(
+									() => line.classList.add("typed"),
+									baseDelay + i * lineDelay,
+								);
+							});
+						};
+
+						const rect = terminal.getBoundingClientRect();
+						if (rect.top < window.innerHeight && rect.bottom > 0) {
+							startTyping();
+						} else {
+							const obs = new IntersectionObserver(
+								(entries) => {
+									if (entries[0].isIntersecting) {
+										startTyping();
+										obs.unobserve(terminal);
+									}
+								},
+								{ threshold: 0.2 },
+							);
+							obs.observe(terminal);
+						}
+					});
 				});
 			</script>
 		</body>
