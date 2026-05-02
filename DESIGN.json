@@ -16,14 +16,14 @@
     },
     "next": {
       "name": "NeXTSTEP (1988)",
-      "description": "Cool-tinted grayscale with no chromatic accent. Reads as pure grayscale, feels like NeXT workstation display.",
-      "background": "oklch(8% 0.004 270) \u2014 next-black",
-      "surface": "oklch(15% 0.004 270) \u2014 next-dark",
-      "elevated": "oklch(30% 0.005 270) \u2014 next-mid",
-      "text": "oklch(82% 0.005 270) \u2014 next-white",
-      "textMuted": "oklch(60% 0.005 270) \u2014 next-subtle",
-      "bevelHi": "oklch(44% 0.005 270)",
-      "bevelLo": "oklch(4% 0.003 270)"
+      "description": "Cool-tinted grayscale with dramatic CRT contrast. Brighter highlights, deeper blacks, punchy bevels. Feels like an actual NeXT workstation display, not a dark theme.",
+      "background": "oklch(6% 0.005 270) \u2014 deeper black",
+      "surface": "oklch(13% 0.005 270) \u2014 next-dark",
+      "elevated": "oklch(28% 0.006 270) \u2014 next-mid",
+      "text": "oklch(88% 0.004 270) \u2014 next-white (brighter)",
+      "textMuted": "oklch(65% 0.006 270) \u2014 next-subtle (brighter)",
+      "bevelHi": "oklch(55% 0.006 270) \u2014 brighter highlights",
+      "bevelLo": "oklch(2% 0.004 270) \u2014 deeper shadows"
     }
   },
   "fonts": {
@@ -66,8 +66,8 @@
     "reducedMotion": "Full prefers-reduced-motion support. All animations disabled, terminals show all lines instantly."
   },
   "semanticColors": {
-    "positive": "oklch(55% 0.12 150) (Mac) / oklch(70% 0.14 150) (NeXT)",
-    "negative": "oklch(50% 0.12 25) (Mac) / oklch(55% 0.12 25) (NeXT)",
-    "note": "Warm-tinted for Mac mode, cool-tinted for NeXT mode. Matches the neutral tint direction of each mode."
+    "positive": "oklch(55% 0.12 150) (Mac) / oklch(75% 0.14 150) (NeXT)",
+    "negative": "oklch(50% 0.12 25) (Mac) / oklch(65% 0.14 25) (NeXT)",
+    "note": "NeXT semantic colors pushed brighter for CRT contrast. Scanlines at 8% opacity. Phosphor afterglow stronger (6px+12px glow)."
   }
 }

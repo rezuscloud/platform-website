@@ -23,21 +23,21 @@
 	--color-accent-gold: oklch(78% 0.16 75);
 	--color-accent-gold-dark: oklch(65% 0.14 75);
 
-	/* NeXT mode: Cool-tinted grayscale (slate hue ~270°) */
-	--color-next-black: oklch(8% 0.004 270);
-	--color-next-dark: oklch(15% 0.004 270);
-	--color-next-mid: oklch(30% 0.005 270);
-	--color-next-light: oklch(44% 0.005 270);
-	--color-next-white: oklch(82% 0.005 270);
-	--color-next-subtle: oklch(60% 0.005 270);
-	--color-next-bevel-hi: oklch(44% 0.005 270);
-	--color-next-bevel-lo: oklch(4% 0.003 270);
+	/* NeXT mode: Cool-tinted grayscale with dramatic CRT contrast */
+	--color-next-black: oklch(6% 0.005 270);
+	--color-next-dark: oklch(13% 0.005 270);
+	--color-next-mid: oklch(28% 0.006 270);
+	--color-next-light: oklch(58% 0.006 270);
+	--color-next-white: oklch(88% 0.004 270);
+	--color-next-subtle: oklch(65% 0.006 270);
+	--color-next-bevel-hi: oklch(55% 0.006 270);
+	--color-next-bevel-lo: oklch(2% 0.004 270);
 
 	/* Semantic colors: warm-tinted for Mac, cool-tinted for NeXT */
 	--color-positive: oklch(55% 0.12 150);
-	--color-positive-next: oklch(70% 0.14 150);
+	--color-positive-next: oklch(75% 0.14 150);
 	--color-negative: oklch(50% 0.12 25);
-	--color-negative-next: oklch(55% 0.12 25);
+	--color-negative-next: oklch(65% 0.14 25);
 
 	/* Font families — same in both modes, only colors change */
 	--font-mac: "Silkscreen", system-ui, sans-serif;
@@ -140,8 +140,8 @@
 			0deg,
 			rgba(255, 255, 255, 0.0) 0px,
 			rgba(255, 255, 255, 0.0) 1px,
-			rgba(255, 255, 255, 0.06) 1px,
-			rgba(255, 255, 255, 0.06) 2px
+			rgba(255, 255, 255, 0.08) 1px,
+			rgba(255, 255, 255, 0.08) 2px
 		);
 	background-size: 100% 4px;
 	animation: crt-scroll 8s linear infinite;
@@ -219,13 +219,13 @@
 
 /* NeXT phosphor afterglow: glow on appear, fade to normal */
 [data-line].typed {
-	text-shadow: 0 0 4px rgba(200, 200, 200, 0.5), 0 0 8px rgba(200, 200, 200, 0.2);
-	animation: phosphor-fade 2s ease-out forwards;
+	text-shadow: 0 0 6px rgba(200, 200, 200, 0.6), 0 0 12px rgba(200, 200, 200, 0.3);
+	animation: phosphor-fade 2.5s ease-out forwards;
 }
 
 @keyframes phosphor-fade {
 	from {
-		text-shadow: 0 0 4px rgba(200, 200, 200, 0.5), 0 0 8px rgba(200, 200, 200, 0.2);
+		text-shadow: 0 0 6px rgba(200, 200, 200, 0.6), 0 0 12px rgba(200, 200, 200, 0.3);
 	}
 	to {
 		text-shadow: none;
