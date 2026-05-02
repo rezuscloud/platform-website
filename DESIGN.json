@@ -1,74 +1,140 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-05-02T00:00:00Z",
+  "generatedAt": "2026-05-02T12:00:00Z",
   "title": "Design System: RezusCloud",
-  "source": "input.css @theme block",
+  "extensions": {
+    "colorMeta": {
+      "paper": { "role": "neutral-bg", "displayName": "Paper", "canonical": "oklch(99.5% 0.004 85)", "tonalRamp": ["oklch(14% 0.008 85)", "oklch(24% 0.007 85)", "oklch(34% 0.006 85)", "oklch(48% 0.006 85)", "oklch(62% 0.006 85)", "oklch(76% 0.005 85)", "oklch(88% 0.005 85)", "oklch(99.5% 0.004 85)"] },
+      "surface": { "role": "neutral-surface", "displayName": "Warm Surface", "canonical": "oklch(88.5% 0.006 85)" },
+      "ink": { "role": "neutral-text", "displayName": "Ink", "canonical": "oklch(14% 0.008 65)" },
+      "ink-muted": { "role": "neutral-text-muted", "displayName": "Ink Muted", "canonical": "oklch(30% 0.008 65)" },
+      "rule": { "role": "neutral-border", "displayName": "Rule", "canonical": "oklch(72% 0.005 85)" },
+      "accent-gold": { "role": "primary", "displayName": "Amber Gold", "canonical": "oklch(78% 0.16 75)", "tonalRamp": ["oklch(40% 0.14 75)", "oklch(50% 0.15 75)", "oklch(58% 0.155 75)", "oklch(66% 0.16 75)", "oklch(74% 0.16 75)", "oklch(78% 0.16 75)", "oklch(84% 0.12 75)", "oklch(92% 0.06 75)"] },
+      "next-black": { "role": "neutral-bg", "displayName": "NeXT Black", "canonical": "oklch(6% 0.005 270)", "tonalRamp": ["oklch(6% 0.005 270)", "oklch(13% 0.005 270)", "oklch(20% 0.006 270)", "oklch(34% 0.006 270)", "oklch(48% 0.006 270)", "oklch(65% 0.006 270)", "oklch(78% 0.005 270)", "oklch(88% 0.004 270)"] },
+      "next-dark": { "role": "neutral-surface", "displayName": "NeXT Dark", "canonical": "oklch(20% 0.006 270)" },
+      "next-mid": { "role": "neutral-elevated", "displayName": "NeXT Mid", "canonical": "oklch(34% 0.006 270)" },
+      "next-light": { "role": "neutral-accent", "displayName": "NeXT Light", "canonical": "oklch(58% 0.006 270)" },
+      "next-white": { "role": "neutral-text", "displayName": "NeXT White", "canonical": "oklch(88% 0.004 270)" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero headline only. Silkscreen extrabold at massive scale." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles. Silkscreen bold." },
+      "title": { "displayName": "Title", "purpose": "Subsection headings, card titles." },
+      "body": { "displayName": "Body", "purpose": "Paragraphs, descriptions. system-ui." },
+      "label": { "displayName": "Label", "purpose": "Nav, table headers, badges. Silkscreen uppercase." },
+      "mono": { "displayName": "Mono", "purpose": "Terminal output, code. VT323 pixel font." }
+    },
+    "shadows": [
+      { "name": "mac-window", "value": "1px 1px 0 var(--color-ink)", "purpose": "Mac window-level containers only (terminal widgets)." }
+    ],
+    "motion": [
+      { "name": "ease-out-quart", "value": "cubic-bezier(0.25, 1, 0.5, 1)", "purpose": "All transitions and animations. No bounce, no elastic." },
+      { "name": "reveal-duration", "value": "0.3s", "purpose": "Scroll reveal and page entrance animations." },
+      { "name": "stagger-step", "value": "0.1s", "purpose": "Delay between staggered entrance elements." },
+      { "name": "crt-scanline-cycle", "value": "8s linear infinite", "purpose": "NeXT CRT scanline scroll speed." },
+      { "name": "phosphor-fade", "value": "2.5s ease-out", "purpose": "NeXT phosphor afterglow duration." },
+      { "name": "crt-flicker", "value": "40ms step-end", "purpose": "Theme toggle CRT flash timing." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary CTA",
+      "kind": "button",
+      "refersTo": "mac-button-primary",
+      "description": "Main call-to-action. Mac: ink on paper. NeXT: light on black with bevel.",
+      "html": "<button class=\"ds-btn-primary\">See How It Works</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; font-family: 'Silkscreen', system-ui, sans-serif; font-weight: 700; font-size: 14px; border: 1px solid oklch(14% 0.008 65); background: oklch(14% 0.008 65); color: oklch(99.5% 0.004 85); cursor: pointer; transition: background 0.15s cubic-bezier(0.25,1,0.5,1), color 0.15s cubic-bezier(0.25,1,0.5,1); } .ds-btn-primary:hover { background: oklch(78% 0.16 75); color: oklch(14% 0.008 65); }"
+    },
+    {
+      "name": "NeXT Primary CTA",
+      "kind": "button",
+      "refersTo": "next-button-primary",
+      "description": "NeXT mode CTA. Light background with raised bevel.",
+      "html": "<button class=\"ds-btn-next\">See How It Works</button>",
+      "css": ".ds-btn-next { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; font-family: 'Silkscreen', system-ui, sans-serif; font-weight: 700; font-size: 14px; border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); background: oklch(58% 0.006 270); color: oklch(6% 0.005 270); cursor: pointer; transition: background 0.15s cubic-bezier(0.25,1,0.5,1), border-color 0.15s cubic-bezier(0.25,1,0.5,1); } .ds-btn-next:hover { background: oklch(34% 0.006 270); color: oklch(6% 0.005 270); }"
+    },
+    {
+      "name": "Tech Chip",
+      "kind": "chip",
+      "refersTo": "mac-chip",
+      "description": "Technology badge. Mac: flat border. NeXT: raised bevel.",
+      "html": "<span class=\"ds-chip\"><span class=\"ds-chip-dot\"></span>Kubernetes</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; padding: 8px 12px; font-family: 'Silkscreen', system-ui, sans-serif; font-size: 12px; background: oklch(88.5% 0.006 85); border: 1px solid oklch(72% 0.005 85); color: oklch(14% 0.008 65); transition: border-color 0.12s; } .ds-chip:hover { border-color: oklch(78% 0.16 75); } .ds-chip-dot { width: 4px; height: 4px; background: oklch(78% 0.16 75); margin-right: 6px; flex-shrink: 0; }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "mac-nav",
+      "description": "Fixed top nav. Mac: flat surface with 1px rule border. NeXT: dark surface with bevel.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\" class=\"ds-nav-link ds-nav-active\">Home</a><a href=\"#\" class=\"ds-nav-link\">Features</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 4px; padding: 0 16px; height: 56px; font-family: 'Silkscreen', system-ui, sans-serif; font-size: 14px; background: oklch(88.5% 0.006 85); border-bottom: 1px solid oklch(72% 0.005 85); } .ds-nav-link { padding: 6px 12px; color: oklch(30% 0.008 65); text-decoration: none; transition: background 0.12s; } .ds-nav-link:hover { background: oklch(99.5% 0.004 85); } .ds-nav-active { color: oklch(14% 0.008 65); background: oklch(99.5% 0.004 85); }"
+    }
+  ],
   "modes": {
     "mac": {
       "name": "Mac System 1 (1984)",
-      "description": "Warm-tinted B&W with amber gold accent. Reads as stark black on white, feels like Mac CRT phosphor and paper.",
-      "background": "oklch(99.5% 0.004 85) \u2014 paper",
-      "surface": "oklch(88.5% 0.006 85) \u2014 surface",
-      "text": "oklch(14% 0.008 65) \u2014 ink",
-      "textMuted": "oklch(42% 0.008 65) \u2014 ink-muted",
-      "border": "oklch(72% 0.005 85) \u2014 rule",
-      "accent": "oklch(78% 0.16 75) \u2014 accent-gold"
+      "description": "Warm-tinted oklch neutrals with amber gold accent. Flat 1px borders. Bitmap display font. Offset window shadows. Mac custom cursor. Dot grid parallax. Animated title bar stripes.",
+      "background": "oklch(99.5% 0.004 85)",
+      "surface": "oklch(88.5% 0.006 85)",
+      "text": "oklch(14% 0.008 65)",
+      "border": "oklch(72% 0.005 85)",
+      "accent": "oklch(78% 0.16 75)"
     },
     "next": {
       "name": "NeXTSTEP (1988)",
-      "description": "Cool-tinted grayscale with dramatic CRT contrast. Section backgrounds alternate clearly. Bevels pop. Feels like an actual NeXT workstation.",
-      "background": "oklch(6% 0.005 270) \u2014 next-black",
-      "surface": "oklch(20% 0.006 270) \u2014 next-dark (was 13%, pushed for section contrast)",
-      "elevated": "oklch(34% 0.006 270) \u2014 next-mid (was 28%)",
-      "text": "oklch(88% 0.004 270) \u2014 next-white",
-      "textMuted": "oklch(65% 0.006 270) \u2014 next-subtle",
-      "bevelHi": "oklch(55% 0.006 270)",
-      "bevelLo": "oklch(2% 0.004 270)",
-      "note": "next-dark raised from 13% to 20% so surface sections are clearly distinct from black background. next-mid raised from 28% to 34% so elevated elements (cards, tables) have clear separation from surfaces."
+      "description": "Cool-tinted oklch grayscale. 2px 3D beveled edges. Scrolling CRT scanlines. Phosphor afterglow. No chromatic accent. The bevel carries emphasis.",
+      "background": "oklch(6% 0.005 270)",
+      "surface": "oklch(20% 0.006 270)",
+      "elevated": "oklch(34% 0.006 270)",
+      "text": "oklch(88% 0.004 270)",
+      "border": "oklch(55% 0.006 270) / oklch(2% 0.004 270) bevel"
     }
   },
-  "fonts": {
-    "note": "Same font families in both modes. Only colors change between light and dark.",
-    "headings": {
-      "family": "Silkscreen, system-ui, sans-serif",
-      "token": "--font-mac / --font-next (aliases)",
-      "purpose": "Headings, navigation, labels, badges"
-    },
-    "body": {
-      "family": "system-ui, -apple-system, Segoe UI, sans-serif",
-      "token": "--font-mac-body / --font-next-body (aliases)",
-      "purpose": "Body paragraphs, descriptions, table content"
-    },
-    "mono": {
-      "family": "VT323, Courier New, monospace",
-      "token": "--font-mac-mono / --font-next-mono (aliases)",
-      "purpose": "Terminal output, code, boot sequences"
-    }
-  },
-  "borders": {
-    "mac": "1px flat solid borders (border-rule color)",
-    "next": "2px 3D beveled edges (raised: top-left light, bottom-right dark; sunken: inverted)",
-    "zeroRadius": "No border-radius anywhere in either mode"
-  },
-  "utilities": {
-    "next-raised": "2px bevel: top/left #555, bottom/right #050505",
-    "next-sunken": "2px bevel: top/left #050505, bottom/right #555",
-    "mac-title-bar": "Repeating horizontal black/white stripe pattern",
-    "mac-window-shadow": "box-shadow: 1px 1px 0 #000",
-    "mac-dots": "Radial gradient dot grid pattern (12px spacing)",
-    "next-scanlines": "1px bright lines every 2px at 6% opacity"
-  },
-  "animation": {
-    "pageLoad": "Staggered fade-in-up reveals (animate-reveal, animate-reveal-d1 through d8). 0.3s ease-out-quart.",
-    "scrollReveal": "data-reveal attribute on sections. IntersectionObserver triggers .revealed class. 0.2s ease-out-quart, 4px shift.",
-    "terminalTypewriter": "data-terminal container with data-line children. Lines appear one by one (baseDelay + i * lineDelay). CSS opacity toggle via .typed class.",
-    "cursorBlink": "1s step-end infinite. Terminal cursor blink.",
-    "crtFlicker": "Theme toggle: double-flash white overlay (flash-off-flash-switch-off) over 200ms. Simulates CRT monitor input change.",
-    "reducedMotion": "Full prefers-reduced-motion support. All animations disabled, terminals show all lines instantly."
-  },
-  "semanticColors": {
-    "positive": "oklch(55% 0.12 150) (Mac) / oklch(75% 0.14 150) (NeXT)",
-    "negative": "oklch(50% 0.12 25) (Mac) / oklch(65% 0.14 25) (NeXT)",
-    "note": "NeXT semantic colors pushed brighter for CRT contrast. Scanlines at 8% opacity. Phosphor afterglow stronger (6px+12px glow)."
+  "narrative": {
+    "northStar": "The Dual Desktop",
+    "overview": "This design system inhabits two eras of personal computing. Day mode is Mac System 1 (1984): paper-white surfaces, 1px flat borders, bitmap type, offset drop shadows, zero border-radius. Night mode is NeXTSTEP (1988): deep black surfaces, 3D beveled edges, scrolling CRT scanlines, phosphor afterglow, zero border-radius. The theme toggle is not dark/light. It is a shift between two computing revolutions from the same lineage. Both modes share identical font families: Silkscreen for headings and labels, system-ui for body, VT323 for terminal and code. Only the colors and border strategies change between modes.",
+    "keyCharacteristics": [
+      "Dual personality: Mac System 1 (day) and NeXTSTEP (night). Same fonts, different colors and borders.",
+      "Zero border-radius everywhere. Neither era had curves.",
+      "Flat 1px borders in Mac mode. 3D beveled edges in NeXT mode.",
+      "One accent in Mac (amber gold). No accent in NeXT (bevel is emphasis).",
+      "oklch color tokens. All neutrals tinted warm (Mac) or cool (NeXT)."
+    ],
+    "rules": [
+      { "name": "The Dual Era Rule", "body": "Day and night are not light/dark variants. They are two distinct computing eras with different border strategies and color logic. Do not blend them.", "section": "colors" },
+      { "name": "The One Accent Rule", "body": "Mac gets one saturated color (amber gold) under 10% of viewport. NeXT gets zero chromatic colors. The bevel is the emphasis.", "section": "colors" },
+      { "name": "The Tinted Neutral Rule", "body": "No pure black or white. All neutrals are oklch with chroma 0.003 to 0.008, tinted warm (85) or cool (270).", "section": "colors" },
+      { "name": "The Unified Font Rule", "body": "Both modes use the same font families. Only colors change. Display in Silkscreen, body in system-ui, terminal in VT323.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule (Mac)", "body": "Mac surfaces are flat at rest. Shadows appear only on window-level containers.", "section": "elevation" },
+      { "name": "The Bevel-Is-Elevation Rule (NeXT)", "body": "Every NeXT surface has a bevel. Raised for protruding, sunken for recessed.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use 1px flat borders in Mac mode and 2px beveled edges in NeXT mode.",
+      "Do use zero border-radius on every element.",
+      "Do use Silkscreen for display, system-ui for body, VT323 for terminal.",
+      "Do keep fonts identical between modes.",
+      "Do keep accent gold under 10% of Mac viewport.",
+      "Do keep NeXT mode pure grayscale.",
+      "Do use oklch for all tokens with tinted neutrals.",
+      "Do respect prefers-reduced-motion."
+    ],
+    "donts": [
+      "Don't use border-radius anywhere.",
+      "Don't use gradient text.",
+      "Don't use glassmorphism or backdrop blur.",
+      "Don't create identical card grids.",
+      "Don't use the hero-metric template.",
+      "Don't use side-stripe borders greater than 1px.",
+      "Don't use em dashes.",
+      "Don't use nested cards.",
+      "Don't treat NeXT mode as generic dark mode.",
+      "Don't introduce chromatic color in NeXT mode.",
+      "Don't use pure black or pure white."
+    ]
   }
 }
