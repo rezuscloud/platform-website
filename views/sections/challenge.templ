@@ -23,7 +23,7 @@ templ Challenge() {
 					<table class="w-full text-left font-mac-body">
 						<thead>
 							<tr class="border-b border-rule/30 dark:border-next-mid/30">
-								<th class="py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-rule dark:text-next-subtle font-semibold font-mac">Then (1970s)</th>
+								<th class="py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-paper/85 dark:text-next-subtle/85 font-semibold font-mac">Then (1970s)</th>
 								<th class="py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-accent-gold dark:text-next-light font-semibold font-mac">Now</th>
 							</tr>
 						</thead>
@@ -50,7 +50,7 @@ templ Challenge() {
 
 templ challengeRow(then string, now string) {
 	<tr class="hover:bg-paper/5 dark:hover:bg-next-white/5 transition-colors duration-120">
-		<td class="py-4 px-4 sm:px-6 text-rule/70 dark:text-next-subtle/70 font-mac-body">{ then }</td>
+		<td class="py-4 px-4 sm:px-6 text-paper/70 dark:text-next-subtle/70 font-mac-body">{ then }</td>
 		<td class="py-4 px-4 sm:px-6 text-paper dark:text-next-white font-semibold font-mac-body">{ now }</td>
 	</tr>
 }
