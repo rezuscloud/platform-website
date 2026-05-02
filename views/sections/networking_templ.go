@@ -29,7 +29,7 @@ func Networking() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"networking\" data-reveal class=\"py-14 sm:py-20 bg-paper dark:bg-next-black\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16\"><!-- Left: heading + facts --><div class=\"lg:col-span-2\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white\">Always Connected</h2><p class=\"text-lg text-ink dark:text-next-white font-mac-body leading-relaxed mb-8\">Your machines talk to each other securely, no matter what ISP they're on. No static IP, no VPN wizardry, no enterprise networking deal.</p><ul class=\"space-y-3\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"networking\" data-reveal class=\"py-14 sm:py-20 bg-surface dark:bg-next-dark\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16\"><!-- Left: heading + facts --><div class=\"lg:col-span-2\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white\">Always Connected</h2><p class=\"text-lg text-ink dark:text-next-white font-mac-body leading-relaxed mb-8\">Your machines talk to each other securely, no matter what ISP they're on. No static IP, no VPN wizardry, no enterprise networking deal.</p><ul class=\"space-y-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
