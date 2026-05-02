@@ -51,7 +51,7 @@ func Features() templ.Component {
 		}
 		templ_7745c5c3_Err = featureItem(
 			"Add Any Hardware",
-			"Old laptop, Raspberry Pi, random desktop — plug it in and it joins the cluster. Hardware doesn't matter, orchestration does.",
+			"Old laptop, Raspberry Pi, random desktop. Plug it in and it joins the cluster. Hardware doesn't matter, orchestration does.",
 			hardwareIcon(),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -67,7 +67,7 @@ func Features() templ.Component {
 		}
 		templ_7745c5c3_Err = featureItem(
 			"Fully Automated",
-			"Push to Git and it's live. Deployments, rollbacks, certificate renewal, DNS updates — all automatic.",
+			"Push to Git and it's live. Deployments, rollbacks, certificate renewal, DNS updates: all automatic.",
 			automatedIcon(),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {

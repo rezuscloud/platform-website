@@ -13,7 +13,7 @@ templ UseCases() {
 			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
 				@useCaseCard(
 					"Home Server",
-					"Run your own services at home — no subscriptions, no data leaving your network.",
+					"Run your own services at home: no subscriptions, no data leaving your network.",
 					[]UseCaseItem{
 						{"Media server", "Netflix, but yours"},
 						{"File sync", "Dropbox, but private"},
@@ -33,7 +33,7 @@ templ UseCases() {
 				)
 				@useCaseCard(
 					"Private Cloud Storage",
-					"Use cloud capacity with your own encryption — providers see nothing.",
+					"Use cloud capacity with your own encryption: providers see nothing.",
 					[]UseCaseItem{
 						{"Encrypted backups", "Across multiple locations"},
 						{"Photo storage", "Self-managed encryption keys"},
@@ -73,7 +73,7 @@ templ useCaseCard(title string, description string, items []UseCaseItem, icon te
 			for _, item := range items {
 				<li class="flex items-start gap-2 text-sm">
 					<span class="mt-1.5 w-1.5 h-1.5 bg-accent-gold dark:bg-next-light shrink-0"></span>
-					<span class="font-mac-body"><span class="font-medium text-ink dark:text-next-white">{ item.Title }</span> <span class="text-ink-muted dark:text-next-subtle">— { item.Description }</span></span>
+					<span class="font-mac-body"><span class="font-medium text-ink dark:text-next-white">{ item.Title }</span> <span class="text-ink-muted dark:text-next-subtle">· { item.Description }</span></span>
 				</li>
 			}
 		</ul>

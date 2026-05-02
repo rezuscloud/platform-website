@@ -35,7 +35,7 @@ func UseCases() templ.Component {
 		}
 		templ_7745c5c3_Err = useCaseCard(
 			"Home Server",
-			"Run your own services at home — no subscriptions, no data leaving your network.",
+			"Run your own services at home: no subscriptions, no data leaving your network.",
 			[]UseCaseItem{
 				{"Media server", "Netflix, but yours"},
 				{"File sync", "Dropbox, but private"},
@@ -61,7 +61,7 @@ func UseCases() templ.Component {
 		}
 		templ_7745c5c3_Err = useCaseCard(
 			"Private Cloud Storage",
-			"Use cloud capacity with your own encryption — providers see nothing.",
+			"Use cloud capacity with your own encryption: providers see nothing.",
 			[]UseCaseItem{
 				{"Encrypted backups", "Across multiple locations"},
 				{"Photo storage", "Self-managed encryption keys"},
@@ -186,14 +186,14 @@ func useCaseCard(title string, description string, items []UseCaseItem, icon tem
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span> <span class=\"text-ink-muted dark:text-next-subtle\">— ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span> <span class=\"text-ink-muted dark:text-next-subtle\">· ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(item.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/usecases.templ`, Line: 76, Col: 184}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/usecases.templ`, Line: 76, Col: 183}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
