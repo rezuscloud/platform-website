@@ -29,7 +29,7 @@ func Edge() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"edge\" data-reveal class=\"py-16 sm:py-24 bg-surface dark:bg-next-black\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><div class=\"w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4\"></div><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white\">Runs on Anything</h2><p class=\"text-lg text-ink dark:text-next-white max-w-2xl mx-auto font-mac-body\">The orchestration layer abstracts the hardware beneath it. Your cluster doesn't care whether a node is a rack server or a laptop gathering dust. It just schedules workloads.</p></div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 max-w-4xl mx-auto mb-16\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"edge\" data-reveal class=\"py-16 sm:py-24 bg-paper dark:bg-next-black\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><div class=\"w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4\"></div><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white\">Runs on Anything</h2><p class=\"text-lg text-ink dark:text-next-white max-w-2xl mx-auto font-mac-body\">The orchestration layer abstracts the hardware beneath it. Your cluster doesn't care whether a node is a rack server or a laptop gathering dust. It just schedules workloads.</p></div><div class=\"grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 max-w-4xl mx-auto mb-16\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
