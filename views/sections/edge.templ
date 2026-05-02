@@ -13,7 +13,7 @@ templ Edge() {
 					a node is a rack server or a laptop gathering dust. It just schedules workloads.
 				</p>
 			</div>
-			<div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto mb-16">
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 max-w-4xl mx-auto mb-16">
 				@edgeNode("Old Laptop", "That one collecting dust in the closet")
 				@edgeNode("Raspberry Pi", "A full node for under $50")
 				@edgeNode("Surplus Desktop", "Your previous main machine")
@@ -46,9 +46,9 @@ templ Edge() {
 }
 
 templ edgeNode(name string, tagline string) {
-	<div class="py-4 text-center">
-		<div class="font-bold text-ink dark:text-next-white font-mac">{ name }</div>
-		<div class="text-sm text-ink-muted dark:text-next-subtle font-mac mt-1">{ tagline }</div>
+	<div class="text-center">
+		<div class="font-bold text-ink dark:text-next-white font-mac text-lg mb-1">{ name }</div>
+		<div class="text-sm text-ink-muted dark:text-next-subtle font-mac">{ tagline }</div>
 	</div>
 }
 
