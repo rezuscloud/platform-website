@@ -93,6 +93,7 @@ templ Layout(title string) {
 			<div id="crt-overlay" class="fixed inset-0 z-[99999] pointer-events-none bg-white" style="opacity:0;transition:opacity 0.06s step-end;" aria-hidden="true"></div>
 			<!-- NeXT mode CRT scanline overlay -->
 			<div class="fixed inset-0 pointer-events-none z-[9999] hidden dark:block next-scanlines" aria-hidden="true"></div>
+			<a href="#hero" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:px-3 focus:py-2 focus:bg-accent-gold focus:text-ink focus:font-mac focus:text-sm focus:border focus:border-ink">Skip to content</a>
 			@Nav()
 			<main>
 				{ children... }
@@ -187,7 +188,7 @@ templ Nav() {
 			<div class="flex items-center justify-between h-14">
 				<div class="flex items-center gap-3">
 					<div class="w-8 h-8 bg-accent-gold dark:bg-next-mid flex items-center justify-center border border-ink dark:next-raised">
-						<svg class="w-5 h-5 text-ink dark:text-next-white" viewBox="0 0 32 32" fill="currentColor">
+						<svg class="w-5 h-5 text-ink dark:text-next-white" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
 							<rect x="4" y="6" width="24" height="14" rx="1"></rect>
 							<rect x="12" y="20" width="8" height="2"></rect>
 							<rect x="8" y="22" width="16" height="2" rx="0.5"></rect>
@@ -210,10 +211,10 @@ templ Nav() {
 						:aria-expanded="mobileOpen"
 						aria-label="Toggle mobile menu"
 					>
-						<svg x-show="!mobileOpen" class="w-5 h-5 text-ink dark:text-next-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<svg x-show="!mobileOpen" class="w-5 h-5 text-ink dark:text-next-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
 						</svg>
-						<svg x-show="mobileOpen" x-cloak class="w-5 h-5 text-ink dark:text-next-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<svg x-show="mobileOpen" x-cloak class="w-5 h-5 text-ink dark:text-next-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
 							<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
 						</svg>
 					</button>
@@ -248,10 +249,10 @@ templ ThemeToggle() {
 		class="w-8 h-8 flex items-center justify-center border border-ink dark:next-raised bg-paper dark:bg-next-dark hover:bg-surface dark:hover:bg-next-mid transition-colors duration-150"
 		aria-label="Toggle theme"
 	>
-		<svg x-show="!$store.theme.dark" class="w-4 h-4 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+		<svg x-show="!$store.theme.dark" class="w-4 h-4 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
 			<path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
 		</svg>
-		<svg x-show="$store.theme.dark" x-cloak class="w-4 h-4 text-next-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+		<svg x-show="$store.theme.dark" x-cloak class="w-4 h-4 text-next-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
 			<circle cx="12" cy="12" r="4"></circle>
 			<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
 		</svg>
@@ -265,7 +266,7 @@ templ Footer() {
 				<div>
 					<div class="flex items-center gap-2 mb-4">
 						<div class="w-8 h-8 bg-accent-gold dark:bg-next-mid flex items-center justify-center border border-ink dark:next-raised">
-							<svg class="w-5 h-5 text-ink dark:text-next-white" viewBox="0 0 32 32" fill="currentColor">
+							<svg class="w-5 h-5 text-ink dark:text-next-white" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
 								<rect x="4" y="6" width="24" height="14" rx="1"></rect>
 								<rect x="12" y="20" width="8" height="2"></rect>
 								<rect x="8" y="22" width="16" height="2" rx="0.5"></rect>
