@@ -107,7 +107,7 @@
 @keyframes fade-in-up {
 	from {
 		opacity: 0;
-		transform: translateY(8px);
+		transform: translateY(6px);
 	}
 	to {
 		opacity: 1;
@@ -143,24 +143,99 @@
 	background-size: 12px 12px;
 }
 
-/* ===== Staggered reveal animation ===== */
+/* ===== Staggered reveal (page-load entrance) ===== */
 
 @utility animate-reveal {
-	animation: fade-in-up 0.5s ease-out forwards;
+	animation: fade-in-up 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 	opacity: 0;
 }
 
 @utility animate-reveal-d1 {
-	animation: fade-in-up 0.5s ease-out 0.1s forwards;
+	animation: fade-in-up 0.3s cubic-bezier(0.25, 1, 0.5, 1) 0.1s forwards;
 	opacity: 0;
 }
 
 @utility animate-reveal-d2 {
-	animation: fade-in-up 0.5s ease-out 0.2s forwards;
+	animation: fade-in-up 0.3s cubic-bezier(0.25, 1, 0.5, 1) 0.2s forwards;
 	opacity: 0;
 }
 
 @utility animate-reveal-d3 {
-	animation: fade-in-up 0.5s ease-out 0.3s forwards;
+	animation: fade-in-up 0.3s cubic-bezier(0.25, 1, 0.5, 1) 0.3s forwards;
 	opacity: 0;
+}
+
+@utility animate-reveal-d4 {
+	animation: fade-in-up 0.3s cubic-bezier(0.25, 1, 0.5, 1) 0.4s forwards;
+	opacity: 0;
+}
+
+@utility animate-reveal-d5 {
+	animation: fade-in-up 0.3s cubic-bezier(0.25, 1, 0.5, 1) 0.5s forwards;
+	opacity: 0;
+}
+
+@utility animate-reveal-d6 {
+	animation: fade-in-up 0.3s cubic-bezier(0.25, 1, 0.5, 1) 0.6s forwards;
+	opacity: 0;
+}
+
+@utility animate-reveal-d7 {
+	animation: fade-in-up 0.3s cubic-bezier(0.25, 1, 0.5, 1) 0.7s forwards;
+	opacity: 0;
+}
+
+@utility animate-reveal-d8 {
+	animation: fade-in-up 0.3s cubic-bezier(0.25, 1, 0.5, 1) 0.8s forwards;
+	opacity: 0;
+}
+
+/* ===== Terminal typewriter ===== */
+
+[data-line] {
+	opacity: 0;
+}
+
+[data-line].typed {
+	opacity: 1;
+}
+
+/* ===== Scroll reveal ===== */
+
+[data-reveal] {
+	transition: opacity 0.2s cubic-bezier(0.25, 1, 0.5, 1),
+				transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+[data-reveal]:not(.revealed) {
+	opacity: 0;
+	transform: translateY(4px);
+}
+
+/* ===== Reduced motion ===== */
+
+@media (prefers-reduced-motion: reduce) {
+	[data-line] {
+		opacity: 1 !important;
+	}
+	[data-reveal] {
+		opacity: 1 !important;
+		transform: none !important;
+		transition: none !important;
+	}
+	.animate-reveal,
+	.animate-reveal-d1,
+	.animate-reveal-d2,
+	.animate-reveal-d3,
+	.animate-reveal-d4,
+	.animate-reveal-d5,
+	.animate-reveal-d6,
+	.animate-reveal-d7,
+	.animate-reveal-d8 {
+		animation: none !important;
+		opacity: 1 !important;
+	}
+	.animate-blink {
+		animation: none !important;
+	}
 }
