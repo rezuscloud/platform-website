@@ -52,8 +52,8 @@ func TestHomeHandlerContainsExpectedContent(t *testing.T) {
 func TestSectionHandler(t *testing.T) {
 	sections := []string{
 		"hero", "challenge", "architecture", "features",
-		"networking", "edge", "services", "comparison",
-		"usecases", "techstack", "getstarted",
+		"networking", "comparison",
+		"usecases", "getstarted",
 	}
 
 	app := setupApp()
@@ -132,8 +132,8 @@ func TestHomePageContainsAllSections(t *testing.T) {
 
 	sections := []string{
 		"hero", "challenge", "architecture", "features",
-		"networking", "edge", "services", "comparison",
-		"usecases", "techstack", "getstarted",
+		"networking", "comparison",
+		"usecases", "getstarted",
 	}
 
 	req := httptest.NewRequest("GET", "/", nil)

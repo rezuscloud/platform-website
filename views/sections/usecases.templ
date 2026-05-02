@@ -3,12 +3,28 @@ package sections
 templ UseCases() {
 	<section id="usecases" data-reveal class="py-16 sm:py-24 bg-surface dark:bg-next-dark">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<div class="text-center mb-14">
+			<div class="text-center mb-10">
 				<div class="w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4"></div>
 				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white">What Will You Build?</h2>
 				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body">
 					Your own platform, your own rules. Here's some inspiration to get you started.
 				</p>
+			</div>
+			<!-- Tech strip (merged from TechStack) -->
+			<div class="max-w-4xl mx-auto mb-12">
+				<div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5">
+					<span class="text-xs font-bold font-mac uppercase tracking-widest text-ink-muted dark:text-next-subtle whitespace-nowrap">Built with</span>
+					<div class="w-8 h-px bg-rule dark:bg-next-mid shrink-0 hidden sm:block"></div>
+					<div class="flex flex-wrap gap-2">
+						@techBadge("Talos Linux")
+						@techBadge("Kubernetes")
+						@techBadge("Cilium")
+						@techBadge("OpenTofu")
+						@techBadge("Flux CD")
+						@techBadge("Bitwarden")
+						@techBadge("Cloudflare")
+					</div>
+				</div>
 			</div>
 			<div class="max-w-4xl mx-auto space-y-10">
 				@useCaseCard(
@@ -42,17 +58,6 @@ templ UseCases() {
 					storageIcon(),
 				)
 			</div>
-			<div class="mt-16 max-w-4xl mx-auto">
-				<h3 class="text-2xl font-bold text-center mb-8 font-mac text-ink dark:text-next-white">People Are Building...</h3>
-				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-4">
-					@inspirationCard("Game servers for friends")
-					@inspirationCard("Family photo gallery with AI tagging")
-					@inspirationCard("Automated smart home")
-					@inspirationCard("Personal finance tracker")
-					@inspirationCard("Learning Kubernetes hands-on")
-					@inspirationCard("Self-hosted email")
-				</div>
-			</div>
 		</div>
 	</section>
 }
@@ -82,11 +87,11 @@ templ useCaseCard(title string, description string, items []UseCaseItem, icon te
 	</div>
 }
 
-templ inspirationCard(label string) {
-	<div class="flex items-center gap-2.5 py-2 text-sm font-mac text-ink dark:text-next-white">
-		<span class="w-1.5 h-1.5 bg-accent-gold dark:text-next-light shrink-0"></span>
-		<span>{ label }</span>
-	</div>
+templ techBadge(name string) {
+	<span class="inline-flex items-center px-3 py-2 bg-surface-strong dark:bg-next-black border border-rule dark:next-raised text-xs font-mac text-ink dark:text-next-white hover:border-accent-gold dark:hover:border-next-light next-bevel-hover transition-colors duration-120">
+		<span class="w-1 h-1 bg-accent-gold dark:bg-next-light mr-1.5 shrink-0"></span>
+		{ name }
+	</span>
 }
 
 templ homeserverIcon() {

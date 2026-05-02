@@ -1,7 +1,7 @@
 package sections
 
 templ Challenge() {
-	<section id="challenge" data-reveal class="py-20 sm:py-32 bg-ink dark:bg-next-black relative overflow-hidden">
+	<section id="challenge" data-reveal class="py-20 sm:py-32 bg-ink dark:bg-next-dark relative overflow-hidden">
 		<!-- Subtle diagonal hash texture -->
 		<div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.02]" aria-hidden="true" style="background-image: repeating-linear-gradient(45deg, #ffffff 0px, #ffffff 1px, transparent 1px, transparent 12px);"></div>
 		<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -23,7 +23,7 @@ templ Challenge() {
 					<table class="w-full text-left font-mac-body">
 						<thead>
 							<tr class="border-b border-rule/30 dark:border-next-mid/30">
-								<th class="py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-paper/85 dark:text-next-subtle/85 font-semibold font-mac">Then (1970s)</th>
+								<th class="py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-paper/85 dark:text-next-white/70 font-semibold font-mac">Then (1970s)</th>
 								<th class="py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-accent-gold dark:text-next-light font-semibold font-mac">Now</th>
 							</tr>
 						</thead>
@@ -50,7 +50,7 @@ templ Challenge() {
 
 templ challengeRow(then string, now string) {
 	<tr class="hover:bg-paper/5 dark:hover:bg-next-white/5 transition-colors duration-120">
-		<td class="py-4 px-4 sm:px-6 text-paper/75 dark:text-next-subtle/75 font-mac-body">{ then }</td>
+		<td class="py-4 px-4 sm:px-6 text-paper/75 dark:text-next-white/75 font-mac-body">{ then }</td>
 		<td class="py-4 px-4 sm:px-6 text-paper dark:text-next-white font-semibold font-mac-body">{ now }</td>
 	</tr>
 }
