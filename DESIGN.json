@@ -6,24 +6,24 @@
   "modes": {
     "mac": {
       "name": "Mac System 1 (1984)",
-      "description": "Stark black and white, 1px flat borders, bitmap textures, amber gold accent.",
-      "background": "#ffffff (paper)",
-      "surface": "#e0e0e0 (surface)",
-      "text": "#000000 (ink)",
-      "textMuted": "#555555 (ink-muted)",
-      "border": "#aaaaaa (rule)",
-      "accent": "#ffb000 (accent-gold)"
+      "description": "Warm-tinted B&W with amber gold accent. Reads as stark black on white, feels like Mac CRT phosphor and paper.",
+      "background": "oklch(99.5% 0.004 85) \u2014 paper",
+      "surface": "oklch(88.5% 0.006 85) \u2014 surface",
+      "text": "oklch(14% 0.008 65) \u2014 ink",
+      "textMuted": "oklch(42% 0.008 65) \u2014 ink-muted",
+      "border": "oklch(72% 0.005 85) \u2014 rule",
+      "accent": "oklch(78% 0.16 75) \u2014 accent-gold"
     },
     "next": {
       "name": "NeXTSTEP (1988)",
-      "description": "Deep black, 2px 3D beveled edges, CRT scanlines, pure grayscale, no chromatic accent.",
-      "background": "#0a0a0a (next-black)",
-      "surface": "#1a1a1a (next-dark)",
-      "elevated": "#3a3a3a (next-mid)",
-      "text": "#c8c8c8 (next-white)",
-      "textMuted": "#888888 (next-subtle)",
-      "bevelHi": "#555555",
-      "bevelLo": "#050505"
+      "description": "Cool-tinted grayscale with no chromatic accent. Reads as pure grayscale, feels like NeXT workstation display.",
+      "background": "oklch(8% 0.004 270) \u2014 next-black",
+      "surface": "oklch(15% 0.004 270) \u2014 next-dark",
+      "elevated": "oklch(30% 0.005 270) \u2014 next-mid",
+      "text": "oklch(82% 0.005 270) \u2014 next-white",
+      "textMuted": "oklch(60% 0.005 270) \u2014 next-subtle",
+      "bevelHi": "oklch(44% 0.005 270)",
+      "bevelLo": "oklch(4% 0.003 270)"
     }
   },
   "fonts": {
@@ -66,7 +66,8 @@
     "reducedMotion": "Full prefers-reduced-motion support. All animations disabled, terminals show all lines instantly."
   },
   "semanticColors": {
-    "positive": "#009900 (Mac) / #33cc33 (NeXT)",
-    "negative": "#cc0000 (Mac) / #cc3333 (NeXT)"
+    "positive": "oklch(55% 0.12 150) (Mac) / oklch(70% 0.14 150) (NeXT)",
+    "negative": "oklch(50% 0.12 25) (Mac) / oklch(55% 0.12 25) (NeXT)",
+    "note": "Warm-tinted for Mac mode, cool-tinted for NeXT mode. Matches the neutral tint direction of each mode."
   }
 }
