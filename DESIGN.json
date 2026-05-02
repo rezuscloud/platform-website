@@ -16,14 +16,15 @@
     },
     "next": {
       "name": "NeXTSTEP (1988)",
-      "description": "Cool-tinted grayscale with dramatic CRT contrast. Brighter highlights, deeper blacks, punchy bevels. Feels like an actual NeXT workstation display, not a dark theme.",
-      "background": "oklch(6% 0.005 270) \u2014 deeper black",
-      "surface": "oklch(13% 0.005 270) \u2014 next-dark",
-      "elevated": "oklch(28% 0.006 270) \u2014 next-mid",
-      "text": "oklch(88% 0.004 270) \u2014 next-white (brighter)",
-      "textMuted": "oklch(65% 0.006 270) \u2014 next-subtle (brighter)",
-      "bevelHi": "oklch(55% 0.006 270) \u2014 brighter highlights",
-      "bevelLo": "oklch(2% 0.004 270) \u2014 deeper shadows"
+      "description": "Cool-tinted grayscale with dramatic CRT contrast. Section backgrounds alternate clearly. Bevels pop. Feels like an actual NeXT workstation.",
+      "background": "oklch(6% 0.005 270) \u2014 next-black",
+      "surface": "oklch(20% 0.006 270) \u2014 next-dark (was 13%, pushed for section contrast)",
+      "elevated": "oklch(34% 0.006 270) \u2014 next-mid (was 28%)",
+      "text": "oklch(88% 0.004 270) \u2014 next-white",
+      "textMuted": "oklch(65% 0.006 270) \u2014 next-subtle",
+      "bevelHi": "oklch(55% 0.006 270)",
+      "bevelLo": "oklch(2% 0.004 270)",
+      "note": "next-dark raised from 13% to 20% so surface sections are clearly distinct from black background. next-mid raised from 28% to 34% so elevated elements (cards, tables) have clear separation from surfaces."
     }
   },
   "fonts": {
