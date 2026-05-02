@@ -57,7 +57,7 @@ func Networking() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</ul></div><!-- Right: network topology --><div class=\"lg:col-span-3\"><div class=\"bg-surface dark:bg-next-dark border border-rule dark:next-raised p-8\"><div class=\"text-xs font-semibold text-ink-muted dark:text-next-subtle mb-6 uppercase tracking-wider font-mac\">Your Network</div><div class=\"grid grid-cols-2 gap-3 mb-6\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</ul></div><!-- Right: network topology --><div class=\"lg:col-span-3\"><div class=\"text-xs font-semibold text-ink-muted dark:text-next-subtle mb-4 uppercase tracking-wider font-mac\">Your Network</div><div class=\"grid grid-cols-2 gap-3 mb-6\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -77,7 +77,7 @@ func Networking() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"flex items-center justify-center gap-2 pt-4 border-t border-rule dark:border-next-mid\"><span class=\"w-2 h-2 bg-accent-gold dark:bg-next-light\"></span> <span class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body\">All connected through encrypted tunnels</span></div></div></div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"flex items-center gap-2\"><span class=\"w-2 h-2 bg-accent-gold dark:bg-next-light\"></span> <span class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body\">All connected through encrypted tunnels</span></div></div></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -106,14 +106,14 @@ func networkNode(name string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"bg-paper dark:bg-next-black p-3 border border-rule dark:next-raised text-center\"><div class=\"text-sm font-bold font-mac text-ink dark:text-next-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"py-3 px-4 text-center\"><div class=\"text-sm font-bold font-mac text-ink dark:text-next-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 47, Col: 78}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 43, Col: 78}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -155,7 +155,7 @@ func networkFact(text string) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 54, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/networking.templ`, Line: 50, Col: 52}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {

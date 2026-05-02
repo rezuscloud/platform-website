@@ -10,7 +10,7 @@ templ UseCases() {
 					Your own platform, your own rules. Here's some inspiration to get you started.
 				</p>
 			</div>
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
 				@useCaseCard(
 					"Home Server",
 					"Run your own services at home: no subscriptions, no data leaving your network.",
@@ -44,7 +44,7 @@ templ UseCases() {
 			</div>
 			<div class="mt-16 max-w-5xl mx-auto">
 				<h3 class="text-2xl font-bold text-center mb-8 font-mac text-ink dark:text-next-white">People Are Building...</h3>
-				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3">
 					@inspirationCard("Game servers for friends")
 					@inspirationCard("Family photo gallery with AI tagging")
 					@inspirationCard("Automated smart home")
@@ -63,7 +63,7 @@ type UseCaseItem struct {
 }
 
 templ useCaseCard(title string, description string, items []UseCaseItem, icon templ.Component) {
-	<div class="bg-surface dark:bg-next-dark p-6 border border-rule dark:next-raised hover:border-accent-gold dark:hover:border-next-light next-bevel-hover transition-colors duration-120">
+	<div>
 		<div class="w-12 h-12 bg-accent-gold dark:bg-next-light flex items-center justify-center mb-4 border border-ink dark:next-raised">
 			@icon
 		</div>
@@ -81,11 +81,9 @@ templ useCaseCard(title string, description string, items []UseCaseItem, icon te
 }
 
 templ inspirationCard(label string) {
-	<div class="bg-surface dark:bg-next-dark p-4 border border-rule dark:next-raised font-mac text-sm text-ink dark:text-next-white">
-		<div class="flex items-center gap-2">
-			<span class="w-1.5 h-1.5 bg-accent-gold dark:bg-next-light shrink-0"></span>
-			<span>{ label }</span>
-		</div>
+	<div class="flex items-center gap-2 py-2 text-sm font-mac text-ink dark:text-next-white">
+		<span class="w-1.5 h-1.5 bg-accent-gold dark:bg-next-light shrink-0"></span>
+		<span>{ label }</span>
 	</div>
 }
 
