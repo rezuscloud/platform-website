@@ -88,7 +88,7 @@ templ Layout(title string) {
 			</script>
 			<script defer src="/assets/js/alpine.min.js"></script>
 		</head>
-		<body class="bg-paper dark:bg-next-black text-ink dark:text-next-white font-mac-body">
+		<body class="bg-paper dark:bg-next-black text-ink dark:text-next-white font-mac-body mac-cursor" x-data="{ dotShift: '0px 0px' }" x-effect="$watch('$store.theme.dark', () => { dotShift = '0px 0px' })" @mousemove.throttle.150ms="dotShift = ((window.innerWidth / 2 - $event.clientX) / window.innerWidth * 6) + 'px ' + ((window.innerHeight / 2 - $event.clientY) / window.innerHeight * 6) + 'px'">
 			<!-- CRT flicker overlay for theme toggle -->
 			<div id="crt-overlay" class="fixed inset-0 z-[99999] pointer-events-none bg-white" style="opacity:0;transition:opacity 0.06s step-end;" aria-hidden="true"></div>
 			<!-- NeXT mode CRT scanline overlay -->
