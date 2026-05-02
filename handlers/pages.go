@@ -29,11 +29,8 @@ func Section(c *fiber.Ctx) error {
 		"architecture": sections.Architecture(),
 		"features":     sections.Features(),
 		"networking":   sections.Networking(),
-		"edge":         sections.Edge(),
-		"services":     sections.Services(),
 		"comparison":   sections.Comparison(),
 		"usecases":     sections.UseCases(),
-		"techstack":    sections.TechStack(),
 		"getstarted":   sections.GetStarted(),
 	}
 

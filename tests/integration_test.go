@@ -123,8 +123,8 @@ func TestHomePageSections(t *testing.T) {
 
 	sections := []string{
 		"hero", "challenge", "architecture", "features",
-		"networking", "edge", "services", "comparison",
-		"usecases", "techstack", "getstarted",
+		"networking", "comparison",
+		"usecases", "getstarted",
 	}
 
 	for _, section := range sections {
@@ -311,7 +311,7 @@ func TestHTMXAttributes(t *testing.T) {
 	})
 
 	t.Run("section endpoints could be used with hx-get", func(t *testing.T) {
-		sections := []string{"hero", "features", "architecture", "networking", "edge", "services", "comparison", "usecases", "techstack", "getstarted"}
+		sections := []string{"hero", "features", "architecture", "networking", "comparison", "usecases", "getstarted"}
 
 		for _, section := range sections {
 			doc := getHTMLDoc(t, app, "/sections/"+section)
@@ -532,7 +532,7 @@ func TestDesignSystemZeroRoundedCorners(t *testing.T) {
 	})
 
 	t.Run("no rounded corners on section endpoints", func(t *testing.T) {
-		sections := []string{"hero", "features", "architecture", "networking", "edge", "services", "comparison", "usecases", "techstack", "getstarted"}
+		sections := []string{"hero", "features", "architecture", "networking", "comparison", "usecases", "getstarted"}
 
 		for _, section := range sections {
 			req := httptest.NewRequest("GET", "/sections/"+section, nil)
@@ -636,10 +636,10 @@ func TestDesignSystemTables(t *testing.T) {
 	})
 
 	t.Run("edge table uses new tokens", func(t *testing.T) {
-		doc := getHTMLDoc(t, app, "/sections/edge")
+		doc := getHTMLDoc(t, app, "/sections/architecture")
 
 		table := doc.Find("table")
-		assert.Equal(t, 1, table.Length(), "Edge section should have a table")
+		assert.Equal(t, 1, table.Length(), "Architecture section should have a table")
 	})
 
 	t.Run("challenge table uses new tokens", func(t *testing.T) {
@@ -665,7 +665,7 @@ func TestProgressiveEnhancement(t *testing.T) {
 	doc := getHTMLDoc(t, app, "/")
 
 	t.Run("page works without JavaScript - all content present", func(t *testing.T) {
-		sections := []string{"hero", "challenge", "architecture", "features", "networking", "edge", "services", "comparison", "usecases", "techstack", "getstarted"}
+		sections := []string{"hero", "challenge", "architecture", "features", "networking", "comparison", "usecases", "getstarted"}
 		for _, section := range sections {
 			assert.Equal(t, 1, doc.Find("#"+section).Length(), "Section %s should exist server-side", section)
 		}

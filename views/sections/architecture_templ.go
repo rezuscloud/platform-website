@@ -29,7 +29,7 @@ func Architecture() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"architecture\" class=\"py-16 sm:py-24 bg-surface dark:bg-next-dark\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"mb-14 max-w-2xl\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white\">How It Works</h2><p class=\"text-lg text-ink dark:text-next-white font-mac-body leading-relaxed\">Your personal cloud is simpler than you think. A brain, your machines, and a secure line between them.</p></div><div class=\"max-w-5xl mx-auto mb-16\"><div class=\"grid grid-cols-1 md:grid-cols-2 gap-12\"><div><div class=\"flex items-center gap-4 mb-4\"><div class=\"w-12 h-12 bg-accent-gold dark:bg-next-light flex items-center justify-center border border-ink dark:next-raised\"><svg class=\"w-6 h-6 text-ink dark:text-next-black\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z\"></path></svg></div><h3 class=\"text-xl font-bold font-mac text-ink dark:text-next-white\">Your Cloud Brain</h3></div><p class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed\">The control plane that keeps everything running. A cheap VPS, a hosted instance, whatever works. It thinks so your machines don't have to.</p></div><div><div class=\"flex items-center gap-4 mb-4\"><div class=\"w-12 h-12 bg-accent-gold dark:bg-next-light flex items-center justify-center border border-ink dark:next-raised\"><svg class=\"w-6 h-6 text-ink dark:text-next-black\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01\"></path></svg></div><h3 class=\"text-xl font-bold font-mac text-ink dark:text-next-white\">Your Machines</h3></div><p class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed\">Whatever hardware you have, wherever it is. Old laptops, Raspberry Pis, rack servers in a closet. They join the cluster and get to work.</p></div></div><div class=\"flex items-center gap-2 mt-10 pt-6 border-t border-rule dark:border-next-mid\"><svg class=\"w-4 h-4 text-accent-gold dark:text-next-light shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z\"></path></svg> <span class=\"text-sm text-ink dark:text-next-white font-mac\">Encrypted Tunnel: any ISP, no special deals</span></div></div><div class=\"max-w-5xl mx-auto\"><div class=\"grid grid-cols-1 md:grid-cols-3 gap-12\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"architecture\" class=\"py-16 sm:py-24 bg-surface dark:bg-next-dark\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"mb-14 max-w-2xl\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white\">How It Works</h2><p class=\"text-lg text-ink dark:text-next-white font-mac-body leading-relaxed\">Your personal cloud is simpler than you think. A brain, your machines, and a secure line between them.</p></div><div class=\"max-w-5xl mx-auto mb-16\"><div class=\"grid grid-cols-1 md:grid-cols-2 gap-12\"><div><div class=\"flex items-center gap-4 mb-4\"><div class=\"w-12 h-12 bg-accent-gold dark:bg-next-light flex items-center justify-center border border-ink dark:next-raised\"><svg class=\"w-6 h-6 text-ink dark:text-next-black\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z\"></path></svg></div><h3 class=\"text-xl font-bold font-mac text-ink dark:text-next-white\">Your Cloud Brain</h3></div><p class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed\">The control plane that keeps everything running. A cheap VPS, a hosted instance, whatever works. It thinks so your machines don't have to.</p></div><div><div class=\"flex items-center gap-4 mb-4\"><div class=\"w-12 h-12 bg-accent-gold dark:bg-next-light flex items-center justify-center border border-ink dark:next-raised\"><svg class=\"w-6 h-6 text-ink dark:text-next-black\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01\"></path></svg></div><h3 class=\"text-xl font-bold font-mac text-ink dark:text-next-white\">Your Machines</h3></div><p class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed\">Whatever hardware you have, wherever it is. Old laptops, Raspberry Pis, rack servers in a closet. They join the cluster and get to work.</p></div></div><div class=\"flex items-center gap-2 mt-10 pt-6 border-t border-rule dark:border-next-mid\"><svg class=\"w-4 h-4 text-accent-gold dark:text-next-light shrink-0\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z\"></path></svg> <span class=\"text-sm text-ink dark:text-next-white font-mac\">Encrypted Tunnel: any ISP, no special deals</span></div></div><div class=\"max-w-5xl mx-auto mb-16\"><div class=\"grid grid-cols-1 md:grid-cols-3 gap-12\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -45,7 +45,47 @@ func Architecture() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div><!-- Merged from Edge: hardware compatibility + efficiency proof --><div class=\"max-w-5xl mx-auto\"><h3 class=\"text-2xl sm:text-3xl font-bold mb-3 font-mac text-ink dark:text-next-white\">Runs on Anything</h3><p class=\"text-ink dark:text-next-white max-w-2xl font-mac-body mb-8\">Old laptop, Raspberry Pi, surplus desktop, mini PC. The orchestration layer abstracts the hardware beneath it. Your cluster doesn't care what a node is.</p><div class=\"grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 mb-10\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = edgeNode("Old Laptop", "That one collecting dust").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = edgeNode("Raspberry Pi", "A full node for under $50").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = edgeNode("Surplus Desktop", "Your previous main machine").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = edgeNode("Mini PC", "Small, silent, always on").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"overflow-x-auto border border-rule dark:next-raised\"><table class=\"w-full text-left font-mac-body\"><thead><tr class=\"border-b border-rule dark:border-next-mid bg-rule dark:bg-next-mid\"><th class=\"py-3 px-4 sm:px-6 text-ink dark:text-next-black uppercase tracking-wider text-xs font-semibold font-mac\">Metric</th><th class=\"py-3 px-4 sm:px-6 text-ink dark:text-next-black uppercase tracking-wider text-xs font-semibold font-mac\">Regular Linux</th><th class=\"py-3 px-4 sm:px-6 text-ink dark:text-next-black uppercase tracking-wider text-xs font-semibold font-mac\">This Platform</th></tr></thead> <tbody class=\"divide-y divide-rule dark:divide-next-dark\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = efficiencyRow("Base Image", "1-2 GB", "~150 MB").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = efficiencyRow("Memory", "1-2 GB", "~200 MB").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = efficiencyRow("Boot Time", "2-5 minutes", "~30 seconds").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = efficiencyRow("Services", "50-100+", "~10").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</tbody></table></div></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -74,46 +114,169 @@ func archLayer(num string, title string, description string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div><div class=\"flex items-center gap-4 mb-3\"><div class=\"w-12 h-12 bg-accent-gold dark:bg-next-light flex items-center justify-center text-ink dark:text-next-black font-bold text-lg font-mac-body\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div><div class=\"flex items-center gap-4 mb-3\"><div class=\"w-12 h-12 bg-accent-gold dark:bg-next-light flex items-center justify-center text-ink dark:text-next-black font-bold text-lg font-mac-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(num)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/architecture.templ`, Line: 59, Col: 9}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/architecture.templ`, Line: 89, Col: 9}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><h3 class=\"text-lg font-bold font-mac text-ink dark:text-next-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><h3 class=\"text-lg font-bold font-mac text-ink dark:text-next-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/architecture.templ`, Line: 61, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/architecture.templ`, Line: 91, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</h3></div><p class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</h3></div><p class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/architecture.templ`, Line: 63, Col: 101}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/architecture.templ`, Line: 93, Col: 101}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</p></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</p></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func edgeNode(name string, tagline string) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var6 == nil {
+			templ_7745c5c3_Var6 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"text-center\"><div class=\"font-bold text-ink dark:text-next-white font-mac text-lg mb-1\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(name)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/architecture.templ`, Line: 99, Col: 83}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"text-sm text-ink-muted dark:text-next-subtle font-mac\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(tagline)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/architecture.templ`, Line: 100, Col: 78}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func efficiencyRow(metric string, regular string, platform string) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var9 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var9 == nil {
+			templ_7745c5c3_Var9 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<tr class=\"hover:bg-paper dark:hover:bg-next-black transition-colors duration-120\"><td class=\"py-4 px-4 sm:px-6 text-ink dark:text-next-white font-semibold font-mac-body\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var10 string
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(metric)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/architecture.templ`, Line: 106, Col: 98}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</td><td class=\"py-4 px-4 sm:px-6 text-negative dark:text-negative-next font-mac-mono\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var11 string
+		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(regular)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/architecture.templ`, Line: 107, Col: 93}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</td><td class=\"py-4 px-4 sm:px-6 text-positive dark:text-positive-next font-semibold font-mac-mono\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var12 string
+		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(platform)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/architecture.templ`, Line: 108, Col: 108}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</td></tr>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
