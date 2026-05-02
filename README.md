@@ -1,19 +1,34 @@
 # RezusCloud Platform Website
 
-The landing page for RezusCloud — your personal cloud. Built with Go Fiber, templ, HTMX, Alpine.js, and Tailwind CSS, running on the Dapr runtime.
+The landing page for RezusCloud, your personal cloud. Built with Go Fiber, templ, HTMX, Alpine.js, and Tailwind CSS, running on the Dapr runtime.
 
 ## Overview
 
-This is a single-page website that presents the **Personal Cloud** narrative: one person with any hardware and any ISP can run their own cloud infrastructure. The site draws the analogy from the personal computer revolution (mainframes → PCs) to today (cloud providers → personal cloud). The visual design evokes retro computing with CRT effects, monospace typography, and a cream/terminal color palette.
+A single-page scrolling website presenting the **Personal Cloud** narrative: one person with any hardware and any ISP can run their own cloud infrastructure. The site draws the analogy from the personal computer revolution (mainframes to PCs) to today (cloud providers to personal cloud).
 
-- **Single-page scrolling layout** with 11 content sections
-- **Retro design system** — IBM Plex Mono + VT323 fonts, CRT scanlines, phosphor glow, beveled borders
-- **Dark/light theme toggle** — cream background (light) / terminal green (dark), localStorage persistence
-- **Alpine.js** for client-side interactivity (theme, mobile menu)
-- **HTMX** for server-side interactivity (section updates)
-- **Progressive enhancement** — works without JavaScript, enhanced with it
+The visual design inhabits two eras of computing revolution by the same visionary:
+- **Day mode**: Mac System 1 (1984), stark black on white, 1px flat borders, bitmap textures, amber gold accent
+- **Night mode**: NeXTSTEP (1988), deep black, 2px beveled edges, CRT scanlines, pure grayscale
+
+Key features:
+- **Dual-era theme** toggled via Alpine.js, persisted to localStorage
+- **Animated page experience**: staggered hero entrance, terminal boot typewriter, scroll-triggered section reveals, CRT flicker on theme switch
+- **Progressive enhancement**: works without JavaScript, enhanced with it
 - **Dapr sidecar integration** for microservices building blocks
 - **Multi-architecture container images** (amd64/arm64)
+
+## Design System
+
+The visual design system is documented in separate files:
+
+| File | Purpose |
+|------|---------|
+| [`PRODUCT.md`](PRODUCT.md) | Brand strategy, personality, users, anti-references, design principles |
+| [`DESIGN.json`](DESIGN.json) | Color tokens, font tokens, border strategies, utilities, animation specs |
+
+All color, font, border, and animation tokens live in `input.css` under the `@theme` block. The `@utility` blocks define mode-specific effects (bevels, scanlines, Mac textures).
+
+**Key rules**: Zero border-radius everywhere. Mac mode uses 1px flat borders. NeXT mode uses 2px beveled edges. Fonts are consistent across modes (Silkscreen headings, system-ui body, VT323 terminal). Only colors change between light and dark.
 
 ## Tech Stack
 
@@ -25,7 +40,7 @@ This is a single-page website that presents the **Personal Cloud** narrative: on
 | CSS Framework | Tailwind CSS | v4 |
 | Server Interactivity | HTMX | 2.0.6 |
 | Client State | Alpine.js | 3.x |
-| Fonts | IBM Plex Mono, VT323 | self-hosted woff2 |
+| Fonts | Silkscreen, VT323 | self-hosted woff2 |
 | Container Runtime | Dapr | 1.15.3 |
 | Base Image | distroless/static-debian12 | nonroot |
 
@@ -61,49 +76,56 @@ platform-website/
 ├── main.go                     # Application entry point
 ├── go.mod                      # Go module definition
 ├── go.sum                      # Go dependencies lock
-├── input.css                   # Tailwind CSS entry point
+├── input.css                   # Tailwind CSS entry point + @theme tokens
 ├── package.json                # npm scripts for Tailwind CLI
 ├── Dockerfile                  # Multi-stage container build
 ├── Makefile                    # Build automation commands
 ├── README.md                   # This file
+├── PRODUCT.md                  # Brand strategy and design principles
+├── DESIGN.json                 # Design system token reference
 ├── AGENTS.md                   # Guidelines for AI coding agents
 ├── .github/
 │   └── workflows/
-│       └── ci.yml              # GitHub Actions CI/CD
+│       ├── ci.yml              # GitHub Actions CI/CD
+│       ├── preview-ready.yml   # Preview deploy label management
+│       └── release.yml         # GoReleaser + semantic release
+│   └── actions/
+│       ├── setup-build/        # Shared Go + Node + templ setup
+│       └── docker-multiarch/   # Multi-arch Docker build + push
 ├── handlers/
 │   ├── pages.go                # HTTP handlers (Home, Section)
+│   ├── handlers_test.go        # Layer 1: httptest unit tests
 │   └── api.go                  # API handlers (Version)
 ├── version/
 │   └── version.go              # Version info (injected at build)
 ├── views/
-│   ├── layout.templ            # Base HTML layout, Nav, Footer
+│   ├── layout.templ            # Base HTML layout, Nav, Footer, scripts
 │   ├── layout_templ.go         # Generated Go code
 │   ├── components/             # Reusable components (placeholder)
 │   ├── pages/
 │   │   ├── home.templ          # Home page composition
 │   │   └── home_templ.go       # Generated Go code
 │   └── sections/
-│       ├── hero.templ
-│       ├── challenge.templ
-│       ├── architecture.templ
-│       ├── features.templ
-│       ├── networking.templ
-│       ├── edge.templ
-│       ├── services.templ
-│       ├── comparison.templ
-│       ├── usecases.templ
-│       ├── techstack.templ
-│       └── getstarted.templ
+│       ├── hero.templ          # Hero with terminal typewriter
+│       ├── challenge.templ     # "The Mainframe Moment" manifesto
+│       ├── architecture.templ  # "How It Works" blueprint
+│       ├── features.templ      # "What You Get" feature list
+│       ├── networking.templ    # "Always Connected"
+│       ├── edge.templ          # "Runs on Anything"
+│       ├── services.templ      # "What You Can Run"
+│       ├── comparison.templ    # "Own vs Rent" signature table
+│       ├── usecases.templ      # "What Will You Build?"
+│       ├── techstack.templ     # "What's Inside" compact strip
+│       └── getstarted.templ    # "Start Your Cloud" terminal
 ├── assets/
 │   ├── js/
 │   │   ├── htmx.min.js         # Vendored HTMX 2.0.6
 │   │   └── alpine.min.js       # Vendored Alpine.js 3.x
-│   ├── img/
-│   │   ├── icon.svg            # SVG favicon
-│   │   ├── favicon.ico         # ICO favicon
-│   │   ├── apple-touch-icon.png
-│   │   ├── icon-192.png        # PWA icon
-│   │   └── icon-512.png        # PWA icon
+│   ├── fonts/
+│   │   ├── Silkscreen-Regular.woff2
+│   │   ├── Silkscreen-Bold.woff2
+│   │   └── VT323-Regular.woff2
+│   ├── img/                    # Favicon, PWA icons
 │   ├── manifest.webmanifest    # PWA manifest
 │   └── styles.css              # Generated Tailwind CSS (gitignored)
 └── tests/
@@ -202,17 +224,17 @@ The website consists of 11 sections, each as a separate templ component:
 
 | Section | ID | Purpose |
 |---------|-----|---------|
-| Hero | `#hero` | "Your Personal Cloud" manifesto + PC revolution analogy |
-| Challenge | `#challenge` | "The Mainframe Moment" — then vs now parallel |
-| Architecture | `#architecture` | "How It Works" — personal cloud blueprint |
-| Features | `#features` | "What You Get" — personal benefits |
-| Networking | `#networking` | "Always Connected" — any ISP, any network |
-| Edge | `#edge` | "Runs on Anything" — old laptop, Raspberry Pi |
-| Services | `#services` | "What You Can Run" — bundled software |
-| Comparison | `#comparison` | "Own vs Rent" — personal decision |
-| Use Cases | `#usecases` | "What Will You Build?" — inspiration |
-| Tech Stack | `#techstack` | "What's Inside" — spec sheet |
-| Get Started | `#getstarted` | "Start Your Cloud" — unboxing experience |
+| Hero | `#hero` | "Your Personal Cloud" manifesto + terminal boot sequence |
+| Challenge | `#challenge` | "The Mainframe Moment" then vs now parallel (inverted palette) |
+| Architecture | `#architecture` | "How It Works" personal cloud blueprint |
+| Features | `#features` | "What You Get" personal benefits |
+| Networking | `#networking` | "Always Connected" any ISP, any network |
+| Edge | `#edge` | "Runs on Anything" old laptop, Raspberry Pi |
+| Services | `#services` | "What You Can Run" bundled software |
+| Comparison | `#comparison` | "Own vs Rent" signature comparison table |
+| Use Cases | `#usecases` | "What Will You Build?" inspiration |
+| Tech Stack | `#techstack` | "What's Inside" compact badge strip |
+| Get Started | `#getstarted` | "Start Your Cloud" terminal with typewriter |
 
 ## Development
 
@@ -227,9 +249,6 @@ The website consists of 11 sections, each as a separate templ component:
 ```bash
 # Install dependencies
 npm install
-
-# Download vendored JS libraries (HTMX, Alpine.js)
-make vendor
 
 # Generate templ files
 templ generate
@@ -288,6 +307,27 @@ docker build \
   -t platform-website .
 ```
 
+## Testing
+
+Tests use a layered Go testing strategy:
+
+```bash
+# Layer 1: Unit tests (httptest) - fast
+go test -v ./handlers/...
+
+# Layer 2: Integration tests (goquery) - HTML structure
+go test -v ./tests/... -run "Integration|HTML|Section|Navigation|Footer|Accessibility|HTMX|Responsive|DarkMode|Alpine|Progressive"
+
+# Layer 3: E2E tests (chromedp) - requires running server
+go test -v -tags=e2e ./tests/... -run "E2E"
+
+# All non-E2E tests
+go test -v ./...
+
+# All tests including E2E (requires server on localhost:3000)
+go test -v -tags=e2e ./...
+```
+
 ## CI/CD Pipeline
 
 ### GitHub Actions Workflows
@@ -295,23 +335,21 @@ docker build \
 The repository uses three workflows:
 
 - `ci.yml` runs on pushes and pull requests to `master`
-- `semantic-release.yml` runs after successful CI on `master` and creates the next semver tag
-- `release.yml` runs on version tags (`v*`) and publishes release artifacts and container images
+- `preview-ready.yml` manages the `preview-ready` label after successful docker builds
+- `release.yml` runs on completed CI on master and publishes release artifacts
 
 **CI (`.github/workflows/ci.yml`)**
-1. Set up Go 1.24 and Node.js 22
-2. Generate templ files and build CSS through the shared setup action
-3. Check templ and Go formatting
-4. Run `go vet`
-5. Build the binary
-6. Run handler tests and HTML integration tests on amd64 and arm64
-7. Run chromedp E2E tests on amd64 against a real container image
-8. For pull requests, publish a preview image tagged `pr-<number>-<sha>` to GHCR
+1. Check templ and Go formatting
+2. Run `go vet`
+3. Build the binary
+4. Run handler tests and HTML integration tests on amd64 and arm64
+5. Run chromedp E2E tests on amd64 against a real container image
+6. For pull requests or workflow_dispatch, publish a preview image tagged `pr-<number>-<sha>` to GHCR
 
 **Release (`.github/workflows/release.yml`)**
-1. Triggered by semver tags such as `v0.1.0`
-2. Runs GoReleaser
-3. Publishes multi-architecture images to GHCR
+1. Triggered by successful CI on master (push event)
+2. Runs semantic-release
+3. On new version tag, publishes multi-architecture images to GHCR
 4. Publishes semver tags plus `latest`
 
 ### Container Registry
@@ -357,7 +395,7 @@ This means application code changes flow through this repository first, but the 
 
 ### Preview Environments
 
-Pull requests also have GitOps-managed preview environments defined in `../k8s-config/apps/platform-website/preview/`.
+Pull requests have GitOps-managed preview environments defined in `../k8s-config/apps/platform-website/preview/`.
 
 - `rsip.yaml` watches GitHub pull requests for `rezuscloud/platform-website`
 - `resourceset.yaml` creates one preview namespace per PR, named `platform-website-pr<id>`
@@ -382,16 +420,6 @@ Internet (IPv6) → [2603:c027:...]:443 ──────────┘
                                      Pod (Go Fiber + Dapr sidecar)
 ```
 
-### Resources Created
-
-| Resource | Type | Purpose |
-|----------|------|---------|
-| Namespace | v1 | Dedicated app namespace with `baseline` Pod Security labels |
-| Application | core.oam.dev/v1beta1 | KubeVela definition for the website workload |
-| Deployment | apps/v1 | Generated by KubeVela from the `Application` |
-| Service | v1 | Generated by KubeVela on port 3000 |
-| HTTPRoute | gateway.networking.k8s.io/v1 | Gateway API routing for production hostnames |
-
 ### Gateway API Configuration
 
 The HTTPRoute routes `rezus.cloud` and `www.rezus.cloud` to the platform-website service:
@@ -407,13 +435,7 @@ spec:
           port: 3000
 ```
 
-Gateway API runs in **hostNetwork mode** — Cilium Envoy binds directly to host ports 80/443.
-No LoadBalancer Service is created; traffic reaches Envoy on node IPs directly.
-See `talos-iac/manifest/cni/README.md` for full CNI architecture.
-
-### Pod Security
-
-The namespace uses `baseline` Pod Security labels because the Dapr sidecar does not satisfy the stricter `restricted` profile. The application manifest also applies explicit pod and container security contexts, including non-root execution, `RuntimeDefault` seccomp, a read-only root filesystem, and dropped Linux capabilities.
+Gateway API runs in **hostNetwork mode** with Cilium Envoy binding directly to host ports 80/443.
 
 ### Dapr Configuration
 
@@ -427,21 +449,7 @@ dapr.io/continue-on-failed-component-init: "true"
 dapr.io/scheduler-host-address: " "
 ```
 
-The Dapr control plane itself is shared cluster infrastructure and is deployed separately from the website application:
-
-- **Namespace:** `dapr-system`
-- **Components:** Operator, Placement, Scheduler, Sentry, Sidecar Injector
-- **HA Mode:** 3 replicas for scheduler
-
-### Configuration Changes
-
-Operational deployment changes should be made in `k8s-config/apps/platform-website/`, for example:
-
-- changing replicas, probes, Dapr annotations, or security settings in `application.yaml`
-- changing production hostnames or routing in `httproute.yaml`
-- adjusting the preview deployment behavior under `preview/`
-
-Cluster-wide prerequisites such as the gateway, cert-manager, Flux, or the Dapr control plane belong to `talos-iac` or `k8s-iac`, not this repository.
+The Dapr control plane itself is shared cluster infrastructure deployed separately in `dapr-system`.
 
 ## Environment Variables
 
@@ -449,63 +457,12 @@ Cluster-wide prerequisites such as the gateway, cert-manager, Flux, or the Dapr 
 |----------|---------|-------------|
 | `PORT` | `3000` | Server listen port |
 
-## Key Implementation Notes
+## Links
 
-### Retro Design System
-
-The visual identity is inspired by personal computers of the 1980s (Olivetti, Apple Macintosh, Commodore 64):
-
-- **Colors**: Cream (`#f5f0e8`), phosphor green (`#00ff41`), amber (`#ffb000`), retro blue (`#4a9eff`), terminal (`#0a0a0a`)
-- **Fonts**: IBM Plex Mono (body) + VT323 (headings/accents), self-hosted as woff2
-- **CRT effects**: Scanline overlay, text glow, pixel borders, beveled edges
-- **Tailwind v4 theme**: Custom colors, fonts, and utilities defined in `input.css` via `@theme` blocks
-- **Dark mode**: Class strategy with `.dark` on `<html>`, toggled via Alpine.js with localStorage persistence
-
-**Important**: Tailwind v4 font variables use `--font-display` / `--font-retro` (not `--font-family-*`). See `input.css` for reference.
-
-### Theme Persistence
-
-Theme state is managed client-side:
-
-1. On page load, check `localStorage.getItem('theme')`
-2. If not set, detect `prefers-color-scheme` media query
-3. Apply `dark` class to `<html>` element
-4. Toggle updates localStorage and class
-
-### Static Assets
-
-Assets are served with `CacheDuration: -1` (no caching) to ensure fresh content during development. In production, the Gateway API can add cache headers.
-
-### HTMX Integration
-
-HTMX is vendored at `assets/js/htmx.min.js` to avoid external dependencies. Future enhancements could include:
-
-- Lazy-loading sections on scroll
-- Form submissions without page reload
-- Real-time updates via SSE/WebSocket
-
-### Version API
-
-The `/api/version` endpoint returns build information:
-
-```json
-{
-  "version": "1.0.0",
-  "gitCommit": "abc123def456",
-  "buildTime": "2024-01-15T10:30:00Z"
-}
-```
-
-Version information is injected at build time via ldflags (see Docker Build section).
-
-### Memory Footprint
-
-The application has minimal memory overhead:
-
-- Go binary: ~10MB
-- Distroless base: ~2MB
-- Total image: ~15MB
-- Runtime memory: ~20-30MB
+- **Live Site:** https://rezus.cloud
+- **Source:** https://github.com/rezuscloud/platform-website
+- **Container Registry:** https://github.com/rezuscloud/platform-website/pkgs/container/platform-website
+- **Platform Documentation:** See `docs/PLATFORM.md` in the talos repository
 
 ## License
 
@@ -517,10 +474,3 @@ MIT License - See LICENSE file for details.
 2. Create a feature branch
 3. Make changes (run `templ generate` if modifying templates)
 4. Submit a pull request
-
-## Links
-
-- **Live Site:** https://rezus.cloud
-- **Source:** https://github.com/rezuscloud/platform-website
-- **Container Registry:** https://github.com/rezuscloud/platform-website/pkgs/container/platform-website
-- **Platform Documentation:** See `docs/PLATFORM.md` in the talos repository
