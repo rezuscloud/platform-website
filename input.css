@@ -18,7 +18,7 @@
 	--color-paper: oklch(99.5% 0.004 85);
 	--color-surface: oklch(88.5% 0.006 85);
 	--color-ink: oklch(14% 0.008 65);
-	--color-ink-muted: oklch(42% 0.008 65);
+	--color-ink-muted: oklch(36% 0.008 65);
 	--color-rule: oklch(72% 0.005 85);
 	--color-accent-gold: oklch(78% 0.16 75);
 	--color-accent-gold-dark: oklch(65% 0.14 75);
@@ -29,7 +29,7 @@
 	--color-next-mid: oklch(34% 0.006 270);
 	--color-next-light: oklch(58% 0.006 270);
 	--color-next-white: oklch(88% 0.004 270);
-	--color-next-subtle: oklch(65% 0.006 270);
+	--color-next-subtle: oklch(70% 0.006 270);
 	--color-next-bevel-hi: oklch(55% 0.006 270);
 	--color-next-bevel-lo: oklch(2% 0.004 270);
 
