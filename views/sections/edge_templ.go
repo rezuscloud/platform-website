@@ -98,7 +98,7 @@ func edgeNode(name string, tagline string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"bg-paper dark:bg-next-black p-4 border border-rule dark:next-raised text-center\"><div class=\"font-bold text-ink dark:text-next-white font-mac\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"py-4 text-center\"><div class=\"font-bold text-ink dark:text-next-white font-mac\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
