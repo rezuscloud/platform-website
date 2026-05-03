@@ -33,7 +33,7 @@ Nostalgic: visual language drawn from two eras of computing revolution by the sa
 
 1. **Personal, not enterprise.** Every design choice asks: would the 1984 Mac have done it this way? If it feels like it belongs in a boardroom, it is wrong. If it feels like it belongs on a desk, it is right.
 
-2. **Two eras, one lineage.** Day mode is Mac System 1: stark black on white, 1px flat borders, bitmap texture, amber gold accent. Night mode is NeXTSTEP: deep black, 2px beveled edges, CRT scanlines, pure grayscale. The theme toggle is not dark/light, it is a shift between two computing revolutions.
+2. **Two eras, one lineage.** Day mode is Mac System 1: stark black on white, 1px flat borders, bitmap texture, amber gold accent. Night mode is NeXTSTEP: deep black, 2px beveled edges, CRT scanlines, cool grayscale with a muted teal accent drawn from the NeXT Inc. brand palette. The theme toggle is not dark/light, it is a shift between two computing revolutions.
 
 3. **Facts over features.** No feature lists padded with buzzwords. Every section makes one clear point with evidence. The comparison tables are the canonical format: here is what renting looks like, here is what owning looks like, you decide.
 
@@ -47,4 +47,4 @@ WCAG AA compliance following web framework best practices. No specific user need
 
 ## Visual Direction
 
-Dual-era retro computing. Day mode: Mac System 1 (1984) with stark black and white, 1px flat borders, offset drop shadows, bitmap textures, and amber gold as the single accent color. Night mode: NeXTSTEP (1988) with deep black, 2px 3D beveled edges, CRT scanline overlay, and pure grayscale with no chromatic accent. Fonts are consistent across both modes (only colors change): Silkscreen for headings and navigation, system-ui for body text, VT323 for terminal and code. Zero border-radius everywhere. Neither mode uses rounded corners, gradient text, or glassmorphism.
+Dual-era retro computing. Day mode: Mac System 1 (1984) with stark black and white, 1px flat borders, offset drop shadows, bitmap textures, and amber gold as the single accent color. Night mode: NeXTSTEP (1988) with deep black, 2px 3D beveled edges, CRT scanline overlay, and cool grayscale with a muted teal accent drawn from the NeXT Inc. brand palette. Fonts are consistent across both modes (only colors change): Silkscreen for headings and navigation, system-ui for body text, VT323 for terminal and code. Zero border-radius everywhere. Neither mode uses rounded corners, gradient text, or glassmorphism.
