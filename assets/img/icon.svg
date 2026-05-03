@@ -1,25 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <defs>
-    <linearGradient id="screenGlow" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#001a00"/>
-      <stop offset="100%" style="stop-color:#000d00"/>
-    </linearGradient>
-  </defs>
-  <rect x="40" y="30" width="432" height="300" rx="16" fill="#2a1a0e" stroke="#5e503b" stroke-width="4"/>
-  <rect x="56" y="46" width="400" height="268" rx="8" fill="url(#screenGlow)" stroke="#1e1e3a" stroke-width="2"/>
-  <text x="80" y="100" font-family="monospace" font-size="32" font-weight="bold" fill="#00ff41" opacity="0.95">$</text>
-  <text x="104" y="100" font-family="monospace" font-size="28" fill="#00ff41" opacity="0.7">your-cloud</text>
-  <rect x="80" y="116" width="120" height="2" fill="#00ff41" opacity="0.6"/>
-  <rect x="80" y="130" width="90" height="2" fill="#00ff41" opacity="0.4"/>
-  <rect x="80" y="144" width="150" height="2" fill="#00ff41" opacity="0.3"/>
-  <rect x="80" y="158" width="60" height="2" fill="#00ff41" opacity="0.2"/>
-  <circle cx="256" cy="260" r="50" fill="none" stroke="#00ff41" stroke-width="2" opacity="0.3"/>
-  <circle cx="256" cy="260" r="35" fill="none" stroke="#00ff41" stroke-width="1.5" opacity="0.2"/>
-  <path d="M230 248 L256 232 L282 248 L282 272 L256 288 L230 272 Z" fill="none" stroke="#ffb000" stroke-width="2" opacity="0.5"/>
-  <rect x="180" y="330" width="152" height="20" rx="2" fill="#3a3a5a"/>
-  <path d="M160 350 L352 350 L372 380 L140 380 Z" fill="#2a1a0e" stroke="#5e503b" stroke-width="3"/>
-  <rect x="190" y="364" width="132" height="4" rx="1" fill="#1e1e3a"/>
-  <circle cx="256" cy="372" r="3" fill="#ffb000" opacity="0.7"/>
-  <rect x="200" y="390" width="112" height="6" rx="1" fill="#3a3a5a"/>
-  <rect x="224" y="396" width="64" height="4" rx="1" fill="#2a1a0e"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!--
+    RezusCloud brand icon: CRT monitor with classic cloud.
+    Token-aligned: paper oklch(99.5% 0.004 85) ≈ #F7F4EF,
+    ink oklch(14% 0.008 65) ≈ #1E1C18 (warm hue 65, not cool).
+    Zero border-radius. Ink outline for dual-context readability.
+  -->
+
+  <!-- Monitor body — paper fill, ink outline -->
+  <rect x="56" y="32" width="400" height="320" rx="0" fill="#F7F4EF" stroke="#1E1C18" stroke-width="12"/>
+
+  <!-- Screen — ink fill -->
+  <rect x="80" y="56" width="352" height="264" rx="0" fill="#1E1C18"/>
+
+  <!-- Classic cloud — paper on ink screen -->
+  <path d="
+    M164 256
+    C164 256 148 256 148 224
+    C148 196 172 180 196 180
+    C196 148 220 128 252 128
+    C284 128 308 148 308 180
+    C332 180 356 196 356 224
+    C356 256 340 256 340 256
+    Z
+  " fill="#F7F4EF"/>
+
+  <!-- Stand neck — paper fill, ink outline -->
+  <rect x="224" y="352" width="64" height="44" rx="0" fill="#F7F4EF" stroke="#1E1C18" stroke-width="12"/>
+
+  <!-- Stand base — paper fill, ink outline -->
+  <rect x="184" y="396" width="144" height="24" rx="0" fill="#F7F4EF" stroke="#1E1C18" stroke-width="12"/>
 </svg>
