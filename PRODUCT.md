@@ -10,7 +10,7 @@ Engineers and teams who need enterprise-grade infrastructure without enterprise-
 
 ## Product Purpose
 
-RezusCloud is the Personal Cloud: a fully open source, free platform that delivers enterprise-grade infrastructure to anyone who needs it. The platform takes away Kubernetes complexity and provides a tested, fully featured golden path covering 90% of real-world use cases with full scalability out of the box. Start with a Raspberry Pi, scale to a rack of GPUs running distributed training. Same platform, same git push, same operational simplicity. Your own machine room: you own the hardware, the data, and the computation. No landlord, no lease, no eviction. The website exists to communicate this vision, build conviction, and capture early interest before public launch.
+RezusCloud is the Personal Cloud: a fully open source, free platform that delivers enterprise-grade infrastructure to anyone who needs it. Multi-site edge computing, distributed workloads, GPU scheduling, access controls, audit trails, and more, all included. The platform takes away Kubernetes complexity and provides a tested, fully featured golden path covering 90% of real-world use cases with full scalability out of the box. Start with a Raspberry Pi, scale to a rack of GPUs running distributed training. Same platform, same git push, same operational simplicity. Your own machine room: you own the hardware, the data, and the computation. No landlord, no lease, no eviction. The website exists to communicate this vision, build conviction, and capture early interest before public launch.
 
 ## Brand Personality
 
