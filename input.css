@@ -245,12 +245,7 @@
 	}
 }
 
-/* ===== Mac title bar loading animation ===== */
-
-@keyframes mac-loading {
-	from { background-position: 0 0; }
-	to { background-position: 24px 0; }
-}
+/* ===== Mac title bar stripe pattern ===== */
 
 .mac-title-bar-animated {
 	background: repeating-linear-gradient(
@@ -259,7 +254,6 @@
 		oklch(92% 0.004 85) 2px, oklch(92% 0.004 85) 4px
 	);
 	background-size: 24px 24px;
-	animation: mac-loading 2s linear infinite;
 }
 
 /* ===== Mac custom cursor (retro arrow) ===== */
