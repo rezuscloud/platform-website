@@ -1,15 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <!--
     RezusCloud brand icon: CRT monitor with classic cloud.
-    Paper fill + ink outline. Reads on both light and dark backgrounds.
-    Susan Kare principle: bold fill with contrasting outline.
+    Token-aligned: paper oklch(99.5% 0.004 85) ≈ #F7F4EF,
+    ink oklch(14% 0.008 65) ≈ #1E1C18 (warm hue 65, not cool).
+    Zero border-radius. Ink outline for dual-context readability.
   -->
 
   <!-- Monitor body — paper fill, ink outline -->
-  <rect x="56" y="32" width="400" height="320" rx="12" fill="#F7F4EF" stroke="#1A1A1E" stroke-width="12"/>
+  <rect x="56" y="32" width="400" height="320" rx="0" fill="#F7F4EF" stroke="#1E1C18" stroke-width="12"/>
 
   <!-- Screen — ink fill -->
-  <rect x="80" y="56" width="352" height="264" rx="4" fill="#1A1A1E"/>
+  <rect x="80" y="56" width="352" height="264" rx="0" fill="#1E1C18"/>
 
   <!-- Classic cloud — paper on ink screen -->
   <path d="
@@ -24,8 +25,8 @@
   " fill="#F7F4EF"/>
 
   <!-- Stand neck — paper fill, ink outline -->
-  <rect x="224" y="352" width="64" height="44" fill="#F7F4EF" stroke="#1A1A1E" stroke-width="12"/>
+  <rect x="224" y="352" width="64" height="44" rx="0" fill="#F7F4EF" stroke="#1E1C18" stroke-width="12"/>
 
   <!-- Stand base — paper fill, ink outline -->
-  <rect x="184" y="396" width="144" height="24" rx="4" fill="#F7F4EF" stroke="#1A1A1E" stroke-width="12"/>
+  <rect x="184" y="396" width="144" height="24" rx="0" fill="#F7F4EF" stroke="#1E1C18" stroke-width="12"/>
 </svg>
