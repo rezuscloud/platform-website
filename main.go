@@ -1,73 +1,60 @@
 package main
 
 import (
-	"context"
 	"log"
+	"net"
+	"net/http"
 	"os"
-	"os/signal"
-	"strings"
-	"syscall"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/pprof"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 
-	"github.com/rezuscloud/platform-website/internal/platform"
-	"github.com/rezuscloud/platform-website/internal/server"
-	"github.com/rezuscloud/platform-website/internal/telemetry"
+	"github.com/rezuscloud/platform-website/handlers"
 )
 
 func main() {
-	mode := strings.TrimSpace(os.Getenv("PLATFORM_MODE"))
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
+	app := fiber.New(fiber.Config{
+		AppName:      "platform-website",
+		ServerHeader: "Fiber",
+	})
 
-	appName, app := buildApp(mode)
+	app.Use(recover.New())
+	app.Use(logger.New())
+	app.Use(compress.New())
 
-	shutdown, err := telemetry.Init(ctx, appName)
+	if os.Getenv("PPROF_ENABLED") == "true" {
+		app.Use(pprof.New())
+		go func() {
+			log.Println("Starting pprof server on :6060")
+			log.Fatal(http.ListenAndServe(":6060", nil))
+		}()
+	}
+
+	app.Static("/assets", "./assets", fiber.Static{
+		CacheDuration: -1,
+	})
+
+	app.Get("/manifest.webmanifest", func(c *fiber.Ctx) error {
+		return c.SendFile("./assets/manifest.webmanifest")
+	})
+
+	app.Get("/", handlers.Home)
+	app.Get("/sections/:name", handlers.Section)
+	app.Get("/api/version", handlers.APIVersion)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	addr := ":3000"
+	log.Printf("Starting server on %s", addr)
+	ln, err := net.Listen("tcp", addr)
 	if err != nil {
-		log.Printf("telemetry init: %v", err)
+		log.Fatalf("Failed to create listener: %v", err)
 	}
-
-	serverErr := make(chan error, 1)
-	go func() {
-		serverErr <- server.Listen(app)
-	}()
-
-	select {
-	case <-ctx.Done():
-		log.Println("Received shutdown signal")
-	case err := <-serverErr:
-		if err != nil {
-			log.Fatalf("Server error: %v", err)
-		}
-		return
-	}
-
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	if err := app.ShutdownWithContext(shutdownCtx); err != nil {
-		log.Printf("Server shutdown: %v", err)
-	}
-
-	if err := shutdown(shutdownCtx); err != nil {
-		log.Printf("Telemetry shutdown: %v", err)
-	}
-}
-
-func buildApp(mode string) (string, *fiber.App) {
-	rt := platform.NewRuntimeFromEnv()
-
-	switch mode {
-	case "shell":
-		return platform.ShellAppID, server.NewShellApp(rt)
-	case "terminal":
-		return platform.TerminalAppID, server.NewTerminalApp(rt)
-	case "mac":
-		return platform.MacAppID, server.NewMacApp(rt)
-	case "linux":
-		return platform.LinuxAppID, server.NewLinuxApp(rt)
-	default:
-		return "platform-website", server.NewGatewayApp(platform.NewLocalRuntime())
-	}
+	log.Fatal(app.Listener(ln))
 }

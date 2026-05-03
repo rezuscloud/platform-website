@@ -1,16 +1,19 @@
 package pages
 
 import (
-	model "github.com/rezuscloud/platform-website/internal/platform"
 	"github.com/rezuscloud/platform-website/views"
-	viewapps "github.com/rezuscloud/platform-website/views/apps"
+	"github.com/rezuscloud/platform-website/views/sections"
 )
 
-templ Home(state model.SessionState) {
-	@views.Layout(
-		"RezusCloud | Live Dapr shell",
-		"A brand shell that composes terminal, Macintosh, and Linux application surfaces through real shared state and cross-app flows.",
-	) {
-		@viewapps.ShellPage(state)
+templ Home() {
+	@views.Layout("Your Personal Cloud | RezusCloud") {
+		@sections.Hero()
+		@sections.Challenge()
+		@sections.Architecture()
+		@sections.Features()
+		@sections.Networking()
+		@sections.Comparison()
+		@sections.UseCases()
+		@sections.GetStarted()
 	}
 }

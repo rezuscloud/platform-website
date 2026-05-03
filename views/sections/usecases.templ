@@ -1,18 +1,35 @@
 package sections
 
 templ UseCases() {
-	<section id="usecases" class="py-16 sm:py-24 bg-cream-50 dark:bg-terminal-bg">
+	<section id="usecases" data-reveal class="py-16 sm:py-24 bg-surface dark:bg-next-dark">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<div class="text-center mb-12">
-				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-display">What Will You Build?</h2>
-				<p class="text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display">
-					Your own platform, your own rules. Here's some inspiration to get you started.
+			<div class="text-center mb-10">
+				<div class="w-12 h-1 bg-accent-gold dark:bg-next-teal-hi mx-auto mb-4"></div>
+				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white">What Will You Build?</h2>
+				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body">
+					From a home server to a distributed training cluster. Same platform, same git push.
 				</p>
 			</div>
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+			<!-- Tech strip (merged from TechStack) -->
+			<div class="max-w-4xl mx-auto mb-12">
+				<div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5">
+					<span class="text-xs font-bold font-mac uppercase tracking-widest text-ink-muted dark:text-next-subtle whitespace-nowrap">Built with</span>
+					<div class="w-8 h-px bg-rule dark:bg-next-mid shrink-0 hidden sm:block"></div>
+					<div class="flex flex-wrap gap-2">
+						@techBadge("Talos Linux")
+						@techBadge("Kubernetes")
+						@techBadge("Cilium")
+						@techBadge("OpenTofu")
+						@techBadge("Flux CD")
+						@techBadge("Bitwarden")
+						@techBadge("Cloudflare")
+					</div>
+				</div>
+			</div>
+			<div class="max-w-4xl mx-auto space-y-10">
 				@useCaseCard(
 					"Home Server",
-					"Run your own services at home — no subscriptions, no data leaving your network.",
+					"Run your own services at home: no subscriptions, no data leaving your network.",
 					[]UseCaseItem{
 						{"Media server", "Netflix, but yours"},
 						{"File sync", "Dropbox, but private"},
@@ -32,7 +49,7 @@ templ UseCases() {
 				)
 				@useCaseCard(
 					"Private Cloud Storage",
-					"Use cloud capacity with your own encryption — providers see nothing.",
+					"Use cloud capacity with your own encryption: providers see nothing.",
 					[]UseCaseItem{
 						{"Encrypted backups", "Across multiple locations"},
 						{"Photo storage", "Self-managed encryption keys"},
@@ -40,18 +57,26 @@ templ UseCases() {
 					},
 					storageIcon(),
 				)
-			</div>
-			<!-- People Are Building... -->
-			<div class="mt-16 max-w-5xl mx-auto">
-				<h3 class="text-2xl font-bold text-center mb-8 font-display">People Are Building...</h3>
-				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-					@inspirationCard("Game servers for friends")
-					@inspirationCard("Family photo gallery with AI tagging")
-					@inspirationCard("Automated smart home")
-					@inspirationCard("Personal finance tracker")
-					@inspirationCard("Learning Kubernetes hands-on")
-					@inspirationCard("Self-hosted email")
-				</div>
+				@useCaseCard(
+					"ML & Data Pipelines",
+					"Schedule GPU workloads, run distributed training, and process data across nodes. The orchestration handles scheduling, failures, and recovery.",
+					[]UseCaseItem{
+						{"GPU scheduling", "Allocate resources across your hardware"},
+						{"Distributed training", "Scale experiments across nodes"},
+						{"Data pipelines", "Process where the data lives"},
+					},
+					pipelineIcon(),
+				)
+				@useCaseCard(
+					"Production Infrastructure",
+					"Multi-region APIs, database clusters, CI/CD pipelines: the stack that usually requires a platform team.",
+					[]UseCaseItem{
+						{"Multi-region APIs", "Traffic routing and failover"},
+						{"Database clusters", "Replicated and persistent"},
+						{"CI/CD pipelines", "Build, test, deploy on your hardware"},
+					},
+					infrastructureIcon(),
+				)
 			</div>
 		</div>
 	</section>
@@ -63,46 +88,58 @@ type UseCaseItem struct {
 }
 
 templ useCaseCard(title string, description string, items []UseCaseItem, icon templ.Component) {
-	<div class="bg-cream-100 dark:bg-terminal-surface rounded-xl p-6 border border-cream-300 dark:border-terminal-border hover:border-amber-400 dark:hover:border-phosphor-500 transition-all">
-		<div class="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center mb-4">
+	<div class="flex items-start gap-5">
+		<div class="w-12 h-12 bg-accent-gold dark:bg-next-teal-hi flex items-center justify-center shrink-0 border border-ink dark:next-raised">
 			@icon
 		</div>
-		<h3 class="text-xl font-bold mb-2 font-display">{ title }</h3>
-		<p class="text-sm text-cream-600 dark:text-gray-400 mb-4 font-display">{ description }</p>
-		<ul class="space-y-2">
-			for _, item := range items {
-				<li class="flex items-start gap-2 text-sm">
-					<span class="mt-1.5 w-1.5 h-1.5 bg-amber-500 rounded-full shrink-0"></span>
-					<span class="font-display"><span class="font-medium">{ item.Title }</span> <span class="text-cream-600 dark:text-gray-400">— { item.Description }</span></span>
-				</li>
-			}
-		</ul>
+		<div>
+			<h3 class="text-xl font-bold mb-1 font-mac text-ink dark:text-next-white">{ title }</h3>
+			<p class="text-sm text-ink-muted dark:text-next-subtle mb-3 font-mac-body">{ description }</p>
+			<ul class="space-y-1.5">
+				for _, item := range items {
+					<li class="flex items-start gap-2 text-sm">
+						<span class="mt-1.5 w-1.5 h-1.5 bg-accent-gold dark:bg-next-teal-hi shrink-0"></span>
+						<span class="font-mac-body"><span class="font-medium text-ink dark:text-next-white">{ item.Title }</span> <span class="text-ink-muted dark:text-next-subtle">· { item.Description }</span></span>
+					</li>
+				}
+			</ul>
+		</div>
 	</div>
 }
 
-templ inspirationCard(label string) {
-	<div class="bg-cream-100 dark:bg-terminal-surface rounded-lg p-4 border border-cream-300 dark:border-terminal-border font-display text-sm">
-		<div class="flex items-center gap-2">
-			<span class="w-1.5 h-1.5 bg-amber-500 rounded-full shrink-0"></span>
-			<span>{ label }</span>
-		</div>
-	</div>
+templ techBadge(name string) {
+	<span class="inline-flex items-center px-3 py-2 bg-surface-strong dark:bg-next-black border border-rule dark:next-raised text-xs font-mac text-ink dark:text-next-white hover:border-accent-gold dark:hover:border-next-teal next-bevel-hover transition-colors duration-120">
+		<span class="w-1 h-1 bg-accent-gold dark:bg-next-teal-hi mr-1.5 shrink-0"></span>
+		{ name }
+	</span>
 }
 
 templ homeserverIcon() {
-	<svg class="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+	<svg class="w-5 h-5 text-ink dark:text-next-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
 		<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205l3 1m1.5.5l-1.5-.5M6.75 7.364V3h-3v18m3-13.636l10.5-3.819"></path>
 	</svg>
 }
 
 templ projectsIcon() {
-	<svg class="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-		<path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"></path>
+	<svg class="w-5 h-5 text-ink dark:text-next-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+		<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"></path>
 	</svg>
 }
 
 templ storageIcon() {
-	<svg class="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+	<svg class="w-5 h-5 text-ink dark:text-next-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
 		<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"></path>
+	</svg>
+}
+
+templ pipelineIcon() {
+	<svg class="w-5 h-5 text-ink dark:text-next-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+		<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"></path>
+	</svg>
+}
+
+templ infrastructureIcon() {
+	<svg class="w-5 h-5 text-ink dark:text-next-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+		<path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z"></path>
 	</svg>
 }

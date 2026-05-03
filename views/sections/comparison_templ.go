@@ -29,7 +29,7 @@ func Comparison() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"comparison\" class=\"py-16 sm:py-24 bg-cream-100 dark:bg-terminal-surface\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-12\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-display text-cream-800 dark:text-gray-300\">Own vs. Rent</h2><p class=\"text-lg text-cream-600 dark:text-gray-400 max-w-2xl mx-auto font-display\">Renting cloud infrastructure is like renting an apartment forever. At some point, you might want to own.</p></div><div class=\"max-w-4xl mx-auto\"><div class=\"bg-cream-50 dark:bg-terminal-bg rounded-xl border border-cream-300 dark:border-terminal-border overflow-hidden\"><table class=\"w-full text-left font-display\"><thead><tr class=\"bg-cream-200 dark:bg-terminal-bg uppercase tracking-wider text-sm text-cream-500 dark:text-gray-500\"><th class=\"py-3 px-4 sm:px-6 font-semibold\">What</th><th class=\"py-3 px-4 sm:px-6 font-semibold\">Renting</th><th class=\"py-3 px-4 sm:px-6 font-semibold\">Owning</th></tr></thead> <tbody class=\"divide-y divide-cream-300 dark:divide-terminal-border\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"comparison\" data-reveal class=\"py-20 sm:py-28 bg-paper dark:bg-next-black relative\"><div class=\"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-14\"><span class=\"inline-block px-3 py-1 text-xs font-mac uppercase tracking-widest text-ink-muted dark:text-next-subtle border border-rule dark:border-next-mid mb-6\">The Argument</span><h2 class=\"text-4xl sm:text-5xl font-extrabold tracking-tighter mb-4 font-mac text-ink dark:text-next-white\">Own vs. Rent</h2><p class=\"text-lg text-ink dark:text-next-white max-w-xl mx-auto font-mac-body leading-relaxed\">Renting cloud infrastructure is like renting an apartment forever. At some point, you might want to own.</p></div><div class=\"border-2 border-ink dark:border-next-white overflow-hidden\"><table class=\"w-full text-left font-mac-body\"><thead><tr class=\"bg-ink dark:bg-next-mid uppercase tracking-wider text-xs font-mac\"><th class=\"py-3.5 px-5 sm:px-8 font-semibold text-paper dark:text-next-white\">What</th><th class=\"py-3.5 px-5 sm:px-8 font-semibold text-paper/60 dark:text-next-white/60\">Renting</th><th class=\"py-3.5 px-5 sm:px-8 font-semibold text-accent-gold dark:text-next-teal\">Owning</th></tr></thead> <tbody class=\"divide-y divide-rule dark:divide-next-mid/40\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -65,7 +65,7 @@ func Comparison() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</tbody></table></div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</tbody></table></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -94,40 +94,40 @@ func compRow(what string, renting string, owning string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-amber-50/50 dark:hover:bg-amber-900/10 transition-colors\"><td class=\"py-3 px-4 sm:px-6 font-semibold text-cream-700 dark:text-gray-400\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-paper dark:hover:bg-next-dark transition-colors duration-120\"><td class=\"py-4 px-5 sm:px-8 font-bold text-ink dark:text-next-white font-mac-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(what)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 43, Col: 86}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 42, Col: 92}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</td><td class=\"py-3 px-4 sm:px-6 text-red-600 dark:text-red-400\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</td><td class=\"py-4 px-5 sm:px-8 text-negative dark:text-negative-next font-mac-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(renting)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 44, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 43, Col: 93}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</td><td class=\"py-3 px-4 sm:px-6 text-phosphor-600 dark:text-phosphor-400 font-semibold\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</td><td class=\"py-4 px-5 sm:px-8 text-positive dark:text-positive-next font-bold font-mac-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(owning)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 45, Col: 95}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/comparison.templ`, Line: 44, Col: 102}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
