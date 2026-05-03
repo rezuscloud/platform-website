@@ -16,7 +16,7 @@ permissions:
 jobs:
   clear:
     if: github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     steps:
       - name: Remove preview-ready label
         env:
@@ -26,7 +26,7 @@ jobs:
 
   mark:
     if: github.event_name == 'workflow_run'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     steps:
       - name: Mark preview ready after successful docker-pr
         env:
