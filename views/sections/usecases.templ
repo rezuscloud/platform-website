@@ -7,7 +7,7 @@ templ UseCases() {
 				<div class="w-12 h-1 bg-accent-gold dark:bg-next-teal-hi mx-auto mb-4"></div>
 				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white">What Will You Build?</h2>
 				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body">
-					Your own platform, your own rules. Here's some inspiration to get you started.
+					From a home server to a distributed training cluster. Same platform, same git push.
 				</p>
 			</div>
 			<!-- Tech strip (merged from TechStack) -->
@@ -56,6 +56,26 @@ templ UseCases() {
 						{"Shared files", "Full privacy control"},
 					},
 					storageIcon(),
+				)
+				@useCaseCard(
+					"ML & Data Pipelines",
+					"Schedule GPU workloads, run distributed training, and process data across nodes. The orchestration handles scheduling, failures, and recovery.",
+					[]UseCaseItem{
+						{"GPU scheduling", "Allocate resources across your hardware"},
+						{"Distributed training", "Scale experiments across nodes"},
+						{"Data pipelines", "Process where the data lives"},
+					},
+					pipelineIcon(),
+				)
+				@useCaseCard(
+					"Production Infrastructure",
+					"Multi-region APIs, database clusters, CI/CD pipelines: the stack that usually requires a platform team.",
+					[]UseCaseItem{
+						{"Multi-region APIs", "Traffic routing and failover"},
+						{"Database clusters", "Replicated and persistent"},
+						{"CI/CD pipelines", "Build, test, deploy on your hardware"},
+					},
+					infrastructureIcon(),
 				)
 			</div>
 		</div>
@@ -109,5 +129,17 @@ templ projectsIcon() {
 templ storageIcon() {
 	<svg class="w-5 h-5 text-ink dark:text-next-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
 		<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"></path>
+	</svg>
+}
+
+templ pipelineIcon() {
+	<svg class="w-5 h-5 text-ink dark:text-next-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+		<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"></path>
+	</svg>
+}
+
+templ infrastructureIcon() {
+	<svg class="w-5 h-5 text-ink dark:text-next-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+		<path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z"></path>
 	</svg>
 }
