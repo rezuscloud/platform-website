@@ -254,12 +254,12 @@
 
 .mac-title-bar-animated {
 	background: repeating-linear-gradient(
-		to right,
-		#000000 0px, #000000 1px,
-		#ffffff 1px, #ffffff 2px
+		-45deg,
+		oklch(82% 0.004 85) 0px, oklch(82% 0.004 85) 2px,
+		oklch(92% 0.004 85) 2px, oklch(92% 0.004 85) 4px
 	);
-	background-size: 24px 2px;
-	animation: mac-loading 1.5s linear infinite;
+	background-size: 24px 24px;
+	animation: mac-loading 2s linear infinite;
 }
 
 /* ===== Mac custom cursor (retro arrow) ===== */
