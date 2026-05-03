@@ -101,6 +101,14 @@ runs:
         echo "$platforms" | grep -qx 'linux/amd64'
         echo "$platforms" | grep -qx 'linux/arm64'
 
+    - name: Install file utility
+      if: ${{ inputs.push_image == 'true' }}
+      shell: bash
+      run: |
+        if ! command -v file &>/dev/null; then
+          apt-get update -qq && apt-get install -y -qq file
+        fi
+
     - name: Verify binary architecture per platform
       if: ${{ inputs.push_image == 'true' }}
       shell: bash
