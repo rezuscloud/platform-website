@@ -53,7 +53,7 @@ func Challenge() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</tbody></table></div></div><div class=\"text-center max-w-3xl mx-auto\"><p class=\"text-2xl sm:text-3xl font-bold font-mac text-accent-gold dark:text-next-white leading-snug\">The Personal Computer changed everything.<br><span class=\"text-paper dark:text-next-subtle\">The Personal Cloud will too.</span></p></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</tbody></table></div></div><div class=\"text-center max-w-3xl mx-auto\"><p class=\"text-2xl sm:text-3xl font-bold font-mac text-accent-gold dark:text-next-teal leading-snug\">The Personal Computer changed everything.<br><span class=\"text-paper dark:text-next-subtle\">The Personal Cloud will too.</span></p></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
