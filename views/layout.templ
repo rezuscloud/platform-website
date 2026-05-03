@@ -56,9 +56,27 @@ templ Layout(title string) {
 				}
 			</script>
 			<link rel="stylesheet" href="/assets/styles.css"/>
+			<link rel="preload" href="/assets/fonts/Silkscreen-Regular.woff2" as="font" type="font/woff2" crossorigin/>
+			<script>
+				/* Prevent FOUC: set dark class before Alpine loads */
+				(function () {
+					var d =
+						localStorage.getItem("theme") === "dark" ||
+						(!localStorage.getItem("theme") &&
+							window.matchMedia("(prefers-color-scheme: dark)").matches);
+					if (d) document.documentElement.classList.add("dark");
+					var mc = document.querySelector('meta[name="theme-color"]');
+					if (mc) mc.content = d ? "oklch(6% 0.005 270)" : "oklch(78% 0.16 75)";
+				})();
+			</script>
 			<script src="/assets/js/htmx.min.js"></script>
 			<script>
 				document.addEventListener("alpine:init", () => {
+					function syncMeta(dark) {
+						var mc = document.querySelector('meta[name="theme-color"]');
+						if (mc)
+							mc.content = dark ? "oklch(6% 0.005 270)" : "oklch(78% 0.16 75)";
+					}
 					Alpine.store("theme", {
 						dark:
 							localStorage.getItem("theme") === "dark" ||
@@ -73,11 +91,13 @@ templ Layout(title string) {
 								setTimeout(() => {
 									this.dark = !this.dark;
 									localStorage.setItem("theme", this.dark ? "dark" : "light");
+									syncMeta(this.dark);
 								}, 120);
 								setTimeout(() => (overlay.style.opacity = "0"), 200);
 							} else {
 								this.dark = !this.dark;
 								localStorage.setItem("theme", this.dark ? "dark" : "light");
+								syncMeta(this.dark);
 							}
 						},
 					});
