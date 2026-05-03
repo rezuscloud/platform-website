@@ -77,8 +77,6 @@ runs:
         context: .
         push: ${{ inputs.push_image }}
         tags: ${{ steps.prep.outputs.tags }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
         platforms: linux/amd64,linux/arm64
         provenance: false
         sbom: false
@@ -102,6 +100,14 @@ runs:
         echo "$platforms"
         echo "$platforms" | grep -qx 'linux/amd64'
         echo "$platforms" | grep -qx 'linux/arm64'
+
+    - name: Install file utility
+      if: ${{ inputs.push_image == 'true' }}
+      shell: bash
+      run: |
+        if ! command -v file &>/dev/null; then
+          sudo apt-get update -qq && sudo apt-get install -y -qq file
+        fi
 
     - name: Verify binary architecture per platform
       if: ${{ inputs.push_image == 'true' }}
