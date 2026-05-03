@@ -31,7 +31,7 @@ jobs:
         run: go vet ./...
 
       - name: Build binary
-        run: CGO_ENABLED=0 go build -trimpath -o bin/server .
+        run: CGO_ENABLED=0 go build -ldflags="-s -w -X main.version=dev -X main.gitCommit=$(git rev-parse --short HEAD) -X main.buildTime=$(date -u +%Y-%m-%dT%H:%M:%SZ)" -trimpath -o bin/server .
 
   test:
     needs: build
@@ -65,7 +65,7 @@ jobs:
       - name: Run integration tests (Layer 2 - goquery)
         env:
           CGO_ENABLED: "1"
-        run: go test -v -race -parallel 2 ./tests/... -run "HTML|Shell|Standalone|Shared|Legacy|Progressive"
+        run: go test -v -race -parallel 2 ./tests/... -run "Integration|HTML|Section|Navigation|Footer|Accessibility|HTMX|Responsive|DarkMode|Alpine|Progressive"
 
   e2e-test:
     needs: build
@@ -114,20 +114,15 @@ jobs:
 
       - name: Build container
         run: |
-          docker rm -f "platform-website-${{ github.run_id }}-${{ github.run_attempt }}" 2>/dev/null || true
+          docker rm -f platform-website 2>/dev/null || true
           ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
           docker build --network=host --build-arg TARGETARCH=${ARCH} -t platform-website-test .
 
       - name: Run container
         run: |
-          container_name="platform-website-${{ github.run_id }}-${{ github.run_attempt }}"
-          docker run -d --name "$container_name" -p 127.0.0.1::3000 platform-website-test
+          docker run -d --name platform-website -p 3000:3000 platform-website-test
           sleep 3
-          mapped_port="$(docker port "$container_name" 3000/tcp)"
-          host_port="${mapped_port##*:}"
-          echo "E2E_CONTAINER_NAME=$container_name" >> "$GITHUB_ENV"
-          echo "BASE_URL=http://127.0.0.1:${host_port}" >> "$GITHUB_ENV"
-          curl --retry 10 --retry-delay 2 --retry-connrefused "http://127.0.0.1:${host_port}"
+          curl --retry 10 --retry-delay 2 --retry-connrefused http://localhost:3000
 
       - name: Run E2E tests (Layer 3 - chromedp)
         env:
@@ -136,22 +131,42 @@ jobs:
 
       - name: Stop container
         if: always()
-        run: docker stop "$E2E_CONTAINER_NAME" && docker rm "$E2E_CONTAINER_NAME" || true
+        run: docker stop platform-website && docker rm platform-website || true
 
   docker-pr:
     needs: [build, test, e2e-test]
-    if: always() && github.event_name == 'pull_request' && needs.build.result == 'success' && needs.test.result == 'success'
+    if: always() && needs.build.result == 'success' && needs.test.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v6
+      - name: Resolve PR context
+        id: pr
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
+            echo "sha=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+          else
+            PR_DATA=$(gh pr list --repo ${{ github.repository }} --head ${{ github.ref_name }} --state open --json number --jq '.[0]')
+            PR_NUMBER=$(echo "$PR_DATA" | jq -r '.number')
+            if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
+              echo "No open PR found for branch ${{ github.ref_name }}, skipping docker-pr"
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+              echo "sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: ./.github/actions/docker-multiarch
+        if: steps.pr.outputs.skip != 'true'
         with:
           push_image: true
           tag_list: |
-            pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
-          version: pr-${{ github.event.pull_request.number }}
-          git_commit: ${{ github.event.pull_request.head.sha }}
+            pr-${{ steps.pr.outputs.number }}-${{ steps.pr.outputs.sha }}
+          version: pr-${{ steps.pr.outputs.number }}
+          git_commit: ${{ steps.pr.outputs.sha }}
           build_time: ""

@@ -118,7 +118,7 @@ go test -v -tags=e2e ./...
 
 - **Dark mode**: Uses class strategy with `.dark` on `<html>` element
 - **Custom variant**: Defined in `input.css` as `@custom-variant dark (&:where(.dark, .dark *));`
-- **Color scheme**: Primary colors are cyan/blue gradients
+- **Color scheme**: Dual-era system. Amber gold accent (light) / teal accent (dark). Warm-tinted neutrals.
 - **Responsive**: Use `sm:`, `md:`, `lg:` prefixes for breakpoints
 - **Do not edit**: `assets/styles.css` is generated, edit `input.css` instead
 
@@ -188,6 +188,32 @@ Theme is managed client-side via localStorage and the `dark` class on `<html>`. 
 4. `go vet ./...` - Run Go vet
 5. `npm run build:css` - Build CSS
 6. Run tests if applicable
+
+## Design Context
+
+### Product & Strategy
+- **PRODUCT.md** — Register (brand), target users, product purpose, brand personality, anti-references, strategic principles. Read before any design or copy work.
+- **CONTEXT.md** — Domain language: canonical terms (Personal Cloud, Machine Room, Golden Path, Builder), relationships, example dialogue, flagged ambiguities. Read before writing or editing copy.
+- **docs/adr/** — Architectural decision records. Start here for "why did we do it this way?" questions.
+
+### Visual System
+- **DESIGN.md** — Complete design system: colors (22 oklch tokens), typography (3 fonts, 6-level hierarchy), elevation (Mac flat / NeXT bevels), components (nav, CTA, icon squares, terminals, tables), do's and don'ts. Read before any visual changes.
+- **DESIGN.json** — Machine-readable sidecar: tonal ramps, motion tokens, breakpoints, self-contained component HTML/CSS snippets, narrative rules. Used by tooling.
+- **input.css** — Source of truth for all CSS custom properties and Tailwind utilities. Edit this (not `assets/styles.css`).
+
+### Key Design Rules
+- Zero border-radius everywhere
+- Dual-era identity: Mac System 1 (light) / NeXTSTEP (dark). Fonts consistent, only colors change.
+- Amber gold accent (light) / teal accent (dark). Never mix between modes.
+- Flat text layout: no boxes, no bordered cards. Icon squares and accent dots punctuate.
+- 8 sections with alternating background rhythm in both modes.
+- No em dashes in copy. Use colons, periods, middots.
+- All animations respect `prefers-reduced-motion`.
+
+### Key Commands
+- `$impeccable document` — Regenerate DESIGN.md and DESIGN.json from code
+- `$impeccable critique` — UX design review with heuristic scoring
+- `$impeccable audit` — Technical quality checks (a11y, perf, responsive)
 
 ## Environment
 

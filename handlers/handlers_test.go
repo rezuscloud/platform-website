@@ -1,4 +1,4 @@
-package handlers_test
+package handlers
 
 import (
 	"io"
@@ -6,15 +6,20 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/rezuscloud/platform-website/internal/platform"
-	"github.com/rezuscloud/platform-website/internal/server"
 )
 
+func setupApp() *fiber.App {
+	app := fiber.New(fiber.Config{})
+	app.Get("/", Home)
+	app.Get("/sections/:name", Section)
+	return app
+}
+
 func TestHomeHandler(t *testing.T) {
-	app := server.NewGatewayApp(platform.NewLocalRuntime())
+	app := setupApp()
 
 	req := httptest.NewRequest("GET", "/", nil)
 	resp, err := app.Test(req, -1)
@@ -26,7 +31,7 @@ func TestHomeHandler(t *testing.T) {
 }
 
 func TestHomeHandlerContainsExpectedContent(t *testing.T) {
-	app := server.NewGatewayApp(platform.NewLocalRuntime())
+	app := setupApp()
 
 	req := httptest.NewRequest("GET", "/", nil)
 	resp, err := app.Test(req, -1)
@@ -37,28 +42,25 @@ func TestHomeHandlerContainsExpectedContent(t *testing.T) {
 	require.NoError(t, err)
 
 	html := string(body)
-	assert.Contains(t, html, "/apps/terminal")
-	assert.Contains(t, html, "Mini vMac")
-	assert.Contains(t, html, "data-term-api")
-	assert.Contains(t, html, "linux-panel")
-	assert.Contains(t, html, "mac-panel")
+	assert.Contains(t, html, "RezusCloud")
+	assert.Contains(t, html, ">YOUR</span>")
+	assert.Contains(t, html, ">PERSONAL</span>")
+	assert.Contains(t, html, ">CLOUD</span>")
+	assert.Contains(t, html, "personal computer changed everything")
 }
 
-func TestAppSurfaceRoutes(t *testing.T) {
-	app := server.NewGatewayApp(platform.NewLocalRuntime())
-
-	routes := []string{
-		"/apps/terminal",
-		"/apps/terminal/embed",
-		"/apps/mac",
-		"/apps/mac/embed",
-		"/apps/linux",
-		"/apps/linux/embed",
+func TestSectionHandler(t *testing.T) {
+	sections := []string{
+		"hero", "challenge", "architecture", "features",
+		"networking", "comparison",
+		"usecases", "getstarted",
 	}
 
-	for _, route := range routes {
-		t.Run(route, func(t *testing.T) {
-			req := httptest.NewRequest("GET", route, nil)
+	app := setupApp()
+
+	for _, section := range sections {
+		t.Run(section, func(t *testing.T) {
+			req := httptest.NewRequest("GET", "/sections/"+section, nil)
 			resp, err := app.Test(req, -1)
 			require.NoError(t, err)
 			defer resp.Body.Close()
@@ -69,64 +71,35 @@ func TestAppSurfaceRoutes(t *testing.T) {
 	}
 }
 
-func TestTerminalActionUpdatesSharedState(t *testing.T) {
-	app := server.NewGatewayApp(platform.NewLocalRuntime())
+func TestSectionHandlerContainsContent(t *testing.T) {
+	app := setupApp()
 
-	bootstrapReq := httptest.NewRequest("GET", "/", nil)
-	bootstrapResp, err := app.Test(bootstrapReq, -1)
-	require.NoError(t, err)
-	defer bootstrapResp.Body.Close()
-
-	cookies := bootstrapResp.Cookies()
-	require.NotEmpty(t, cookies)
-
-	actionReq := httptest.NewRequest("POST", "/apps/terminal/actions/run", strings.NewReader("preset=rezus+sync+demo"))
-	actionReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	for _, cookie := range cookies {
-		actionReq.AddCookie(cookie)
+	expectedContent := map[string]string{
+		"hero":         "personal computer changed everything",
+		"features":     "What You Get",
+		"architecture": "How It Works",
+		"getstarted":   "Start Your Cloud",
 	}
 
-	actionResp, err := app.Test(actionReq, -1)
-	require.NoError(t, err)
-	defer actionResp.Body.Close()
+	for section, expected := range expectedContent {
+		t.Run(section+"_content", func(t *testing.T) {
+			req := httptest.NewRequest("GET", "/sections/"+section, nil)
+			resp, err := app.Test(req, -1)
+			require.NoError(t, err)
+			defer resp.Body.Close()
 
-	body, err := io.ReadAll(actionResp.Body)
-	require.NoError(t, err)
-	html := string(body)
+			body, err := io.ReadAll(resp.Body)
+			require.NoError(t, err)
 
-	assert.Contains(t, html, "linux-app")
-	assert.Contains(t, html, "artifact.published")
-	assert.Contains(t, actionResp.Header.Get("HX-Trigger"), "session-updated")
-
-	macReq := httptest.NewRequest("GET", "/apps/mac/embed", nil)
-	for _, cookie := range cookies {
-		macReq.AddCookie(cookie)
+			assert.Contains(t, string(body), expected)
+		})
 	}
-	macResp, err := app.Test(macReq, -1)
-	require.NoError(t, err)
-	defer macResp.Body.Close()
-
-	macBody, err := io.ReadAll(macResp.Body)
-	require.NoError(t, err)
-	assert.Contains(t, string(macBody), "Deployment dossier")
-
-	shellReq := httptest.NewRequest("GET", "/shell/summary", nil)
-	for _, cookie := range cookies {
-		shellReq.AddCookie(cookie)
-	}
-	shellResp, err := app.Test(shellReq, -1)
-	require.NoError(t, err)
-	defer shellResp.Body.Close()
-
-	shellBody, err := io.ReadAll(shellResp.Body)
-	require.NoError(t, err)
-	assert.Contains(t, string(shellBody), "One command moved through three services")
 }
 
-func TestLegacySectionsRemoved(t *testing.T) {
-	app := server.NewGatewayApp(platform.NewLocalRuntime())
+func TestSectionHandlerNotFound(t *testing.T) {
+	app := setupApp()
 
-	req := httptest.NewRequest("GET", "/sections/hero", nil)
+	req := httptest.NewRequest("GET", "/sections/nonexistent", nil)
 	resp, err := app.Test(req, -1)
 	require.NoError(t, err)
 	defer resp.Body.Close()
@@ -134,8 +107,34 @@ func TestLegacySectionsRemoved(t *testing.T) {
 	assert.Equal(t, 404, resp.StatusCode)
 }
 
-func TestHomePageContainsAllPrimarySurfaces(t *testing.T) {
-	app := server.NewGatewayApp(platform.NewLocalRuntime())
+func TestSectionHandlerReturnsSectionID(t *testing.T) {
+	app := setupApp()
+
+	sections := []string{"hero", "features", "architecture"}
+
+	for _, section := range sections {
+		t.Run(section+"_has_id", func(t *testing.T) {
+			req := httptest.NewRequest("GET", "/sections/"+section, nil)
+			resp, err := app.Test(req, -1)
+			require.NoError(t, err)
+			defer resp.Body.Close()
+
+			body, err := io.ReadAll(resp.Body)
+			require.NoError(t, err)
+
+			assert.Contains(t, string(body), `id="`+section+`"`)
+		})
+	}
+}
+
+func TestHomePageContainsAllSections(t *testing.T) {
+	app := setupApp()
+
+	sections := []string{
+		"hero", "challenge", "architecture", "features",
+		"networking", "comparison",
+		"usecases", "getstarted",
+	}
 
 	req := httptest.NewRequest("GET", "/", nil)
 	resp, err := app.Test(req, -1)
@@ -146,9 +145,198 @@ func TestHomePageContainsAllPrimarySurfaces(t *testing.T) {
 	require.NoError(t, err)
 
 	html := string(body)
-	assert.True(t, strings.Contains(html, `id="terminal-panel"`))
-	assert.True(t, strings.Contains(html, `id="mac-panel"`))
-	assert.True(t, strings.Contains(html, `id="linux-panel"`))
-	assert.True(t, strings.Contains(html, `data-scene-root`))
-	assert.True(t, strings.Contains(html, `xterm-mount`))
+	for _, section := range sections {
+		assert.True(t, strings.Contains(html, `id="`+section+`"`),
+			"Expected section %s to be present in home page", section)
+	}
+}
+
+func TestHomePageNoOldDesignTokens(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+
+	// Verify old color tokens are completely removed
+	oldTokens := []string{
+		"cream-50", "cream-100", "cream-200", "cream-300",
+		"cream-400", "cream-500", "cream-600", "cream-700", "cream-800", "cream-900",
+		"phosphor-", "retro-blue-",
+		"terminal-bg", "terminal-surface", "terminal-border",
+	}
+	for _, token := range oldTokens {
+		assert.NotContains(t, html, token,
+			"Old design token '%s' should be removed from HTML", token)
+	}
+}
+
+func TestHomePageNewDesignTokens(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+
+	// Verify Mac mode tokens are present
+	macTokens := []string{"bg-paper", "bg-surface", "text-ink", "text-ink-muted", "border-rule", "text-accent-gold"}
+	for _, token := range macTokens {
+		assert.Contains(t, html, token,
+			"Expected Mac mode token '%s' to be present", token)
+	}
+
+	// Verify NeXT mode tokens are present
+	nextTokens := []string{"dark:bg-next-black", "dark:bg-next-dark", "dark:text-next-white", "dark:text-next-subtle"}
+	for _, token := range nextTokens {
+		assert.Contains(t, html, token,
+			"Expected NeXT mode token '%s' to be present", token)
+	}
+}
+
+func TestHomePageNoRoundedCorners(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+
+	// Verify no rounded corner classes
+	roundedClasses := []string{"rounded-xl", "rounded-2xl", "rounded-lg", "rounded-md", "rounded-full"}
+	for _, cls := range roundedClasses {
+		assert.NotContains(t, html, cls,
+			"Rounded corner class '%s' should not be present", cls)
+	}
+}
+
+func TestHomePageNoBorder2(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+
+	// border-2 only allowed on comparison table (signature moment)
+	// All other elements use border (1px) or border-none
+	borderCount := strings.Count(html, "border-2")
+	assert.LessOrEqual(t, borderCount, 2,
+		"border-2 should only appear on the comparison table wrapper")
+}
+
+func TestHomePageFontFamilies(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+
+	// Verify font hierarchy: Silkscreen headings + system-ui body (same in both modes)
+	assert.Contains(t, html, "font-mac", "Display font (Silkscreen) should be present")
+	assert.Contains(t, html, "font-mac-body", "Body font (system-ui) should be present")
+
+	// Verify old font class is gone
+	assert.NotContains(t, html, "font-retro", "Old font-retro class should be removed")
+	assert.NotContains(t, html, "IBM Plex Mono", "IBM Plex Mono should be removed")
+}
+
+func TestHomePageNoCRTEffects(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+
+	// CRT effects should be removed
+	crtClasses := []string{"crt-scanlines", "crt-glow", "retro-bevel"}
+	for _, cls := range crtClasses {
+		assert.NotContains(t, html, cls,
+			"CRT/retro effect '%s' should be removed", cls)
+	}
+}
+
+func TestHomePageNeXTBevels(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+
+	// NeXT bevel utilities should be present in dark mode
+	assert.Contains(t, html, "dark:next-raised",
+		"NeXT raised bevel should be used in dark mode")
+	assert.Contains(t, html, "dark:next-sunken",
+		"NeXT sunken bevel should be used in dark mode")
+}
+
+func TestHomePageContainsNavigation(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+	assert.Contains(t, html, "<nav")
+	assert.Contains(t, html, "</nav>")
+}
+
+func TestHomePageContainsFooter(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+	assert.Contains(t, html, "<footer")
+	assert.Contains(t, html, "</footer>")
 }

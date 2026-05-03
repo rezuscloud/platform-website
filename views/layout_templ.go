@@ -8,7 +8,7 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func Layout(title string, description string) templ.Component {
+func Layout(title string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,85 +29,28 @@ func Layout(title string, description string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"brand-html no-js\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"scroll-smooth\" x-data :class=\"{ 'dark': $store.theme.dark }\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta name=\"description\" content=\"RezusCloud: The Personal Cloud. Own your infrastructure like you own your computer. Open source, self-managed, fully private.\"><meta name=\"theme-color\" content=\"#ffb000\"><link rel=\"canonical\" href=\"https://rezus.cloud/\"><meta property=\"og:title\" content=\"Your Personal Cloud | RezusCloud\"><meta property=\"og:description\" content=\"RezusCloud: The Personal Cloud. Own your infrastructure like you own your computer. Open source, self-managed, fully private.\"><meta property=\"og:site_name\" content=\"RezusCloud\"><meta property=\"og:type\" content=\"website\"><meta property=\"og:locale\" content=\"en_US\"><meta property=\"og:url\" content=\"https://rezus.cloud\"><meta property=\"og:image\" content=\"https://rezus.cloud/assets/img/icon-512.png\"><meta property=\"og:image:alt\" content=\"RezusCloud Personal Cloud icon\"><meta name=\"twitter:card\" content=\"summary_large_image\"><meta name=\"twitter:title\" content=\"Your Personal Cloud | RezusCloud\"><meta name=\"twitter:description\" content=\"RezusCloud: The Personal Cloud. Own your infrastructure like you own your computer. Open source, self-managed, fully private.\"><meta name=\"twitter:image\" content=\"https://rezus.cloud/assets/img/icon-512.png\"><meta name=\"twitter:image:alt\" content=\"RezusCloud Personal Cloud icon\"><title>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(description)
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 9, Col: 49}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 30, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><meta name=\"theme-color\" content=\"#10151f\"><link rel=\"canonical\" href=\"https://rezus.cloud/\"><meta property=\"og:title\" content=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link rel=\"icon\" href=\"/assets/img/favicon.ico\" sizes=\"32x32\"><link rel=\"icon\" href=\"/assets/img/icon.svg\" type=\"image/svg+xml\"><link rel=\"apple-touch-icon\" href=\"/assets/img/apple-touch-icon.png\"><link rel=\"manifest\" href=\"/manifest.webmanifest\"><script type=\"application/ld+json\">\n\t\t\t\t{\n\t\t\t\t\t\"@context\": \"https://schema.org\",\n\t\t\t\t\t\"@graph\": [\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"@type\": \"WebSite\",\n\t\t\t\t\t\t\t\"name\": \"RezusCloud\",\n\t\t\t\t\t\t\t\"url\": \"https://rezus.cloud/\",\n\t\t\t\t\t\t\t\"description\": \"RezusCloud: The Personal Cloud. Own your infrastructure like you own your computer. Open source, self-managed, fully private.\",\n\t\t\t\t\t\t\t\"inLanguage\": \"en\",\n\t\t\t\t\t\t\t\"publisher\": { \"@id\": \"https://rezus.cloud/#organization\" }\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"@type\": \"Organization\",\n\t\t\t\t\t\t\t\"@id\": \"https://rezus.cloud/#organization\",\n\t\t\t\t\t\t\t\"name\": \"RezusCloud\",\n\t\t\t\t\t\t\t\"url\": \"https://rezus.cloud/\",\n\t\t\t\t\t\t\t\"logo\": \"https://rezus.cloud/assets/img/icon-512.png\",\n\t\t\t\t\t\t\t\"email\": \"tiberiu@rezus.net\"\n\t\t\t\t\t\t}\n\t\t\t\t\t]\n\t\t\t\t}\n\t\t\t</script><link rel=\"stylesheet\" href=\"/assets/styles.css\"><link rel=\"preload\" href=\"/assets/fonts/Silkscreen-Regular.woff2\" as=\"font\" type=\"font/woff2\" crossorigin><script>\n\t\t\t\t/* Prevent FOUC: set dark class before Alpine loads */\n\t\t\t\t(function () {\n\t\t\t\t\tvar d =\n\t\t\t\t\t\tlocalStorage.getItem(\"theme\") === \"dark\" ||\n\t\t\t\t\t\t(!localStorage.getItem(\"theme\") &&\n\t\t\t\t\t\t\twindow.matchMedia(\"(prefers-color-scheme: dark)\").matches);\n\t\t\t\t\tif (d) document.documentElement.classList.add(\"dark\");\n\t\t\t\t\tvar mc = document.querySelector('meta[name=\"theme-color\"]');\n\t\t\t\t\tif (mc) mc.content = d ? \"oklch(6% 0.005 270)\" : \"oklch(78% 0.16 75)\";\n\t\t\t\t})();\n\t\t\t</script><script defer src=\"/assets/js/htmx.min.js\"></script><script>\n\t\t\t\tdocument.addEventListener(\"alpine:init\", () => {\n\t\t\t\t\tfunction syncMeta(dark) {\n\t\t\t\t\t\tvar mc = document.querySelector('meta[name=\"theme-color\"]');\n\t\t\t\t\t\tif (mc)\n\t\t\t\t\t\t\tmc.content = dark ? \"oklch(6% 0.005 270)\" : \"oklch(78% 0.16 75)\";\n\t\t\t\t\t}\n\t\t\t\t\tAlpine.store(\"theme\", {\n\t\t\t\t\t\tdark:\n\t\t\t\t\t\t\tlocalStorage.getItem(\"theme\") === \"dark\" ||\n\t\t\t\t\t\t\t(!localStorage.getItem(\"theme\") &&\n\t\t\t\t\t\t\t\twindow.matchMedia(\"(prefers-color-scheme: dark)\").matches),\n\t\t\t\t\t\ttoggle() {\n\t\t\t\t\t\t\tconst overlay = document.getElementById(\"crt-overlay\");\n\t\t\t\t\t\t\tif (overlay) {\n\t\t\t\t\t\t\t\toverlay.style.opacity = \"0.8\";\n\t\t\t\t\t\t\t\tsetTimeout(() => (overlay.style.opacity = \"0\"), 40);\n\t\t\t\t\t\t\t\tsetTimeout(() => (overlay.style.opacity = \"1\"), 80);\n\t\t\t\t\t\t\t\tsetTimeout(() => {\n\t\t\t\t\t\t\t\t\tthis.dark = !this.dark;\n\t\t\t\t\t\t\t\t\tlocalStorage.setItem(\"theme\", this.dark ? \"dark\" : \"light\");\n\t\t\t\t\t\t\t\t\tsyncMeta(this.dark);\n\t\t\t\t\t\t\t\t}, 120);\n\t\t\t\t\t\t\t\tsetTimeout(() => (overlay.style.opacity = \"0\"), 200);\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\tthis.dark = !this.dark;\n\t\t\t\t\t\t\t\tlocalStorage.setItem(\"theme\", this.dark ? \"dark\" : \"light\");\n\t\t\t\t\t\t\t\tsyncMeta(this.dark);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t},\n\t\t\t\t\t});\n\t\t\t\t\tAlpine.store(\"scroll\", {\n\t\t\t\t\t\tactive: \"hero\",\n\t\t\t\t\t});\n\t\t\t\t});\n\t\t\t</script><script defer src=\"/assets/js/alpine.min.js\"></script></head><body class=\"bg-paper dark:bg-next-black text-ink dark:text-next-white font-mac-body mac-cursor\" x-data=\"{ dotShift: '0px 0px' }\" x-effect=\"$watch('$store.theme.dark', () => { dotShift = '0px 0px' })\" @mousemove.throttle.150ms=\"dotShift = ((window.innerWidth / 2 - $event.clientX) / window.innerWidth * 6) + 'px ' + ((window.innerHeight / 2 - $event.clientY) / window.innerHeight * 6) + 'px'\"><!-- CRT flicker overlay for theme toggle --><div id=\"crt-overlay\" class=\"fixed inset-0 z-[99999] pointer-events-none bg-white\" style=\"opacity:0;transition:opacity 0.06s step-end;\" aria-hidden=\"true\"></div><!-- NeXT mode CRT scanline overlay --><div class=\"fixed inset-0 pointer-events-none z-[9999] hidden dark:block next-scanlines\" aria-hidden=\"true\"></div><a href=\"#hero\" class=\"sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:px-3 focus:py-2 focus:bg-accent-gold focus:text-ink focus:font-mac focus:text-sm focus:border focus:border-ink\">Skip to content</a>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(title)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 12, Col: 44}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+		templ_7745c5c3_Err = Nav().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"><meta property=\"og:description\" content=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(description)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 13, Col: 56}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><meta property=\"og:site_name\" content=\"RezusCloud\"><meta property=\"og:type\" content=\"website\"><meta property=\"og:locale\" content=\"en_US\"><meta property=\"og:url\" content=\"https://rezus.cloud\"><meta property=\"og:image\" content=\"https://rezus.cloud/assets/img/icon-512.png\"><meta property=\"og:image:alt\" content=\"RezusCloud icon\"><meta name=\"twitter:card\" content=\"summary_large_image\"><meta name=\"twitter:title\" content=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(title)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 21, Col: 45}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><meta name=\"twitter:description\" content=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(description)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 22, Col: 57}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\"><meta name=\"twitter:image\" content=\"https://rezus.cloud/assets/img/icon-512.png\"><meta name=\"twitter:image:alt\" content=\"RezusCloud icon\"><title>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var7 string
-		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(title)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 25, Col: 17}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</title><script>\n\t\t\t\tdocument.documentElement.classList.remove(\"no-js\");\n\t\t\t\tdocument.documentElement.classList.add(\"js\");\n\t\t\t</script><link rel=\"icon\" href=\"/assets/img/favicon.ico\" sizes=\"32x32\"><link rel=\"icon\" href=\"/assets/img/icon.svg\" type=\"image/svg+xml\"><link rel=\"apple-touch-icon\" href=\"/assets/img/apple-touch-icon.png\"><link rel=\"manifest\" href=\"/manifest.webmanifest\"><script type=\"application/ld+json\">\n\t\t\t\t{\n\t\t\t\t\t\"@context\": \"https://schema.org\",\n\t\t\t\t\t\"@graph\": [\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"@type\": \"WebSite\",\n\t\t\t\t\t\t\t\"name\": \"RezusCloud\",\n\t\t\t\t\t\t\t\"url\": \"https://rezus.cloud/\",\n\t\t\t\t\t\t\t\"description\": \"A brand shell that composes live terminal, Macintosh, and Linux application surfaces through real shared platform state.\",\n\t\t\t\t\t\t\t\"inLanguage\": \"en\",\n\t\t\t\t\t\t\t\"publisher\": { \"@id\": \"https://rezus.cloud/#organization\" }\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"@type\": \"Organization\",\n\t\t\t\t\t\t\t\"@id\": \"https://rezus.cloud/#organization\",\n\t\t\t\t\t\t\t\"name\": \"RezusCloud\",\n\t\t\t\t\t\t\t\"url\": \"https://rezus.cloud/\",\n\t\t\t\t\t\t\t\"logo\": \"https://rezus.cloud/assets/img/icon-512.png\",\n\t\t\t\t\t\t\t\"email\": \"tiberiu@rezus.net\"\n\t\t\t\t\t\t}\n\t\t\t\t\t]\n\t\t\t\t}\n\t\t\t</script><link rel=\"stylesheet\" href=\"/assets/styles.css\"><link rel=\"stylesheet\" href=\"/assets/js/vendor/xterm.css\"><script src=\"/assets/js/htmx.min.js\"></script><script src=\"/assets/js/vendor/xterm.min.js\"></script><script src=\"/assets/js/vendor/addon-fit.min.js\"></script><script src=\"/assets/js/term-app.js\" defer></script><script src=\"/assets/js/desktop.js\" defer></script></head><body class=\"brand-body\"><main class=\"brand-main\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<main>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -115,7 +58,110 @@ func Layout(title string, description string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</main></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</main>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = Footer().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Active section observer, scroll reveals, terminal typewriter --><script>\n\t\t\t\tdocument.addEventListener(\"alpine:init\", () => {\n\t\t\t\t\tconst sections = document.querySelectorAll(\"section[id]\");\n\t\t\t\t\tif (!sections.length) return;\n\t\t\t\t\tconst observer = new IntersectionObserver(\n\t\t\t\t\t\t(entries) => {\n\t\t\t\t\t\t\tentries.forEach((entry) => {\n\t\t\t\t\t\t\t\tif (entry.isIntersecting) {\n\t\t\t\t\t\t\t\t\tAlpine.store(\"scroll\").active = entry.target.id;\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{ rootMargin: \"-20% 0px -60% 0px\" },\n\t\t\t\t\t);\n\t\t\t\t\tsections.forEach((s) => observer.observe(s));\n\t\t\t\t});\n\n\t\t\t\tdocument.addEventListener(\"DOMContentLoaded\", () => {\n\t\t\t\t\t// Scroll reveals for below-fold sections\n\t\t\t\t\tconst revealEls = document.querySelectorAll(\"[data-reveal]\");\n\t\t\t\t\tif (revealEls.length) {\n\t\t\t\t\t\tconst revealObserver = new IntersectionObserver(\n\t\t\t\t\t\t\t(entries) => {\n\t\t\t\t\t\t\t\tentries.forEach((entry) => {\n\t\t\t\t\t\t\t\t\tif (entry.isIntersecting) {\n\t\t\t\t\t\t\t\t\t\tentry.target.classList.add(\"revealed\");\n\t\t\t\t\t\t\t\t\t\trevealObserver.unobserve(entry.target);\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t{ threshold: 0.05, rootMargin: \"0px 0px -40px 0px\" },\n\t\t\t\t\t\t);\n\t\t\t\t\t\trevealEls.forEach((el) => {\n\t\t\t\t\t\t\tconst rect = el.getBoundingClientRect();\n\t\t\t\t\t\t\tif (rect.top < window.innerHeight) {\n\t\t\t\t\t\t\t\tel.classList.add(\"revealed\");\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\trevealObserver.observe(el);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t}\n\n\t\t\t\t\t// Terminal typewriter effect\n\t\t\t\t\tdocument.querySelectorAll(\"[data-terminal]\").forEach((terminal) => {\n\t\t\t\t\t\tconst lines = terminal.querySelectorAll(\"[data-line]\");\n\t\t\t\t\t\tconst baseDelay = parseInt(terminal.dataset.baseDelay || \"800\");\n\t\t\t\t\t\tconst lineDelay = parseInt(terminal.dataset.lineDelay || \"250\");\n\n\t\t\t\t\t\tconst startTyping = () => {\n\t\t\t\t\t\t\tlines.forEach((line, i) => {\n\t\t\t\t\t\t\t\tsetTimeout(\n\t\t\t\t\t\t\t\t\t() => line.classList.add(\"typed\"),\n\t\t\t\t\t\t\t\t\tbaseDelay + i * lineDelay,\n\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t};\n\n\t\t\t\t\t\tconst rect = terminal.getBoundingClientRect();\n\t\t\t\t\t\tif (rect.top < window.innerHeight && rect.bottom > 0) {\n\t\t\t\t\t\t\tstartTyping();\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tconst obs = new IntersectionObserver(\n\t\t\t\t\t\t\t\t(entries) => {\n\t\t\t\t\t\t\t\t\tif (entries[0].isIntersecting) {\n\t\t\t\t\t\t\t\t\t\tstartTyping();\n\t\t\t\t\t\t\t\t\t\tobs.unobserve(terminal);\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{ threshold: 0.2 },\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tobs.observe(terminal);\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t});\n\t\t\t</script></body></html>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func Nav() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<nav class=\"fixed top-0 w-full z-50 bg-surface-strong dark:bg-next-dark border-b border-rule dark:border-next-mid transition-colors duration-150\" x-data=\"{ mobileOpen: false }\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"flex items-center justify-between h-14\"><div class=\"flex items-center gap-3\"><div class=\"w-8 h-8 bg-accent-gold dark:bg-next-teal-hi flex items-center justify-center border border-ink dark:next-raised\"><svg class=\"w-5 h-5 text-ink dark:text-next-white\" viewBox=\"0 0 32 32\" fill=\"currentColor\" aria-hidden=\"true\"><rect x=\"4\" y=\"6\" width=\"24\" height=\"14\" rx=\"1\"></rect> <rect x=\"12\" y=\"20\" width=\"8\" height=\"2\"></rect> <rect x=\"8\" y=\"22\" width=\"16\" height=\"2\" rx=\"0.5\"></rect></svg></div><span class=\"text-lg font-bold font-mac text-ink dark:text-next-white tracking-wide\">Rezus<span class=\"text-accent-gold dark:text-next-teal\">Cloud</span></span></div><div class=\"hidden md:flex items-center gap-1 text-sm font-mac\"><a href=\"#hero\" x-bind:class=\"$store.scroll.active === 'hero' ? 'px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light' : 'px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'\">Home</a> <a href=\"#architecture\" x-bind:class=\"$store.scroll.active === 'architecture' ? 'px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light' : 'px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'\">Architecture</a> <a href=\"#features\" x-bind:class=\"$store.scroll.active === 'features' ? 'px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light' : 'px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'\">Features</a> <a href=\"#comparison\" x-bind:class=\"$store.scroll.active === 'comparison' ? 'px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light' : 'px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'\">Compare</a> <a href=\"#getstarted\" x-bind:class=\"$store.scroll.active === 'getstarted' ? 'px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light' : 'px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'\">Get Started</a></div><div class=\"flex items-center gap-3\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = ThemeToggle().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<button class=\"md:hidden p-2 hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120\" @click=\"mobileOpen = !mobileOpen\" :aria-expanded=\"mobileOpen\" aria-label=\"Toggle mobile menu\"><svg x-show=\"!mobileOpen\" class=\"w-5 h-5 text-ink dark:text-next-white\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M4 6h16M4 12h16M4 18h16\"></path></svg> <svg x-show=\"mobileOpen\" x-cloak class=\"w-5 h-5 text-ink dark:text-next-white\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M6 18L18 6M6 6l12 12\"></path></svg></button></div></div><div x-show=\"mobileOpen\" x-cloak x-transition:enter=\"transition ease-out duration-200\" x-transition:enter-start=\"opacity-0 -translate-y-2\" x-transition:enter-end=\"opacity-100 translate-y-0\" x-transition:leave=\"transition ease-in duration-150\" x-transition:leave-start=\"opacity-100 translate-y-0\" x-transition:leave-end=\"opacity-0 -translate-y-2\" class=\"md:hidden pb-4\"><div class=\"flex flex-col gap-1 text-sm font-mac\"><a href=\"#hero\" @click=\"mobileOpen = false\" class=\"block px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120\">Home</a> <a href=\"#architecture\" @click=\"mobileOpen = false\" class=\"block px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120\">Architecture</a> <a href=\"#features\" @click=\"mobileOpen = false\" class=\"block px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120\">Features</a> <a href=\"#comparison\" @click=\"mobileOpen = false\" class=\"block px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120\">Compare</a> <a href=\"#getstarted\" @click=\"mobileOpen = false\" class=\"block px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120\">Get Started</a></div></div></div></nav>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func ThemeToggle() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var4 == nil {
+			templ_7745c5c3_Var4 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<button @click=\"$store.theme.toggle()\" class=\"w-10 h-10 flex items-center justify-center border border-ink dark:next-raised bg-paper dark:bg-next-dark hover:bg-surface dark:hover:bg-next-mid transition-colors duration-150\" aria-label=\"Toggle theme\"><svg x-show=\"!$store.theme.dark\" class=\"w-5 h-5 text-ink-muted\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z\"></path></svg> <svg x-show=\"$store.theme.dark\" x-cloak class=\"w-5 h-5 text-next-white\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"4\"></circle> <path d=\"M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41\"></path></svg></button>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func Footer() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var5 == nil {
+			templ_7745c5c3_Var5 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<footer class=\"bg-surface-strong dark:bg-next-dark border-t border-rule dark:border-next-mid\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12\"><div class=\"grid grid-cols-1 md:grid-cols-3 gap-8\"><div><div class=\"flex items-center gap-2 mb-4\"><div class=\"w-8 h-8 bg-accent-gold dark:bg-next-teal-hi flex items-center justify-center border border-ink dark:next-raised\"><svg class=\"w-5 h-5 text-ink dark:text-next-white\" viewBox=\"0 0 32 32\" fill=\"currentColor\" aria-hidden=\"true\"><rect x=\"4\" y=\"6\" width=\"24\" height=\"14\" rx=\"1\"></rect> <rect x=\"12\" y=\"20\" width=\"8\" height=\"2\"></rect> <rect x=\"8\" y=\"22\" width=\"16\" height=\"2\" rx=\"0.5\"></rect></svg></div><span class=\"text-lg font-bold font-mac text-ink dark:text-next-white tracking-wide\">Rezus<span class=\"text-accent-gold dark:text-next-teal\">Cloud</span></span></div><p class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body\">Your Personal Cloud. Own it.</p></div><div><h3 class=\"font-semibold mb-3 font-mac text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle\">Platform</h3><ul class=\"space-y-2 text-sm font-mac-body text-ink-muted dark:text-next-subtle\"><li><a href=\"#features\" class=\"hover:text-accent-gold dark:hover:text-next-white transition-colors\">Features</a></li><li><a href=\"#architecture\" class=\"hover:text-accent-gold dark:hover:text-next-white transition-colors\">Architecture</a></li><li><a href=\"#comparison\" class=\"hover:text-accent-gold dark:hover:text-next-white transition-colors\">Compare</a></li><li><a href=\"#usecases\" class=\"hover:text-accent-gold dark:hover:text-next-white transition-colors\">Use Cases</a></li></ul></div><div><h3 class=\"font-semibold mb-3 font-mac text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle\">Explore</h3><ul class=\"space-y-2 text-sm font-mac-body text-ink-muted dark:text-next-subtle\"><li><a href=\"#getstarted\" class=\"hover:text-accent-gold dark:hover:text-next-white transition-colors\">Get Started</a></li><li><a href=\"#networking\" class=\"hover:text-accent-gold dark:hover:text-next-white transition-colors\">Networking</a></li></ul></div></div><div class=\"mt-8 pt-8 border-t border-rule dark:border-next-mid text-center text-xs text-ink-muted dark:text-next-subtle font-mac-mono\"><p>MODEL RC-001 // SERIAL: OPEN-SOURCE // <span class=\"text-accent-gold dark:text-next-teal\">Built with Go, templ, HTMX, Alpine.js, Tailwind CSS</span></p></div></div></footer>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

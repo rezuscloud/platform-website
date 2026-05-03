@@ -39,7 +39,18 @@ jobs:
           pr_number="$(jq -r '.pull_requests[0].number // empty' <<< "$run_payload")"
           head_sha="$(jq -r '.head_sha' <<< "$run_payload")"
 
+          # For workflow_dispatch runs without PR context, resolve PR from branch name
           if [ -z "$pr_number" ] || [ -z "$head_sha" ]; then
+            branch_name="$(jq -r '.head_branch' <<< "$run_payload")"
+            if [ -n "$branch_name" ]; then
+              pr_data="$(gh pr list --repo ${{ github.repository }} --head "$branch_name" --state open --json number --jq '.[0]')"
+              pr_number="$(echo "$pr_data" | jq -r '.number')"
+              head_sha="$(jq -r '.head_sha' <<< "$run_payload")"
+            fi
+          fi
+
+          if [ -z "$pr_number" ] || [ "$pr_number" = "null" ]; then
+            echo "No open PR found, skipping"
             exit 0
           fi
 
@@ -47,6 +58,7 @@ jobs:
 
           if [ "$current_head_sha" != "$head_sha" ]; then
             gh api --silent --method DELETE repos/${{ github.repository }}/issues/${pr_number}/labels/preview-ready || true
+            echo "HEAD SHA mismatch, cleared label"
             exit 0
           fi
 
@@ -54,8 +66,10 @@ jobs:
 
           if [ "$docker_pr_conclusion" != "success" ]; then
             gh api --silent --method DELETE repos/${{ github.repository }}/issues/${pr_number}/labels/preview-ready || true
+            echo "docker-pr job did not succeed ($docker_pr_conclusion), cleared label"
             exit 0
           fi
 
           docker buildx imagetools inspect "ghcr.io/${{ github.repository }}:pr-${pr_number}-${head_sha}"
           gh api --silent --method POST repos/${{ github.repository }}/issues/${pr_number}/labels -f labels[]=preview-ready
+          echo "Added preview-ready label to PR #${pr_number}"
