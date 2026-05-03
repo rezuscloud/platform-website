@@ -10,7 +10,7 @@ Individual developers and small-to-medium businesses who limit their software de
 
 ## Product Purpose
 
-RezusCloud is the Personal Cloud: a fully open source, free platform that provides an architectural golden path covering 90% of real-world use cases with full scalability out of the box. It lets anyone deploy like a full-scale enterprise, on hardware they already own, in an afternoon. The website exists to communicate this vision, build conviction, and capture early interest before public launch.
+RezusCloud is the Personal Cloud: a fully open source, free platform that provides an architectural golden path covering 90% of real-world use cases with full scalability out of the box. It lets anyone deploy like a full-scale enterprise, on hardware they already own, in an afternoon. Your own machine room: you own the hardware, the data, and the computation. No landlord, no lease, no eviction. The website exists to communicate this vision, build conviction, and capture early interest before public launch.
 
 ## Brand Personality
 
