@@ -1,15 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <!--
-    RezusCloud brand icon: CRT monitor with pixel cloud.
-    Mac System 1 aesthetic. Bold geometric fills, no curves, no text.
+    RezusCloud brand icon: CRT monitor with cloud.
+    Inspired by Susan Kare (Mac System 1) and NeXTSTEP icon craft.
+    Bold silhouette, screen depth via inset, organic cloud shape.
   -->
-  <!-- Monitor body -->
-  <rect x="64" y="48" width="384" height="304" rx="6" fill="#1A1A1E"/>
+
+  <!-- Monitor shell -->
+  <rect x="56" y="32" width="400" height="312" rx="12" fill="#1A1A1E"/>
+
+  <!-- Bezel (inner frame — gives the CRT depth) -->
+  <rect x="76" y="52" width="360" height="272" rx="6" fill="#2C2C30"/>
+
   <!-- Screen -->
-  <rect x="88" y="72" width="336" height="256" fill="#F7F4EF"/>
-  <!-- Pixel cloud: two bumps on wide base -->
-  <path d="M156 272h200v-32h-20v-32h-20v-32h-52v32h-16v-32h-52v32h-20v32h-20z" fill="#1A1A1E"/>
-  <!-- Stand -->
-  <rect x="224" y="352" width="64" height="40" fill="#1A1A1E"/>
-  <rect x="176" y="392" width="160" height="24" rx="2" fill="#1A1A1E"/>
+  <rect x="96" y="72" width="320" height="232" fill="#F7F4EF"/>
+
+  <!-- Cloud on screen (overlapping circles + base) -->
+  <g fill="#1A1A1E">
+    <!-- Base bar -->
+    <rect x="172" y="228" width="168" height="40" rx="20"/>
+    <!-- Left bump -->
+    <circle cx="212" cy="204" r="36"/>
+    <!-- Center bump (tallest) -->
+    <circle cx="260" cy="186" r="44"/>
+    <!-- Right bump -->
+    <circle cx="304" cy="200" r="32"/>
+  </g>
+
+  <!-- Power LED -->
+  <circle cx="256" cy="308" r="5" fill="#C48A1A"/>
+
+  <!-- Stand neck -->
+  <rect x="228" y="344" width="56" height="48" rx="2" fill="#1A1A1E"/>
+
+  <!-- Stand foot -->
+  <ellipse cx="256" cy="400" rx="80" ry="14" fill="#1A1A1E"/>
 </svg>
