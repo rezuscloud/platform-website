@@ -1,34 +1,45 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-05-03T00:00:00Z",
+  "generatedAt": "2026-05-03T19:30:00Z",
   "title": "Design System: RezusCloud",
   "extensions": {
     "colorMeta": {
-      "paper": { "role": "neutral-bg", "displayName": "Paper", "canonical": "oklch(99.5% 0.004 85)", "tonalRamp": ["oklch(15% 0.004 85)", "oklch(30% 0.004 85)", "oklch(45% 0.004 85)", "oklch(60% 0.004 85)", "oklch(75% 0.004 85)", "oklch(85% 0.004 85)", "oklch(95.5% 0.004 85)", "oklch(99.5% 0.004 85)"] },
-      "surface": { "role": "neutral-bg", "displayName": "Surface", "canonical": "oklch(95.5% 0.004 85)", "tonalRamp": ["oklch(15% 0.004 85)", "oklch(30% 0.004 85)", "oklch(45% 0.004 85)", "oklch(60% 0.004 85)", "oklch(75% 0.004 85)", "oklch(88.5% 0.006 85)", "oklch(95.5% 0.004 85)", "oklch(99.5% 0.004 85)"] },
-      "ink": { "role": "neutral-text", "displayName": "Ink", "canonical": "oklch(14% 0.008 65)", "tonalRamp": ["oklch(14% 0.008 65)", "oklch(20% 0.008 65)", "oklch(30% 0.008 65)", "oklch(45% 0.008 65)", "oklch(60% 0.008 65)", "oklch(72% 0.005 85)", "oklch(88.5% 0.006 85)", "oklch(99.5% 0.004 85)"] },
-      "accent-gold": { "role": "primary", "displayName": "Amber Gold", "canonical": "oklch(78% 0.16 75)", "tonalRamp": ["oklch(20% 0.16 75)", "oklch(30% 0.16 75)", "oklch(40% 0.16 75)", "oklch(50% 0.16 75)", "oklch(60% 0.16 75)", "oklch(70% 0.16 75)", "oklch(78% 0.16 75)", "oklch(90% 0.12 75)"] },
-      "next-black": { "role": "neutral-bg", "displayName": "NeXT Black", "canonical": "oklch(6% 0.005 270)", "tonalRamp": ["oklch(6% 0.006 270)", "oklch(20% 0.006 270)", "oklch(34% 0.006 270)", "oklch(48% 0.006 270)", "oklch(58% 0.006 270)", "oklch(72% 0.006 270)", "oklch(82% 0.006 270)", "oklch(88% 0.006 270)"] },
-      "next-teal": { "role": "primary", "displayName": "NeXT Teal", "canonical": "oklch(52% 0.08 170)", "tonalRamp": ["oklch(15% 0.08 170)", "oklch(25% 0.08 170)", "oklch(35% 0.08 170)", "oklch(45% 0.08 170)", "oklch(52% 0.08 170)", "oklch(62% 0.07 170)", "oklch(75% 0.06 170)", "oklch(85% 0.04 170)"] }
+      "paper": { "role": "neutral-bg", "displayName": "Paper", "canonical": "oklch(99.5% 0.004 85)", "tonalRamp": ["oklch(14% 0.004 85)", "oklch(28% 0.004 85)", "oklch(42% 0.004 85)", "oklch(56% 0.004 85)", "oklch(70% 0.004 85)", "oklch(80% 0.004 85)", "oklch(90% 0.004 85)", "oklch(99.5% 0.004 85)"] },
+      "surface": { "role": "neutral-bg-alt", "displayName": "Surface", "canonical": "oklch(95.5% 0.004 85)", "tonalRamp": ["oklch(14% 0.004 85)", "oklch(28% 0.004 85)", "oklch(42% 0.004 85)", "oklch(56% 0.004 85)", "oklch(70% 0.004 85)", "oklch(80% 0.004 85)", "oklch(95.5% 0.004 85)", "oklch(99.5% 0.004 85)"] },
+      "surface-strong": { "role": "neutral-chrome", "displayName": "Surface Strong", "canonical": "oklch(88.5% 0.006 85)" },
+      "ink": { "role": "neutral-text", "displayName": "Ink", "canonical": "oklch(14% 0.008 65)" },
+      "ink-muted": { "role": "neutral-text-muted", "displayName": "Ink Muted", "canonical": "oklch(30% 0.008 65)" },
+      "rule": { "role": "neutral-border", "displayName": "Rule", "canonical": "oklch(72% 0.005 85)" },
+      "accent-gold": { "role": "primary", "displayName": "Amber Gold", "canonical": "oklch(78% 0.16 75)", "tonalRamp": ["oklch(28% 0.12 75)", "oklch(38% 0.14 75)", "oklch(48% 0.15 75)", "oklch(58% 0.16 75)", "oklch(68% 0.16 75)", "oklch(78% 0.16 75)", "oklch(88% 0.12 75)", "oklch(95% 0.06 75)"] },
+      "next-black": { "role": "neutral-bg", "displayName": "NeXT Black", "canonical": "oklch(6% 0.005 270)", "tonalRamp": ["oklch(6% 0.005 270)", "oklch(20% 0.006 270)", "oklch(34% 0.006 270)", "oklch(48% 0.006 270)", "oklch(58% 0.006 270)", "oklch(68% 0.005 270)", "oklch(78% 0.004 270)", "oklch(88% 0.004 270)"] },
+      "next-dark": { "role": "neutral-bg-alt", "displayName": "NeXT Dark", "canonical": "oklch(20% 0.006 270)" },
+      "next-mid": { "role": "neutral-hover", "displayName": "NeXT Mid", "canonical": "oklch(34% 0.006 270)" },
+      "next-light": { "role": "neutral-chrome", "displayName": "NeXT Light", "canonical": "oklch(58% 0.006 270)" },
+      "next-white": { "role": "neutral-text", "displayName": "NeXT White", "canonical": "oklch(88% 0.004 270)" },
+      "next-subtle": { "role": "neutral-text-muted", "displayName": "NeXT Subtle", "canonical": "oklch(72% 0.012 85)" },
+      "next-teal": { "role": "primary", "displayName": "NeXT Teal", "canonical": "oklch(60% 0.08 170)", "tonalRamp": ["oklch(20% 0.06 170)", "oklch(30% 0.07 170)", "oklch(40% 0.08 170)", "oklch(50% 0.08 170)", "oklch(60% 0.08 170)", "oklch(70% 0.07 170)", "oklch(80% 0.05 170)", "oklch(90% 0.03 170)"] },
+      "next-teal-hi": { "role": "primary-bg", "displayName": "NeXT Teal Hi", "canonical": "oklch(70% 0.07 170)" },
+      "positive": { "role": "semantic-positive", "displayName": "Positive", "canonical": "oklch(55% 0.12 150)" },
+      "negative": { "role": "semantic-negative", "displayName": "Negative", "canonical": "oklch(50% 0.12 25)" }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Hero headline only. Single most prominent element." },
-      "headline": { "displayName": "Headline", "purpose": "Section headings. Silkscreen 700." },
-      "title": { "displayName": "Title", "purpose": "Sub-section headings, feature names." },
-      "body": { "displayName": "Body", "purpose": "Paragraph copy, descriptions. system-ui 400. 65-75ch max." },
-      "label": { "displayName": "Label", "purpose": "Nav, badges, tags. Silkscreen 700, uppercase, tracked." },
-      "mono": { "displayName": "Mono", "purpose": "Terminal output, code. VT323, ASCII subset." }
+      "display": { "displayName": "Display", "purpose": "Hero headline 'YOUR' only. text-8xl Silkscreen 700." },
+      "headline": { "displayName": "Headline", "purpose": "Section headings. text-2xl to text-3xl Silkscreen 700." },
+      "title": { "displayName": "Title", "purpose": "Sub-section headings and card titles. text-lg to text-xl Silkscreen 700." },
+      "body": { "displayName": "Body", "purpose": "Paragraph copy. system-ui 400. Max 65-75ch." },
+      "label": { "displayName": "Label", "purpose": "Nav links, badges, tech tags. text-xs uppercase tracking-widest Silkscreen 700." },
+      "mono": { "displayName": "Mono", "purpose": "Terminal output and prompts. VT323 400. ASCII subset only." }
     },
     "shadows": [
-      { "name": "bevel-raised", "value": "border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270)", "purpose": "NeXT mode 3D raised appearance for interactive elements." },
-      { "name": "bevel-sunken", "value": "border: 2px solid; border-color: oklch(2% 0.004 270) oklch(55% 0.006 270) oklch(55% 0.006 270) oklch(2% 0.004 270)", "purpose": "NeXT mode 3D sunken appearance for inset fields." }
+      { "name": "mac-window-shadow", "value": "1px 1px 0 var(--color-ink)", "purpose": "Mac mode terminal container drop shadow. Period-authentic 1px offset." }
     ],
     "motion": [
-      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default easing for state transitions (hover, focus)." },
-      { "name": "ease-reveal", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Scroll reveal entrance animations." },
-      { "name": "duration-fast", "value": "120ms", "purpose": "Hover and state-change transitions." },
-      { "name": "duration-normal", "value": "150ms", "purpose": "Color transitions, theme toggle." },
-      { "name": "scanline-scroll", "value": "8s linear infinite", "purpose": "CRT scanline vertical scroll in NeXT mode." }
+      { "name": "ease-standard", "value": "cubic-bezier(0.25, 1, 0.5, 1)", "purpose": "Default easing for bevel hover transitions and background-position shifts." },
+      { "name": "ease-color", "value": "150ms", "purpose": "Duration for color transitions on hover states." },
+      { "name": "crt-flicker", "value": "step-end 60ms", "purpose": "CRT flicker on theme toggle: white overlay flash at 0ms, 40ms, 80ms, 120ms, 200ms." },
+      { "name": "blink-cursor", "value": "1s step-end infinite", "purpose": "Terminal cursor blink animation." },
+      { "name": "crt-scroll", "value": "8s linear infinite", "purpose": "Scanline vertical scroll animation." },
+      { "name": "typewriter", "value": "220ms per line", "purpose": "Terminal line reveal delay between each typed line." }
     ],
     "breakpoints": [
       { "name": "sm", "value": "640px" },
@@ -38,66 +49,65 @@
   },
   "components": [
     {
-      "name": "Primary CTA Button",
+      "name": "CTA Button",
       "kind": "button",
       "refersTo": "cta-button",
-      "description": "Main call-to-action. Flat in Mac, beveled in NeXT. Teal background in dark.",
-      "html": "<a href=\"#\" class=\"ds-cta\">EXPLORE</a>",
-      "css": ".ds-cta { display: inline-flex; align-items: center; padding: 12px 24px; background: oklch(14% 0.008 65); color: oklch(99.5% 0.004 85); font-family: Silkscreen, system-ui, sans-serif; font-weight: 700; font-size: 14px; border: 1px solid oklch(14% 0.008 65); text-decoration: none; transition: background 150ms, color 150ms; border-radius: 0; } .ds-cta:hover { background: oklch(78% 0.16 75); color: oklch(14% 0.008 65); } @media (prefers-color-scheme: dark) { .ds-cta { background: oklch(62% 0.07 170); color: oklch(6% 0.005 270); border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); } .ds-cta:hover { background: oklch(34% 0.006 270); color: oklch(6% 0.005 270); } } .ds-cta:focus-visible { outline: 2px solid oklch(78% 0.16 75); outline-offset: 2px; }"
+      "description": "Primary call-to-action. Inky black in Mac mode, teal in NeXT mode.",
+      "html": "<a href=\"#challenge\" class=\"ds-cta\"><span>See Why It Matters</span><svg class=\"ds-cta-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13 7l5 5m0 0l-5 5m5-5H6\"></path></svg></a>",
+      "css": ".ds-cta { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: oklch(14% 0.008 65); color: oklch(99.5% 0.004 85); font-weight: 700; font-family: Silkscreen, system-ui, sans-serif; border: 1px solid oklch(14% 0.008 65); transition: background 0.15s, color 0.15s; cursor: pointer; border-radius: 0; text-decoration: none; } .ds-cta:hover { background: oklch(78% 0.16 75); color: oklch(14% 0.008 65); } .ds-cta-icon { width: 1rem; height: 1rem; } .dark .ds-cta { background: oklch(70% 0.07 170); color: oklch(6% 0.005 270); border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); } .dark .ds-cta:hover { background: oklch(34% 0.006 270); color: oklch(6% 0.005 270); }"
     },
     {
       "name": "Icon Square",
       "kind": "custom",
       "refersTo": "icon-square",
-      "description": "Fixed-size square with accent background. Contains SVG icon or bold character.",
-      "html": "<div class=\"ds-icon-square\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5\"/></svg></div>",
-      "css": ".ds-icon-square { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: oklch(78% 0.16 75); flex-shrink: 0; border: 1px solid oklch(14% 0.008 65); border-radius: 0; } .ds-icon-square svg { color: oklch(14% 0.008 65); } @media (prefers-color-scheme: dark) { .ds-icon-square { background: oklch(62% 0.07 170); border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); } .ds-icon-square svg { color: oklch(6% 0.005 270); } }"
+      "description": "48x48px accent-filled square containing an SVG icon. Used for feature items, architecture layers, use case cards.",
+      "html": "<div class=\"ds-icon-square\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z\"></path></svg></div>",
+      "css": ".ds-icon-square { width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: oklch(78% 0.16 75); border: 1px solid oklch(14% 0.008 65); border-radius: 0; } .ds-icon-square svg { width: 1.25rem; height: 1.25rem; color: oklch(14% 0.008 65); } .dark .ds-icon-square { background: oklch(70% 0.07 170); border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); } .dark .ds-icon-square svg { color: oklch(6% 0.005 270); }"
     },
     {
-      "name": "Navigation Bar",
+      "name": "Nav Link Active",
       "kind": "nav",
       "refersTo": "nav-link-active",
-      "description": "Fixed top navigation with logo, section links, and theme toggle. Active pill highlights.",
-      "html": "<nav class=\"ds-nav\"><div class=\"ds-nav-inner\"><a href=\"#\" class=\"ds-nav-logo\">Rezus<span>Cloud</span></a><div class=\"ds-nav-links\"><a href=\"#\" class=\"ds-nav-link ds-nav-link-active\">Home</a><a href=\"#\" class=\"ds-nav-link\">Features</a></div></div></nav>",
-      "css": ".ds-nav { position: fixed; top: 0; width: 100%; z-index: 50; background: oklch(88.5% 0.006 85); border-bottom: 1px solid oklch(72% 0.005 85); font-family: Silkscreen, system-ui, sans-serif; } .ds-nav-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 56px; } .ds-nav-logo { font-size: 18px; font-weight: 700; color: oklch(14% 0.008 65); text-decoration: none; letter-spacing: 0.025em; } .ds-nav-logo span { color: oklch(78% 0.16 75); } .ds-nav-links { display: flex; gap: 4px; } .ds-nav-link { padding: 8px 12px; font-size: 12px; font-weight: 700; color: oklch(30% 0.008 65); text-decoration: none; text-transform: uppercase; letter-spacing: 0.05em; transition: background 120ms; border-radius: 0; } .ds-nav-link:hover { background: oklch(95.5% 0.004 85); } .ds-nav-link-active { background: oklch(99.5% 0.004 85); color: oklch(14% 0.008 65); } @media (prefers-color-scheme: dark) { .ds-nav { background: oklch(20% 0.006 270); border-bottom-color: oklch(34% 0.006 270); } .ds-nav-logo { color: oklch(88% 0.004 270); } .ds-nav-logo span { color: oklch(52% 0.08 170); } .ds-nav-link { color: oklch(72% 0.012 85); } .ds-nav-link:hover { background: oklch(34% 0.006 270); } .ds-nav-link-active { background: oklch(58% 0.006 270); color: oklch(6% 0.005 270); } }"
+      "description": "Active navigation pill. Paper background in Mac, next-light background in NeXT.",
+      "html": "<a href=\"#features\" class=\"ds-nav-active\">Features</a>",
+      "css": ".ds-nav-active { padding: 0.5rem 0.75rem; background: oklch(99.5% 0.004 85); color: oklch(14% 0.008 65); font-family: Silkscreen, system-ui, sans-serif; font-weight: 700; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 0; text-decoration: none; } .dark .ds-nav-active { background: oklch(58% 0.006 270); color: oklch(6% 0.005 270); }"
     },
     {
-      "name": "Terminal",
-      "kind": "custom",
-      "refersTo": null,
-      "description": "VT323 monospace code block with title bar and blinking cursor.",
-      "html": "<div class=\"ds-terminal\"><div class=\"ds-terminal-titlebar\"><span class=\"ds-terminal-dot\"></span><span class=\"ds-terminal-dot\"></span><span class=\"ds-terminal-dot\"></span></div><div class=\"ds-terminal-body\"><span class=\"ds-terminal-prompt\">$</span> rezusctl init<br/><span class=\"ds-terminal-prompt\">*</span> SYSTEM CHECK: ALL CLEAR<br/><span class=\"ds-terminal-prompt\">$</span> <span class=\"ds-terminal-cursor\">_</span></div></div>",
-      "css": ".ds-terminal { border: 1px solid oklch(72% 0.005 85); font-family: VT323, Courier New, monospace; font-size: 16px; background: oklch(14% 0.008 65); color: oklch(99.5% 0.004 85); border-radius: 0; overflow: hidden; } .ds-terminal-titlebar { padding: 8px 12px; background: oklch(88.5% 0.006 85); display: flex; gap: 6px; } .ds-terminal-dot { width: 10px; height: 10px; border-radius: 0; } .ds-terminal-dot:nth-child(1) { background: oklch(50% 0.12 25); } .ds-terminal-dot:nth-child(2) { background: oklch(78% 0.16 75); } .ds-terminal-dot:nth-child(3) { background: oklch(55% 0.12 150); } .ds-terminal-body { padding: 16px; line-height: 1.6; } .ds-terminal-prompt { color: oklch(78% 0.16 75); } .ds-terminal-cursor { animation: ds-blink 1s step-end infinite; } @keyframes ds-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } } @media (prefers-color-scheme: dark) { .ds-terminal { border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); background: oklch(6% 0.005 270); color: oklch(88% 0.004 270); } .ds-terminal-titlebar { background: oklch(20% 0.006 270); } .ds-terminal-prompt { color: oklch(52% 0.08 170); } } @media (prefers-reduced-motion: reduce) { .ds-terminal-cursor { animation: none; } }"
+      "name": "Nav Link Inactive",
+      "kind": "nav",
+      "refersTo": "nav-link-inactive",
+      "description": "Inactive navigation link. Muted text with hover background.",
+      "html": "<a href=\"#architecture\" class=\"ds-nav\">Architecture</a>",
+      "css": ".ds-nav { padding: 0.5rem 0.75rem; color: oklch(30% 0.008 65); font-family: Silkscreen, system-ui, sans-serif; font-weight: 700; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 0; text-decoration: none; transition: background 0.15s, color 0.15s; } .ds-nav:hover { background: oklch(95.5% 0.004 85); } .dark .ds-nav { color: oklch(72% 0.012 85); } .dark .ds-nav:hover { background: oklch(34% 0.006 270); }"
     },
     {
-      "name": "Accent Bar",
-      "kind": "custom",
-      "refersTo": null,
-      "description": "Short horizontal bar used as section heading underline.",
-      "html": "<div class=\"ds-accent-bar\"></div>",
-      "css": ".ds-accent-bar { width: 48px; height: 4px; background: oklch(78% 0.16 75); border-radius: 0; } @media (prefers-color-scheme: dark) { .ds-accent-bar { background: oklch(62% 0.07 170); } }"
-    },
-    {
-      "name": "Tech Tag",
+      "name": "Tech Badge",
       "kind": "chip",
-      "refersTo": null,
-      "description": "Small inline chip for technology labels. Beveled in NeXT mode.",
-      "html": "<span class=\"ds-tech-tag\"><span class=\"ds-tech-dot\"></span>Kubernetes</span>",
-      "css": ".ds-tech-tag { display: inline-flex; align-items: center; padding: 8px 12px; background: oklch(88.5% 0.006 85); border: 1px solid oklch(72% 0.005 85); font-family: Silkscreen, system-ui, sans-serif; font-size: 12px; color: oklch(14% 0.008 65); border-radius: 0; transition: border-color 120ms; } .ds-tech-tag:hover { border-color: oklch(78% 0.16 75); } .ds-tech-dot { width: 4px; height: 4px; background: oklch(78% 0.16 75); margin-right: 6px; flex-shrink: 0; border-radius: 0; } @media (prefers-color-scheme: dark) { .ds-tech-tag { background: oklch(6% 0.005 270); border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); color: oklch(88% 0.004 270); } .ds-tech-tag:hover { border-color: oklch(52% 0.08 170); } .ds-tech-dot { background: oklch(62% 0.07 170); } }"
+      "description": "Technology tag in the Built With strip. Bevel-raised border in NeXT mode with hover highlight.",
+      "html": "<span class=\"ds-badge\"><span class=\"ds-badge-dot\"></span>Kubernetes</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.5rem 0.75rem; background: oklch(88.5% 0.006 85); border: 1px solid oklch(72% 0.005 85); font-family: Silkscreen, system-ui, sans-serif; font-size: 0.75rem; color: oklch(14% 0.008 65); border-radius: 0; transition: border-color 0.15s; } .ds-badge:hover { border-color: oklch(78% 0.16 75); } .ds-badge-dot { width: 0.25rem; height: 0.25rem; background: oklch(78% 0.16 75); border-radius: 0; } .dark .ds-badge { background: oklch(6% 0.005 270); border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); color: oklch(88% 0.004 270); } .dark .ds-badge:hover { border-color: oklch(72% 0.012 85) oklch(6% 0.005 270) oklch(6% 0.005 270) oklch(72% 0.012 85); } .dark .ds-badge-dot { background: oklch(70% 0.07 170); }"
+    },
+    {
+      "name": "Terminal Window",
+      "kind": "custom",
+      "description": "Mac/NeXT terminal container with title bar, typewriter text, and blinking cursor.",
+      "html": "<div class=\"ds-terminal\"><div class=\"ds-terminal-bar\"><span class=\"ds-terminal-dot\" style=\"background:oklch(55% 0.15 25)\"></span><span class=\"ds-terminal-dot\" style=\"background:oklch(75% 0.15 90)\"></span><span class=\"ds-terminal-dot\" style=\"background:oklch(55% 0.15 150)\"></span><span class=\"ds-terminal-title\">rezusctl</span></div><div class=\"ds-terminal-body\"><p class=\"ds-terminal-line\"><span class=\"ds-terminal-prompt\">$</span> rezusctl init</p><p class=\"ds-terminal-line\">Cluster ready. 2 nodes. 30s.</p><p class=\"ds-terminal-line\"><span class=\"ds-terminal-prompt\">$</span> <span class=\"ds-terminal-cursor\">_</span></p></div></div>",
+      "css": ".ds-terminal { background: oklch(6% 0.005 270); border: 1px solid oklch(14% 0.008 65); border-radius: 0; overflow: hidden; box-shadow: 1px 1px 0 oklch(14% 0.008 65); } .dark .ds-terminal { border: 2px solid; border-color: oklch(2% 0.004 270) oklch(55% 0.006 270) oklch(55% 0.006 270) oklch(2% 0.004 270); box-shadow: none; } .ds-terminal-bar { display: flex; align-items: center; gap: 0.375rem; padding: 0.5rem 0.75rem; border-bottom: 1px solid oklch(14% 0.008 65); background: repeating-linear-gradient(to bottom, oklch(0% 0 0) 0px, oklch(0% 0 0) 1px, oklch(100% 0 0) 1px, oklch(100% 0 0) 2px); } .dark .ds-terminal-bar { border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); background: oklch(34% 0.006 270); } .ds-terminal-dot { width: 0.625rem; height: 0.625rem; border: 1px solid oklch(30% 0.008 65); border-radius: 0; } .ds-terminal-title { margin-left: 0.5rem; font-family: Silkscreen, system-ui, sans-serif; font-size: 10px; color: oklch(30% 0.008 65); text-transform: uppercase; letter-spacing: 0.1em; } .dark .ds-terminal-title { color: oklch(72% 0.012 85); } .dark .ds-terminal-dot { display: none; } .ds-terminal-body { padding: 1rem; } .ds-terminal-line { font-family: VT323, Courier New, monospace; font-size: 0.75rem; color: oklch(30% 0.008 65); margin: 0.25rem 0; } .dark .ds-terminal-line { color: oklch(72% 0.012 85); } .ds-terminal-prompt { color: oklch(78% 0.16 75); } .dark .ds-terminal-prompt { color: oklch(60% 0.08 170); } .ds-terminal-cursor { color: oklch(14% 0.008 65); animation: ds-blink 1s step-end infinite; } .dark .ds-terminal-cursor { color: oklch(88% 0.004 270); } @keyframes ds-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }"
     }
   ],
   "narrative": {
     "northStar": "The Machine Room",
-    "overview": "Two operating systems, one machine. Light mode is a 1984 Macintosh 128K: bitmap fonts, 1px borders, stark contrast, amber highlights on warm white. Dark mode is a 1988 NeXTcube: 3D beveled edges, CRT scanlines, phosphor afterglow, muted teal on deep black. The site is not decorated to look retro. It IS retro, running natively in the browser.\n\nThe system is defiant, precise, and nostalgic. Every element earns its place. No rounded corners, no gradient text, no glassmorphism, no SaaS hero-metric template, no identical card grids. The layout principle is flat: text flows without container boxes, spacing varies for rhythm, and section backgrounds alternate between two surface levels. Icon squares and accent dots punctuate the hierarchy. Terminals use VT323 monospace with typewriter line reveals.\n\nFor the brand strategy, storytelling context, and anti-references behind this visual system, see PRODUCT.md.",
+    "overview": "Two operating systems, one machine. Light mode is a 1984 Macintosh 128K: bitmap fonts, 1px borders, stark contrast, amber highlights on warm white. Dark mode is a 1988 NeXTcube: 3D beveled edges, CRT scanlines, phosphor afterglow, muted teal on deep black. The site is not decorated to look retro. It IS retro, running natively in the browser.\n\nThe system is defiant, precise, and nostalgic. Every element earns its place. No rounded corners, no gradient text, no glassmorphism, no SaaS hero-metric template, no identical card grids. The layout principle is flat: text flows without container boxes, spacing varies for rhythm, and section backgrounds alternate between two surface levels.",
     "keyCharacteristics": [
       "Zero border-radius everywhere. Every corner is a right angle.",
       "Dual-era identity: Mac System 1 in light, NeXTSTEP in dark. Fonts stay the same, only colors change.",
-      "Committed color strategy: amber gold (light) / teal (dark) carry the accent load across 30-40% of visible surface.",
-      "Flat text layout: no boxes wrapping content, no bordered cards.",
-      "3D bevel system for NeXT mode: 2px raised/sunken borders on interactive elements.",
-      "CRT overlay: scanline pattern at 4px intervals with slow vertical scroll animation.",
-      "Bitmap typography: Silkscreen for headings/labels/nav, system-ui for body, VT323 for terminals.",
-      "All animations respect prefers-reduced-motion. FOUC prevention via inline script."
+      "Committed color strategy: amber gold (light) / teal (dark) carry the accent load.",
+      "Flat text layout: no boxes wrapping content. Icon squares, dots, and accent bars punctuate.",
+      "3D bevel system for NeXT mode: 2px raised/sunken borders.",
+      "CRT overlay: scanline pattern with slow vertical scroll animation.",
+      "Bitmap typography: Silkscreen headings, system-ui body, VT323 terminals.",
+      "All animations respect prefers-reduced-motion.",
+      "8 sections, 5 use cases, 7 built-in capabilities."
     ],
     "rules": [
       { "name": "The Dual-Accent Rule", "body": "Light mode uses amber gold. Dark mode uses teal. Never mix: amber never appears in dark mode, teal never appears in light mode. Each accent occupies the same structural positions in both modes.", "section": "colors" },
@@ -108,24 +118,24 @@
       { "name": "The Flat-By-Mode Rule", "body": "Mac mode is always flat: borders are always 1px solid ink. NeXT mode uses bevels: borders are always 2px with directional shading. Never mix bevel styles within a mode.", "section": "elevation" }
     ],
     "dos": [
-      "Do use zero border-radius on every element. Every corner is a right angle.",
-      "Do use Silkscreen for all headings, labels, and nav. system-ui for body. VT323 for terminals only.",
-      "Do alternate section backgrounds every section. Paper/surface (light), next-black/next-dark (dark).",
+      "Do use zero border-radius on every element.",
+      "Do use Silkscreen for headings/labels/nav, system-ui for body, VT323 for terminals.",
+      "Do alternate section backgrounds every section.",
       "Do use amber gold (light) / teal (dark) as the exclusive accent.",
       "Do use 2px bevels in NeXT mode for interactive elements.",
-      "Do respect prefers-reduced-motion. All animations must have a static fallback.",
-      "Do use warm-tinted neutrals. Hue 85 (amber) for Mac, hue 270 (cool) for NeXT.",
+      "Do respect prefers-reduced-motion.",
+      "Do use warm-tinted neutrals (hue 85 for Mac, hue 270 for NeXT).",
       "Do vary section padding for rhythm."
     ],
     "donts": [
-      "Don't use rounded corners anywhere. No border-radius.",
+      "Don't use rounded corners anywhere.",
       "Don't use gradient text (background-clip: text).",
-      "Don't use glassmorphism. No blur overlays, no frosted glass cards.",
-      "Don't wrap text in bordered container boxes. Layout is flat.",
-      "Don't mix accent colors between modes. Amber never in dark, teal never in light.",
-      "Don't use #000 or #fff. All neutrals are tinted with brand hue.",
-      "Don't use next-light as an accent color. Teal is the accent.",
-      "Don't animate CSS layout properties. Animate opacity and transform only.",
+      "Don't use glassmorphism.",
+      "Don't wrap text in bordered container boxes.",
+      "Don't mix accent colors between modes.",
+      "Don't use #000 or #fff.",
+      "Don't use next-light as an accent color.",
+      "Don't animate CSS layout properties.",
       "Don't use bounce, elastic, or spring easings."
     ]
   }
