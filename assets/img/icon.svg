@@ -1,39 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <!--
-    RezusCloud brand icon: Macintosh-style CRT with amber cloud.
-    Susan Kare spirit: bold outlines, warm colors, friendly shapes.
+    RezusCloud brand icon: CRT monitor with classic cloud.
+    Monochrome silhouette. Two colors, shape carries identity.
   -->
 
-  <!-- Monitor body — warm platinum (Mac 128K beige) -->
-  <rect x="48" y="28" width="416" height="328" rx="16" fill="#D4C9A8"/>
-  <!-- Outer frame line -->
-  <rect x="48" y="28" width="416" height="328" rx="16" fill="none" stroke="#1A1A1E" stroke-width="6"/>
+  <!-- Monitor body -->
+  <rect x="56" y="32" width="400" height="320" rx="12" fill="#1A1A1E"/>
 
-  <!-- Screen bezel — darker warm gray -->
-  <rect x="72" y="52" width="368" height="268" rx="6" fill="#8A8070"/>
-  <!-- Bezel inner line -->
-  <rect x="72" y="52" width="368" height="268" rx="6" fill="none" stroke="#1A1A1E" stroke-width="3"/>
+  <!-- Screen -->
+  <rect x="80" y="56" width="352" height="264" rx="4" fill="#F7F4EF"/>
 
-  <!-- Screen — dark CRT -->
-  <rect x="88" y="68" width="336" height="236" fill="#1A1A1E"/>
+  <!-- Classic cloud: flat bottom, two smooth bumps on top -->
+  <path d="
+    M164 256
+    C164 256 148 256 148 224
+    C148 196 172 180 196 180
+    C196 148 220 128 252 128
+    C284 128 308 148 308 180
+    C332 180 356 196 356 224
+    C356 256 340 256 340 256
+    Z
+  " fill="#1A1A1E"/>
 
-  <!-- Cloud on screen — amber gold (brand accent) -->
-  <g fill="#C48A1A">
-    <rect x="164" y="224" width="184" height="44" rx="22"/>
-    <circle cx="208" cy="196" r="40"/>
-    <circle cx="260" cy="176" r="48"/>
-    <circle cx="310" cy="194" r="36"/>
-  </g>
-
-  <!-- Floppy slot — iconic Mac detail -->
-  <rect x="184" y="298" width="144" height="8" rx="2" fill="#8A8070" stroke="#1A1A1E" stroke-width="2"/>
-
-  <!-- Power LED — warm green -->
-  <circle cx="256" cy="326" r="6" fill="#5A9A3A" stroke="#1A1A1E" stroke-width="2"/>
-
-  <!-- Stand neck -->
-  <rect x="218" y="356" width="76" height="48" rx="2" fill="#D4C9A8" stroke="#1A1A1E" stroke-width="4"/>
-
-  <!-- Stand base -->
-  <rect x="168" y="404" width="176" height="28" rx="8" fill="#D4C9A8" stroke="#1A1A1E" stroke-width="4"/>
+  <!-- Stand -->
+  <rect x="224" y="352" width="64" height="44" fill="#1A1A1E"/>
+  <rect x="184" y="396" width="144" height="24" rx="4" fill="#1A1A1E"/>
 </svg>
