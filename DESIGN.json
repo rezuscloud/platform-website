@@ -4,36 +4,175 @@
   "title": "Design System: RezusCloud",
   "extensions": {
     "colorMeta": {
-      "paper": { "role": "neutral-bg", "displayName": "Paper", "canonical": "oklch(99.5% 0.004 85)", "tonalRamp": ["oklch(15% 0.004 85)", "oklch(30% 0.004 85)", "oklch(45% 0.004 85)", "oklch(60% 0.004 85)", "oklch(75% 0.004 85)", "oklch(85% 0.004 85)", "oklch(95.5% 0.004 85)", "oklch(99.5% 0.004 85)"] },
-      "surface": { "role": "neutral-bg", "displayName": "Surface", "canonical": "oklch(95.5% 0.004 85)", "tonalRamp": ["oklch(15% 0.004 85)", "oklch(30% 0.004 85)", "oklch(45% 0.004 85)", "oklch(60% 0.004 85)", "oklch(75% 0.004 85)", "oklch(88.5% 0.006 85)", "oklch(95.5% 0.004 85)", "oklch(99.5% 0.004 85)"] },
-      "ink": { "role": "neutral-text", "displayName": "Ink", "canonical": "oklch(14% 0.008 65)", "tonalRamp": ["oklch(14% 0.008 65)", "oklch(20% 0.008 65)", "oklch(30% 0.008 65)", "oklch(45% 0.008 65)", "oklch(60% 0.008 65)", "oklch(72% 0.005 85)", "oklch(88.5% 0.006 85)", "oklch(99.5% 0.004 85)"] },
-      "accent-gold": { "role": "primary", "displayName": "Amber Gold", "canonical": "oklch(78% 0.16 75)", "tonalRamp": ["oklch(20% 0.16 75)", "oklch(30% 0.16 75)", "oklch(40% 0.16 75)", "oklch(50% 0.16 75)", "oklch(60% 0.16 75)", "oklch(70% 0.16 75)", "oklch(78% 0.16 75)", "oklch(90% 0.12 75)"] },
-      "next-black": { "role": "neutral-bg", "displayName": "NeXT Black", "canonical": "oklch(6% 0.005 270)", "tonalRamp": ["oklch(6% 0.006 270)", "oklch(20% 0.006 270)", "oklch(34% 0.006 270)", "oklch(48% 0.006 270)", "oklch(58% 0.006 270)", "oklch(72% 0.006 270)", "oklch(82% 0.006 270)", "oklch(88% 0.006 270)"] },
-      "next-teal": { "role": "primary", "displayName": "NeXT Teal", "canonical": "oklch(52% 0.08 170)", "tonalRamp": ["oklch(15% 0.08 170)", "oklch(25% 0.08 170)", "oklch(35% 0.08 170)", "oklch(45% 0.08 170)", "oklch(52% 0.08 170)", "oklch(62% 0.07 170)", "oklch(75% 0.06 170)", "oklch(85% 0.04 170)"] }
+      "paper": {
+        "role": "neutral-bg",
+        "displayName": "Paper",
+        "canonical": "oklch(99.5% 0.004 85)",
+        "tonalRamp": [
+          "oklch(15% 0.004 85)",
+          "oklch(30% 0.004 85)",
+          "oklch(45% 0.004 85)",
+          "oklch(60% 0.004 85)",
+          "oklch(75% 0.004 85)",
+          "oklch(85% 0.004 85)",
+          "oklch(95.5% 0.004 85)",
+          "oklch(99.5% 0.004 85)"
+        ]
+      },
+      "surface": {
+        "role": "neutral-bg",
+        "displayName": "Surface",
+        "canonical": "oklch(95.5% 0.004 85)",
+        "tonalRamp": [
+          "oklch(15% 0.004 85)",
+          "oklch(30% 0.004 85)",
+          "oklch(45% 0.004 85)",
+          "oklch(60% 0.004 85)",
+          "oklch(75% 0.004 85)",
+          "oklch(88.5% 0.006 85)",
+          "oklch(95.5% 0.004 85)",
+          "oklch(99.5% 0.004 85)"
+        ]
+      },
+      "ink": {
+        "role": "neutral-text",
+        "displayName": "Ink",
+        "canonical": "oklch(14% 0.008 65)",
+        "tonalRamp": [
+          "oklch(14% 0.008 65)",
+          "oklch(20% 0.008 65)",
+          "oklch(30% 0.008 65)",
+          "oklch(45% 0.008 65)",
+          "oklch(60% 0.008 65)",
+          "oklch(72% 0.005 85)",
+          "oklch(88.5% 0.006 85)",
+          "oklch(99.5% 0.004 85)"
+        ]
+      },
+      "accent-gold": {
+        "role": "primary",
+        "displayName": "Amber Gold",
+        "canonical": "oklch(78% 0.16 75)",
+        "tonalRamp": [
+          "oklch(20% 0.16 75)",
+          "oklch(30% 0.16 75)",
+          "oklch(40% 0.16 75)",
+          "oklch(50% 0.16 75)",
+          "oklch(60% 0.16 75)",
+          "oklch(70% 0.16 75)",
+          "oklch(78% 0.16 75)",
+          "oklch(90% 0.12 75)"
+        ]
+      },
+      "next-black": {
+        "role": "neutral-bg",
+        "displayName": "NeXT Black",
+        "canonical": "oklch(6% 0.005 270)",
+        "tonalRamp": [
+          "oklch(6% 0.006 270)",
+          "oklch(20% 0.006 270)",
+          "oklch(34% 0.006 270)",
+          "oklch(48% 0.006 270)",
+          "oklch(58% 0.006 270)",
+          "oklch(72% 0.006 270)",
+          "oklch(82% 0.006 270)",
+          "oklch(88% 0.006 270)"
+        ]
+      },
+      "next-teal": {
+        "role": "primary",
+        "displayName": "NeXT Teal",
+        "canonical": "oklch(52% 0.08 170)",
+        "tonalRamp": [
+          "oklch(15% 0.08 170)",
+          "oklch(25% 0.08 170)",
+          "oklch(35% 0.08 170)",
+          "oklch(45% 0.08 170)",
+          "oklch(52% 0.08 170)",
+          "oklch(62% 0.07 170)",
+          "oklch(75% 0.06 170)",
+          "oklch(85% 0.04 170)"
+        ]
+      }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Hero headline only. Single most prominent element." },
-      "headline": { "displayName": "Headline", "purpose": "Section headings. Silkscreen 700." },
-      "title": { "displayName": "Title", "purpose": "Sub-section headings, feature names." },
-      "body": { "displayName": "Body", "purpose": "Paragraph copy, descriptions. system-ui 400. 65-75ch max." },
-      "label": { "displayName": "Label", "purpose": "Nav, badges, tags. Silkscreen 700, uppercase, tracked." },
-      "mono": { "displayName": "Mono", "purpose": "Terminal output, code. VT323, ASCII subset." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline only. Single most prominent element."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings. Silkscreen 700."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Sub-section headings, feature names."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Paragraph copy, descriptions. system-ui 400. 65-75ch max."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Nav, badges, tags. Silkscreen 700, uppercase, tracked."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Terminal output, code. VT323, ASCII subset."
+      }
     },
     "shadows": [
-      { "name": "bevel-raised", "value": "border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270)", "purpose": "NeXT mode 3D raised appearance for interactive elements." },
-      { "name": "bevel-sunken", "value": "border: 2px solid; border-color: oklch(2% 0.004 270) oklch(55% 0.006 270) oklch(55% 0.006 270) oklch(2% 0.004 270)", "purpose": "NeXT mode 3D sunken appearance for inset fields." }
+      {
+        "name": "bevel-raised",
+        "value": "border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270)",
+        "purpose": "NeXT mode 3D raised appearance for interactive elements."
+      },
+      {
+        "name": "bevel-sunken",
+        "value": "border: 2px solid; border-color: oklch(2% 0.004 270) oklch(55% 0.006 270) oklch(55% 0.006 270) oklch(2% 0.004 270)",
+        "purpose": "NeXT mode 3D sunken appearance for inset fields."
+      }
     ],
     "motion": [
-      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default easing for state transitions (hover, focus)." },
-      { "name": "ease-reveal", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Scroll reveal entrance animations." },
-      { "name": "duration-fast", "value": "120ms", "purpose": "Hover and state-change transitions." },
-      { "name": "duration-normal", "value": "150ms", "purpose": "Color transitions, theme toggle." },
-      { "name": "scanline-scroll", "value": "8s linear infinite", "purpose": "CRT scanline vertical scroll in NeXT mode." }
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Default easing for state transitions (hover, focus)."
+      },
+      {
+        "name": "ease-reveal",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Scroll reveal entrance animations."
+      },
+      {
+        "name": "duration-fast",
+        "value": "120ms",
+        "purpose": "Hover and state-change transitions."
+      },
+      {
+        "name": "duration-normal",
+        "value": "150ms",
+        "purpose": "Color transitions, theme toggle."
+      },
+      {
+        "name": "scanline-scroll",
+        "value": "8s linear infinite",
+        "purpose": "CRT scanline vertical scroll in NeXT mode."
+      }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "1024px" }
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
     ]
   },
   "components": [
@@ -88,7 +227,7 @@
   ],
   "narrative": {
     "northStar": "The Machine Room",
-    "overview": "Two operating systems, one machine. Light mode is a 1984 Macintosh 128K: bitmap fonts, 1px borders, stark contrast, amber highlights on warm white. Dark mode is a 1988 NeXTcube: 3D beveled edges, CRT scanlines, phosphor afterglow, muted teal on deep black. The site is not decorated to look retro. It IS retro, running natively in the browser.\n\nThe system is defiant, precise, and nostalgic. Every element earns its place. No rounded corners, no gradient text, no glassmorphism, no SaaS hero-metric template, no identical card grids. The layout principle is flat: text flows without container boxes, spacing varies for rhythm, and section backgrounds alternate between two surface levels.\n\nWhat this system explicitly rejects: anything that looks like it was generated by a 2024 landing-page template. No hero metrics. No card grids. No glass cards. No em dashes.",
+    "overview": "Two operating systems, one machine. Light mode is a 1984 Macintosh 128K: bitmap fonts, 1px borders, stark contrast, amber highlights on warm white. Dark mode is a 1988 NeXTcube: 3D beveled edges, CRT scanlines, phosphor afterglow, muted teal on deep black. The site is not decorated to look retro. It IS retro, running natively in the browser.\n\nThe system is defiant, precise, and nostalgic. Every element earns its place. No rounded corners, no gradient text, no glassmorphism, no SaaS hero-metric template, no identical card grids. The layout principle is flat: text flows without container boxes, spacing varies for rhythm, and section backgrounds alternate between two surface levels.\n\nFor the brand strategy, storytelling context, and anti-references behind this visual system, see PRODUCT.md.",
     "keyCharacteristics": [
       "Zero border-radius everywhere. Every corner is a right angle.",
       "Dual-era identity: Mac System 1 in light, NeXTSTEP in dark. Fonts stay the same, only colors change.",
@@ -100,12 +239,36 @@
       "All animations respect prefers-reduced-motion. FOUC prevention via inline script."
     ],
     "rules": [
-      { "name": "The Dual-Accent Rule", "body": "Light mode uses amber gold. Dark mode uses teal. Never mix: amber never appears in dark mode, teal never appears in light mode. Each accent occupies the same structural positions in both modes.", "section": "colors" },
-      { "name": "The Alternating Rhythm Rule", "body": "Sections alternate between two background levels. Light: paper and surface. Dark: next-black and next-dark. The challenge section inverts: ink (light) and next-dark (dark). This rhythm never breaks.", "section": "colors" },
-      { "name": "The No-Gray-Accent Rule", "body": "In NeXT mode, next-light is a bright neutral for UI chrome (active nav pills only). It is never used for accent purposes. That role belongs exclusively to next-teal.", "section": "colors" },
-      { "name": "The No-Serif Rule", "body": "Serif fonts never appear. The system is entirely sans-serif + bitmap + mono.", "section": "typography" },
-      { "name": "The Font-Consistency Rule", "body": "Font families are identical between light and dark modes. Only colors change.", "section": "typography" },
-      { "name": "The Flat-By-Mode Rule", "body": "Mac mode is always flat: borders are always 1px solid ink. NeXT mode uses bevels: borders are always 2px with directional shading. Never mix bevel styles within a mode.", "section": "elevation" }
+      {
+        "name": "The Dual-Accent Rule",
+        "body": "Light mode uses amber gold. Dark mode uses teal. Never mix: amber never appears in dark mode, teal never appears in light mode. Each accent occupies the same structural positions in both modes.",
+        "section": "colors"
+      },
+      {
+        "name": "The Alternating Rhythm Rule",
+        "body": "Sections alternate between two background levels. Light: paper and surface. Dark: next-black and next-dark. The challenge section inverts: ink (light) and next-dark (dark). This rhythm never breaks.",
+        "section": "colors"
+      },
+      {
+        "name": "The No-Gray-Accent Rule",
+        "body": "In NeXT mode, next-light is a bright neutral for UI chrome (active nav pills only). It is never used for accent purposes. That role belongs exclusively to next-teal.",
+        "section": "colors"
+      },
+      {
+        "name": "The No-Serif Rule",
+        "body": "Serif fonts never appear. The system is entirely sans-serif + bitmap + mono.",
+        "section": "typography"
+      },
+      {
+        "name": "The Font-Consistency Rule",
+        "body": "Font families are identical between light and dark modes. Only colors change.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Mode Rule",
+        "body": "Mac mode is always flat: borders are always 1px solid ink. NeXT mode uses bevels: borders are always 2px with directional shading. Never mix bevel styles within a mode.",
+        "section": "elevation"
+      }
     ],
     "dos": [
       "Do use zero border-radius on every element. Every corner is a right angle.",
@@ -121,9 +284,6 @@
       "Don't use rounded corners anywhere. No border-radius.",
       "Don't use gradient text (background-clip: text).",
       "Don't use glassmorphism. No blur overlays, no frosted glass cards.",
-      "Don't use the hero-metric template (big number, small label, supporting stats).",
-      "Don't use identical card grids. No repeated same-sized icon + heading + text cards.",
-      "Don't use em dashes. Use commas, colons, periods, middots instead.",
       "Don't wrap text in bordered container boxes. Layout is flat.",
       "Don't mix accent colors between modes. Amber never in dark, teal never in light.",
       "Don't use #000 or #fff. All neutrals are tinted with brand hue.",
