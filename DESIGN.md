@@ -18,8 +18,8 @@ colors:
   next-light: "oklch(58% 0.006 270)"
   next-white: "oklch(88% 0.004 270)"
   next-subtle: "oklch(72% 0.012 85)"
-  next-teal: "oklch(52% 0.08 170)"
-  next-teal-hi: "oklch(62% 0.07 170)"
+  next-teal: "oklch(60% 0.08 170)"
+  next-teal-hi: "oklch(70% 0.07 170)"
   # Bevel system
   next-bevel-hi: "oklch(55% 0.006 270)"
   next-bevel-lo: "oklch(2% 0.004 270)"
@@ -106,7 +106,7 @@ Two operating systems, one machine. Light mode is a 1984 Macintosh 128K: bitmap 
 
 The system is defiant, precise, and nostalgic. Every element earns its place. No rounded corners, no gradient text, no glassmorphism, no SaaS hero-metric template, no identical card grids. The layout principle is flat: text flows without container boxes, spacing varies for rhythm, and section backgrounds alternate between two surface levels. Icon squares and accent dots punctuate the hierarchy. Terminals use VT323 monospace with typewriter line reveals.
 
-For the brand strategy, storytelling context, and anti-references behind this visual system, see PRODUCT.md.
+For the brand strategy, storytelling context, and anti-references behind this visual system, see PRODUCT.md. For domain terminology (Personal Cloud, Machine Room, Golden Path, Builder), see CONTEXT.md.
 
 **Key Characteristics:**
 - Zero border-radius everywhere. Every corner is a right angle.
@@ -114,9 +114,12 @@ For the brand strategy, storytelling context, and anti-references behind this vi
 - Committed color strategy: amber gold (light) / teal (dark) carry the accent load across 30-40% of visible surface.
 - Flat text layout: no boxes wrapping content, no bordered cards. Icon squares, dots, and accent bars punctuate.
 - 3D bevel system for NeXT mode: 2px raised/sunken borders on interactive elements and signature components.
-- CRT overlay: scanline pattern at 4px intervals with slow vertical scroll animation.
+- CRT overlay: scanline pattern at 2px intervals with slow vertical scroll animation.
 - Bitmap typography: Silkscreen for headings, labels, and nav. system-ui for body. VT323 for terminals.
 - All animations respect `prefers-reduced-motion`. FOUC prevention via inline script.
+- 8 sections: Hero, Challenge, Architecture, Features, Networking, Comparison, Use Cases, Get Started.
+- 5 use cases spanning entry-level to enterprise: Home Server, Personal Projects, Private Cloud Storage, ML & Data Pipelines, Production Infrastructure.
+- 7 built-in capabilities including GPU Scheduling, Access Control, and Multi-Site Edge.
 
 ## 2. Colors
 
@@ -140,8 +143,8 @@ Two complete palettes, each with warm-tinted neutrals and one saturated accent. 
 - **Next-light** (oklch(58% 0.006 270)): Bright neutral for active nav pill backgrounds. NOT used as accent (that role belongs to next-teal).
 - **Next-white** (oklch(88% 0.004 270)): Primary text. Cool white for headings, body copy.
 - **Next-subtle** (oklch(72% 0.012 85)): Secondary text. Warm-tinted beige (hue 85) for descriptions, labels. Two-color text system: cool white + warm beige.
-- **Next-teal** (oklch(52% 0.08 170)): Accent for text and borders. Logo "Cloud", terminal prompts, hero "YOUR", hero subtitle, table headers, badge borders. The NeXT Inc. brand color.
-- **Next-teal-hi** (oklch(62% 0.07 170)): Accent for backgrounds. Icon squares, dots, accent bars, CTA button. Lighter variant for contrast on dark surfaces.
+- **Next-teal** (oklch(60% 0.08 170)): Accent for text and borders. Logo "Cloud", terminal prompts, hero "YOUR", hero subtitle, table headers, badge borders, use case card icons. The NeXT Inc. brand color. Contrast-safe: passes AA on both next-black and next-dark.
+- **Next-teal-hi** (oklch(70% 0.07 170)): Accent for backgrounds. Icon squares, dots, accent bars, CTA button. Lighter variant for contrast on dark surfaces.
 
 ### Bevel System
 
@@ -170,7 +173,7 @@ Two complete palettes, each with warm-tinted neutrals and one saturated accent. 
 - **Headline** (700 weight, text-2xl to text-3xl, leading-snug to leading-tight): Section headings. Left-aligned for Architecture and Networking, centered for others.
 - **Title** (700 weight, text-lg to text-xl, leading-snug): Sub-section headings, card titles, feature names.
 - **Body** (400 weight, text-sm to text-lg, leading-relaxed): Paragraph copy, descriptions, feature details. Max line length 65-75ch.
-- **Label** (700 weight, text-xs, tracking-widest, uppercase): Nav links, section badges ("1984 // Then vs Now"), feature categories, tech tags.
+- **Label** (700 weight, text-xs, tracking-widest, uppercase): Nav links, section badges ("The Mainframe Era // Then vs Now"), feature categories, tech tags.
 - **Mono** (400 weight, text-sm to text-base): Terminal output, code prompts, boot sequence lines, cursor blink.
 
 ### Named Rules
@@ -181,13 +184,13 @@ Two complete palettes, each with warm-tinted neutrals and one saturated accent. 
 
 ## 4. Elevation
 
-Mac mode is flat. No shadows, no bevels. Depth comes from background color alternation (paper vs surface) and border rules. This is the Mac System 1 aesthetic: 1px black borders on stark white.
+Mac mode is flat. No shadows, no bevels. Depth comes from background color alternation (paper vs surface) and border rules. The single exception is the `mac-window-shadow` utility (1px 1px 0 ink) applied to terminal containers.
 
-NeXT mode uses a 2px 3D bevel system. The bevels simulate the chunky, period-authentic NeXTSTEP interface: a top-left highlight (bevel-hi at oklch 55%) and bottom-right shadow (bevel-lo at oklch 2%) create raised elements. Reversing the colors creates sunken elements. Applied to: icon squares, CTA button, tech tags, mobile nav wrapper.
+NeXT mode uses a 2px 3D bevel system. The bevels simulate the chunky, period-authentic NeXTSTEP interface: a top-left highlight (bevel-hi at oklch 55%) and bottom-right shadow (bevel-lo at oklch 2%) create raised elements. Reversing the colors creates sunken elements. Applied to: icon squares, CTA button, tech badges, mobile nav wrapper.
 
 ### Bevel Vocabulary
 
-- **Raised** (`border: 2px solid; border-color: bevel-hi bevel-lo bevel-lo bevel-hi`): Default for interactive containers. Icon squares, buttons, tech tags.
+- **Raised** (`border: 2px solid; border-color: bevel-hi bevel-lo bevel-lo bevel-hi`): Default for interactive containers. Icon squares, buttons, tech badges.
 - **Sunken** (`border: 2px solid; border-color: bevel-lo bevel-hi bevel-hi bevel-lo`): Inset fields. Available but not currently used.
 - **Hover raised** (`next-bevel-hover`): Brightens bevel-hi on hover for interactive feedback.
 
@@ -195,6 +198,8 @@ NeXT mode uses a 2px 3D bevel system. The bevels simulate the chunky, period-aut
 
 - **CRT Scanlines** (`next-scanlines`): 2px horizontal lines at 8% white opacity, 4px intervals. Slow vertical scroll animation (8s linear infinite). Fixed overlay on entire viewport in dark mode.
 - **CRT Flicker**: White overlay flashes on theme toggle (step-end timing, 200ms total).
+- **Mac Dot Grid** (`mac-dots`): Radial gradient dots at 12px intervals. Parallax-shifted on mouse move. 4% opacity, hidden in dark mode.
+- **Challenge Hash Texture**: Diagonal lines at 45 degrees (1px oklch(99.5% 0.004 85), 12px gap) at 3% opacity. Inverted section background decoration.
 
 ### Named Rules
 
@@ -204,7 +209,7 @@ NeXT mode uses a 2px 3D bevel system. The bevels simulate the chunky, period-aut
 
 ### Navigation
 
-Fixed top bar. `surface-strong` (light) / `next-dark` (dark) background. 1px bottom border. Logo: "Rezus" in ink/next-white + "Cloud" in accent-gold/next-teal. Desktop links: Silkscreen label weight, uppercase. Active state: pill background (paper/next-light). Hover: surface/next-mid background. Mobile: hamburger menu with slide-down panel.
+Fixed top bar. `surface-strong` (light) / `next-dark` (dark) background. 1px bottom border. Logo: "Rezus" in ink/next-white + "Cloud" in accent-gold/next-teal. Desktop links: Silkscreen label weight, uppercase. Active state: pill background (paper/next-light). Hover: surface/next-mid background. Mobile: hamburger menu with slide-down panel. IntersectionObserver tracks active section via scroll position.
 
 ### CTA Button
 
@@ -224,15 +229,23 @@ Horizontal bars (w-12 h-1). Background: accent-gold (light) / next-teal-hi (dark
 
 ### Terminal
 
-VT323 monospace. Dark background container with title bar (static diagonal barber pole stripes). Blinking cursor via CSS animation. Line-by-line typewriter reveal. Green/amber text for prompts, white for output. `prefers-reduced-motion` shows all lines immediately.
+VT323 monospace. Dark background container with title bar (static diagonal barber pole stripes: alternating 1px black/1px white). Blinking cursor via CSS animation. Line-by-line typewriter reveal. Green/amber text for prompts, white for output. `prefers-reduced-motion` shows all lines immediately.
+
+### Use Case Cards
+
+5 cards spanning entry-level to enterprise. Each has: icon square (w-12 h-12), bold title, description, 3 bullet items with accent dots. Flat layout: no borders, no background. Icon square is the only colored element. Cards are stacked vertically with `space-y-10` spacing.
+
+### Feature Items
+
+4 core promises in 2-column grid (icon square + text). Below: 7 capabilities as dot-prefixed flat list separated by border-t divider. No borders on individual items.
 
 ### Comparison Table
 
-Full-width bordered table. 1px borders in rule (light) / next-mid (dark). Header row with accent-colored column labels. Alternating row backgrounds via surface/next-dark. Challenge section uses inverted background (ink/next-dark).
+Full-width bordered table. 2px border frame (comparison signature moment). Header row with accent-colored column labels. 8 rows comparing renting vs owning. Hover rows highlight.
 
 ### Footer
 
-`surface-strong` (light) / `next-dark` (dark) background. Top border. Logo with icon square. Navigation links. Terminal-style copyright line with accent-colored tech stack mention.
+`surface-strong` (light) / `next-dark` (dark) background. Top border. Logo with icon square. "Explore" and "Platform" link groups with internal anchors. Terminal-style copyright line with accent-colored tech stack mention: "MODEL RC-001 // SERIAL: OPEN-SOURCE".
 
 ### Skip Link
 
@@ -254,6 +267,7 @@ Full-width bordered table. 1px borders in rule (light) / next-mid (dark). Header
 - **Do** use warm-tinted neutrals. Paper and ink have hue 85 (amber direction). Next-black and next-white have hue 270 (cool direction).
 - **Do** use next-subtle (warm-tinted at hue 85) for dark mode secondary text. The two-color text system (cool white + warm beige) mirrors light mode (black + brown).
 - **Do** vary section padding for rhythm. py-12 to py-32 depending on section importance.
+- **Do** reference CONTEXT.md for domain terminology when writing copy.
 
 ### Don't:
 - **Don't** use rounded corners anywhere. No `rounded-*` classes. No `border-radius` in CSS.
@@ -265,5 +279,7 @@ Full-width bordered table. 1px borders in rule (light) / next-mid (dark). Header
 - **Don't** use next-light as an accent color. It is a bright neutral for active nav pills only. Teal is the accent.
 - **Don't** animate CSS layout properties. Animate opacity and transform only.
 - **Don't** use bounce, elastic, or spring easings. Use ease-out-quart or exponential curves.
+- **Don't** create platforms designed for procurement committees and sold via sales calls. This platform gives engineers enterprise capabilities directly.
+- **Don't** use trust logos, monthly pricing tables, or "Get Started Free" CTAs. This is not a subscription product.
 
 For brand-level anti-references (what this product is NOT), see PRODUCT.md.
