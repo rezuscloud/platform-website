@@ -25,9 +25,7 @@ jobs:
         run: gh api --silent --method DELETE repos/${{ github.repository }}/issues/${PR_NUMBER}/labels/preview-ready || true
 
   mark:
-    if: >-
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.head_repository.full_name == github.repository
+    if: github.event_name == 'workflow_run'
     runs-on: ubuntu-latest
     steps:
       - name: Mark preview ready after successful docker-pr
