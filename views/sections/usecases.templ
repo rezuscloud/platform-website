@@ -4,7 +4,7 @@ templ UseCases() {
 	<section id="usecases" data-reveal class="py-16 sm:py-24 bg-surface dark:bg-next-dark">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-10">
-				<div class="w-12 h-1 bg-accent-gold dark:bg-next-light mx-auto mb-4"></div>
+				<div class="w-12 h-1 bg-accent-gold dark:bg-next-teal-hi mx-auto mb-4"></div>
 				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white">What Will You Build?</h2>
 				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body">
 					Your own platform, your own rules. Here's some inspiration to get you started.
@@ -69,7 +69,7 @@ type UseCaseItem struct {
 
 templ useCaseCard(title string, description string, items []UseCaseItem, icon templ.Component) {
 	<div class="flex items-start gap-5">
-		<div class="w-12 h-12 bg-accent-gold dark:bg-next-light flex items-center justify-center shrink-0 border border-ink dark:next-raised">
+		<div class="w-12 h-12 bg-accent-gold dark:bg-next-teal-hi flex items-center justify-center shrink-0 border border-ink dark:next-raised">
 			@icon
 		</div>
 		<div>
@@ -78,7 +78,7 @@ templ useCaseCard(title string, description string, items []UseCaseItem, icon te
 			<ul class="space-y-1.5">
 				for _, item := range items {
 					<li class="flex items-start gap-2 text-sm">
-						<span class="mt-1.5 w-1.5 h-1.5 bg-accent-gold dark:bg-next-light shrink-0"></span>
+						<span class="mt-1.5 w-1.5 h-1.5 bg-accent-gold dark:bg-next-teal-hi shrink-0"></span>
 						<span class="font-mac-body"><span class="font-medium text-ink dark:text-next-white">{ item.Title }</span> <span class="text-ink-muted dark:text-next-subtle">· { item.Description }</span></span>
 					</li>
 				}
@@ -88,8 +88,8 @@ templ useCaseCard(title string, description string, items []UseCaseItem, icon te
 }
 
 templ techBadge(name string) {
-	<span class="inline-flex items-center px-3 py-2 bg-surface-strong dark:bg-next-black border border-rule dark:next-raised text-xs font-mac text-ink dark:text-next-white hover:border-accent-gold dark:hover:border-next-light next-bevel-hover transition-colors duration-120">
-		<span class="w-1 h-1 bg-accent-gold dark:bg-next-light mr-1.5 shrink-0"></span>
+	<span class="inline-flex items-center px-3 py-2 bg-surface-strong dark:bg-next-black border border-rule dark:next-raised text-xs font-mac text-ink dark:text-next-white hover:border-accent-gold dark:hover:border-next-teal next-bevel-hover transition-colors duration-120">
+		<span class="w-1 h-1 bg-accent-gold dark:bg-next-teal-hi mr-1.5 shrink-0"></span>
 		{ name }
 	</span>
 }
