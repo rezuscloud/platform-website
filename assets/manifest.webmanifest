@@ -1,11 +1,11 @@
 {
   "name": "RezusCloud Personal Cloud",
   "short_name": "RezusCloud",
-  "description": "Your personal cloud infrastructure.",
+  "description": "Your Personal Cloud. Own it.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#faf8f3",
-  "theme_color": "#ffb000",
+  "background_color": "#F7F4EF",
+  "theme_color": "#C48A1A",
   "icons": [
     {
       "src": "/assets/img/icon-192.png",

@@ -1,25 +1,46 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!--
+    RezusCloud retro brand icon: pixel-art CRT monitor with cloud.
+    Designed for crisp rendering at 16x16 through 512x512.
+    Uses amber (Mac accent) body with dark screen showing a pixel cloud.
+  -->
   <defs>
-    <linearGradient id="screenGlow" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#001a00"/>
-      <stop offset="100%" style="stop-color:#000d00"/>
-    </linearGradient>
+    <style>
+      .monitor-body { fill: #C48A1A; }
+      .monitor-bezel { fill: #A67616; }
+      .screen { fill: #0D0D12; }
+      .cloud { fill: #E8C84A; }
+      .stand-base { fill: #8B6512; }
+      .stand-neck { fill: #A67616; }
+      .led { fill: #E8C84A; }
+    </style>
   </defs>
-  <rect x="40" y="30" width="432" height="300" rx="16" fill="#2a1a0e" stroke="#5e503b" stroke-width="4"/>
-  <rect x="56" y="46" width="400" height="268" rx="8" fill="url(#screenGlow)" stroke="#1e1e3a" stroke-width="2"/>
-  <text x="80" y="100" font-family="monospace" font-size="32" font-weight="bold" fill="#00ff41" opacity="0.95">$</text>
-  <text x="104" y="100" font-family="monospace" font-size="28" fill="#00ff41" opacity="0.7">your-cloud</text>
-  <rect x="80" y="116" width="120" height="2" fill="#00ff41" opacity="0.6"/>
-  <rect x="80" y="130" width="90" height="2" fill="#00ff41" opacity="0.4"/>
-  <rect x="80" y="144" width="150" height="2" fill="#00ff41" opacity="0.3"/>
-  <rect x="80" y="158" width="60" height="2" fill="#00ff41" opacity="0.2"/>
-  <circle cx="256" cy="260" r="50" fill="none" stroke="#00ff41" stroke-width="2" opacity="0.3"/>
-  <circle cx="256" cy="260" r="35" fill="none" stroke="#00ff41" stroke-width="1.5" opacity="0.2"/>
-  <path d="M230 248 L256 232 L282 248 L282 272 L256 288 L230 272 Z" fill="none" stroke="#ffb000" stroke-width="2" opacity="0.5"/>
-  <rect x="180" y="330" width="152" height="20" rx="2" fill="#3a3a5a"/>
-  <path d="M160 350 L352 350 L372 380 L140 380 Z" fill="#2a1a0e" stroke="#5e503b" stroke-width="3"/>
-  <rect x="190" y="364" width="132" height="4" rx="1" fill="#1e1e3a"/>
-  <circle cx="256" cy="372" r="3" fill="#ffb000" opacity="0.7"/>
-  <rect x="200" y="390" width="112" height="6" rx="1" fill="#3a3a5a"/>
-  <rect x="224" y="396" width="64" height="4" rx="1" fill="#2a1a0e"/>
+
+  <!-- Monitor body (rounded rect with thick bezel) -->
+  <rect x="48" y="40" width="416" height="304" rx="16" class="monitor-body"/>
+  <!-- Inner bezel shadow -->
+  <rect x="56" y="48" width="400" height="288" rx="12" class="monitor-bezel"/>
+  <!-- Screen -->
+  <rect x="80" y="72" width="352" height="240" class="screen"/>
+
+  <!-- Pixel cloud on screen (5-pixel grid, centered) -->
+  <!-- Cloud bottom row -->
+  <rect x="144" y="232" width="224" height="32" class="cloud"/>
+  <!-- Cloud middle row -->
+  <rect x="176" y="200" width="160" height="32" class="cloud"/>
+  <!-- Cloud top bumps -->
+  <rect x="208" y="168" width="32" height="32" class="cloud"/>
+  <rect x="272" y="168" width="32" height="32" class="cloud"/>
+  <!-- Cloud top connector -->
+  <rect x="240" y="168" width="32" height="32" class="cloud"/>
+
+  <!-- Power LED -->
+  <rect x="232" y="320" width="48" height="8" rx="4" class="led"/>
+
+  <!-- Stand neck -->
+  <rect x="216" y="344" width="80" height="48" class="stand-neck"/>
+  <!-- Stand base -->
+  <rect x="168" y="392" width="176" height="32" rx="4" class="stand-base"/>
+  <!-- Base highlight -->
+  <rect x="168" y="392" width="176" height="8" rx="4" class="stand-neck"/>
 </svg>
