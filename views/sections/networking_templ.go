@@ -77,7 +77,7 @@ func Networking() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"flex items-center gap-2\"><span class=\"w-2 h-2 bg-accent-gold dark:bg-next-light\"></span> <span class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body\">All connected through encrypted tunnels</span></div></div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"flex items-center gap-2\"><span class=\"w-2 h-2 bg-accent-gold dark:bg-next-teal-hi\"></span> <span class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body\">All connected through encrypted tunnels</span></div></div></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -106,7 +106,7 @@ func networkNode(name string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"flex items-center gap-3 py-3 border-b border-rule dark:border-next-mid\"><span class=\"w-2 h-2 bg-accent-gold dark:bg-next-light shrink-0\"></span> <span class=\"text-sm font-bold font-mac text-ink dark:text-next-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"flex items-center gap-3 py-3 border-b border-rule dark:border-next-mid\"><span class=\"w-2 h-2 bg-accent-gold dark:bg-next-teal-hi shrink-0\"></span> <span class=\"text-sm font-bold font-mac text-ink dark:text-next-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -148,7 +148,7 @@ func networkFact(text string) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<li class=\"flex items-start gap-3 font-mac-body\"><span class=\"mt-1.5 w-2 h-2 bg-accent-gold dark:bg-next-light shrink-0\"></span> <span class=\"text-ink dark:text-next-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<li class=\"flex items-start gap-3 font-mac-body\"><span class=\"mt-1.5 w-2 h-2 bg-accent-gold dark:bg-next-teal-hi shrink-0\"></span> <span class=\"text-ink dark:text-next-white\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

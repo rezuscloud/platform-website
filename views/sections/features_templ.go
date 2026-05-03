@@ -130,7 +130,7 @@ func featureItem(title string, description string, icon templ.Component) templ.C
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"flex items-start gap-4\"><div class=\"w-10 h-10 bg-accent-gold dark:bg-next-light flex items-center justify-center shrink-0\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"flex items-start gap-4\"><div class=\"w-10 h-10 bg-accent-gold dark:bg-next-teal-hi flex items-center justify-center shrink-0\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
