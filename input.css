@@ -329,3 +329,40 @@
 		transition: none !important;
 	}
 }
+
+/* Print styles: strip chrome, force light theme, hide interactive elements */
+@media print {
+	*,
+	*::before,
+	*::after {
+		background: white !important;
+		color: black !important;
+		box-shadow: none !important;
+		text-shadow: none !important;
+	}
+	nav,
+	.nav-mobile,
+	footer,
+	#crt-overlay,
+	.next-scanlines,
+	button,
+	.skip-to-content,
+	.theme-toggle {
+		display: none !important;
+	}
+	section {
+		page-break-inside: avoid;
+		break-inside: avoid;
+		padding: 1rem 0 !important;
+	}
+	main {
+		padding: 0 !important;
+	}
+	a[href]::after {
+		content: " (" attr(href) ")";
+		font-size: 0.85em;
+	}
+	a[href^="#"]::after {
+		content: none;
+	}
+}
