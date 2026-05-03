@@ -1,37 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <!--
-    RezusCloud brand icon: CRT monitor with cloud.
-    Inspired by Susan Kare (Mac System 1) and NeXTSTEP icon craft.
-    Bold silhouette, screen depth via inset, organic cloud shape.
+    RezusCloud brand icon: Macintosh-style CRT with amber cloud.
+    Susan Kare spirit: bold outlines, warm colors, friendly shapes.
   -->
 
-  <!-- Monitor shell -->
-  <rect x="56" y="32" width="400" height="312" rx="12" fill="#1A1A1E"/>
+  <!-- Monitor body — warm platinum (Mac 128K beige) -->
+  <rect x="48" y="28" width="416" height="328" rx="16" fill="#D4C9A8"/>
+  <!-- Outer frame line -->
+  <rect x="48" y="28" width="416" height="328" rx="16" fill="none" stroke="#1A1A1E" stroke-width="6"/>
 
-  <!-- Bezel (inner frame — gives the CRT depth) -->
-  <rect x="76" y="52" width="360" height="272" rx="6" fill="#2C2C30"/>
+  <!-- Screen bezel — darker warm gray -->
+  <rect x="72" y="52" width="368" height="268" rx="6" fill="#8A8070"/>
+  <!-- Bezel inner line -->
+  <rect x="72" y="52" width="368" height="268" rx="6" fill="none" stroke="#1A1A1E" stroke-width="3"/>
 
-  <!-- Screen -->
-  <rect x="96" y="72" width="320" height="232" fill="#F7F4EF"/>
+  <!-- Screen — dark CRT -->
+  <rect x="88" y="68" width="336" height="236" fill="#1A1A1E"/>
 
-  <!-- Cloud on screen (overlapping circles + base) -->
-  <g fill="#1A1A1E">
-    <!-- Base bar -->
-    <rect x="172" y="228" width="168" height="40" rx="20"/>
-    <!-- Left bump -->
-    <circle cx="212" cy="204" r="36"/>
-    <!-- Center bump (tallest) -->
-    <circle cx="260" cy="186" r="44"/>
-    <!-- Right bump -->
-    <circle cx="304" cy="200" r="32"/>
+  <!-- Cloud on screen — amber gold (brand accent) -->
+  <g fill="#C48A1A">
+    <rect x="164" y="224" width="184" height="44" rx="22"/>
+    <circle cx="208" cy="196" r="40"/>
+    <circle cx="260" cy="176" r="48"/>
+    <circle cx="310" cy="194" r="36"/>
   </g>
 
-  <!-- Power LED -->
-  <circle cx="256" cy="308" r="5" fill="#C48A1A"/>
+  <!-- Floppy slot — iconic Mac detail -->
+  <rect x="184" y="298" width="144" height="8" rx="2" fill="#8A8070" stroke="#1A1A1E" stroke-width="2"/>
+
+  <!-- Power LED — warm green -->
+  <circle cx="256" cy="326" r="6" fill="#5A9A3A" stroke="#1A1A1E" stroke-width="2"/>
 
   <!-- Stand neck -->
-  <rect x="228" y="344" width="56" height="48" rx="2" fill="#1A1A1E"/>
+  <rect x="218" y="356" width="76" height="48" rx="2" fill="#D4C9A8" stroke="#1A1A1E" stroke-width="4"/>
 
-  <!-- Stand foot -->
-  <ellipse cx="256" cy="400" rx="80" ry="14" fill="#1A1A1E"/>
+  <!-- Stand base -->
+  <rect x="168" y="404" width="176" height="28" rx="8" fill="#D4C9A8" stroke="#1A1A1E" stroke-width="4"/>
 </svg>
