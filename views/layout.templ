@@ -69,7 +69,7 @@ templ Layout(title string) {
 					if (mc) mc.content = d ? "oklch(6% 0.005 270)" : "oklch(78% 0.16 75)";
 				})();
 			</script>
-			<script src="/assets/js/htmx.min.js"></script>
+			<script defer src="/assets/js/htmx.min.js"></script>
 			<script>
 				document.addEventListener("alpine:init", () => {
 					function syncMeta(dark) {
