@@ -29,11 +29,11 @@ Nostalgic: the visual language is drawn from two eras of computing revolution le
 - Cloud provider console aesthetics (AWS, GCP, Azure): infinite service catalogs, complex navigation, feature-matrix overload. This product is the opposite of that.
 - Shallow retro aesthetics: retro as surface decoration without conviction. The visual language must be period-authentic, not retro-themed.
 
-## Design Principles
+## Strategic Principles
 
 1. **Personal, not enterprise.** Every choice asks: does this feel like it belongs on a desk, or in a boardroom? If the answer is boardroom, it is wrong. The Mac was personal. This platform is personal.
 
-2. **Two eras, one lineage.** Day mode is the Mac: computing becomes personal. Night mode is the NeXTcube: serious people building serious things. Same visionary, same conviction, two expressions. The design system (see DESIGN.md) carries both eras with period-authentic visual language.
+2. **Two eras, one lineage.** Day mode is the Mac: computing becomes personal. Night mode is the NeXTcube: serious people building serious things. Same visionary, same conviction, two expressions. See DESIGN.md for the visual language that carries both eras.
 
 3. **Facts over features.** No feature lists padded with buzzwords. Every section makes one clear point with evidence. The comparison tables are the canonical format: here is what renting looks like, here is what owning looks like, you decide.
 
