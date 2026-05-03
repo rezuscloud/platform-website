@@ -76,7 +76,7 @@ func TestHomePageHTMLStructure(t *testing.T) {
 
 		ogImage, exists := doc.Find("meta[property='og:image']").Attr("content")
 		assert.True(t, exists)
-		assert.Contains(t, ogImage, "icon-512.png")
+		assert.Contains(t, ogImage, "og-image.png")
 
 		ogSiteName, exists := doc.Find("meta[property='og:site_name']").Attr("content")
 		assert.True(t, exists)
