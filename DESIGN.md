@@ -1,338 +1,270 @@
 ---
-name: RezusCloud
-description: "The Personal Cloud. Mac System 1 by day, NeXTSTEP by night."
+name: RezusCloud Platform Website
+description: Dual-era retro computing visual system. Mac System 1 (1984) for light mode, NeXTSTEP (1988) with teal accent for dark mode.
 colors:
+  # Mac mode: warm-tinted neutrals + amber gold accent
   paper: "oklch(99.5% 0.004 85)"
-  surface: "oklch(88.5% 0.006 85)"
+  surface: "oklch(95.5% 0.004 85)"
+  surface-strong: "oklch(88.5% 0.006 85)"
   ink: "oklch(14% 0.008 65)"
   ink-muted: "oklch(30% 0.008 65)"
   rule: "oklch(72% 0.005 85)"
   accent-gold: "oklch(78% 0.16 75)"
   accent-gold-dark: "oklch(65% 0.14 75)"
-  positive: "oklch(55% 0.12 150)"
-  negative: "oklch(50% 0.12 25)"
+  # NeXT mode: cool-tinted grayscale + teal accent
   next-black: "oklch(6% 0.005 270)"
   next-dark: "oklch(20% 0.006 270)"
   next-mid: "oklch(34% 0.006 270)"
   next-light: "oklch(58% 0.006 270)"
   next-white: "oklch(88% 0.004 270)"
-  next-subtle: "oklch(74% 0.006 270)"
+  next-subtle: "oklch(72% 0.012 85)"
+  next-teal: "oklch(52% 0.08 170)"
+  next-teal-hi: "oklch(62% 0.07 170)"
+  # Bevel system
   next-bevel-hi: "oklch(55% 0.006 270)"
   next-bevel-lo: "oklch(2% 0.004 270)"
+  # Semantic
+  positive: "oklch(55% 0.12 150)"
   positive-next: "oklch(75% 0.14 150)"
+  negative: "oklch(50% 0.12 25)"
   negative-next: "oklch(65% 0.14 25)"
 typography:
   display:
-    fontFamily: "'Silkscreen', system-ui, sans-serif"
-    fontSize: "clamp(3rem, 7vw, 6rem)"
-    fontWeight: 800
-    lineHeight: 0.88
-    letterSpacing: "-0.02em"
-  headline:
-    fontFamily: "'Silkscreen', system-ui, sans-serif"
-    fontSize: "clamp(1.875rem, 4vw, 3rem)"
+    fontFamily: "Silkscreen, system-ui, sans-serif"
     fontWeight: 700
-    lineHeight: 1.1
+  headline:
+    fontFamily: "Silkscreen, system-ui, sans-serif"
+    fontWeight: 700
     letterSpacing: "normal"
   title:
-    fontFamily: "'Silkscreen', system-ui, sans-serif"
-    fontSize: "1.125rem"
+    fontFamily: "Silkscreen, system-ui, sans-serif"
     fontWeight: 700
-    lineHeight: 1.3
     letterSpacing: "normal"
   body:
-    fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif"
-    fontSize: "1rem"
+    fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif"
     fontWeight: 400
-    lineHeight: 1.625
-    letterSpacing: "normal"
   label:
-    fontFamily: "'Silkscreen', system-ui, sans-serif"
-    fontSize: "0.75rem"
+    fontFamily: "Silkscreen, system-ui, sans-serif"
     fontWeight: 700
-    lineHeight: 1.2
     letterSpacing: "0.05em"
   mono:
-    fontFamily: "'VT323', 'Courier New', monospace"
-    fontSize: "0.875rem"
+    fontFamily: "VT323, Courier New, monospace"
     fontWeight: 400
-    lineHeight: 1.625
-    letterSpacing: "normal"
 rounded:
   none: "0px"
 spacing:
-  tight: "4px"
-  sm: "8px"
-  md: "16px"
-  lg: "24px"
-  xl: "32px"
-  2xl: "48px"
-  section-sm: "40px"
-  section-md: "64px"
-  section-lg: "80px"
-  section-xl: "128px"
+  section-sm: "3.5rem 4rem"
+  section-md: "5rem 7rem"
+  nav-px: "0.75rem"
+  nav-py: "0.5rem"
+  btn-px: "1.5rem"
+  btn-py: "0.75rem"
 components:
-  mac-button-primary:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.paper}"
-    rounded: "{rounded.none}"
-    padding: "12px 24px"
-  mac-button-primary-hover:
-    backgroundColor: "{colors.accent-gold}"
+  nav-link-active:
+    backgroundColor: "{colors.paper}"
     textColor: "{colors.ink}"
-    rounded: "{rounded.none}"
-    padding: "12px 24px"
-  next-button-primary:
+    padding: "{spacing.nav-px} {spacing.nav-py}"
+  nav-link-active-dark:
     backgroundColor: "{colors.next-light}"
     textColor: "{colors.next-black}"
-    rounded: "{rounded.none}"
-    padding: "12px 24px"
-  next-button-primary-hover:
-    backgroundColor: "{colors.next-mid}"
+    padding: "{spacing.nav-px} {spacing.nav-py}"
+  nav-link-inactive:
+    textColor: "{colors.ink-muted}"
+    padding: "{spacing.nav-px} {spacing.nav-py}"
+  nav-link-inactive-dark:
+    textColor: "{colors.next-subtle}"
+    padding: "{spacing.nav-px} {spacing.nav-py}"
+  cta-button:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.paper}"
+    padding: "{spacing.btn-px} {spacing.btn-py}"
+  cta-button-dark:
+    backgroundColor: "{colors.next-teal-hi}"
     textColor: "{colors.next-black}"
-    rounded: "{rounded.none}"
-    padding: "12px 24px"
-  mac-card:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.none}"
-    padding: "16px"
-  next-card:
-    backgroundColor: "{colors.next-dark}"
-    textColor: "{colors.next-white}"
-    rounded: "{rounded.none}"
-    padding: "16px"
-  mac-nav:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.none}"
-    padding: "0 16px"
-  next-nav:
-    backgroundColor: "{colors.next-dark}"
-    textColor: "{colors.next-white}"
-    rounded: "{rounded.none}"
-    padding: "0 16px"
-  mac-table-header:
-    backgroundColor: "{colors.rule}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.none}"
-    padding: "12px 16px"
-  next-table-header:
-    backgroundColor: "{colors.next-mid}"
-    textColor: "{colors.next-black}"
-    rounded: "{rounded.none}"
-    padding: "12px 16px"
-  mac-chip:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.none}"
-    padding: "8px 12px"
-  next-chip:
-    backgroundColor: "{colors.next-dark}"
-    textColor: "{colors.next-white}"
-    rounded: "{rounded.none}"
-    padding: "8px 12px"
+    padding: "{spacing.btn-px} {spacing.btn-py}"
+  icon-square:
+    size: "3rem"
+    backgroundColor: "{colors.accent-gold}"
+  icon-square-dark:
+    size: "3rem"
+    backgroundColor: "{colors.next-teal-hi}"
+  accent-dot:
+    size: "0.5rem"
+    backgroundColor: "{colors.accent-gold}"
+  accent-dot-dark:
+    size: "0.5rem"
+    backgroundColor: "{colors.next-teal-hi}"
 ---
 
 # Design System: RezusCloud
 
 ## 1. Overview
 
-**Creative North Star: "The Dual Desktop"**
+**Creative North Star: "The Machine Room"**
 
-This design system inhabits two eras of personal computing. Day mode is Mac System 1 (1984): paper-white surfaces, 1px flat borders, bitmap type, offset drop shadows, zero border-radius. Night mode is NeXTSTEP (1988): deep black surfaces, 3D beveled edges, scrolling CRT scanlines, phosphor afterglow, zero border-radius. The theme toggle is not dark/light. It is a shift between two computing revolutions from the same lineage.
+Two operating systems, one machine. Light mode is a 1984 Macintosh 128K: bitmap fonts, 1px borders, stark contrast, amber highlights on warm white. Dark mode is a 1988 NeXTcube: 3D beveled edges, CRT scanlines, phosphor afterglow, muted teal on deep black. The site is not decorated to look retro. It IS retro, running natively in the browser.
 
-Both modes share identical font families: Silkscreen for headings and labels, system-ui for body, VT323 for terminal and code. Only the colors and border strategies change between modes. Mac mode uses warm-tinted oklch neutrals (hue 85 degrees) with one amber gold accent. NeXT mode uses cool-tinted oklch neutrals (hue 270 degrees) in pure grayscale with no chromatic accent. The bevel is the emphasis in NeXT. The gold is the emphasis in Mac.
+The system is defiant, precise, and nostalgic. Every element earns its place. No rounded corners, no gradient text, no glassmorphism, no SaaS hero-metric template, no identical card grids. The layout principle is flat: text flows without container boxes, spacing varies for rhythm, and section backgrounds alternate between two surface levels. Icon squares and accent dots punctuate the hierarchy. Terminals use VT323 monospace with typewriter line reveals.
 
-Shape language is constant: rectangles only, zero border-radius, 1px borders in Mac mode, 2px beveled edges in NeXT mode. The Mac desktop has a custom SVG arrow cursor, dot grid parallax, and animated title bar stripes. The NeXT desktop has scrolling CRT scanlines, phosphor text glow, and bevel hover sweeps. All animations respect prefers-reduced-motion.
+What this system explicitly rejects: anything that looks like it was generated by a 2024 landing-page template. No hero metrics. No card grids. No glass cards. No em dashes.
 
 **Key Characteristics:**
-- Dual personality: Mac System 1 (day) and NeXTSTEP (night). Same fonts, different colors and borders.
-- Zero border-radius everywhere. Neither the 1984 Mac nor the 1988 NeXT had curves.
-- Flat 1px borders in Mac mode. 3D beveled edges (light top-left, dark bottom-right) in NeXT mode.
-- One font set across both modes: Silkscreen bitmap (display/labels), system-ui (body), VT323 pixel (terminal).
-- One accent color in Mac mode: amber gold, used sparingly. No accent in NeXT mode: pure grayscale.
-- oklch color tokens throughout. All neutrals tinted: warm (hue 85 degrees) for Mac, cool (hue 270 degrees) for NeXT.
-- Comparison tables as the canonical content format, not card grids.
-- Mac offset drop shadows (1px 1px 0) for window-level elevation only. NeXT uses bevels exclusively.
+- Zero border-radius everywhere. Every corner is a right angle.
+- Dual-era identity: Mac System 1 in light, NeXTSTEP in dark. Fonts stay the same, only colors change.
+- Committed color strategy: amber gold (light) / teal (dark) carry the accent load across 30-40% of visible surface.
+- Flat text layout: no boxes wrapping content, no bordered cards. Icon squares, dots, and accent bars punctuate.
+- 3D bevel system for NeXT mode: 2px raised/sunken borders on interactive elements and signature components.
+- CRT overlay: scanline pattern at 4px intervals with slow vertical scroll animation.
+- Bitmap typography: Silkscreen for headings, labels, and nav. system-ui for body. VT323 for terminals.
+- All animations respect `prefers-reduced-motion`. FOUC prevention via inline script.
 
 ## 2. Colors
 
-Two chromatic worlds sharing a single oklch token system. Mac mode is warm monochrome with gold accent. NeXT mode is pure grayscale, no accent. All values are oklch with perceptual uniformity.
+Two complete palettes, each with warm-tinted neutrals and one saturated accent. The light mode uses amber-direction hue (85 degrees) for neutrals. The dark mode uses cool-direction hue (270 degrees) for neutrals and teal (hue 170) for the accent.
 
-### Day Mode: The Macintosh Palette
+### Mac Mode (Light)
 
-Warm, papery, near-monochrome with a single gold accent. Extends the original Mac's strict black-and-white with warm amber tinting.
+- **Paper** (oklch(99.5% 0.004 85)): Primary background. Warm white, not pure white. Used for body, most sections, active nav pills.
+- **Surface** (oklch(95.5% 0.004 85)): Alternating section background. Softly differentiated from paper. Used for Architecture, Networking, UseCases.
+- **Surface-strong** (oklch(88.5% 0.006 85)): Chrome surfaces. Nav bar, footer. Higher contrast than surface for fixed UI elements.
+- **Ink** (oklch(14% 0.008 65)): Primary text. Near-black with warm undertone. Headings, body copy, active states.
+- **Ink-muted** (oklch(30% 0.008 65)): Secondary text. Warm brown for descriptions, labels, inactive nav. Scoped to decorative/secondary use only.
+- **Rule** (oklch(72% 0.005 85)): Borders and dividers. Warm gray for 1px borders, table rules, section separators.
+- **Amber Gold** (oklch(78% 0.16 75)): The one accent. Icon square backgrounds, accent bars, terminal prompts ($ and *), logo "Cloud" highlight, hero "YOUR", hero subtitle, table headers. Carries the brand identity.
 
-- **Paper** (oklch 99.5% 0.004 85): Primary background. Warm off-white, not pure white. Every surface starts here.
-- **Surface** (oklch 88.5% 0.006 85): Secondary surface for cards, panels, nav bar. Provides depth through tonal layering.
-- **Ink** (oklch 14% 0.008 65): Primary text and borders. Near-black with warm brown tint. Used for body text, border lines, and button fills.
-- **Ink Muted** (oklch 30% 0.008 65): Decorative text: nav inactive state, footer labels, terminal output, badges. Not for functional/meaningful text (which uses ink at full contrast).
-- **Rule** (oklch 72% 0.005 85): Dividers, table borders, subtle separators. Warm gray, visible but not assertive.
-- **Accent Gold** (oklch 78% 0.16 75): The one saturated color. Used for hero emphasis, brand marks, icon dots, active states, divider bars. Never fills more than 10% of any viewport.
-- **Accent Gold Dark** (oklch 65% 0.14 75): Hover and pressed states for gold elements.
-- **Positive** (oklch 55% 0.12 150): Success indicators in terminal output.
-- **Negative** (oklch 50% 0.12 25): Error indicators.
+### NeXT Mode (Dark)
 
-### Night Mode: The NeXTSTEP Palette
+- **Next-black** (oklch(6% 0.005 270)): Deepest background. Near-black with cool undertone. Body, alternating sections (Features, Comparison, GetStarted).
+- **Next-dark** (oklch(20% 0.006 270)): Secondary background. Charcoal. Architecture, Networking, UseCases, Challenge, nav bar, footer.
+- **Next-mid** (oklch(34% 0.006 270)): Hover state background. Used for nav link hover, button hover.
+- **Next-light** (oklch(58% 0.006 270)): Bright neutral for active nav pill backgrounds. NOT used as accent (that role belongs to next-teal).
+- **Next-white** (oklch(88% 0.004 270)): Primary text. Cool white for headings, body copy.
+- **Next-subtle** (oklch(72% 0.012 85)): Secondary text. Warm-tinted beige (hue 85) for descriptions, labels. Two-color text system: cool white + warm beige.
+- **Next-teal** (oklch(52% 0.08 170)): Accent for text and borders. Logo "Cloud", terminal prompts, hero "YOUR", hero subtitle, table headers, badge borders. The NeXT Inc. brand color.
+- **Next-teal-hi** (oklch(62% 0.07 170)): Accent for backgrounds. Icon squares, dots, accent bars, CTA button. Lighter variant for contrast on dark surfaces.
 
-Pure grayscale, no chromatic color. Cool-tinted neutrals (hue 270 degrees) create a CRT phosphor feel. Depth comes from lightness variation, not hue. The bevel carries all emphasis.
+### Bevel System
 
-- **NeXT Black** (oklch 6% 0.005 270): Primary background. The matte black of the NeXTcube.
-- **NeXT Dark** (oklch 20% 0.006 270): Secondary surface for cards, panels, nav. Clearly distinct from black (14% gap) for section rhythm.
-- **NeXT Mid** (oklch 34% 0.006 270): Elevated surfaces, table headers, button fills. The medium gray of NeXTSTEP window backgrounds.
-- **NeXT Light** (oklch 58% 0.006 270): Bevel highlights, active nav pill background, CTA button fill. The lightest functional gray.
-- **NeXT White** (oklch 88% 0.004 270): Primary text. Softened white like text on a CRT.
-- **NeXT Subtle** (oklch 74% 0.006 270): Decorative secondary text. 7.2:1 on black (passes AA), 3.2:1 on dark surfaces (large text AA).
-- **NeXT Bevel Hi** (oklch 55% 0.006 270): The light edge of 3D bevels. Applied to top and left borders.
-- **NeXT Bevel Lo** (oklch 2% 0.004 270): The dark edge of 3D bevels. Applied to bottom and right borders.
-- **Positive Next** (oklch 75% 0.14 150): Success indicators (bright for dark backgrounds).
-- **Negative Next** (oklch 65% 0.14 25): Error indicators (bright for dark backgrounds).
+- **Bevel-hi** (oklch(55% 0.006 270)): Top-left border color for raised elements, bottom-right for sunken.
+- **Bevel-lo** (oklch(2% 0.004 270)): Bottom-right border color for raised, top-left for sunken.
 
 ### Named Rules
 
-**The Dual Era Rule.** Day mode and night mode are not light/dark variants. They are two distinct computing eras with different border strategies and color logic, sharing only font families. Mac mode uses warm oklch on paper. NeXT mode uses cool oklch on black. Do not blend them.
+**The Dual-Accent Rule.** Light mode uses amber gold. Dark mode uses teal. Never mix: amber never appears in dark mode, teal never appears in light mode. Each accent occupies the same structural positions in both modes.
 
-**The One Accent Rule.** Mac mode gets exactly one saturated color: amber gold, under 10% of any viewport. NeXT mode gets zero chromatic colors. The bevel is the emphasis. Chromatic color in NeXT mode breaks the grayscale purity.
+**The Alternating Rhythm Rule.** Sections alternate between two background levels. Light: paper and surface. Dark: next-black and next-dark. The challenge section inverts: ink (light) and next-dark (dark). This rhythm never breaks.
 
-**The Tinted Neutral Rule.** No pure black or pure white. All neutrals are oklch with chroma 0.003 to 0.008, tinted warm (hue 85) for Mac or cool (hue 270) for NeXT. Pure gray is forbidden.
+**The No-Gray-Accent Rule.** In NeXT mode, next-light is a bright neutral for UI chrome (active nav pills only). It is never used for accent purposes like icon squares, dots, or highlights. That role belongs exclusively to next-teal.
 
 ## 3. Typography
 
-One font set for both modes. The distinction is chromatic, not typographic.
+**Display Font:** Silkscreen (bitmap pixel font, system-ui fallback)
+**Body Font:** system-ui (-apple-system, Segoe UI fallback)
+**Mono Font:** VT323 (Courier New fallback, ASCII subset only: U+0020-007F, U+2713)
 
-**Display Font:** Silkscreen (bitmap pixel font, 12KB regular + 8KB bold woff2)
-**Body Font:** system-ui (platform native, no download)
-**Mono Font:** VT323 (pixel terminal font, 12KB woff2, ASCII subset with unicode-range)
-
-**Character:** Silkscreen is a proper bitmap font that evokes the Mac's original Chicago and Geneva without being a recreation. It has the same pixel-grid clarity and friendly geometry Susan Kare designed. VT323 provides period-authentic terminal output. system-ui keeps body text readable at speed. The pairing is defiant (bitmap display), precise (system body), nostalgic (pixel terminal).
+**Character:** Three fonts, three voices. Silkscreen is the machine speaking in labels and headings. system-ui is the human reading documentation. VT323 is the terminal: raw, monospaced, alive with blinking cursors.
 
 ### Hierarchy
 
-- **Display** (extrabold, clamp(3rem, 7vw, 6rem), 0.88 line-height, tight tracking): Hero headline only. Silkscreen. The biggest word on the page.
-- **Headline** (bold, clamp(1.875rem, 4vw, 3rem), 1.1 line-height): Section titles. Silkscreen. Bold and unmissable.
-- **Title** (bold, 1.125rem, 1.3 line-height): Subsection headings, card titles, layer labels. Silkscreen.
-- **Body** (regular, 1rem, 1.625 line-height): Paragraphs, descriptions. system-ui. Max line length 65ch.
-- **Label** (bold, 0.75rem, 1.2 line-height, uppercase, 0.05em tracking): Navigation, table headers, badges. Silkscreen.
-- **Mono** (regular, 0.75rem to 0.875rem, 1.625 line-height): Terminal output, code, system readout. VT323.
+- **Display** (700 weight, text-8xl, leading-none): Hero headline "YOUR" only. Single most prominent element on the page.
+- **Headline** (700 weight, text-2xl to text-3xl, leading-snug to leading-tight): Section headings. Left-aligned for Architecture and Networking, centered for others.
+- **Title** (700 weight, text-lg to text-xl, leading-snug): Sub-section headings, card titles, feature names.
+- **Body** (400 weight, text-sm to text-lg, leading-relaxed): Paragraph copy, descriptions, feature details. Max line length 65-75ch.
+- **Label** (700 weight, text-xs, tracking-widest, uppercase): Nav links, section badges ("1984 // Then vs Now"), feature categories, tech tags.
+- **Mono** (400 weight, text-sm to text-base): Terminal output, code prompts, boot sequence lines, cursor blink.
 
 ### Named Rules
 
-**The Unified Font Rule.** Both modes use the same font families. Only colors change between Mac and NeXT. Display in Silkscreen, body in system-ui, terminal in VT323. The font switch is not a mode signal. The color switch is.
+**The No-Serif Rule.** Serif fonts never appear. The system is entirely sans-serif + bitmap + mono.
+
+**The Font-Consistency Rule.** Font families are identical between light and dark modes. Only colors change. Silkscreen always for display/labels, system-ui always for body, VT323 always for terminals.
 
 ## 4. Elevation
 
-The two modes use fundamentally different elevation strategies. Mac mode is flat with occasional offset shadows. NeXT mode uses 3D beveled edges. Both reject diffuse drop shadows.
+Mac mode is flat. No shadows, no bevels. Depth comes from background color alternation (paper vs surface) and border rules. This is the Mac System 1 aesthetic: 1px black borders on stark white.
 
-### Mac Mode: Flat with Offset Shadow
+NeXT mode uses a 2px 3D bevel system. The bevels simulate the chunky, period-authentic NeXTSTEP interface: a top-left highlight (bevel-hi at oklch 55%) and bottom-right shadow (bevel-lo at oklch 2%) create raised elements. Reversing the colors creates sunken elements. Applied to: icon squares, CTA button, tech tags, mobile nav wrapper.
 
-The original Mac used a 1px black drop shadow offset down-right for window layering. This system recreates that treatment sparingly:
+### Bevel Vocabulary
 
-- **Window Shadow** (box-shadow: 1px 1px 0 var(--color-ink)): Applied to window-level containers only (terminal widgets). Never on cards, buttons, chips, or badges.
-- **Flat at rest** (box-shadow: none): Cards, tables, navigation, badges. The 1px border is the shape.
-- **Tonal layering**: Sections alternate paper (99.5%) and surface (88.5%) for rhythm.
+- **Raised** (`border: 2px solid; border-color: bevel-hi bevel-lo bevel-lo bevel-hi`): Default for interactive containers. Icon squares, buttons, tech tags.
+- **Sunken** (`border: 2px solid; border-color: bevel-lo bevel-hi bevel-hi bevel-lo`): Inset fields. Available but not currently used.
+- **Hover raised** (`next-bevel-hover`): Brightens bevel-hi on hover for interactive feedback.
 
-### NeXT Mode: 3D Beveled Edges
+### Overlay Effects
 
-NeXTSTEP's entire visual identity was its 3D beveled edges. Every surface has a light edge (top-left) and dark edge (bottom-right):
-
-- **Raised Bevel** (2px solid, border-color: bevel-hi bevel-lo bevel-lo bevel-hi): Buttons, elevated panels, active elements. The surface appears to protrude.
-- **Sunken Bevel** (2px solid, border-color: bevel-lo bevel-hi bevel-hi bevel-lo): Input fields, terminal body, inset areas. The surface appears recessed.
-- **No box-shadow**: NeXTSTEP did not use drop shadows. The bevel is the elevation.
-- **Tonal layering**: Sections alternate next-black (6%) and next-dark (20%) for rhythm.
-
-### CRT Effects (NeXT only)
-
-- **Scanlines**: 1px bright lines every 2px at 8% opacity, scrolling vertically at 8s cycle.
-- **Phosphor afterglow**: Terminal lines glow on appear (6px + 12px text-shadow), fading over 2.5s.
-- **CRT flicker**: Theme toggle triggers a double-flash white overlay (40ms on, 40ms off, 120ms switch).
+- **CRT Scanlines** (`next-scanlines`): 2px horizontal lines at 8% white opacity, 4px intervals. Slow vertical scroll animation (8s linear infinite). Fixed overlay on entire viewport in dark mode.
+- **CRT Flicker**: White overlay flashes on theme toggle (step-end timing, 200ms total).
 
 ### Named Rules
 
-**The Flat-By-Default Rule (Mac).** Mac surfaces are flat at rest. Shadows appear only on window-level containers.
-
-**The Bevel-Is-Elevation Rule (NeXT).** Every NeXT surface has a bevel. Raised for protruding elements, sunken for recessed. If a NeXT element has no bevel, it is wrong.
+**The Flat-By-Mode Rule.** Mac mode is always flat: borders are always 1px solid ink. NeXT mode uses bevels: borders are always 2px with directional shading. Never mix bevel styles within a mode.
 
 ## 5. Components
 
-Every component is rectangular. Zero border-radius is non-negotiable. The difference between modes is border treatment and color.
-
-### Buttons
-
-- **Mac Primary**: Ink background, paper text, 1px ink border. Padding 12px 24px. Font: Silkscreen bold. Hover fills accent-gold.
-- **NeXT Primary**: NeXT Light background, NeXT Black text, raised bevel. Padding 12px 24px. Font: Silkscreen bold. Hover fills NeXT Mid.
-- **Ghost (both)**: Transparent background, text color, 1px border. Hover fills surface color.
-
-### Cards / Containers
-
-- **Corner Style**: Sharp (0px radius).
-- **Mac**: Surface background, 1px rule border, flat. Hover deepens border to accent-gold.
-- **NeXT**: NeXT Dark background, raised bevel. Hover brightens bevel highlight.
-- **Internal Padding**: 16px standard, 24px for content-dense layouts.
-- **Nesting**: Prohibited.
-
-### Tables
-
-The signature component. Comparison tables carry the argument.
-
-- **Mac Header**: Rule background, ink text, uppercase Silkscreen labels.
-- **Mac Row**: Paper background, ink text. Hover shifts to surface.
-- **NeXT Header**: NeXT Mid background, NeXT Black text, raised bevel.
-- **NeXT Row**: NeXT Black background, NeXT White text.
-- **Accent columns**: Positive/negative semantic colors per mode.
-
 ### Navigation
 
-- **Mac**: Surface background, 1px rule border bottom (flat). Silkscreen bold labels. Active section highlighted with paper background.
-- **NeXT**: NeXT Dark background, raised bevel bottom edge. Active section highlighted with NeXT Light background and NeXT Black text (5.7:1 contrast).
-- **Mobile**: Hamburger icon (rectangular). Menu drops as full-width panel. No overlay blur.
-- **Touch targets**: Desktop py-1.5 (~36px), mobile py-2 (~44px).
+Fixed top bar. `surface-strong` (light) / `next-dark` (dark) background. 1px bottom border. Logo: "Rezus" in ink/next-white + "Cloud" in accent-gold/next-teal. Desktop links: Silkscreen label weight, uppercase. Active state: pill background (paper/next-light). Hover: surface/next-mid background. Mobile: hamburger menu with slide-down panel.
 
-### Chips / Badges
+### CTA Button
 
-- **Mac**: Surface background, 1px rule border, ink text. Amber dot indicator.
-- **NeXT**: NeXT Dark background, raised bevel, NeXT White text. No dot indicator.
+Inline-flex. Background: ink (light) / next-teal-hi (dark). Text: paper (light) / next-black (dark). Font: Silkscreen 700. 1px border ink (light) / 2px bevel raised (dark). Hover: accent-gold (light) / next-mid (dark). 150ms color transition.
 
-### Terminal Widget (signature component)
+### Icon Squares
 
-- **Mac mode**: Paper background, 1px ink border, window shadow (1px 1px 0). Animated title bar with repeating horizontal stripes. Three colored dots (red, yellow, green) hidden in dark mode. VT323 body text. Typewriter entrance animation.
-- **NeXT mode**: NeXT Black background, sunken bevel (recessed screen). Medium gray title strip. VT323 body text with phosphor afterglow on each line. Typewriter entrance animation.
+Fixed-size squares (w-12 h-12 for primary, w-10 h-10 for features). Background: accent-gold (light) / next-teal-hi (dark). 1px border (light) / 2px bevel raised (dark). Contain SVG icons or bold single characters. Never contain text paragraphs.
+
+### Accent Dots
+
+Small circles (w-2 h-2 or w-1.5 h-1.5). Background: accent-gold (light) / next-teal-hi (dark). Used as list bullet alternatives, connection indicators, status markers.
+
+### Accent Bars
+
+Horizontal bars (w-12 h-1). Background: accent-gold (light) / next-teal-hi (dark). Centered or left-aligned as section heading underlines.
+
+### Terminal
+
+VT323 monospace. Dark background container with title bar (static diagonal barber pole stripes). Blinking cursor via CSS animation. Line-by-line typewriter reveal. Green/amber text for prompts, white for output. `prefers-reduced-motion` shows all lines immediately.
+
+### Comparison Table
+
+Full-width bordered table. 1px borders in rule (light) / next-mid (dark). Header row with accent-colored column labels. Alternating row backgrounds via surface/next-dark. Challenge section uses inverted background (ink/next-dark).
+
+### Footer
+
+`surface-strong` (light) / `next-dark` (dark) background. Top border. Logo with icon square. Navigation links. Terminal-style copyright line with accent-colored tech stack mention.
+
+### Skip Link
+
+`sr-only` by default. On focus: absolute positioned, accent-gold background, ink text, z-60, Silkscreen font. Keyboard accessible skip to main content.
 
 ### Theme Toggle
 
-- **Mac state**: Moon icon on ghost button (paper fill, ink border). 40x40px.
-- **NeXT state**: Sun icon on beveled button (NeXT Dark fill, raised bevel). 40x40px.
-- **Transition**: CRT flicker overlay (double-flash white), then 150ms ease-out color switch. Font families stay constant.
+40x40px button. Border + bevel raised (dark). Shows moon icon (light) / sun icon (dark). Alpine.js x-show toggles visibility with x-cloak for no-flash. CRT flicker overlay on toggle (200ms white flash).
 
 ## 6. Do's and Don'ts
 
 ### Do:
-
-- **Do** use 1px flat borders in Mac mode. Every container, card, and interactive element has a 1px border in rule color.
-- **Do** use 2px beveled edges in NeXT mode. Raised for protruding, sunken for recessed. The bevel IS the visual identity.
-- **Do** use zero border-radius on every element without exception.
-- **Do** alternate section backgrounds (paper/surface for Mac, next-black/next-dark for NeXT) for visual rhythm.
-- **Do** use Silkscreen for all display, heading, label, and nav text. system-ui for body. VT323 for terminal.
-- **Do** keep fonts identical between modes. Only colors change.
-- **Do** cap body line length at 65ch.
-- **Do** use comparison tables as the primary content format for arguments.
-- **Do** keep accent gold under 10% of any Mac mode viewport.
-- **Do** keep NeXT mode pure grayscale. No chromatic color.
-- **Do** use oklch for all color tokens. Tint all neutrals.
-- **Do** respect prefers-reduced-motion. Disable all animations, scanlines, and parallax.
+- **Do** use zero border-radius on every element. Every corner is a right angle. This is non-negotiable.
+- **Do** use Silkscreen for all headings, labels, and nav. system-ui for body. VT323 for terminals only.
+- **Do** alternate section backgrounds every section. Paper/surface (light), next-black/next-dark (dark). Never three consecutive sections with the same background.
+- **Do** use amber gold (light) / teal (dark) as the exclusive accent. One accent per mode, same structural positions.
+- **Do** use 2px bevels in NeXT mode for interactive elements. They are the elevation system.
+- **Do** respect `prefers-reduced-motion`. All animations must have a static fallback.
+- **Do** use warm-tinted neutrals. Paper and ink have hue 85 (amber direction). Next-black and next-white have hue 270 (cool direction).
+- **Do** use next-subtle (warm-tinted at hue 85) for dark mode secondary text. The two-color text system (cool white + warm beige) mirrors light mode (black + brown).
+- **Do** vary section padding for rhythm. py-12 to py-32 depending on section importance.
 
 ### Don't:
-
-- **Don't** use border-radius anywhere. Rounded corners break both eras instantly.
-- **Don't** use gradient text (background-clip: text with gradient). Neither platform could render gradients on text.
-- **Don't** use glassmorphism, backdrop blur, or frosted-glass effects. Neither platform had transparency.
-- **Don't** create identical card grids with icon + heading + text repeated endlessly. Vary layout per section.
-- **Don't** use the hero-metric template (big number, small label, stats). SaaS cliche.
-- **Don't** use side-stripe borders (border-left or border-right greater than 1px as colored accent).
-- **Don't** apply box-shadow to cards, buttons, chips, or badges. Mac shadows are window-level only. NeXT never uses shadows.
-- **Don't** use em dashes. Use commas, colons, semicolons, or periods.
-- **Don't** use nested cards. Flatten or restructure.
-- **Don't** treat night mode as "dark mode." It is NeXTSTEP. Different border strategy, different color logic.
-- **Don't** introduce chromatic color in NeXT mode. No blue links, no green accents, no gold carry-over.
-- **Don't** use pure black (#000) or pure white (#fff). All neutrals must be tinted via oklch.
-- **Don't** use different font families between modes. The font set is shared. Colors differ, fonts do not.
+- **Don't** use rounded corners anywhere. No `rounded-*` classes. No `border-radius` in CSS.
+- **Don't** use gradient text (`background-clip: text`). Solid colors only.
+- **Don't** use glassmorphism. No blur overlays, no frosted glass cards.
+- **Don't** use the hero-metric template (big number, small label, supporting stats). This is the SaaS cliché.
+- **Don't** use identical card grids. No repeated same-sized icon + heading + text cards.
+- **Don't** use em dashes. Use commas, colons, periods, middots instead.
+- **Don't** wrap text in bordered container boxes. Layout is flat: text flows with icon squares and accent dots for punctuation.
+- **Don't** mix accent colors between modes. Amber never in dark, teal never in light.
+- **Don't** use `#000` or `#fff`. All neutrals are tinted with brand hue. Minimum chroma 0.004.
+- **Don't** use next-light as an accent color. It is a bright neutral for active nav pills only. Teal is the accent.
+- **Don't** animate CSS layout properties. Animate opacity and transform only.
+- **Don't** use bounce, elastic, or spring easings. Use ease-out-quart or exponential curves.
