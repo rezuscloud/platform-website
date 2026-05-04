@@ -18,6 +18,9 @@ jobs:
     if: github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: [self-hosted, Linux, X64]
     steps:
+      - name: Install gh CLI
+        run: which gh || (curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null && sudo apt-get update -qq && sudo apt-get install -y -qq gh)
+
       - name: Remove preview-ready label
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -28,6 +31,9 @@ jobs:
     if: github.event_name == 'workflow_run'
     runs-on: [self-hosted, Linux, X64]
     steps:
+      - name: Install gh CLI
+        run: which gh || (curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null && sudo apt-get update -qq && sudo apt-get install -y -qq gh)
+
       - name: Mark preview ready after successful docker-pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
