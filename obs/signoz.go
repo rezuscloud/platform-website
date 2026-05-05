@@ -17,6 +17,7 @@ import (
 type SigNozClient struct {
 	baseURL    string
 	apiKey     string
+	namespace  string // k8s namespace to query metrics for
 	httpClient *http.Client
 	cached     LiveData
 	cachedAt   time.Time
@@ -27,6 +28,7 @@ func NewSigNozClient(baseURL, apiKey string) *SigNozClient {
 	return &SigNozClient{
 		baseURL:    strings.TrimRight(baseURL, "/"),
 		apiKey:     apiKey,
+		namespace:  getNamespace(),
 		httpClient: &http.Client{Timeout: 5 * time.Second},
 		cacheTTL:   30 * time.Second,
 	}
@@ -41,6 +43,18 @@ func NewSigNozClientFromEnv() *SigNozClient {
 		return nil
 	}
 	return NewSigNozClient(u, k)
+}
+
+// getNamespace returns the pod namespace. Falls back to "platform-website".
+func getNamespace() string {
+	if ns := os.Getenv("POD_NAMESPACE"); ns != "" {
+		return ns
+	}
+	// Read from serviceaccount namespace (always available in K8s)
+	if data, err := os.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace"); err == nil {
+		return strings.TrimSpace(string(data))
+	}
+	return "platform-website"
 }
 
 // Fetch returns the platform-website service tree with live metrics.
@@ -77,8 +91,8 @@ func (c *SigNozClient) populateStatus(ctx context.Context, root *ServiceNode) {
 	// All other services are inferred from what we can query.
 	queries := map[string]string{
 		// Daprd up = entire pod is running (app + sidecar)
-		"daprd":              `up{k8s_namespace_name="platform-website",k8s_container_name="daprd"}`,
-		"platform-website":   `up{k8s_namespace_name="platform-website",k8s_container_name="daprd"}`,
+		"daprd":              fmt.Sprintf(`up{k8s_namespace_name="%s",k8s_container_name="daprd"}`, c.namespace),
+		"platform-website":   fmt.Sprintf(`up{k8s_namespace_name="%s",k8s_container_name="daprd"}`, c.namespace),
 		"dapr-control-plane": `up{k8s_namespace_name="dapr-system"}`,
 	}
 
@@ -112,17 +126,17 @@ func (c *SigNozClient) populateMetrics(ctx context.Context, root *ServiceNode) {
 	queries := []mq{
 		{
 			name: "platform-website", label: "goroutines", unit: "",
-			query:  `go_goroutines{k8s_namespace_name="platform-website",k8s_container_name="daprd"}`,
+			query:  fmt.Sprintf(`go_goroutines{k8s_namespace_name="%s",k8s_container_name="daprd"}`, c.namespace),
 			format: func(v float64) string { return fmt.Sprintf("%.0f", v) },
 		},
 		{
 			name: "platform-website", label: "heap", unit: "MiB",
-			query:  `go_memstats_alloc_bytes{k8s_namespace_name="platform-website",k8s_container_name="daprd"}`,
+			query:  fmt.Sprintf(`go_memstats_alloc_bytes{k8s_namespace_name="%s",k8s_container_name="daprd"}`, c.namespace),
 			format: func(v float64) string { return fmt.Sprintf("%.1f", v/(1024*1024)) },
 		},
 		{
 			name: "daprd", label: "components", unit: "loaded",
-			query:  `dapr_runtime_component_loaded{k8s_namespace_name="platform-website"}`,
+			query:  fmt.Sprintf(`dapr_runtime_component_loaded{k8s_namespace_name="%s"}`, c.namespace),
 			format: func(v float64) string { return fmt.Sprintf("%.0f", v) },
 		},
 	}
@@ -157,7 +171,7 @@ func (c *SigNozClient) populateStats(ctx context.Context) StatsStrip {
 
 	// Get uptime from daprd's process_start_time_seconds
 	results, err := c.queryInstant(ctx,
-		`process_start_time_seconds{k8s_namespace_name="platform-website",k8s_container_name="daprd"}`)
+		fmt.Sprintf(`process_start_time_seconds{k8s_namespace_name="%s",k8s_container_name="daprd"}`, c.namespace))
 	if err == nil && len(results) > 0 && len(results[0].Value) >= 2 {
 		if ts, err := parseFloat(results[0].Value[1]); err == nil {
 			uptime := time.Since(time.Unix(int64(ts), 0))
@@ -167,7 +181,7 @@ func (c *SigNozClient) populateStats(ctx context.Context) StatsStrip {
 
 	// Go version from go_info
 	results, err = c.queryInstant(ctx,
-		`go_info{k8s_namespace_name="platform-website",k8s_container_name="daprd"}`)
+		fmt.Sprintf(`go_info{k8s_namespace_name="%s",k8s_container_name="daprd"}`, c.namespace))
 	if err == nil && len(results) > 0 {
 		if v, ok := results[0].Metric["version"]; ok {
 			stats.GoVersion = v
