@@ -94,8 +94,8 @@ func (c *SigNozClient) populateStatus(ctx context.Context, root *ServiceNode) {
 	// All other services are inferred from what we can query.
 	queries := map[string]string{
 		// Daprd up = entire pod is running (app + sidecar)
-		"daprd":              fmt.Sprintf(`up{k8s_namespace_name="%s",k8s_container_name="daprd"}`, c.namespace),
-		"platform-website":   fmt.Sprintf(`up{k8s_namespace_name="%s",k8s_container_name="daprd"}`, c.namespace),
+		"daprd":              fmt.Sprintf(`up{k8s_namespace_name="%s"}`, c.namespace),
+		"platform-website":   fmt.Sprintf(`up{k8s_namespace_name="%s"}`, c.namespace),
 		"dapr-control-plane": `up{k8s_namespace_name="dapr-system"}`,
 	}
 
@@ -129,12 +129,12 @@ func (c *SigNozClient) populateMetrics(ctx context.Context, root *ServiceNode) {
 	queries := []mq{
 		{
 			name: "platform-website", label: "goroutines", unit: "",
-			query:  fmt.Sprintf(`go_goroutines{k8s_namespace_name="%s",k8s_container_name="daprd"}`, c.namespace),
+			query:  fmt.Sprintf(`go_goroutines{k8s_namespace_name="%s"}`, c.namespace),
 			format: func(v float64) string { return fmt.Sprintf("%.0f", v) },
 		},
 		{
 			name: "platform-website", label: "heap", unit: "MiB",
-			query:  fmt.Sprintf(`go_memstats_alloc_bytes{k8s_namespace_name="%s",k8s_container_name="daprd"}`, c.namespace),
+			query:  fmt.Sprintf(`go_memstats_alloc_bytes{k8s_namespace_name="%s"}`, c.namespace),
 			format: func(v float64) string { return fmt.Sprintf("%.1f", v/(1024*1024)) },
 		},
 		{
@@ -174,7 +174,7 @@ func (c *SigNozClient) populateStats(ctx context.Context) StatsStrip {
 
 	// Get uptime from daprd's process_start_time_seconds
 	results, err := c.queryInstant(ctx,
-		fmt.Sprintf(`process_start_time_seconds{k8s_namespace_name="%s",k8s_container_name="daprd"}`, c.namespace))
+		fmt.Sprintf(`process_start_time_seconds{k8s_namespace_name="%s"}`, c.namespace))
 	if err == nil && len(results) > 0 && len(results[0].Value) >= 2 {
 		if ts, err := parseFloat(results[0].Value[1]); err == nil {
 			uptime := time.Since(time.Unix(int64(ts), 0))
@@ -184,7 +184,7 @@ func (c *SigNozClient) populateStats(ctx context.Context) StatsStrip {
 
 	// Go version from go_info
 	results, err = c.queryInstant(ctx,
-		fmt.Sprintf(`go_info{k8s_namespace_name="%s",k8s_container_name="daprd"}`, c.namespace))
+		fmt.Sprintf(`go_info{k8s_namespace_name="%s"}`, c.namespace))
 	if err == nil && len(results) > 0 {
 		if v, ok := results[0].Metric["version"]; ok {
 			stats.GoVersion = v
