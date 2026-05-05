@@ -44,6 +44,7 @@ func main() {
 	app.Get("/", handlers.Home)
 	app.Get("/sections/:name", handlers.Section)
 	app.Get("/api/version", handlers.APIVersion)
+	app.Get("/api/live/stream", handlers.LiveSSE)
 
 	port := os.Getenv("PORT")
 	if port == "" {
