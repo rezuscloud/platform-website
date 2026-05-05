@@ -19,9 +19,10 @@ type Node struct {
 
 // Pod is a running pod on a node.
 type Pod struct {
-	Name     string // "platform-website-shell-abc123"
-	Status   string // "Running", "Pending"
-	Restarts int
+	Name      string // "platform-website-shell-abc123"
+	Namespace string // "platform-website"
+	Status    string // "Running", "Pending"
+	Restarts  int
 }
 
 // MetricSeries holds a named metric with sparkline data.

@@ -16,7 +16,7 @@ func render(c *fiber.Ctx, component templ.Component) error {
 
 // Home renders the full landing page.
 func Home(c *fiber.Ctx) error {
-	return render(c, pages.Home())
+	return render(c, pages.Home(defaultLiveData()))
 }
 
 // Section renders an individual section for HTMX partial swaps.
@@ -32,6 +32,10 @@ func Section(c *fiber.Ctx) error {
 		"comparison":   sections.Comparison(),
 		"usecases":     sections.UseCases(),
 		"getstarted":   sections.GetStarted(),
+	}
+
+	if name == "live" {
+		return render(c, sections.Live(defaultLiveData()))
 	}
 
 	component, ok := sectionMap[name]

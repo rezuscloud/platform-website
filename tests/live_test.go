@@ -50,4 +50,52 @@ func TestLiveSectionHTML(t *testing.T) {
 		})
 		assert.True(t, foundLive, "#live should appear after #architecture in DOM order")
 	})
+
+	t.Run("nodes render as containers", func(t *testing.T) {
+		nodes := doc.Find("[data-live-node]")
+		assert.Equal(t, 3, nodes.Length(), "Expected 3 nodes from default data")
+	})
+
+	t.Run("node shows name", func(t *testing.T) {
+		talosCP0 := doc.Find("[data-live-node=\"talos-oci-cp-0\"]")
+		assert.Equal(t, 1, talosCP0.Length())
+		assert.Contains(t, talosCP0.Text(), "talos-oci-cp-0")
+	})
+
+	t.Run("node shows tier label", func(t *testing.T) {
+		html, err := doc.Find("[data-live-node=\"talos-oci-cp-0\"]").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "oci-cloud")
+	})
+
+	t.Run("edge node shows edge tier", func(t *testing.T) {
+		html, err := doc.Find("[data-live-node=\"talosedge-genmachiche-flowing-bluejay\"]").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "edge")
+	})
+
+	t.Run("node shows resource usage", func(t *testing.T) {
+		html, err := doc.Find("[data-live-node=\"talos-oci-cp-0\"]").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "12%")
+		assert.Contains(t, html, "4.2 GiB")
+	})
+
+	t.Run("node shows status indicator", func(t *testing.T) {
+		html, err := doc.Find("[data-live-node=\"talos-oci-cp-0\"]").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "bg-green-600")
+	})
+
+	t.Run("pods render inside nodes", func(t *testing.T) {
+		edgeNode := doc.Find("[data-live-node=\"talosedge-genmachiche-flowing-bluejay\"]")
+		pods := edgeNode.Find("[data-live-pod]")
+		assert.Equal(t, 3, pods.Length(), "Expected 3 pods on edge node")
+	})
+
+	t.Run("pod shows name and status", func(t *testing.T) {
+		pod := doc.Find("[data-live-pod=\"platform-website-6f8d6fd5fc-4rgj9\"]")
+		assert.Equal(t, 1, pod.Length())
+		assert.Contains(t, pod.Text(), "Running")
+	})
 }
