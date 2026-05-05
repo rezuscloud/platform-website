@@ -45,11 +45,17 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 
 	c.populateStatus(ctx, &root)
 	c.populateMetrics(ctx, &root)
+	stats := c.populateStats(ctx)
+	health := c.populateHealth(ctx, &root)
 
-	return LiveData{Root: root}, nil
+	return LiveData{
+		Root:       root,
+		Stats:      stats,
+		Health:     health,
+		HasMetrics: true,
+	}, nil
 }
 
-// populateStatus checks the "up" metric for each known service.
 func (c *SigNozClient) populateStatus(ctx context.Context, root *ServiceNode) {
 	queries := map[string]string{
 		"platform-website":   `up{k8s_namespace_name="platform-website"}`,
@@ -73,70 +79,110 @@ func (c *SigNozClient) populateStatus(ctx context.Context, root *ServiceNode) {
 	})
 }
 
-// populateMetrics fetches sparkline data for services with known queries.
 func (c *SigNozClient) populateMetrics(ctx context.Context, root *ServiceNode) {
-	end := time.Now()
-	start := end.Add(-15 * time.Minute)
-
 	type mq struct {
-		name      string
-		label     string
-		unit      string
-		query     string
-		transform func(float64) float64
-		format    func(float64) string
+		name   string
+		label  string
+		unit   string
+		query  string
+		format func(float64) string
 	}
 
 	queries := []mq{
 		{
-			name: "platform-website", label: "Goroutines", unit: "",
+			name: "platform-website", label: "goroutines", unit: "",
 			query:  `go_goroutines{k8s_namespace_name="platform-website",k8s_container_name="platform-website"}`,
 			format: func(v float64) string { return fmt.Sprintf("%.0f", v) },
 		},
 		{
-			name: "platform-website", label: "Heap", unit: "MiB",
-			query:     `go_memstats_alloc_bytes{k8s_namespace_name="platform-website",k8s_container_name="platform-website"}`,
-			transform: func(v float64) float64 { return v / (1024 * 1024) },
-			format:    func(v float64) string { return fmt.Sprintf("%.1f", v) },
+			name: "platform-website", label: "heap", unit: "MiB",
+			query:  `go_memstats_alloc_bytes{k8s_namespace_name="platform-website",k8s_container_name="platform-website"}`,
+			format: func(v float64) string { return fmt.Sprintf("%.1f", v/(1024*1024)) },
 		},
 		{
-			name: "daprd", label: "Components", unit: "loaded",
+			name: "daprd", label: "components", unit: "loaded",
 			query:  `dapr_runtime_component_loaded{k8s_namespace_name="platform-website"}`,
 			format: func(v float64) string { return fmt.Sprintf("%.0f", v) },
 		},
 	}
 
-	root.Walk(func(s *ServiceNode) {
-		for _, q := range queries {
-			if q.name != s.Name {
-				continue
-			}
-			results, err := c.queryRange(ctx, q.query, start, end, time.Minute)
-			if err != nil || len(results) == 0 {
-				continue
-			}
-			rawPts := extractPoints(results)
-			if len(rawPts) == 0 {
-				continue
-			}
-			pts := make([]float64, len(rawPts))
-			for i, v := range rawPts {
-				if q.transform != nil {
-					pts[i] = q.transform(v)
-				} else {
-					pts[i] = v
-				}
-			}
-			s.Metrics = append(s.Metrics, MetricSeries{
-				Label:  q.label,
-				Value:  q.format(pts[len(pts)-1]),
-				Unit:   q.unit,
-				Points: pts,
-			})
+	for _, q := range queries {
+		node := root.Find(q.name)
+		if node == nil {
+			continue
 		}
-	})
+		results, err := c.queryInstant(ctx, q.query)
+		if err != nil || len(results) == 0 {
+			continue
+		}
+		valStr := results[0].Metric["value"]
+		if len(results[0].Value) >= 2 {
+			if f, err := strconv.ParseFloat(fmt.Sprintf("%v", results[0].Value[1]), 64); err == nil {
+				valStr = q.format(f)
+			}
+		}
+		node.Metrics = append(node.Metrics, MetricSeries{
+			Label: q.label,
+			Value: valStr,
+			Unit:  q.unit,
+		})
+	}
 }
 
+func (c *SigNozClient) populateStats(ctx context.Context) StatsStrip {
+	stats := StatsStrip{NodeCount: 2}
+
+	// Uptime from process_start_time_seconds
+	results, err := c.queryInstant(ctx,
+		`process_start_time_seconds{k8s_namespace_name="platform-website",k8s_container_name="platform-website"}`)
+	if err == nil && len(results) > 0 && len(results[0].Value) >= 2 {
+		if ts, err := strconv.ParseFloat(fmt.Sprintf("%v", results[0].Value[1]), 64); err == nil {
+			uptime := time.Since(time.Unix(int64(ts), 0))
+			stats.Uptime = formatDuration(uptime)
+		}
+	}
+
+	// Go version from go_info
+	results, err = c.queryInstant(ctx,
+		`go_info{k8s_namespace_name="platform-website",k8s_container_name="platform-website"}`)
+	if err == nil && len(results) > 0 {
+		if v, ok := results[0].Metric["version"]; ok {
+			stats.GoVersion = v
+		}
+	}
+
+	return stats
+}
+
+func (c *SigNozClient) populateHealth(ctx context.Context, root *ServiceNode) []HealthCheck {
+	var checks []HealthCheck
+	root.Walk(func(s *ServiceNode) {
+		h := HealthCheck{
+			ServiceName: s.Label,
+			Status:      s.Status,
+		}
+		if s.Status == "healthy" {
+			h.LastCheck = "5s ago"
+		}
+		checks = append(checks, h)
+	})
+	return checks
+}
+
+func formatDuration(d time.Duration) string {
+	h := int(d.Hours())
+	if h >= 24 {
+		days := h / 24
+		return fmt.Sprintf("%dd", days)
+	}
+	if h >= 1 {
+		return fmt.Sprintf("%dh", h)
+	}
+	m := int(d.Minutes())
+	return fmt.Sprintf("%dm", m)
+}
+
+// queryInstant runs a PromQL instant query.
 func (c *SigNozClient) queryInstant(ctx context.Context, query string) ([]promResultItem, error) {
 	u, _ := url.Parse(c.baseURL)
 	u.Path = "/api/v1/query"
@@ -171,59 +217,6 @@ func (c *SigNozClient) queryInstant(ctx context.Context, query string) ([]promRe
 	return pr.Data.Result, nil
 }
 
-func (c *SigNozClient) queryRange(ctx context.Context, query string, start, end time.Time, step time.Duration) ([]promResultItem, error) {
-	u, _ := url.Parse(c.baseURL)
-	u.Path = "/api/v1/query_range"
-	q := u.Query()
-	q.Set("query", query)
-	q.Set("start", strconv.FormatInt(start.Unix(), 10))
-	q.Set("end", strconv.FormatInt(end.Unix(), 10))
-	q.Set("step", strconv.FormatInt(int64(step.Seconds()), 10))
-	u.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("SIGNOZ-API-KEY", c.apiKey)
-
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var pr promRangeResponse
-	if err := json.Unmarshal(body, &pr); err != nil {
-		return nil, fmt.Errorf("parse: %w", err)
-	}
-	if pr.Status != "success" {
-		return nil, fmt.Errorf("sigNoz: %s", string(body))
-	}
-	return pr.Data.Result, nil
-}
-
-func extractPoints(results []promResultItem) []float64 {
-	if len(results) == 0 {
-		return nil
-	}
-	vals := results[0].Values
-	points := make([]float64, len(vals))
-	for i, v := range vals {
-		if len(v) >= 2 {
-			if f, err := strconv.ParseFloat(fmt.Sprintf("%v", v[1]), 64); err == nil {
-				points[i] = f
-			}
-		}
-	}
-	return points
-}
-
 // Prometheus API response types
 
 type promResponse struct {
@@ -234,16 +227,7 @@ type promResponse struct {
 	} `json:"data"`
 }
 
-type promRangeResponse struct {
-	Status string `json:"status"`
-	Data   struct {
-		ResultType string           `json:"resultType"`
-		Result     []promResultItem `json:"result"`
-	} `json:"data"`
-}
-
 type promResultItem struct {
 	Metric map[string]string `json:"metric"`
 	Value  []interface{}     `json:"value,omitempty"`
-	Values [][]interface{}   `json:"values,omitempty"`
 }
