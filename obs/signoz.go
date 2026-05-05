@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -53,14 +52,13 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 
 	root := PlatformTopology()
 
-	// Use a shorter timeout for the initial fetch to avoid blocking page renders
 	fetchCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
 	c.populateStatus(fetchCtx, &root)
 	c.populateMetrics(fetchCtx, &root)
 	stats := c.populateStats(fetchCtx)
-	health := c.populateHealth(fetchCtx, &root)
+	health := c.populateHealth(&root)
 
 	c.cached = LiveData{
 		Root:       root,
@@ -73,18 +71,21 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	return c.cached, nil
 }
 
+// populateStatus checks which services are reachable via their scraped metrics.
 func (c *SigNozClient) populateStatus(ctx context.Context, root *ServiceNode) {
+	// The Dapr sidecar (daprd) is the only container with prometheus.io annotations.
+	// All other services are inferred from what we can query.
 	queries := map[string]string{
-		"platform-website":   `up{k8s_namespace_name="platform-website"}`,
+		// Daprd up = entire pod is running (app + sidecar)
 		"daprd":              `up{k8s_namespace_name="platform-website",k8s_container_name="daprd"}`,
-		"signoz-collector":   `up{k8s_namespace_name="signoz",k8s_deployment_name="signoz-otel-collector"}`,
-		"cilium-gateway":     `up{k8s_namespace_name="kube-system",k8s_container_name="cilium-envoy"}`,
+		"platform-website":   `up{k8s_namespace_name="platform-website",k8s_container_name="daprd"}`,
 		"dapr-control-plane": `up{k8s_namespace_name="dapr-system"}`,
 	}
 
 	root.Walk(func(s *ServiceNode) {
 		q := queries[s.Name]
 		if q == "" {
+			s.Status = "unknown"
 			return
 		}
 		results, err := c.queryInstant(ctx, q)
@@ -96,7 +97,10 @@ func (c *SigNozClient) populateStatus(ctx context.Context, root *ServiceNode) {
 	})
 }
 
+// populateMetrics fetches compact metric values for services that have them.
 func (c *SigNozClient) populateMetrics(ctx context.Context, root *ServiceNode) {
+	// All metrics come from the daprd sidecar's :9090 endpoint since the app
+	// doesn't expose its own /metrics. goroutines/heap are daprd's runtime.
 	type mq struct {
 		name   string
 		label  string
@@ -108,12 +112,12 @@ func (c *SigNozClient) populateMetrics(ctx context.Context, root *ServiceNode) {
 	queries := []mq{
 		{
 			name: "platform-website", label: "goroutines", unit: "",
-			query:  `go_goroutines{k8s_namespace_name="platform-website",k8s_container_name="platform-website"}`,
+			query:  `go_goroutines{k8s_namespace_name="platform-website",k8s_container_name="daprd"}`,
 			format: func(v float64) string { return fmt.Sprintf("%.0f", v) },
 		},
 		{
 			name: "platform-website", label: "heap", unit: "MiB",
-			query:  `go_memstats_alloc_bytes{k8s_namespace_name="platform-website",k8s_container_name="platform-website"}`,
+			query:  `go_memstats_alloc_bytes{k8s_namespace_name="platform-website",k8s_container_name="daprd"}`,
 			format: func(v float64) string { return fmt.Sprintf("%.1f", v/(1024*1024)) },
 		},
 		{
@@ -132,28 +136,30 @@ func (c *SigNozClient) populateMetrics(ctx context.Context, root *ServiceNode) {
 		if err != nil || len(results) == 0 {
 			continue
 		}
-		valStr := results[0].Metric["value"]
+		valStr := ""
 		if len(results[0].Value) >= 2 {
-			if f, err := strconv.ParseFloat(fmt.Sprintf("%v", results[0].Value[1]), 64); err == nil {
+			if f, err := parseFloat(results[0].Value[1]); err == nil {
 				valStr = q.format(f)
 			}
 		}
-		node.Metrics = append(node.Metrics, MetricSeries{
-			Label: q.label,
-			Value: valStr,
-			Unit:  q.unit,
-		})
+		if valStr != "" {
+			node.Metrics = append(node.Metrics, MetricSeries{
+				Label: q.label,
+				Value: valStr,
+				Unit:  q.unit,
+			})
+		}
 	}
 }
 
 func (c *SigNozClient) populateStats(ctx context.Context) StatsStrip {
 	stats := StatsStrip{NodeCount: 2}
 
-	// Uptime from process_start_time_seconds
+	// Get uptime from daprd's process_start_time_seconds
 	results, err := c.queryInstant(ctx,
-		`process_start_time_seconds{k8s_namespace_name="platform-website",k8s_container_name="platform-website"}`)
+		`process_start_time_seconds{k8s_namespace_name="platform-website",k8s_container_name="daprd"}`)
 	if err == nil && len(results) > 0 && len(results[0].Value) >= 2 {
-		if ts, err := strconv.ParseFloat(fmt.Sprintf("%v", results[0].Value[1]), 64); err == nil {
+		if ts, err := parseFloat(results[0].Value[1]); err == nil {
 			uptime := time.Since(time.Unix(int64(ts), 0))
 			stats.Uptime = formatDuration(uptime)
 		}
@@ -161,7 +167,7 @@ func (c *SigNozClient) populateStats(ctx context.Context) StatsStrip {
 
 	// Go version from go_info
 	results, err = c.queryInstant(ctx,
-		`go_info{k8s_namespace_name="platform-website",k8s_container_name="platform-website"}`)
+		`go_info{k8s_namespace_name="platform-website",k8s_container_name="daprd"}`)
 	if err == nil && len(results) > 0 {
 		if v, ok := results[0].Metric["version"]; ok {
 			stats.GoVersion = v
@@ -171,7 +177,7 @@ func (c *SigNozClient) populateStats(ctx context.Context) StatsStrip {
 	return stats
 }
 
-func (c *SigNozClient) populateHealth(ctx context.Context, root *ServiceNode) []HealthCheck {
+func (c *SigNozClient) populateHealth(root *ServiceNode) []HealthCheck {
 	var checks []HealthCheck
 	root.Walk(func(s *ServiceNode) {
 		h := HealthCheck{
@@ -184,6 +190,12 @@ func (c *SigNozClient) populateHealth(ctx context.Context, root *ServiceNode) []
 		checks = append(checks, h)
 	})
 	return checks
+}
+
+func parseFloat(v interface{}) (float64, error) {
+	var f float64
+	_, err := fmt.Sscanf(fmt.Sprintf("%v", v), "%f", &f)
+	return f, err
 }
 
 func formatDuration(d time.Duration) string {
@@ -199,7 +211,6 @@ func formatDuration(d time.Duration) string {
 	return fmt.Sprintf("%dm", m)
 }
 
-// queryInstant runs a PromQL instant query.
 func (c *SigNozClient) queryInstant(ctx context.Context, query string) ([]promResultItem, error) {
 	u, _ := url.Parse(c.baseURL)
 	u.Path = "/api/v1/query"
