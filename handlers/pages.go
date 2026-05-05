@@ -4,9 +4,21 @@ import (
 	"github.com/a-h/templ"
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/rezuscloud/platform-website/obs"
 	"github.com/rezuscloud/platform-website/views/pages"
 	"github.com/rezuscloud/platform-website/views/sections"
 )
+
+// liveClient is the data source for the live section.
+// Defaults to a mock client. Set at startup from main.go.
+var liveClient obs.Client = &obs.MockClient{Data: obs.DefaultMockData()}
+
+// SetLiveClient configures the data source for the live section.
+func SetLiveClient(c obs.Client) {
+	if c != nil {
+		liveClient = c
+	}
+}
 
 // Render adapts a templ.Component to a Fiber response.
 func render(c *fiber.Ctx, component templ.Component) error {
@@ -16,7 +28,8 @@ func render(c *fiber.Ctx, component templ.Component) error {
 
 // Home renders the full landing page.
 func Home(c *fiber.Ctx) error {
-	return render(c, pages.Home(defaultLiveData()))
+	data, _ := liveClient.Fetch(c.Context())
+	return render(c, pages.Home(data))
 }
 
 // Section renders an individual section for HTMX partial swaps.
@@ -35,7 +48,8 @@ func Section(c *fiber.Ctx) error {
 	}
 
 	if name == "live" {
-		return render(c, sections.Live(defaultLiveData()))
+		data, _ := liveClient.Fetch(c.Context())
+		return render(c, sections.Live(data))
 	}
 
 	component, ok := sectionMap[name]
