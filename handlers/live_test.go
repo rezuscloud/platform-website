@@ -42,17 +42,6 @@ func TestSSEWriteHelpers(t *testing.T) {
 		assert.Equal(t, "event: services\ndata: 5\n\n", buf.String())
 	})
 
-	t.Run("sseMetricCount writes total metrics", func(t *testing.T) {
-		var buf bytes.Buffer
-		w := bufio.NewWriter(&buf)
-		data := obs.DefaultMockData()
-		sseMetricCount(w, data)
-		w.Flush()
-
-		// Mock has 2 metrics on platform-website + 1 on daprd = 3
-		assert.Equal(t, "event: metrics\ndata: 3\n\n", buf.String())
-	})
-
 	t.Run("sseHeartbeat writes heartbeat with unix timestamp", func(t *testing.T) {
 		var buf bytes.Buffer
 		w := bufio.NewWriter(&buf)
@@ -81,26 +70,22 @@ func TestDefaultMockData(t *testing.T) {
 		assert.Equal(t, "cilium-gateway", data.Root.Name)
 	})
 
-	t.Run("all services are healthy", func(t *testing.T) {
+	t.Run("all services are unknown", func(t *testing.T) {
 		data.Root.Walk(func(s *obs.ServiceNode) {
-			assert.Equal(t, "healthy", s.Status, "Service %s should be healthy", s.Name)
+			assert.Equal(t, "unknown", s.Status, "Service %s", s.Name)
 		})
 	})
 
-	t.Run("platform-website has metrics", func(t *testing.T) {
-		data.Root.Walk(func(s *obs.ServiceNode) {
-			if s.Name == "platform-website" {
-				assert.NotEmpty(t, s.Metrics)
-			}
-		})
+	t.Run("has no metrics", func(t *testing.T) {
+		assert.False(t, data.HasMetrics)
+	})
+
+	t.Run("has no health checks", func(t *testing.T) {
+		assert.Empty(t, data.Health)
 	})
 }
 
 func TestLiveSSEHandlerRegistration(t *testing.T) {
-	t.Run("SSE endpoint returns event-stream content type", func(t *testing.T) {
-		assert.NotNil(t, LiveSSE)
-	})
-
 	t.Run("mock client implements Client interface", func(t *testing.T) {
 		var _ obs.Client = &obs.MockClient{}
 	})
