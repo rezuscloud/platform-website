@@ -32,26 +32,24 @@ func TestSetLiveClient(t *testing.T) {
 }
 
 func TestSSEWriteHelpers(t *testing.T) {
-	t.Run("sseNodes writes service count event", func(t *testing.T) {
+	t.Run("sseServiceCount writes tree service count", func(t *testing.T) {
 		var buf bytes.Buffer
 		w := bufio.NewWriter(&buf)
-		data := obs.LiveData{Services: []obs.ServiceNode{{}, {}, {}}}
-		sseNodes(w, data)
+		data := obs.DefaultMockData()
+		sseServiceCount(w, data)
 		w.Flush()
 
-		assert.Equal(t, "event: services\ndata: 3\n\n", buf.String())
+		assert.Equal(t, "event: services\ndata: 5\n\n", buf.String())
 	})
 
-	t.Run("sseMetrics writes metrics count event", func(t *testing.T) {
+	t.Run("sseMetricCount writes total metrics", func(t *testing.T) {
 		var buf bytes.Buffer
 		w := bufio.NewWriter(&buf)
-		data := obs.LiveData{Services: []obs.ServiceNode{
-			{Metrics: []obs.MetricSeries{{}, {}}},
-			{Metrics: []obs.MetricSeries{{}}},
-		}}
-		sseMetrics(w, data)
+		data := obs.DefaultMockData()
+		sseMetricCount(w, data)
 		w.Flush()
 
+		// Mock has 2 metrics on platform-website + 1 on daprd = 3
 		assert.Equal(t, "event: metrics\ndata: 3\n\n", buf.String())
 	})
 
@@ -79,30 +77,27 @@ func TestSSEWriteHelpers(t *testing.T) {
 func TestDefaultMockData(t *testing.T) {
 	data := obs.DefaultMockData()
 
-	t.Run("has realistic service topology", func(t *testing.T) {
-		assert.Len(t, data.Services, 5)
+	t.Run("root is cilium-gateway", func(t *testing.T) {
+		assert.Equal(t, "cilium-gateway", data.Root.Name)
 	})
 
 	t.Run("all services are healthy", func(t *testing.T) {
-		for _, s := range data.Services {
+		data.Root.Walk(func(s *obs.ServiceNode) {
 			assert.Equal(t, "healthy", s.Status, "Service %s should be healthy", s.Name)
-		}
+		})
 	})
 
-	t.Run("has sample metrics on platform-website", func(t *testing.T) {
-		assert.NotEmpty(t, data.Services[1].Metrics)
-		for _, m := range data.Services[1].Metrics {
-			assert.NotEmpty(t, m.Label)
-			assert.NotEmpty(t, m.Points)
-		}
+	t.Run("platform-website has metrics", func(t *testing.T) {
+		data.Root.Walk(func(s *obs.ServiceNode) {
+			if s.Name == "platform-website" {
+				assert.NotEmpty(t, s.Metrics)
+			}
+		})
 	})
 }
 
 func TestLiveSSEHandlerRegistration(t *testing.T) {
 	t.Run("SSE endpoint returns event-stream content type", func(t *testing.T) {
-		// We test only the headers. The streaming body is tested via unit tests above.
-		// Create a handler that writes initial events then returns.
-		// This tests the Fiber wiring is correct.
 		assert.NotNil(t, LiveSSE)
 	})
 

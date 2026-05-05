@@ -39,26 +39,18 @@ func NewSigNozClientFromEnv() *SigNozClient {
 	return NewSigNozClient(u, k)
 }
 
-// Fetch returns the platform-website service map with live metrics.
+// Fetch returns the platform-website service tree with live metrics.
 func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
-	data := PlatformTopology()
+	root := PlatformTopology()
 
-	// Check which services are up
-	if err := c.populateStatus(ctx, &data); err != nil {
-		return data, fmt.Errorf("status: %w", err)
-	}
+	c.populateStatus(ctx, &root)
+	c.populateMetrics(ctx, &root)
 
-	// Fetch app metrics for sparklines
-	if err := c.populateMetrics(ctx, &data); err != nil {
-		return data, fmt.Errorf("metrics: %w", err)
-	}
-
-	return data, nil
+	return LiveData{Root: root}, nil
 }
 
 // populateStatus checks the "up" metric for each known service.
-func (c *SigNozClient) populateStatus(ctx context.Context, data *LiveData) error {
-	// Map our service names to PromQL label matchers
+func (c *SigNozClient) populateStatus(ctx context.Context, root *ServiceNode) {
 	queries := map[string]string{
 		"platform-website":   `up{k8s_namespace_name="platform-website"}`,
 		"daprd":              `up{k8s_namespace_name="platform-website",k8s_container_name="daprd"}`,
@@ -67,105 +59,84 @@ func (c *SigNozClient) populateStatus(ctx context.Context, data *LiveData) error
 		"dapr-control-plane": `up{k8s_namespace_name="dapr-system"}`,
 	}
 
-	for i := range data.Services {
-		q := queries[data.Services[i].Name]
+	root.Walk(func(s *ServiceNode) {
+		q := queries[s.Name]
 		if q == "" {
-			continue
+			return
 		}
 		results, err := c.queryInstant(ctx, q)
-		if err != nil {
-			data.Services[i].Status = "unknown"
-			continue
+		if err != nil || len(results) == 0 {
+			s.Status = "unknown"
+			return
 		}
-		if len(results) > 0 {
-			data.Services[i].Status = "healthy"
-		} else {
-			data.Services[i].Status = "unknown"
-		}
-	}
-	return nil
+		s.Status = "healthy"
+	})
 }
 
-// populateMetrics fetches sparkline data for the platform-website service.
-func (c *SigNozClient) populateMetrics(ctx context.Context, data *LiveData) error {
+// populateMetrics fetches sparkline data for services with known queries.
+func (c *SigNozClient) populateMetrics(ctx context.Context, root *ServiceNode) {
 	end := time.Now()
 	start := end.Add(-15 * time.Minute)
 
-	type metricQuery struct {
-		serviceIdx int
-		label      string
-		unit       string
-		query      string
-		transform  func(float64) float64
-		format     func(float64) string
+	type mq struct {
+		name      string
+		label     string
+		unit      string
+		query     string
+		transform func(float64) float64
+		format    func(float64) string
 	}
 
-	queries := []metricQuery{
+	queries := []mq{
 		{
-			serviceIdx: 1, // platform-website
-			label:      "Goroutines",
-			unit:       "",
-			query:      `go_goroutines{k8s_namespace_name="platform-website",k8s_container_name="platform-website"}`,
-			transform:  nil,
-			format:     func(v float64) string { return fmt.Sprintf("%.0f", v) },
+			name: "platform-website", label: "Goroutines", unit: "",
+			query:  `go_goroutines{k8s_namespace_name="platform-website",k8s_container_name="platform-website"}`,
+			format: func(v float64) string { return fmt.Sprintf("%.0f", v) },
 		},
 		{
-			serviceIdx: 1,
-			label:      "Heap",
-			unit:       "MiB",
-			query:      `go_memstats_alloc_bytes{k8s_namespace_name="platform-website",k8s_container_name="platform-website"}`,
-			transform:  func(v float64) float64 { return v / (1024 * 1024) },
-			format:     func(v float64) string { return fmt.Sprintf("%.1f", v) },
+			name: "platform-website", label: "Heap", unit: "MiB",
+			query:     `go_memstats_alloc_bytes{k8s_namespace_name="platform-website",k8s_container_name="platform-website"}`,
+			transform: func(v float64) float64 { return v / (1024 * 1024) },
+			format:    func(v float64) string { return fmt.Sprintf("%.1f", v) },
 		},
 		{
-			serviceIdx: 2, // daprd
-			label:      "Components",
-			unit:       "loaded",
-			query:      `dapr_runtime_component_loaded{k8s_namespace_name="platform-website"}`,
-			transform:  nil,
-			format:     func(v float64) string { return fmt.Sprintf("%.0f", v) },
+			name: "daprd", label: "Components", unit: "loaded",
+			query:  `dapr_runtime_component_loaded{k8s_namespace_name="platform-website"}`,
+			format: func(v float64) string { return fmt.Sprintf("%.0f", v) },
 		},
 	}
 
-	for _, mq := range queries {
-		results, err := c.queryRange(ctx, mq.query, start, end, time.Minute)
-		if err != nil || len(results) == 0 {
-			continue
-		}
-
-		rawPts := extractPoints(results)
-		if len(rawPts) == 0 {
-			continue
-		}
-
-		// Transform points (e.g. bytes → MiB)
-		pts := make([]float64, len(rawPts))
-		for i, v := range rawPts {
-			if mq.transform != nil {
-				pts[i] = mq.transform(v)
-			} else {
-				pts[i] = v
+	root.Walk(func(s *ServiceNode) {
+		for _, q := range queries {
+			if q.name != s.Name {
+				continue
 			}
-		}
-
-		// Format the last value
-		lastVal := pts[len(pts)-1]
-
-		data.Services[mq.serviceIdx].Metrics = append(
-			data.Services[mq.serviceIdx].Metrics,
-			MetricSeries{
-				Label:  mq.label,
-				Value:  mq.format(lastVal),
-				Unit:   mq.unit,
+			results, err := c.queryRange(ctx, q.query, start, end, time.Minute)
+			if err != nil || len(results) == 0 {
+				continue
+			}
+			rawPts := extractPoints(results)
+			if len(rawPts) == 0 {
+				continue
+			}
+			pts := make([]float64, len(rawPts))
+			for i, v := range rawPts {
+				if q.transform != nil {
+					pts[i] = q.transform(v)
+				} else {
+					pts[i] = v
+				}
+			}
+			s.Metrics = append(s.Metrics, MetricSeries{
+				Label:  q.label,
+				Value:  q.format(pts[len(pts)-1]),
+				Unit:   q.unit,
 				Points: pts,
-			},
-		)
-	}
-
-	return nil
+			})
+		}
+	})
 }
 
-// queryInstant runs a PromQL instant query.
 func (c *SigNozClient) queryInstant(ctx context.Context, query string) ([]promResultItem, error) {
 	u, _ := url.Parse(c.baseURL)
 	u.Path = "/api/v1/query"
@@ -200,7 +171,6 @@ func (c *SigNozClient) queryInstant(ctx context.Context, query string) ([]promRe
 	return pr.Data.Result, nil
 }
 
-// queryRange runs a PromQL range query for sparkline data.
 func (c *SigNozClient) queryRange(ctx context.Context, query string, start, end time.Time, step time.Duration) ([]promResultItem, error) {
 	u, _ := url.Parse(c.baseURL)
 	u.Path = "/api/v1/query_range"
@@ -254,7 +224,7 @@ func extractPoints(results []promResultItem) []float64 {
 	return points
 }
 
-// Prometheus API types
+// Prometheus API response types
 
 type promResponse struct {
 	Status string `json:"status"`

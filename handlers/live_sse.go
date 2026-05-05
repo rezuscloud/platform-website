@@ -24,8 +24,8 @@ func LiveSSE(c *fiber.Ctx) error {
 			sseError(w, err)
 			return
 		}
-		sseNodes(w, data)
-		sseMetrics(w, data)
+		sseServiceCount(w, data)
+		sseMetricCount(w, data)
 		sseHeartbeat(w)
 		w.Flush()
 
@@ -37,8 +37,8 @@ func LiveSSE(c *fiber.Ctx) error {
 					sseError(w, err)
 					return
 				}
-				sseNodes(w, data)
-				sseMetrics(w, data)
+				sseServiceCount(w, data)
+				sseMetricCount(w, data)
 				sseHeartbeat(w)
 				w.Flush()
 			}
@@ -53,15 +53,15 @@ func sseError(w *bufio.Writer, err error) {
 	w.Flush()
 }
 
-func sseNodes(w *bufio.Writer, data obs.LiveData) {
-	fmt.Fprintf(w, "event: services\ndata: %d\n\n", len(data.Services))
+func sseServiceCount(w *bufio.Writer, data obs.LiveData) {
+	fmt.Fprintf(w, "event: services\ndata: %d\n\n", data.Root.ServiceCount())
 }
 
-func sseMetrics(w *bufio.Writer, data obs.LiveData) {
+func sseMetricCount(w *bufio.Writer, data obs.LiveData) {
 	var count int
-	for _, s := range data.Services {
+	data.Root.Walk(func(s *obs.ServiceNode) {
 		count += len(s.Metrics)
-	}
+	})
 	fmt.Fprintf(w, "event: metrics\ndata: %d\n\n", count)
 }
 

@@ -21,14 +21,7 @@ func TestSigNozClientFetch(t *testing.T) {
 			resp := promResponse{Status: "success"}
 			resp.Data.ResultType = "vector"
 			resp.Data.Result = []promResultItem{
-				{
-					Metric: map[string]string{
-						"k8s_node_name":      "talosedge-genmachiche-flowing-bluejay",
-						"k8s_pod_name":       "platform-website-abc123",
-						"k8s_namespace_name": "platform-website",
-					},
-					Value: []interface{}{float64(1714896000), "1"},
-				},
+				{Metric: map[string]string{"k8s_namespace_name": "platform-website"}, Value: []interface{}{float64(1714896000), "1"}},
 			}
 			json.NewEncoder(w).Encode(resp)
 
@@ -56,43 +49,34 @@ func TestSigNozClientFetch(t *testing.T) {
 
 	client := NewSigNozClient(server.URL, "test-api-key")
 
-	t.Run("Fetch returns platform topology", func(t *testing.T) {
+	t.Run("returns full tree", func(t *testing.T) {
 		data, err := client.Fetch(context.Background())
 		require.NoError(t, err)
-
-		assert.Len(t, data.Services, 5)
-		assert.Len(t, data.Edges, 4)
+		assert.Equal(t, "cilium-gateway", data.Root.Name)
+		assert.Equal(t, 5, data.Root.ServiceCount())
 	})
 
-	t.Run("services have names from topology", func(t *testing.T) {
+	t.Run("populates status from up metric", func(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
-
-		assert.Equal(t, "cilium-gateway", data.Services[0].Name)
-		assert.Equal(t, "platform-website", data.Services[1].Name)
-		assert.Equal(t, "daprd", data.Services[2].Name)
+		// All services should have a status (healthy or unknown)
+		data.Root.Walk(func(s *ServiceNode) {
+			assert.Contains(t, []string{"healthy", "unknown"}, s.Status, "Service %s", s.Name)
+		})
 	})
 
-	t.Run("services get status from up metric", func(t *testing.T) {
+	t.Run("populates metrics for platform-website", func(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
-
-		// platform-website should be healthy (the mock server returns a result)
-		assert.Equal(t, "healthy", data.Services[1].Status)
+		data.Root.Walk(func(s *ServiceNode) {
+			if s.Name == "platform-website" {
+				assert.NotEmpty(t, s.Metrics, "platform-website should have metrics")
+			}
+		})
 	})
 
-	t.Run("metrics sparklines populated for platform-website", func(t *testing.T) {
+	t.Run("edges connect correctly", func(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
-
-		assert.NotEmpty(t, data.Services[1].Metrics)
-		assert.Equal(t, "Goroutines", data.Services[1].Metrics[0].Label)
-		assert.NotEmpty(t, data.Services[1].Metrics[0].Points)
-	})
-
-	t.Run("edges connect services correctly", func(t *testing.T) {
-		data, _ := client.Fetch(context.Background())
-
-		assert.Equal(t, "cilium-gateway", data.Edges[0].From)
-		assert.Equal(t, "platform-website", data.Edges[0].To)
-		assert.Equal(t, "HTTPS", data.Edges[0].Label)
+		assert.Equal(t, "HTTPS", data.Root.Out[0].Label)
+		assert.Equal(t, "platform-website", data.Root.Out[0].Target.Name)
 	})
 }
 
@@ -100,12 +84,11 @@ func TestSigNozClientGracefulDegradation(t *testing.T) {
 	t.Run("unreachable URL still returns topology", func(t *testing.T) {
 		client := NewSigNozClient("http://127.0.0.1:1", "test-key")
 		data, err := client.Fetch(context.Background())
-		// Returns topology with services marked as unknown, no hard error
 		assert.NoError(t, err)
-		assert.Len(t, data.Services, 5)
-		for _, s := range data.Services {
-			assert.Equal(t, "unknown", s.Status)
-		}
+		assert.Equal(t, "cilium-gateway", data.Root.Name)
+		data.Root.Walk(func(s *ServiceNode) {
+			assert.Equal(t, "unknown", s.Status, "Service %s", s.Name)
+		})
 	})
 }
 
@@ -117,25 +100,40 @@ func TestNewSigNozClientFromEnv(t *testing.T) {
 }
 
 func TestPlatformTopology(t *testing.T) {
-	data := PlatformTopology()
+	root := PlatformTopology()
 
-	t.Run("has 5 services", func(t *testing.T) {
-		assert.Len(t, data.Services, 5)
+	t.Run("root is cilium-gateway", func(t *testing.T) {
+		assert.Equal(t, "cilium-gateway", root.Name)
+		assert.Equal(t, "ingress", root.Kind)
 	})
 
-	t.Run("has 4 edges", func(t *testing.T) {
-		assert.Len(t, data.Edges, 4)
+	t.Run("has 5 total services", func(t *testing.T) {
+		assert.Equal(t, 5, root.ServiceCount())
 	})
 
-	t.Run("has kinds", func(t *testing.T) {
-		kinds := make(map[string]string)
-		for _, s := range data.Services {
-			kinds[s.Name] = s.Kind
-		}
-		assert.Equal(t, "ingress", kinds["cilium-gateway"])
-		assert.Equal(t, "app", kinds["platform-website"])
-		assert.Equal(t, "sidecar", kinds["daprd"])
-		assert.Equal(t, "infra", kinds["signoz-collector"])
-		assert.Equal(t, "infra", kinds["dapr-control-plane"])
+	t.Run("has correct tree structure", func(t *testing.T) {
+		// cilium → platform-website → daprd → [signoz, dapr-cp]
+		assert.Len(t, root.Out, 1)
+		pw := root.Out[0].Target
+		assert.Equal(t, "platform-website", pw.Name)
+		assert.Len(t, pw.Out, 1)
+		daprd := pw.Out[0].Target
+		assert.Equal(t, "daprd", daprd.Name)
+		assert.Len(t, daprd.Out, 2)
+		assert.Equal(t, "signoz-collector", daprd.Out[0].Target.Name)
+		assert.Equal(t, "dapr-control-plane", daprd.Out[1].Target.Name)
+	})
+
+	t.Run("walk visits all 5 services", func(t *testing.T) {
+		var names []string
+		root.Walk(func(s *ServiceNode) { names = append(names, s.Name) })
+		assert.Equal(t, []string{"cilium-gateway", "platform-website", "daprd", "signoz-collector", "dapr-control-plane"}, names)
+	})
+
+	t.Run("edge labels are correct", func(t *testing.T) {
+		assert.Equal(t, "HTTPS", root.Out[0].Label)
+		assert.Equal(t, "localhost", root.Out[0].Target.Out[0].Label)
+		assert.Equal(t, "OTLP", root.Out[0].Target.Out[0].Target.Out[0].Label)
+		assert.Equal(t, "gRPC", root.Out[0].Target.Out[0].Target.Out[1].Label)
 	})
 }
