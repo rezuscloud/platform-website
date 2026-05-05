@@ -1,0 +1,17 @@
+package sections
+
+import "github.com/rezuscloud/platform-website/obs"
+
+templ Live(data obs.LiveData) {
+	<section id="live" class="py-16 sm:py-24 bg-surface dark:bg-next-dark">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="flex items-center gap-3 mb-8">
+				<h2 class="font-mac text-2xl sm:text-3xl font-bold text-ink dark:text-next-white tracking-tight">Watch It Run</h2>
+				<div class="flex items-center gap-1.5">
+					<span class="inline-block w-2.5 h-2.5 bg-green-600 dark:bg-green-500 animate-pulse" aria-hidden="true"></span>
+					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle uppercase tracking-wider">Live</span>
+				</div>
+			</div>
+		</div>
+	</section>
+}
