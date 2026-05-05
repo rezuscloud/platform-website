@@ -13,15 +13,26 @@ templ Live(data obs.LiveData) {
 					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle uppercase tracking-wider">Live</span>
 				</div>
 			</div>
-			<!-- Infrastructure Map -->
-			if len(data.Nodes) > 0 {
-				<!-- Group nodes by tier -->
-				<div class="space-y-6" data-live-infra>
-					for _, node := range data.Nodes {
-						@liveNode(node)
+			<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+				<!-- Infrastructure Map (2/3 width) -->
+				<div class="lg:col-span-2">
+					if len(data.Nodes) > 0 {
+						<div class="space-y-4" data-live-infra>
+							for _, node := range data.Nodes {
+								@liveNode(node)
+							}
+						</div>
 					}
 				</div>
-			}
+				<!-- Metrics Sparklines (1/3 width) -->
+				if len(data.Metrics) > 0 {
+					<div class="space-y-4" data-live-metrics>
+						for _, m := range data.Metrics {
+							@liveMetric(m)
+						}
+					</div>
+				}
+			</div>
 		</div>
 	</section>
 }
@@ -72,4 +83,20 @@ templ livePod(pod obs.Pod) {
 			}
 		</div>
 	</div>
+}
+
+templ liveMetric(m obs.MetricSeries) {
+	if len(m.Points) > 0 {
+		{{ line, area := obs.Sparkline(m.Points, 100, 24) }}
+		<div class="border border-rule dark:border-next-mid p-3" data-live-metric={ m.Label }>
+			<div class="flex items-baseline justify-between mb-2">
+				<span class="font-mac text-xs font-bold text-ink dark:text-next-white">{ m.Label }</span>
+				<span class="font-terminal text-sm text-ink dark:text-next-white">{ m.Value } <span class="text-ink-muted dark:text-next-subtle">{ m.Unit }</span></span>
+			</div>
+			<svg viewBox="0 0 100 24" class="w-full h-6" preserveAspectRatio="none" aria-hidden="true">
+				<polygon points={ area } class="fill-accent-gold/20 dark:fill-next-teal/20"></polygon>
+				<polyline points={ line } fill="none" stroke-width="1.5" class="stroke-accent-gold dark:stroke-next-teal"></polyline>
+			</svg>
+		</div>
+	}
 }

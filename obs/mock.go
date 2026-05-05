@@ -17,25 +17,18 @@ func DefaultMockData() LiveData {
 	return LiveData{
 		Nodes: []Node{
 			{
-				Name:   "talos-oci-cp-0",
+				Name:   "talosoci-control-plane-legal-poodle",
 				Tier:   "oci-cloud",
 				Status: "Ready",
 				CPU:    "12%",
 				Mem:    "4.2 GiB",
 				Pods: []Pod{
-					{Name: "cilium-operator-6d8f9c7b4-x2k1p", Namespace: "kube-system", Status: "Running", Restarts: 0},
-					{Name: "coredns-7db8d4f5b9-mn3vq", Namespace: "kube-system", Status: "Running", Restarts: 0},
-				},
-			},
-			{
-				Name:   "talos-oci-cp-1",
-				Tier:   "oci-cloud",
-				Status: "Ready",
-				CPU:    "8%",
-				Mem:    "3.1 GiB",
-				Pods: []Pod{
-					{Name: "etcd-talos-oci-cp-1", Namespace: "kube-system", Status: "Running", Restarts: 0},
-					{Name: "kube-apiserver-talos-oci-cp-1", Namespace: "kube-system", Status: "Running", Restarts: 0},
+					{Name: "kube-apiserver-talosoci-...", Namespace: "kube-system", Status: "Running", Restarts: 0},
+					{Name: "cilium-bnj7n", Namespace: "kube-system", Status: "Running", Restarts: 0},
+					{Name: "coredns-7859998f6-bjrj2", Namespace: "kube-system", Status: "Running", Restarts: 0},
+					{Name: "source-controller-5f5f984f54", Namespace: "flux-system", Status: "Running", Restarts: 0},
+					{Name: "kustomize-controller-86c4c6f9f7", Namespace: "flux-system", Status: "Running", Restarts: 0},
+					{Name: "forgejo-76bb8587c6-r4bbc", Namespace: "forgejo", Status: "Running", Restarts: 0},
 				},
 			},
 			{
@@ -45,9 +38,11 @@ func DefaultMockData() LiveData {
 				CPU:    "34%",
 				Mem:    "5.8 GiB",
 				Pods: []Pod{
-					{Name: "platform-website-6f8d6fd5fc-4rgj9", Namespace: "platform-website-pr57", Status: "Running", Restarts: 0},
-					{Name: "signoz-otel-collector-7c9d8f6b5-jk2mn", Namespace: "signoz", Status: "Running", Restarts: 0},
-					{Name: "signoz-query-service-0", Namespace: "signoz", Status: "Running", Restarts: 0},
+					{Name: "platform-website-69f7bffd5f-trltm", Namespace: "platform-website", Status: "Running", Restarts: 0},
+					{Name: "signoz-0", Namespace: "signoz", Status: "Running", Restarts: 0},
+					{Name: "signoz-otel-collector-86659589f", Namespace: "signoz", Status: "Running", Restarts: 0},
+					{Name: "chi-signoz-clickhouse-0-0-0", Namespace: "signoz", Status: "Running", Restarts: 0},
+					{Name: "opencloud-7b45456dc9-bk48r", Namespace: "opencloud", Status: "Running", Restarts: 0},
 				},
 			},
 		},

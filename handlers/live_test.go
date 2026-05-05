@@ -77,7 +77,7 @@ func TestDefaultMockData(t *testing.T) {
 	data := obs.DefaultMockData()
 
 	t.Run("has realistic cluster topology", func(t *testing.T) {
-		assert.Len(t, data.Nodes, 3)
+		assert.Len(t, data.Nodes, 2)
 	})
 
 	t.Run("has OCI cloud nodes", func(t *testing.T) {
@@ -87,7 +87,7 @@ func TestDefaultMockData(t *testing.T) {
 				ociNodes++
 			}
 		}
-		assert.Equal(t, 2, ociNodes)
+		assert.Equal(t, 1, ociNodes)
 	})
 
 	t.Run("has edge node", func(t *testing.T) {
