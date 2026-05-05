@@ -3,85 +3,102 @@ package sections
 import "github.com/rezuscloud/platform-website/obs"
 
 templ Live(data obs.LiveData) {
-	<section id="live" class="py-16 sm:py-24 bg-surface dark:bg-next-dark">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<!-- Header -->
-			<div class="flex items-center gap-3 mb-8">
+	<section id="live" class="py-16 sm:py-24 bg-surface-strong dark:bg-next-black">
+		<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+			<!-- Section header -->
+			<div class="flex items-center gap-3 mb-6">
 				<h2 class="font-mac text-2xl sm:text-3xl font-bold text-ink dark:text-next-white tracking-tight">Watch It Run</h2>
 				<div class="flex items-center gap-1.5">
 					<span class="inline-block w-2.5 h-2.5 bg-green-600 dark:bg-green-500 animate-pulse" aria-hidden="true"></span>
 					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle uppercase tracking-wider">Live</span>
 				</div>
 			</div>
-			<!-- Service Map -->
-			@serviceMap(data)
+			<!-- Terminal window -->
+			<div class="border border-ink dark:border-next-mid dark:next-bevel-raised overflow-hidden" data-live-infra>
+				<!-- Title bar -->
+				<div class="flex items-center justify-between px-3 py-1.5 bg-ink dark:bg-next-dark border-b border-ink dark:border-next-mid">
+					<div class="flex items-center gap-2">
+						<!-- Window controls -->
+						<span class="inline-block w-2.5 h-2.5 bg-surface-strong dark:bg-next-light" aria-hidden="true"></span>
+						<span class="inline-block w-2.5 h-2.5 bg-surface-strong dark:bg-next-light" aria-hidden="true"></span>
+						<span class="inline-block w-2.5 h-2.5 bg-surface-strong dark:bg-next-light" aria-hidden="true"></span>
+					</div>
+					<span class="font-terminal text-sm text-surface-strong dark:text-next-white">service-map — platform-website</span>
+					<span class="font-terminal text-xs text-green-500 dark:text-green-400 uppercase tracking-wider">● Live</span>
+				</div>
+				<!-- Terminal body -->
+				<div class="bg-surface dark:bg-next-dark p-4 sm:p-6 font-terminal text-sm sm:text-base leading-relaxed">
+					@serviceNode(data.Root, true)
+				</div>
+			</div>
 		</div>
 	</section>
 }
 
-templ serviceMap(data obs.LiveData) {
-	<!-- Service map as a vertical flow diagram -->
-	<div class="flex flex-col items-center gap-0" data-live-infra>
-		for i, svc := range data.Services {
-			@serviceNode(svc)
-			<!-- Edge to next -->
-			if i < len(data.Edges) {
-				@serviceEdge(data.Edges[i])
+templ serviceNode(svc obs.ServiceNode, isRoot bool) {
+	<!-- Service row -->
+	<div data-live-service={ svc.Name }>
+		<div class="flex items-baseline gap-2 flex-wrap">
+			<!-- Status dot -->
+			if svc.Status == "healthy" {
+				<span class="text-green-600 dark:text-green-500" aria-label="Healthy">●</span>
+			} else {
+				<span class="text-ink-muted dark:text-next-mid" aria-label="Unknown">○</span>
 			}
+			<!-- Service name -->
+			if svc.Kind == "app" {
+				<span class="text-ink dark:text-next-teal font-bold">{ svc.Label }</span>
+			} else {
+				<span class="text-ink dark:text-next-white">{ svc.Label }</span>
+			}
+			<!-- Detail -->
+			<span class="text-ink-muted dark:text-next-subtle">{ svc.Detail }</span>
+			<!-- Status badge -->
+			<span class="ml-auto text-ink-muted dark:text-next-subtle uppercase text-xs tracking-wider">{ svc.Status }</span>
+		</div>
+		<!-- Inline metrics -->
+		if len(svc.Metrics) > 0 {
+			<div class="ml-4 sm:ml-6 mt-1 space-y-1 mb-2">
+				for _, m := range svc.Metrics {
+					@metricRow(m)
+				}
+			</div>
 		}
 	</div>
-}
-
-templ serviceNode(svc obs.ServiceNode) {
-	<div class="w-full max-w-md" data-live-service={ svc.Name }>
-		<div class="border border-rule dark:border-next-mid">
-			<!-- Title bar -->
-			<div class="flex items-center justify-between px-3 py-1.5 bg-surface-strong dark:bg-next-black border-b border-rule dark:border-next-mid">
-				<div class="flex items-center gap-2">
-					if svc.Status == "healthy" {
-						<span class="inline-block w-2 h-2 bg-green-600 dark:bg-green-500" aria-label="Healthy"></span>
-					} else {
-						<span class="inline-block w-2 h-2 bg-rule dark:bg-next-mid" aria-label="Unknown"></span>
-					}
-					<span class="font-mac text-xs font-bold text-ink dark:text-next-white">{ svc.Label }</span>
+	<!-- Children -->
+	if len(svc.Out) > 0 {
+		<div class="ml-3 sm:ml-5 border-l border-rule dark:border-next-mid pl-0">
+			for i, edge := range svc.Out {
+				<!-- Edge connector -->
+				<div class="flex items-center gap-1 py-1 text-ink-muted dark:text-next-subtle">
+					<span>├─ { edge.Label } ─►</span>
 				</div>
-				<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">{ svc.Detail }</span>
-			</div>
-			<!-- Metrics -->
-			if len(svc.Metrics) > 0 {
-				<div class="px-3 py-2 space-y-2">
-					for _, m := range svc.Metrics {
-						@metricSparkline(m)
-					}
-				</div>
+				if i < len(svc.Out)-1 {
+					<div class="ml-4 sm:ml-6">
+						@serviceNode(edge.Target, false)
+					</div>
+					<!-- Continuation pipe -->
+					<div class="border-l border-rule dark:border-next-mid ml-3 sm:ml-5 h-2" aria-hidden="true"></div>
+				} else {
+					<div class="ml-4 sm:ml-6">
+						@serviceNode(edge.Target, false)
+					</div>
+				}
 			}
-		</div>
-	</div>
-}
-
-templ metricSparkline(m obs.MetricSeries) {
-	if len(m.Points) > 0 {
-		{{ line, area := obs.Sparkline(m.Points, 80, 16) }}
-		<div class="flex items-center justify-between gap-3" data-live-metric={ m.Label }>
-			<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle shrink-0">{ m.Label }</span>
-			<svg viewBox="0 0 80 16" class="flex-1 h-4" preserveAspectRatio="none" aria-hidden="true">
-				<polygon points={ area } class="fill-accent-gold/20 dark:fill-next-teal/20"></polygon>
-				<polyline points={ line } fill="none" stroke-width="1" class="stroke-accent-gold dark:stroke-next-teal"></polyline>
-			</svg>
-			<span class="font-terminal text-xs text-ink dark:text-next-white shrink-0 tabular-nums">{ m.Value }<span class="text-ink-muted dark:text-next-subtle">{ m.Unit }</span></span>
 		</div>
 	}
 }
 
-templ serviceEdge(edge obs.ServiceEdge) {
-	<div class="flex flex-col items-center py-1">
-		<!-- Vertical line -->
-		<div class="w-px h-6 bg-rule dark:bg-next-mid" aria-hidden="true"></div>
-		<!-- Arrow + label -->
-		<div class="flex items-center gap-1.5">
-			<div class="w-px h-2 bg-rule dark:bg-next-mid" aria-hidden="true"></div>
-			<span class="font-terminal text-xs text-accent-gold dark:text-next-teal">{ edge.Label }</span>
-			<div class="w-0 h-0 border-l-[3px] border-r-[3px] border-t-[4px] border-l-transparent border-r-transparent border-t-ink dark:border-t-next-white" aria-hidden="true"></div>
+templ metricRow(m obs.MetricSeries) {
+	if len(m.Points) > 0 {
+		{{ line, area := obs.Sparkline(m.Points, 120, 20) }}
+		<div class="flex items-center gap-3" data-live-metric={ m.Label }>
+			<span class="text-ink-muted dark:text-next-subtle w-24 shrink-0">{ m.Label }</span>
+			<svg viewBox="0 0 120 20" class="flex-1 h-5 max-w-[200px]" preserveAspectRatio="none" aria-hidden="true">
+				<polygon points={ area } class="fill-accent-gold/15 dark:fill-next-teal/15"></polygon>
+				<polyline points={ line } fill="none" stroke-width="1.5" class="stroke-accent-gold dark:stroke-next-teal"></polyline>
+			</svg>
+			<span class="text-ink dark:text-next-white tabular-nums">{ m.Value }<span class="text-ink-muted dark:text-next-subtle">{ m.Unit }</span></span>
 		</div>
-	</div>
+	}
 }

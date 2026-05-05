@@ -1,46 +1,22 @@
 package obs
 
-// ServiceNode is a service in the platform-website dependency graph.
+import "context"
+
+// ServiceNode is a service in the platform-website dependency tree.
 type ServiceNode struct {
-	Name    string // unique ID: "cilium-gateway"
-	Label   string // display: "Cilium Gateway"
-	Kind    string // "ingress", "app", "sidecar", "infra"
-	Status  string // "healthy" or "unknown"
-	Detail  string // e.g. "Go/Fiber v2"
-	Metrics []MetricSeries
+	Name    string         // unique ID: "cilium-gateway"
+	Label   string         // display: "Cilium Gateway"
+	Kind    string         // "ingress", "app", "sidecar", "infra"
+	Status  string         // "healthy" or "unknown"
+	Detail  string         // e.g. "Go / Fiber v2"
+	Metrics []MetricSeries // live sparkline metrics
+	Out     []ServiceEdge  // outgoing edges to downstream services
 }
 
-// ServiceEdge is a directed connection between two services.
+// ServiceEdge is a directed connection to a downstream service.
 type ServiceEdge struct {
-	From  string // source ServiceNode.Name
-	To    string // target ServiceNode.Name
-	Label string // "HTTP", "OTLP", "gRPC"
-}
-
-// LiveData holds everything the live section template needs.
-type LiveData struct {
-	Services []ServiceNode
-	Edges    []ServiceEdge
-}
-
-// PlatformTopology returns the known service map for the platform-website.
-// The topology is static. Only the status and metrics come from SigNoz.
-func PlatformTopology() LiveData {
-	return LiveData{
-		Services: []ServiceNode{
-			{Name: "cilium-gateway", Label: "Cilium Gateway", Kind: "ingress", Detail: "Gateway API + TLS"},
-			{Name: "platform-website", Label: "platform-website", Kind: "app", Detail: "Go / Fiber v2"},
-			{Name: "daprd", Label: "Dapr Sidecar", Kind: "sidecar", Detail: "daprd v1.15"},
-			{Name: "signoz-collector", Label: "SigNoz Collector", Kind: "infra", Detail: "OTEL Receiver"},
-			{Name: "dapr-control-plane", Label: "Dapr Control Plane", Kind: "infra", Detail: "Placement + Sentry"},
-		},
-		Edges: []ServiceEdge{
-			{From: "cilium-gateway", To: "platform-website", Label: "HTTPS"},
-			{From: "platform-website", To: "daprd", Label: "localhost"},
-			{From: "daprd", To: "signoz-collector", Label: "OTLP"},
-			{From: "daprd", To: "dapr-control-plane", Label: "gRPC"},
-		},
-	}
+	Label  string      // "HTTPS", "OTLP", "gRPC"
+	Target ServiceNode // the downstream service
 }
 
 // MetricSeries holds a named metric with sparkline data.
@@ -51,28 +27,70 @@ type MetricSeries struct {
 	Points []float64
 }
 
-// TierGroup groups nodes by infrastructure tier.
-type TierGroup struct {
-	Name  string
-	Tier  string
-	Nodes []Node
+// LiveData wraps the service tree root.
+type LiveData struct {
+	Root ServiceNode
 }
 
-// Node and Pod kept for backward compat with mock client.
-// Will be removed once SigNoz client is wired in production.
-
-type Node struct {
-	Name   string
-	Tier   string
-	Status string
-	CPU    string
-	Mem    string
-	Pods   []Pod
+// Client fetches live service tree data from SigNoz metrics.
+type Client interface {
+	Fetch(ctx context.Context) (LiveData, error)
 }
 
-type Pod struct {
-	Name      string
-	Namespace string
-	Status    string
-	Restarts  int
+// Walk traverses the service tree depth-first, calling fn on each node.
+func (s *ServiceNode) Walk(fn func(*ServiceNode)) {
+	fn(s)
+	for i := range s.Out {
+		s.Out[i].Target.Walk(fn)
+	}
+}
+
+// ServiceCount returns the total number of services in the tree.
+func (s *ServiceNode) ServiceCount() int {
+	count := 1
+	for i := range s.Out {
+		count += s.Out[i].Target.ServiceCount()
+	}
+	return count
+}
+
+// PlatformTopology returns the known dependency tree for platform-website.
+// The topology is static. Only status and metrics come from SigNoz.
+func PlatformTopology() ServiceNode {
+	return ServiceNode{
+		Name:   "cilium-gateway",
+		Label:  "Cilium Gateway",
+		Kind:   "ingress",
+		Detail: "Gateway API + TLS",
+		Out: []ServiceEdge{
+			{Label: "HTTPS", Target: ServiceNode{
+				Name:   "platform-website",
+				Label:  "platform-website",
+				Kind:   "app",
+				Detail: "Go / Fiber v2",
+				Out: []ServiceEdge{
+					{Label: "localhost", Target: ServiceNode{
+						Name:   "daprd",
+						Label:  "Dapr Sidecar",
+						Kind:   "sidecar",
+						Detail: "daprd v1.15",
+						Out: []ServiceEdge{
+							{Label: "OTLP", Target: ServiceNode{
+								Name:   "signoz-collector",
+								Label:  "SigNoz Collector",
+								Kind:   "infra",
+								Detail: "OTEL Receiver",
+							}},
+							{Label: "gRPC", Target: ServiceNode{
+								Name:   "dapr-control-plane",
+								Label:  "Dapr Control Plane",
+								Kind:   "infra",
+								Detail: "Placement + Sentry",
+							}},
+						},
+					}},
+				},
+			}},
+		},
+	}
 }
