@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -25,6 +26,8 @@ type SigNozClient struct {
 }
 
 func NewSigNozClient(baseURL, apiKey string) *SigNozClient {
+	ns := getNamespace()
+	log.Printf("SigNoz client: namespace=%s", ns)
 	return &SigNozClient{
 		baseURL:    strings.TrimRight(baseURL, "/"),
 		apiKey:     apiKey,
