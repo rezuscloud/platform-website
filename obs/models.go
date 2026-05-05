@@ -1,72 +1,78 @@
 package obs
 
+// ServiceNode is a service in the platform-website dependency graph.
+type ServiceNode struct {
+	Name    string // unique ID: "cilium-gateway"
+	Label   string // display: "Cilium Gateway"
+	Kind    string // "ingress", "app", "sidecar", "infra"
+	Status  string // "healthy" or "unknown"
+	Detail  string // e.g. "Go/Fiber v2"
+	Metrics []MetricSeries
+}
+
+// ServiceEdge is a directed connection between two services.
+type ServiceEdge struct {
+	From  string // source ServiceNode.Name
+	To    string // target ServiceNode.Name
+	Label string // "HTTP", "OTLP", "gRPC"
+}
+
 // LiveData holds everything the live section template needs.
 type LiveData struct {
-	Nodes        []Node
-	Metrics      []MetricSeries
-	DashboardURL string
+	Services []ServiceNode
+	Edges    []ServiceEdge
 }
 
-// Node is a Kubernetes node with its running pods.
-type Node struct {
-	Name   string // e.g. "talos-oci-cp-0"
-	Tier   string // "oci-cloud" or "edge"
-	Status string // "Ready", "NotReady"
-	CPU    string // formatted usage
-	Mem    string // formatted usage
-	Pods   []Pod
-}
-
-// Pod is a running pod on a node.
-type Pod struct {
-	Name      string // "platform-website-shell-abc123"
-	Namespace string // "platform-website"
-	Status    string // "Running", "Pending"
-	Restarts  int
+// PlatformTopology returns the known service map for the platform-website.
+// The topology is static. Only the status and metrics come from SigNoz.
+func PlatformTopology() LiveData {
+	return LiveData{
+		Services: []ServiceNode{
+			{Name: "cilium-gateway", Label: "Cilium Gateway", Kind: "ingress", Detail: "Gateway API + TLS"},
+			{Name: "platform-website", Label: "platform-website", Kind: "app", Detail: "Go / Fiber v2"},
+			{Name: "daprd", Label: "Dapr Sidecar", Kind: "sidecar", Detail: "daprd v1.15"},
+			{Name: "signoz-collector", Label: "SigNoz Collector", Kind: "infra", Detail: "OTEL Receiver"},
+			{Name: "dapr-control-plane", Label: "Dapr Control Plane", Kind: "infra", Detail: "Placement + Sentry"},
+		},
+		Edges: []ServiceEdge{
+			{From: "cilium-gateway", To: "platform-website", Label: "HTTPS"},
+			{From: "platform-website", To: "daprd", Label: "localhost"},
+			{From: "daprd", To: "signoz-collector", Label: "OTLP"},
+			{From: "daprd", To: "dapr-control-plane", Label: "gRPC"},
+		},
+	}
 }
 
 // MetricSeries holds a named metric with sparkline data.
 type MetricSeries struct {
-	Label     string
-	Value     string
-	Unit      string
-	Points    []float64
-	Sparkline string // pre-computed SVG polyline points
-	Area      string // pre-computed SVG area polygon points
+	Label  string
+	Value  string
+	Unit   string
+	Points []float64
 }
 
 // TierGroup groups nodes by infrastructure tier.
 type TierGroup struct {
-	Name  string // "OCI Cloud" or "Edge"
-	Tier  string // "oci-cloud" or "edge"
+	Name  string
+	Tier  string
 	Nodes []Node
 }
 
-// GroupedByTier returns nodes grouped by tier in display order.
-func (d LiveData) GroupedByTier() []TierGroup {
-	var groups []TierGroup
-	byTier := make(map[string]*TierGroup)
-	var order []string
+// Node and Pod kept for backward compat with mock client.
+// Will be removed once SigNoz client is wired in production.
 
-	for _, n := range d.Nodes {
-		tier := n.Tier
-		if _, ok := byTier[tier]; !ok {
-			order = append(order, tier)
-			groups = append(groups, TierGroup{Name: tierDisplayName(tier), Tier: tier})
-			byTier[tier] = &groups[len(groups)-1]
-		}
-		byTier[tier].Nodes = append(byTier[tier].Nodes, n)
-	}
-	return groups
+type Node struct {
+	Name   string
+	Tier   string
+	Status string
+	CPU    string
+	Mem    string
+	Pods   []Pod
 }
 
-func tierDisplayName(tier string) string {
-	switch tier {
-	case "oci-cloud":
-		return "OCI Cloud"
-	case "edge":
-		return "Edge"
-	default:
-		return tier
-	}
+type Pod struct {
+	Name      string
+	Namespace string
+	Status    string
+	Restarts  int
 }

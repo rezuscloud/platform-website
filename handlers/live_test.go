@@ -32,24 +32,27 @@ func TestSetLiveClient(t *testing.T) {
 }
 
 func TestSSEWriteHelpers(t *testing.T) {
-	t.Run("sseNodes writes node count event", func(t *testing.T) {
+	t.Run("sseNodes writes service count event", func(t *testing.T) {
 		var buf bytes.Buffer
 		w := bufio.NewWriter(&buf)
-		data := obs.LiveData{Nodes: []obs.Node{{}, {}, {}}}
+		data := obs.LiveData{Services: []obs.ServiceNode{{}, {}, {}}}
 		sseNodes(w, data)
 		w.Flush()
 
-		assert.Equal(t, "event: nodes\ndata: 3\n\n", buf.String())
+		assert.Equal(t, "event: services\ndata: 3\n\n", buf.String())
 	})
 
 	t.Run("sseMetrics writes metrics count event", func(t *testing.T) {
 		var buf bytes.Buffer
 		w := bufio.NewWriter(&buf)
-		data := obs.LiveData{Metrics: []obs.MetricSeries{{}, {}}}
+		data := obs.LiveData{Services: []obs.ServiceNode{
+			{Metrics: []obs.MetricSeries{{}, {}}},
+			{Metrics: []obs.MetricSeries{{}}},
+		}}
 		sseMetrics(w, data)
 		w.Flush()
 
-		assert.Equal(t, "event: metrics\ndata: 2\n\n", buf.String())
+		assert.Equal(t, "event: metrics\ndata: 3\n\n", buf.String())
 	})
 
 	t.Run("sseHeartbeat writes heartbeat with unix timestamp", func(t *testing.T) {
@@ -76,45 +79,19 @@ func TestSSEWriteHelpers(t *testing.T) {
 func TestDefaultMockData(t *testing.T) {
 	data := obs.DefaultMockData()
 
-	t.Run("has realistic cluster topology", func(t *testing.T) {
-		assert.Len(t, data.Nodes, 2)
+	t.Run("has realistic service topology", func(t *testing.T) {
+		assert.Len(t, data.Services, 5)
 	})
 
-	t.Run("has OCI cloud nodes", func(t *testing.T) {
-		var ociNodes int
-		for _, n := range data.Nodes {
-			if n.Tier == "oci-cloud" {
-				ociNodes++
-			}
-		}
-		assert.Equal(t, 1, ociNodes)
-	})
-
-	t.Run("has edge node", func(t *testing.T) {
-		var edgeNodes int
-		for _, n := range data.Nodes {
-			if n.Tier == "edge" {
-				edgeNodes++
-			}
-		}
-		assert.Equal(t, 1, edgeNodes)
-	})
-
-	t.Run("all nodes are Ready", func(t *testing.T) {
-		for _, n := range data.Nodes {
-			assert.Equal(t, "Ready", n.Status, "Node %s should be Ready", n.Name)
+	t.Run("all services are healthy", func(t *testing.T) {
+		for _, s := range data.Services {
+			assert.Equal(t, "healthy", s.Status, "Service %s should be healthy", s.Name)
 		}
 	})
 
-	t.Run("all nodes have pods", func(t *testing.T) {
-		for _, n := range data.Nodes {
-			assert.NotEmpty(t, n.Pods, "Node %s should have pods", n.Name)
-		}
-	})
-
-	t.Run("has sample metrics with data points", func(t *testing.T) {
-		assert.NotEmpty(t, data.Metrics)
-		for _, m := range data.Metrics {
+	t.Run("has sample metrics on platform-website", func(t *testing.T) {
+		assert.NotEmpty(t, data.Services[1].Metrics)
+		for _, m := range data.Services[1].Metrics {
 			assert.NotEmpty(t, m.Label)
 			assert.NotEmpty(t, m.Points)
 		}

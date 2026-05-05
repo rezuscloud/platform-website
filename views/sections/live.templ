@@ -14,90 +14,74 @@ templ Live(data obs.LiveData) {
 				</div>
 			</div>
 			<!-- Service Map -->
-			<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-				<!-- Infrastructure topology (2/3) -->
-				<div class="lg:col-span-2 space-y-4" data-live-infra>
-					for _, tier := range data.GroupedByTier() {
-						@tierContainer(tier)
-					}
-				</div>
-				<!-- Metrics (1/3) -->
-				if len(data.Metrics) > 0 {
-					<div class="space-y-4" data-live-metrics>
-						for _, m := range data.Metrics {
-							@liveMetric(m)
-						}
-					</div>
-				}
-			</div>
+			@serviceMap(data)
 		</div>
 	</section>
 }
 
-templ tierContainer(tier obs.TierGroup) {
-	<div class="border border-rule dark:border-next-mid" data-tier={ tier.Tier }>
-		<!-- Tier header -->
-		<div class="flex items-center gap-2 px-3 py-1.5 bg-ink dark:bg-next-white">
-			<span class="font-mac text-xs font-bold text-paper dark:text-next-black">{ tier.Name }</span>
-			<span class="font-terminal text-xs text-paper/60 dark:text-next-black/60">{ len(tier.Nodes) } nodes</span>
-		</div>
-		<!-- Nodes inside tier -->
-		<div class="p-3 space-y-3">
-			for _, node := range tier.Nodes {
-				@liveNode(node)
+templ serviceMap(data obs.LiveData) {
+	<!-- Service map as a vertical flow diagram -->
+	<div class="flex flex-col items-center gap-0" data-live-infra>
+		for i, svc := range data.Services {
+			@serviceNode(svc)
+			<!-- Edge to next -->
+			if i < len(data.Edges) {
+				@serviceEdge(data.Edges[i])
+			}
+		}
+	</div>
+}
+
+templ serviceNode(svc obs.ServiceNode) {
+	<div class="w-full max-w-md" data-live-service={ svc.Name }>
+		<div class="border border-rule dark:border-next-mid">
+			<!-- Title bar -->
+			<div class="flex items-center justify-between px-3 py-1.5 bg-surface-strong dark:bg-next-black border-b border-rule dark:border-next-mid">
+				<div class="flex items-center gap-2">
+					if svc.Status == "healthy" {
+						<span class="inline-block w-2 h-2 bg-green-600 dark:bg-green-500" aria-label="Healthy"></span>
+					} else {
+						<span class="inline-block w-2 h-2 bg-rule dark:bg-next-mid" aria-label="Unknown"></span>
+					}
+					<span class="font-mac text-xs font-bold text-ink dark:text-next-white">{ svc.Label }</span>
+				</div>
+				<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">{ svc.Detail }</span>
+			</div>
+			<!-- Metrics -->
+			if len(svc.Metrics) > 0 {
+				<div class="px-3 py-2 space-y-2">
+					for _, m := range svc.Metrics {
+						@metricSparkline(m)
+					}
+				</div>
 			}
 		</div>
 	</div>
 }
 
-templ liveNode(node obs.Node) {
-	<div class="border border-rule dark:border-next-mid" data-live-node={ node.Name }>
-		<!-- Node title bar -->
-		<div class="flex items-center justify-between px-3 py-2 bg-surface-strong dark:bg-next-black border-b border-rule dark:border-next-mid">
-			<div class="flex items-center gap-2">
-				<span class="inline-block w-2 h-2 bg-green-600 dark:bg-green-500" aria-hidden="true"></span>
-				<span class="font-mac text-xs font-bold text-ink dark:text-next-white">{ node.Name }</span>
-			</div>
-			<div class="flex items-center gap-3">
-				if node.CPU != "" {
-					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">cpu { node.CPU }</span>
-				}
-				if node.Mem != "" {
-					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">mem { node.Mem }</span>
-				}
-			</div>
-		</div>
-		<!-- Pod blocks in a flex grid -->
-		if len(node.Pods) > 0 {
-			<div class="p-2 flex flex-wrap gap-1.5">
-				for _, pod := range node.Pods {
-					@livePod(pod)
-				}
-			</div>
-		}
-	</div>
-}
-
-templ livePod(pod obs.Pod) {
-	<div class="inline-flex items-center gap-1.5 px-2 py-1 bg-paper dark:bg-next-black border border-rule dark:border-next-mid" data-live-pod={ pod.Name }>
-		<span class="inline-block w-1.5 h-1.5 bg-green-600 dark:bg-green-500" aria-hidden="true"></span>
-		<span class="font-terminal text-xs text-ink dark:text-next-white">{ pod.Name }</span>
-		<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">{ pod.Namespace }</span>
-	</div>
-}
-
-templ liveMetric(m obs.MetricSeries) {
+templ metricSparkline(m obs.MetricSeries) {
 	if len(m.Points) > 0 {
-		{{ line, area := obs.Sparkline(m.Points, 100, 24) }}
-		<div class="border border-rule dark:border-next-mid p-3" data-live-metric={ m.Label }>
-			<div class="flex items-baseline justify-between mb-2">
-				<span class="font-mac text-xs font-bold text-ink dark:text-next-white">{ m.Label }</span>
-				<span class="font-terminal text-sm text-ink dark:text-next-white">{ m.Value } <span class="text-ink-muted dark:text-next-subtle">{ m.Unit }</span></span>
-			</div>
-			<svg viewBox="0 0 100 24" class="w-full h-6" preserveAspectRatio="none" aria-hidden="true">
+		{{ line, area := obs.Sparkline(m.Points, 80, 16) }}
+		<div class="flex items-center justify-between gap-3" data-live-metric={ m.Label }>
+			<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle shrink-0">{ m.Label }</span>
+			<svg viewBox="0 0 80 16" class="flex-1 h-4" preserveAspectRatio="none" aria-hidden="true">
 				<polygon points={ area } class="fill-accent-gold/20 dark:fill-next-teal/20"></polygon>
-				<polyline points={ line } fill="none" stroke-width="1.5" class="stroke-accent-gold dark:stroke-next-teal"></polyline>
+				<polyline points={ line } fill="none" stroke-width="1" class="stroke-accent-gold dark:stroke-next-teal"></polyline>
 			</svg>
+			<span class="font-terminal text-xs text-ink dark:text-next-white shrink-0 tabular-nums">{ m.Value }<span class="text-ink-muted dark:text-next-subtle">{ m.Unit }</span></span>
 		</div>
 	}
+}
+
+templ serviceEdge(edge obs.ServiceEdge) {
+	<div class="flex flex-col items-center py-1">
+		<!-- Vertical line -->
+		<div class="w-px h-6 bg-rule dark:bg-next-mid" aria-hidden="true"></div>
+		<!-- Arrow + label -->
+		<div class="flex items-center gap-1.5">
+			<div class="w-px h-2 bg-rule dark:bg-next-mid" aria-hidden="true"></div>
+			<span class="font-terminal text-xs text-accent-gold dark:text-next-teal">{ edge.Label }</span>
+			<div class="w-0 h-0 border-l-[3px] border-r-[3px] border-t-[4px] border-l-transparent border-r-transparent border-t-ink dark:border-t-next-white" aria-hidden="true"></div>
+		</div>
+	</div>
 }
