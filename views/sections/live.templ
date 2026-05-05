@@ -5,6 +5,7 @@ import "github.com/rezuscloud/platform-website/obs"
 templ Live(data obs.LiveData) {
 	<section id="live" class="py-16 sm:py-24 bg-surface dark:bg-next-dark">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<!-- Header -->
 			<div class="flex items-center gap-3 mb-8">
 				<h2 class="font-mac text-2xl sm:text-3xl font-bold text-ink dark:text-next-white tracking-tight">Watch It Run</h2>
 				<div class="flex items-center gap-1.5">
@@ -12,6 +13,63 @@ templ Live(data obs.LiveData) {
 					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle uppercase tracking-wider">Live</span>
 				</div>
 			</div>
+			<!-- Infrastructure Map -->
+			if len(data.Nodes) > 0 {
+				<!-- Group nodes by tier -->
+				<div class="space-y-6" data-live-infra>
+					for _, node := range data.Nodes {
+						@liveNode(node)
+					}
+				</div>
+			}
 		</div>
 	</section>
+}
+
+templ liveNode(node obs.Node) {
+	<div class="border border-rule dark:border-next-mid" data-live-node={ node.Name } data-tier={ node.Tier }>
+		<!-- Node title bar -->
+		<div class="flex items-center justify-between px-3 py-2 bg-surface-strong dark:bg-next-black border-b border-rule dark:border-next-mid">
+			<div class="flex items-center gap-2">
+				<span class="font-mac text-xs font-bold text-ink dark:text-next-white">{ node.Name }</span>
+				if node.Status == "Ready" {
+					<span class="inline-block w-2 h-2 bg-green-600 dark:bg-green-500" aria-label="Ready"></span>
+				} else {
+					<span class="inline-block w-2 h-2 bg-red-600 dark:bg-red-500" aria-label={ node.Status }></span>
+				}
+			</div>
+			<div class="flex items-center gap-3">
+				if node.CPU != "" {
+					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">cpu { node.CPU }</span>
+				}
+				if node.Mem != "" {
+					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">mem { node.Mem }</span>
+				}
+				<span class="font-terminal text-xs text-accent-gold dark:text-next-teal uppercase">{ node.Tier }</span>
+			</div>
+		</div>
+		<!-- Pods -->
+		if len(node.Pods) > 0 {
+			<div class="px-3 py-2 space-y-1">
+				for _, pod := range node.Pods {
+					@livePod(pod)
+				}
+			</div>
+		}
+	</div>
+}
+
+templ livePod(pod obs.Pod) {
+	<div class="flex items-center justify-between py-1 px-2 bg-paper dark:bg-next-dark" data-live-pod={ pod.Name }>
+		<div class="flex items-center gap-2">
+			<span class="inline-block w-1.5 h-1.5 bg-green-600 dark:bg-green-500" aria-hidden="true"></span>
+			<span class="font-terminal text-xs text-ink dark:text-next-white">{ pod.Name }</span>
+		</div>
+		<div class="flex items-center gap-2">
+			<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">{ pod.Status }</span>
+			if pod.Restarts > 0 {
+				<span class="font-terminal text-xs text-amber-600 dark:text-amber-400">{ pod.Restarts } restarts</span>
+			}
+		</div>
+	</div>
 }
