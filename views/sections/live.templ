@@ -13,18 +13,15 @@ templ Live(data obs.LiveData) {
 					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle uppercase tracking-wider">Live</span>
 				</div>
 			</div>
+			<!-- Service Map -->
 			<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-				<!-- Infrastructure Map (2/3 width) -->
-				<div class="lg:col-span-2">
-					if len(data.Nodes) > 0 {
-						<div class="space-y-4" data-live-infra>
-							for _, node := range data.Nodes {
-								@liveNode(node)
-							}
-						</div>
+				<!-- Infrastructure topology (2/3) -->
+				<div class="lg:col-span-2 space-y-4" data-live-infra>
+					for _, tier := range data.GroupedByTier() {
+						@tierContainer(tier)
 					}
 				</div>
-				<!-- Metrics Sparklines (1/3 width) -->
+				<!-- Metrics (1/3) -->
 				if len(data.Metrics) > 0 {
 					<div class="space-y-4" data-live-metrics>
 						for _, m := range data.Metrics {
@@ -37,17 +34,29 @@ templ Live(data obs.LiveData) {
 	</section>
 }
 
+templ tierContainer(tier obs.TierGroup) {
+	<div class="border border-rule dark:border-next-mid" data-tier={ tier.Tier }>
+		<!-- Tier header -->
+		<div class="flex items-center gap-2 px-3 py-1.5 bg-ink dark:bg-next-white">
+			<span class="font-mac text-xs font-bold text-paper dark:text-next-black">{ tier.Name }</span>
+			<span class="font-terminal text-xs text-paper/60 dark:text-next-black/60">{ len(tier.Nodes) } nodes</span>
+		</div>
+		<!-- Nodes inside tier -->
+		<div class="p-3 space-y-3">
+			for _, node := range tier.Nodes {
+				@liveNode(node)
+			}
+		</div>
+	</div>
+}
+
 templ liveNode(node obs.Node) {
-	<div class="border border-rule dark:border-next-mid" data-live-node={ node.Name } data-tier={ node.Tier }>
+	<div class="border border-rule dark:border-next-mid" data-live-node={ node.Name }>
 		<!-- Node title bar -->
 		<div class="flex items-center justify-between px-3 py-2 bg-surface-strong dark:bg-next-black border-b border-rule dark:border-next-mid">
 			<div class="flex items-center gap-2">
+				<span class="inline-block w-2 h-2 bg-green-600 dark:bg-green-500" aria-hidden="true"></span>
 				<span class="font-mac text-xs font-bold text-ink dark:text-next-white">{ node.Name }</span>
-				if node.Status == "Ready" {
-					<span class="inline-block w-2 h-2 bg-green-600 dark:bg-green-500" aria-label="Ready"></span>
-				} else {
-					<span class="inline-block w-2 h-2 bg-red-600 dark:bg-red-500" aria-label={ node.Status }></span>
-				}
 			</div>
 			<div class="flex items-center gap-3">
 				if node.CPU != "" {
@@ -56,12 +65,11 @@ templ liveNode(node obs.Node) {
 				if node.Mem != "" {
 					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">mem { node.Mem }</span>
 				}
-				<span class="font-terminal text-xs text-accent-gold dark:text-next-teal uppercase">{ node.Tier }</span>
 			</div>
 		</div>
-		<!-- Pods -->
+		<!-- Pod blocks in a flex grid -->
 		if len(node.Pods) > 0 {
-			<div class="px-3 py-2 space-y-1">
+			<div class="p-2 flex flex-wrap gap-1.5">
 				for _, pod := range node.Pods {
 					@livePod(pod)
 				}
@@ -71,17 +79,10 @@ templ liveNode(node obs.Node) {
 }
 
 templ livePod(pod obs.Pod) {
-	<div class="flex items-center justify-between py-1 px-2 bg-paper dark:bg-next-dark" data-live-pod={ pod.Name }>
-		<div class="flex items-center gap-2">
-			<span class="inline-block w-1.5 h-1.5 bg-green-600 dark:bg-green-500" aria-hidden="true"></span>
-			<span class="font-terminal text-xs text-ink dark:text-next-white">{ pod.Name }</span>
-		</div>
-		<div class="flex items-center gap-2">
-			<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">{ pod.Status }</span>
-			if pod.Restarts > 0 {
-				<span class="font-terminal text-xs text-amber-600 dark:text-amber-400">{ pod.Restarts } restarts</span>
-			}
-		</div>
+	<div class="inline-flex items-center gap-1.5 px-2 py-1 bg-paper dark:bg-next-black border border-rule dark:border-next-mid" data-live-pod={ pod.Name }>
+		<span class="inline-block w-1.5 h-1.5 bg-green-600 dark:bg-green-500" aria-hidden="true"></span>
+		<span class="font-terminal text-xs text-ink dark:text-next-white">{ pod.Name }</span>
+		<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">{ pod.Namespace }</span>
 	</div>
 }
 

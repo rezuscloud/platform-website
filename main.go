@@ -13,6 +13,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 
 	"github.com/rezuscloud/platform-website/handlers"
+	"github.com/rezuscloud/platform-website/obs"
 )
 
 func main() {
@@ -45,6 +46,14 @@ func main() {
 	app.Get("/sections/:name", handlers.Section)
 	app.Get("/api/version", handlers.APIVersion)
 	app.Get("/api/live/stream", handlers.LiveSSE)
+
+	// Wire SigNoz client if env vars are present
+	if signoz := obs.NewSigNozClientFromEnv(); signoz != nil {
+		handlers.SetLiveClient(signoz)
+		log.Printf("Live section using SigNoz metrics from %s", os.Getenv("SIGNOZ_URL"))
+	} else {
+		log.Println("SIGNOZ_URL/SIGNOZ_API_KEY not set, live section using mock data")
+	}
 
 	port := os.Getenv("PORT")
 	if port == "" {

@@ -34,3 +34,39 @@ type MetricSeries struct {
 	Sparkline string // pre-computed SVG polyline points
 	Area      string // pre-computed SVG area polygon points
 }
+
+// TierGroup groups nodes by infrastructure tier.
+type TierGroup struct {
+	Name  string // "OCI Cloud" or "Edge"
+	Tier  string // "oci-cloud" or "edge"
+	Nodes []Node
+}
+
+// GroupedByTier returns nodes grouped by tier in display order.
+func (d LiveData) GroupedByTier() []TierGroup {
+	var groups []TierGroup
+	byTier := make(map[string]*TierGroup)
+	var order []string
+
+	for _, n := range d.Nodes {
+		tier := n.Tier
+		if _, ok := byTier[tier]; !ok {
+			order = append(order, tier)
+			groups = append(groups, TierGroup{Name: tierDisplayName(tier), Tier: tier})
+			byTier[tier] = &groups[len(groups)-1]
+		}
+		byTier[tier].Nodes = append(byTier[tier].Nodes, n)
+	}
+	return groups
+}
+
+func tierDisplayName(tier string) string {
+	switch tier {
+	case "oci-cloud":
+		return "OCI Cloud"
+	case "edge":
+		return "Edge"
+	default:
+		return tier
+	}
+}
