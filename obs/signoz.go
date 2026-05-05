@@ -14,17 +14,22 @@ import (
 )
 
 // SigNozClient fetches live data from the SigNoz Prometheus-compatible API.
+// Results are cached for 30s to avoid querying on every page render.
 type SigNozClient struct {
 	baseURL    string
 	apiKey     string
 	httpClient *http.Client
+	cached     LiveData
+	cachedAt   time.Time
+	cacheTTL   time.Duration
 }
 
 func NewSigNozClient(baseURL, apiKey string) *SigNozClient {
 	return &SigNozClient{
 		baseURL:    strings.TrimRight(baseURL, "/"),
 		apiKey:     apiKey,
-		httpClient: &http.Client{Timeout: 10 * time.Second},
+		httpClient: &http.Client{Timeout: 5 * time.Second},
+		cacheTTL:   30 * time.Second,
 	}
 }
 
@@ -40,20 +45,32 @@ func NewSigNozClientFromEnv() *SigNozClient {
 }
 
 // Fetch returns the platform-website service tree with live metrics.
+// Returns cached data if less than 30s old. Falls back to topology-only on error.
 func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
+	if time.Since(c.cachedAt) < c.cacheTTL && c.cached.Root.Name != "" {
+		return c.cached, nil
+	}
+
 	root := PlatformTopology()
 
-	c.populateStatus(ctx, &root)
-	c.populateMetrics(ctx, &root)
-	stats := c.populateStats(ctx)
-	health := c.populateHealth(ctx, &root)
+	// Use a shorter timeout for the initial fetch to avoid blocking page renders
+	fetchCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
 
-	return LiveData{
+	c.populateStatus(fetchCtx, &root)
+	c.populateMetrics(fetchCtx, &root)
+	stats := c.populateStats(fetchCtx)
+	health := c.populateHealth(fetchCtx, &root)
+
+	c.cached = LiveData{
 		Root:       root,
 		Stats:      stats,
 		Health:     health,
 		HasMetrics: true,
-	}, nil
+	}
+	c.cachedAt = time.Now()
+
+	return c.cached, nil
 }
 
 func (c *SigNozClient) populateStatus(ctx context.Context, root *ServiceNode) {
