@@ -54,11 +54,15 @@ func sseError(w *bufio.Writer, err error) {
 }
 
 func sseNodes(w *bufio.Writer, data obs.LiveData) {
-	fmt.Fprintf(w, "event: nodes\ndata: %d\n\n", len(data.Nodes))
+	fmt.Fprintf(w, "event: services\ndata: %d\n\n", len(data.Services))
 }
 
 func sseMetrics(w *bufio.Writer, data obs.LiveData) {
-	fmt.Fprintf(w, "event: metrics\ndata: %d\n\n", len(data.Metrics))
+	var count int
+	for _, s := range data.Services {
+		count += len(s.Metrics)
+	}
+	fmt.Fprintf(w, "event: metrics\ndata: %d\n\n", count)
 }
 
 func sseHeartbeat(w *bufio.Writer) {

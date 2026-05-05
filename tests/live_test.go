@@ -13,31 +13,22 @@ func TestLiveSectionHTML(t *testing.T) {
 	doc := getHTMLDoc(t, app, "/")
 
 	t.Run("live section exists", func(t *testing.T) {
-		selection := doc.Find("#live")
-		assert.Equal(t, 1, selection.Length(), "Expected exactly one #live section")
+		assert.Equal(t, 1, doc.Find("#live").Length())
 	})
 
-	t.Run("live section has Watch It Run heading", func(t *testing.T) {
+	t.Run("has Watch It Run heading", func(t *testing.T) {
 		heading := doc.Find("#live h2")
 		assert.Equal(t, 1, heading.Length())
 		assert.Contains(t, heading.Text(), "Watch It Run")
 	})
 
-	t.Run("live section has LIVE indicator", func(t *testing.T) {
+	t.Run("has LIVE indicator", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "Live")
 		assert.Contains(t, html, "animate-pulse")
 	})
 
-	t.Run("live section has green dot", func(t *testing.T) {
-		html, err := doc.Find("#live").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "bg-green-600")
-		assert.Contains(t, html, "dark:bg-green-500")
-	})
-
-	t.Run("live section after architecture", func(t *testing.T) {
+	t.Run("after architecture in DOM order", func(t *testing.T) {
 		var foundArch, foundLive bool
 		doc.Find("section[id]").Each(func(i int, s *goquery.Selection) {
 			id, _ := s.Attr("id")
@@ -48,87 +39,87 @@ func TestLiveSectionHTML(t *testing.T) {
 				foundLive = true
 			}
 		})
-		assert.True(t, foundLive, "#live should appear after #architecture in DOM order")
+		assert.True(t, foundLive)
 	})
 
-	// Service map: tier containers
+	// Service map topology
 
-	t.Run("tier containers render", func(t *testing.T) {
-		tiers := doc.Find("[data-tier]")
-		assert.Equal(t, 2, tiers.Length(), "Expected 2 tier containers")
+	t.Run("five services render", func(t *testing.T) {
+		services := doc.Find("[data-live-service]")
+		assert.Equal(t, 5, services.Length())
 	})
 
-	t.Run("OCI Cloud tier exists", func(t *testing.T) {
-		html, err := doc.Find("[data-tier=\"oci-cloud\"]").Html()
+	t.Run("cilium gateway renders", func(t *testing.T) {
+		svc := doc.Find("[data-live-service=\"cilium-gateway\"]")
+		assert.Equal(t, 1, svc.Length())
+		assert.Contains(t, svc.Text(), "Cilium Gateway")
+	})
+
+	t.Run("platform-website renders", func(t *testing.T) {
+		svc := doc.Find("[data-live-service=\"platform-website\"]")
+		assert.Equal(t, 1, svc.Length())
+		assert.Contains(t, svc.Text(), "Go / Fiber v2")
+	})
+
+	t.Run("daprd renders", func(t *testing.T) {
+		svc := doc.Find("[data-live-service=\"daprd\"]")
+		assert.Equal(t, 1, svc.Length())
+		assert.Contains(t, svc.Text(), "Dapr Sidecar")
+	})
+
+	t.Run("signoz-collector renders", func(t *testing.T) {
+		svc := doc.Find("[data-live-service=\"signoz-collector\"]")
+		assert.Equal(t, 1, svc.Length())
+		assert.Contains(t, svc.Text(), "SigNoz Collector")
+	})
+
+	t.Run("dapr-control-plane renders", func(t *testing.T) {
+		svc := doc.Find("[data-live-service=\"dapr-control-plane\"]")
+		assert.Equal(t, 1, svc.Length())
+		assert.Contains(t, svc.Text(), "Dapr Control Plane")
+	})
+
+	// Service edges
+
+	t.Run("edge labels render", func(t *testing.T) {
+		html, err := doc.Find("[data-live-infra]").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "OCI Cloud")
+		assert.Contains(t, html, "HTTPS")
+		assert.Contains(t, html, "OTLP")
+		assert.Contains(t, html, "gRPC")
 	})
 
-	t.Run("Edge tier exists", func(t *testing.T) {
-		html, err := doc.Find("[data-tier=\"edge\"]").Html()
+	t.Run("services have status dots", func(t *testing.T) {
+		html, err := doc.Find("[data-live-service=\"platform-website\"]").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "Edge")
-	})
-
-	t.Run("tier headers use inverted background", func(t *testing.T) {
-		html, err := doc.Find("[data-tier=\"oci-cloud\"]").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "bg-ink")
-	})
-
-	// Service map: nodes
-
-	t.Run("nodes render inside tiers", func(t *testing.T) {
-		nodes := doc.Find("[data-live-node]")
-		assert.Equal(t, 2, nodes.Length(), "Expected 2 nodes")
-	})
-
-	t.Run("OCI node name renders", func(t *testing.T) {
-		node := doc.Find("[data-live-node=\"talosoci-control-plane-legal-poodle\"]")
-		assert.Equal(t, 1, node.Length())
-	})
-
-	t.Run("edge node name renders", func(t *testing.T) {
-		node := doc.Find("[data-live-node=\"talosedge-genmachiche-flowing-bluejay\"]")
-		assert.Equal(t, 1, node.Length())
-	})
-
-	// Service map: pods as blocks
-
-	t.Run("pods render as blocks", func(t *testing.T) {
-		pods := doc.Find("[data-live-pod]")
-		assert.Equal(t, 11, pods.Length(), "Expected 11 pods total")
-	})
-
-	t.Run("pods show namespace", func(t *testing.T) {
-		html, err := doc.Find("[data-live-pod]").First().Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "kube-system")
+		assert.Contains(t, html, "bg-green-600")
 	})
 
 	// Sparklines
 
-	t.Run("metrics container exists", func(t *testing.T) {
-		metrics := doc.Find("[data-live-metrics]")
-		assert.Equal(t, 1, metrics.Length())
+	t.Run("metrics render on platform-website", func(t *testing.T) {
+		svc := doc.Find("[data-live-service=\"platform-website\"]")
+		sparklines := svc.Find("[data-live-metric]")
+		assert.Equal(t, 2, sparklines.Length(), "Expected Goroutines + Heap")
 	})
 
-	t.Run("three metric sparklines render", func(t *testing.T) {
-		metrics := doc.Find("[data-live-metric]")
-		assert.Equal(t, 3, metrics.Length())
+	t.Run("sparkline has SVG", func(t *testing.T) {
+		svc := doc.Find("[data-live-service=\"platform-website\"]")
+		svgs := svc.Find("svg")
+		assert.Equal(t, 2, svgs.Length())
 	})
 
 	t.Run("sparkline uses accent colors", func(t *testing.T) {
-		metric := doc.Find("[data-live-metric=\"Requests\"]")
-		html, err := metric.Html()
+		svc := doc.Find("[data-live-service=\"platform-website\"]")
+		html, err := svc.Html()
 		require.NoError(t, err)
 		assert.Contains(t, html, "stroke-accent-gold")
 		assert.Contains(t, html, "dark:stroke-next-teal")
 	})
 
-	t.Run("layout uses grid with 2/3 split", func(t *testing.T) {
-		html, err := doc.Find("#live").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "lg:col-span-2")
+	t.Run("metrics show on daprd", func(t *testing.T) {
+		svc := doc.Find("[data-live-service=\"daprd\"]")
+		sparklines := svc.Find("[data-live-metric]")
+		assert.Equal(t, 1, sparklines.Length(), "Expected Components metric")
 	})
 }
