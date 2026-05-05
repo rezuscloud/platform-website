@@ -87,23 +87,23 @@ func (s *ServiceNode) Find(name string) *ServiceNode {
 func PlatformTopology() ServiceNode {
 	return ServiceNode{
 		Name: "cilium-gateway", Label: "Cilium Gateway", Kind: "ingress",
-		Detail: "Gateway API + TLS",
+		Detail: "Gateway API + TLS", Status: "unknown",
 		Out: []ServiceEdge{
 			{Label: "HTTPS", Target: ServiceNode{
 				Name: "platform-website", Label: "platform-website", Kind: "app",
-				Detail: "Go / Fiber v2",
+				Detail: "Go / Fiber v2", Status: "unknown",
 				Out: []ServiceEdge{
 					{Label: "localhost", Target: ServiceNode{
 						Name: "daprd", Label: "Dapr Sidecar", Kind: "sidecar",
-						Detail: "daprd v1.15",
+						Detail: "daprd v1.15", Status: "unknown",
 						Out: []ServiceEdge{
 							{Label: "OTLP", Target: ServiceNode{
 								Name: "signoz-collector", Label: "SigNoz Collector", Kind: "infra",
-								Detail: "OTEL Receiver",
+								Detail: "OTEL Receiver", Status: "unknown",
 							}},
 							{Label: "gRPC", Target: ServiceNode{
 								Name: "dapr-control-plane", Label: "Dapr Control Plane", Kind: "infra",
-								Detail: "Placement + Sentry",
+								Detail: "Placement + Sentry", Status: "unknown",
 							}},
 						},
 					}},
