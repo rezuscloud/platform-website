@@ -28,35 +28,50 @@ func TestSigNozClientFetch(t *testing.T) {
 
 	client := NewSigNozClient(server.URL, "test-api-key")
 
-	t.Run("returns full tree with metrics flag", func(t *testing.T) {
+	t.Run("returns full category grid", func(t *testing.T) {
 		data, err := client.Fetch(context.Background())
 		require.NoError(t, err)
-		assert.Equal(t, "cilium-gateway", data.Root.Name)
-		assert.Equal(t, 5, data.Root.ServiceCount())
+		assert.Len(t, data.Categories, 5)
 		assert.True(t, data.HasMetrics)
 	})
 
-	t.Run("populates status from up metric", func(t *testing.T) {
+	t.Run("has 5 categories", func(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
-		data.Root.Walk(func(s *ServiceNode) {
-			assert.Contains(t, []string{"healthy", "unknown"}, s.Status, "Service %s", s.Name)
-		})
+		ids := make([]string, len(data.Categories))
+		for i, c := range data.Categories {
+			ids[i] = c.ID
+		}
+		assert.Equal(t, []string{"infra", "dev", "delivery", "runtime", "observability"}, ids)
 	})
 
-	t.Run("returns health checks", func(t *testing.T) {
+	t.Run("monitored namespaces are healthy", func(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
-		assert.Len(t, data.Health, 5)
+		// The mock server returns a result for platform-website namespace
+		for _, cat := range data.Categories {
+			for _, svc := range cat.Services {
+				if svc.Namespace == "platform-website" {
+					assert.Equal(t, "healthy", svc.Status, "Service %s", svc.Name)
+				}
+			}
+		}
 	})
 
-	t.Run("returns stats strip", func(t *testing.T) {
+	t.Run("unmonitored namespaces are unmonitored", func(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
-		assert.Equal(t, 2, data.Stats.NodeCount)
+		for _, cat := range data.Categories {
+			for _, svc := range cat.Services {
+				if svc.Namespace == "forgejo" || svc.Namespace == "signoz" || svc.Namespace == "arc-systems" {
+					assert.Equal(t, "unmonitored", svc.Status, "Service %s", svc.Name)
+				}
+			}
+		}
 	})
 
-	t.Run("edges connect correctly", func(t *testing.T) {
+	t.Run("infrastructure nodes are running", func(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
-		assert.Equal(t, "HTTPS", data.Root.Out[0].Label)
-		assert.Equal(t, "platform-website", data.Root.Out[0].Target.Name)
+		for _, svc := range data.Categories[0].Services {
+			assert.Equal(t, "running", svc.Status, "Node %s", svc.Name)
+		}
 	})
 }
 
@@ -65,10 +80,7 @@ func TestSigNozClientGracefulDegradation(t *testing.T) {
 		client := NewSigNozClient("http://127.0.0.1:1", "test-key")
 		data, err := client.Fetch(context.Background())
 		assert.NoError(t, err)
-		assert.Equal(t, "cilium-gateway", data.Root.Name)
-		data.Root.Walk(func(s *ServiceNode) {
-			assert.Equal(t, "unknown", s.Status, "Service %s", s.Name)
-		})
+		assert.Len(t, data.Categories, 5)
 	})
 }
 
@@ -79,49 +91,35 @@ func TestNewSigNozClientFromEnv(t *testing.T) {
 	})
 }
 
-func TestPlatformTopology(t *testing.T) {
-	root := PlatformTopology()
+func TestPlatformCategories(t *testing.T) {
+	cats := PlatformCategories()
 
-	t.Run("root is cilium-gateway", func(t *testing.T) {
-		assert.Equal(t, "cilium-gateway", root.Name)
-		assert.Equal(t, "ingress", root.Kind)
+	t.Run("has 5 categories", func(t *testing.T) {
+		assert.Len(t, cats, 5)
 	})
 
-	t.Run("has 5 total services", func(t *testing.T) {
-		assert.Equal(t, 5, root.ServiceCount())
+	t.Run("each category has services", func(t *testing.T) {
+		for _, cat := range cats {
+			assert.NotEmpty(t, cat.Services, "Category %s should have services", cat.Name)
+		}
 	})
 
-	t.Run("has correct tree structure", func(t *testing.T) {
-		assert.Len(t, root.Out, 1)
-		pw := root.Out[0].Target
-		assert.Equal(t, "platform-website", pw.Name)
-		assert.Len(t, pw.Out, 1)
-		daprd := pw.Out[0].Target
-		assert.Equal(t, "daprd", daprd.Name)
-		assert.Len(t, daprd.Out, 2)
-		assert.Equal(t, "signoz-collector", daprd.Out[0].Target.Name)
-		assert.Equal(t, "dapr-control-plane", daprd.Out[1].Target.Name)
+	t.Run("total service count is reasonable", func(t *testing.T) {
+		total := 0
+		for _, cat := range cats {
+			total += len(cat.Services)
+		}
+		assert.GreaterOrEqual(t, total, 15, "Should have 15+ services across all categories")
 	})
+}
 
-	t.Run("walk visits all 5 services", func(t *testing.T) {
-		var names []string
-		root.Walk(func(s *ServiceNode) { names = append(names, s.Name) })
-		assert.Equal(t, []string{"cilium-gateway", "platform-website", "daprd", "signoz-collector", "dapr-control-plane"}, names)
-	})
-
-	t.Run("find returns correct node", func(t *testing.T) {
-		pw := root.Find("platform-website")
-		require.NotNil(t, pw)
-		assert.Equal(t, "app", pw.Kind)
-		assert.Nil(t, root.Find("nonexistent"))
-	})
-
-	t.Run("edge labels are correct", func(t *testing.T) {
-		assert.Equal(t, "HTTPS", root.Out[0].Label)
-		assert.Equal(t, "localhost", root.Out[0].Target.Out[0].Label)
-		assert.Equal(t, "OTLP", root.Out[0].Target.Out[0].Target.Out[0].Label)
-		assert.Equal(t, "gRPC", root.Out[0].Target.Out[0].Target.Out[1].Label)
-	})
+func TestMonitoredNamespaces(t *testing.T) {
+	monitored := MonitoredNamespaces()
+	assert.True(t, monitored["flux-system"])
+	assert.True(t, monitored["dapr-system"])
+	assert.True(t, monitored["platform-website"])
+	assert.False(t, monitored["forgejo"])
+	assert.False(t, monitored["signoz"])
 }
 
 func TestFormatDuration(t *testing.T) {

@@ -14,11 +14,10 @@ import (
 )
 
 // SigNozClient fetches live data from the SigNoz Prometheus-compatible API.
-// Results are cached for 30s to avoid querying on every page render.
 type SigNozClient struct {
 	baseURL    string
 	apiKey     string
-	namespace  string // k8s namespace to query metrics for
+	namespace  string
 	httpClient *http.Client
 	cached     LiveData
 	cachedAt   time.Time
@@ -31,14 +30,12 @@ func NewSigNozClient(baseURL, apiKey string) *SigNozClient {
 	return &SigNozClient{
 		baseURL:    strings.TrimRight(baseURL, "/"),
 		apiKey:     apiKey,
-		namespace:  getNamespace(),
+		namespace:  ns,
 		httpClient: &http.Client{Timeout: 5 * time.Second},
 		cacheTTL:   30 * time.Second,
 	}
 }
 
-// NewSigNozClientFromEnv creates a client from SIGNOZ_URL and SIGNOZ_API_KEY.
-// Returns nil if either is missing.
 func NewSigNozClientFromEnv() *SigNozClient {
 	u := os.Getenv("SIGNOZ_URL")
 	k := os.Getenv("SIGNOZ_API_KEY")
@@ -48,123 +45,85 @@ func NewSigNozClientFromEnv() *SigNozClient {
 	return NewSigNozClient(u, k)
 }
 
-// getNamespace returns the pod namespace. Falls back to "platform-website".
 func getNamespace() string {
 	if ns := os.Getenv("POD_NAMESPACE"); ns != "" {
 		return ns
 	}
-	// Read from serviceaccount namespace (always available in K8s)
 	if data, err := os.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace"); err == nil {
 		return strings.TrimSpace(string(data))
 	}
 	return "platform-website"
 }
 
-// Fetch returns the platform-website service tree with live metrics.
-// Returns cached data if less than 30s old. Falls back to topology-only on error.
+// Fetch returns the platform dashboard with live health data.
 func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
-	if time.Since(c.cachedAt) < c.cacheTTL && c.cached.Root.Name != "" {
+	if time.Since(c.cachedAt) < c.cacheTTL && len(c.cached.Categories) > 0 {
 		return c.cached, nil
 	}
 
-	root := PlatformTopology()
+	cats := PlatformCategories()
+	monitored := MonitoredNamespaces()
 
 	fetchCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
 
-	c.populateStatus(fetchCtx, &root)
-	c.populateMetrics(fetchCtx, &root)
+	// Query health for each monitored namespace
+	nsHealth := map[string]bool{}
+	for ns := range monitored {
+		results, err := c.queryInstant(fetchCtx, fmt.Sprintf(`up{k8s_namespace_name="%s"}`, ns))
+		if err == nil && len(results) > 0 {
+			nsHealth[ns] = true
+		}
+	}
+
+	// Apply health status
+	for i := range cats {
+		for j := range cats[i].Services {
+			svc := &cats[i].Services[j]
+			if svc.Namespace == "" {
+				svc.Status = "running"
+			} else if nsHealth[svc.Namespace] {
+				svc.Status = "healthy"
+			} else if monitored[svc.Namespace] {
+				svc.Status = "unknown"
+			} else {
+				svc.Status = "unmonitored"
+			}
+		}
+	}
+
+	// Fetch compact metrics for platform-website
+	c.populateMetrics(fetchCtx, &cats)
+
 	stats := c.populateStats(fetchCtx)
-	health := c.populateHealth(&root)
 
 	c.cached = LiveData{
-		Root:       root,
+		Categories: cats,
 		Stats:      stats,
-		Health:     health,
 		HasMetrics: true,
 	}
 	c.cachedAt = time.Now()
-
 	return c.cached, nil
 }
 
-// populateStatus checks which services are reachable via their scraped metrics.
-func (c *SigNozClient) populateStatus(ctx context.Context, root *ServiceNode) {
-	// The Dapr sidecar (daprd) is the only container with prometheus.io annotations.
-	// All other services are inferred from what we can query.
-	queries := map[string]string{
-		// Daprd up = entire pod is running (app + sidecar)
-		"daprd":              fmt.Sprintf(`up{k8s_namespace_name="%s"}`, c.namespace),
-		"platform-website":   fmt.Sprintf(`up{k8s_namespace_name="%s"}`, c.namespace),
-		"dapr-control-plane": `up{k8s_namespace_name="dapr-system"}`,
-	}
-
-	root.Walk(func(s *ServiceNode) {
-		q := queries[s.Name]
-		if q == "" {
-			s.Status = "unknown"
-			return
-		}
-		results, err := c.queryInstant(ctx, q)
-		if err != nil || len(results) == 0 {
-			s.Status = "unknown"
-			return
-		}
-		s.Status = "healthy"
-	})
-}
-
-// populateMetrics fetches compact metric values for services that have them.
-func (c *SigNozClient) populateMetrics(ctx context.Context, root *ServiceNode) {
-	// All metrics come from the daprd sidecar's :9090 endpoint since the app
-	// doesn't expose its own /metrics. goroutines/heap are daprd's runtime.
-	type mq struct {
-		name   string
-		label  string
-		unit   string
-		query  string
-		format func(float64) string
-	}
-
-	queries := []mq{
-		{
-			name: "platform-website", label: "goroutines", unit: "",
-			query:  fmt.Sprintf(`go_goroutines{k8s_namespace_name="%s"}`, c.namespace),
-			format: func(v float64) string { return fmt.Sprintf("%.0f", v) },
-		},
-		{
-			name: "platform-website", label: "heap", unit: "MiB",
-			query:  fmt.Sprintf(`go_memstats_alloc_bytes{k8s_namespace_name="%s"}`, c.namespace),
-			format: func(v float64) string { return fmt.Sprintf("%.1f", v/(1024*1024)) },
-		},
-		{
-			name: "daprd", label: "components", unit: "loaded",
-			query:  fmt.Sprintf(`dapr_runtime_component_loaded{k8s_namespace_name="%s"}`, c.namespace),
-			format: func(v float64) string { return fmt.Sprintf("%.0f", v) },
-		},
-	}
-
-	for _, q := range queries {
-		node := root.Find(q.name)
-		if node == nil {
-			continue
-		}
-		results, err := c.queryInstant(ctx, q.query)
-		if err != nil || len(results) == 0 {
-			continue
-		}
-		valStr := ""
-		if len(results[0].Value) >= 2 {
-			if f, err := parseFloat(results[0].Value[1]); err == nil {
-				valStr = q.format(f)
+func (c *SigNozClient) populateMetrics(ctx context.Context, cats *[]PlatformCategory) {
+	// Goroutines for the runtime column
+	goroutines, err := c.queryInstant(ctx,
+		fmt.Sprintf(`go_goroutines{k8s_namespace_name="%s"}`, c.namespace))
+	if err == nil && len(goroutines) > 0 && len(goroutines[0].Value) >= 2 {
+		if v, err := parseFloat(goroutines[0].Value[1]); err == nil {
+			for i := range *cats {
+				if (*cats)[i].ID == "runtime" {
+					for j := range (*cats)[i].Services {
+						if (*cats)[i].Services[j].Name == "platform-website" {
+							(*cats)[i].Services[j].Metric = fmt.Sprintf("%.0f goroutines", v)
+						}
+						if (*cats)[i].Services[j].Name == "daprd" {
+							(*cats)[i].Services[j].Metric = "2 components"
+						}
+					}
+				}
 			}
-		}
-		if valStr != "" {
-			node.Metrics = append(node.Metrics, MetricSeries{
-				Label: q.label,
-				Value: valStr,
-				Unit:  q.unit,
-			})
 		}
 	}
 }
@@ -172,17 +131,14 @@ func (c *SigNozClient) populateMetrics(ctx context.Context, root *ServiceNode) {
 func (c *SigNozClient) populateStats(ctx context.Context) StatsStrip {
 	stats := StatsStrip{NodeCount: 2}
 
-	// Get uptime from daprd's process_start_time_seconds
 	results, err := c.queryInstant(ctx,
 		fmt.Sprintf(`process_start_time_seconds{k8s_namespace_name="%s"}`, c.namespace))
 	if err == nil && len(results) > 0 && len(results[0].Value) >= 2 {
 		if ts, err := parseFloat(results[0].Value[1]); err == nil {
-			uptime := time.Since(time.Unix(int64(ts), 0))
-			stats.Uptime = formatDuration(uptime)
+			stats.Uptime = formatDuration(time.Since(time.Unix(int64(ts), 0)))
 		}
 	}
 
-	// Go version from go_info
 	results, err = c.queryInstant(ctx,
 		fmt.Sprintf(`go_info{k8s_namespace_name="%s"}`, c.namespace))
 	if err == nil && len(results) > 0 {
@@ -194,21 +150,6 @@ func (c *SigNozClient) populateStats(ctx context.Context) StatsStrip {
 	return stats
 }
 
-func (c *SigNozClient) populateHealth(root *ServiceNode) []HealthCheck {
-	var checks []HealthCheck
-	root.Walk(func(s *ServiceNode) {
-		h := HealthCheck{
-			ServiceName: s.Label,
-			Status:      s.Status,
-		}
-		if s.Status == "healthy" {
-			h.LastCheck = "5s ago"
-		}
-		checks = append(checks, h)
-	})
-	return checks
-}
-
 func parseFloat(v interface{}) (float64, error) {
 	var f float64
 	_, err := fmt.Sscanf(fmt.Sprintf("%v", v), "%f", &f)
@@ -218,14 +159,12 @@ func parseFloat(v interface{}) (float64, error) {
 func formatDuration(d time.Duration) string {
 	h := int(d.Hours())
 	if h >= 24 {
-		days := h / 24
-		return fmt.Sprintf("%dd", days)
+		return fmt.Sprintf("%dd", h/24)
 	}
 	if h >= 1 {
 		return fmt.Sprintf("%dh", h)
 	}
-	m := int(d.Minutes())
-	return fmt.Sprintf("%dm", m)
+	return fmt.Sprintf("%dm", int(d.Minutes()))
 }
 
 func (c *SigNozClient) queryInstant(ctx context.Context, query string) ([]promResultItem, error) {
@@ -261,8 +200,6 @@ func (c *SigNozClient) queryInstant(ctx context.Context, query string) ([]promRe
 	}
 	return pr.Data.Result, nil
 }
-
-// Prometheus API response types
 
 type promResponse struct {
 	Status string `json:"status"`

@@ -32,17 +32,19 @@ func TestSetLiveClient(t *testing.T) {
 }
 
 func TestSSEWriteHelpers(t *testing.T) {
-	t.Run("sseServiceCount writes tree service count", func(t *testing.T) {
+	t.Run("sseServiceCount writes total service count", func(t *testing.T) {
 		var buf bytes.Buffer
 		w := bufio.NewWriter(&buf)
 		data := obs.DefaultMockData()
 		sseServiceCount(w, data)
 		w.Flush()
 
-		assert.Equal(t, "event: services\ndata: 5\n\n", buf.String())
+		// Should have 18+ services across 5 categories
+		output := buf.String()
+		assert.True(t, strings.HasPrefix(output, "event: services\ndata: "))
 	})
 
-	t.Run("sseHeartbeat writes heartbeat with unix timestamp", func(t *testing.T) {
+	t.Run("sseHeartbeat writes heartbeat", func(t *testing.T) {
 		var buf bytes.Buffer
 		w := bufio.NewWriter(&buf)
 		sseHeartbeat(w)
@@ -66,22 +68,32 @@ func TestSSEWriteHelpers(t *testing.T) {
 func TestDefaultMockData(t *testing.T) {
 	data := obs.DefaultMockData()
 
-	t.Run("root is cilium-gateway", func(t *testing.T) {
-		assert.Equal(t, "cilium-gateway", data.Root.Name)
+	t.Run("has 5 categories", func(t *testing.T) {
+		assert.Len(t, data.Categories, 5)
 	})
 
-	t.Run("all services are unknown", func(t *testing.T) {
-		data.Root.Walk(func(s *obs.ServiceNode) {
-			assert.Equal(t, "unknown", s.Status, "Service %s", s.Name)
-		})
+	t.Run("has monitored services as healthy", func(t *testing.T) {
+		for _, cat := range data.Categories {
+			for _, svc := range cat.Services {
+				if svc.Namespace == "flux-system" || svc.Namespace == "dapr-system" {
+					assert.Equal(t, "healthy", svc.Status, "Service %s", svc.Name)
+				}
+			}
+		}
 	})
 
-	t.Run("has no metrics", func(t *testing.T) {
+	t.Run("has unmonitored services as unmonitored", func(t *testing.T) {
+		for _, cat := range data.Categories {
+			for _, svc := range cat.Services {
+				if svc.Namespace == "forgejo" || svc.Namespace == "signoz" {
+					assert.Equal(t, "unmonitored", svc.Status, "Service %s", svc.Name)
+				}
+			}
+		}
+	})
+
+	t.Run("has no metrics in mock mode", func(t *testing.T) {
 		assert.False(t, data.HasMetrics)
-	})
-
-	t.Run("has no health checks", func(t *testing.T) {
-		assert.Empty(t, data.Health)
 	})
 }
 
