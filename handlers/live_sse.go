@@ -52,7 +52,11 @@ func sseError(w *bufio.Writer, err error) {
 }
 
 func sseServiceCount(w *bufio.Writer, data obs.LiveData) {
-	fmt.Fprintf(w, "event: services\ndata: %d\n\n", data.Root.ServiceCount())
+	var count int
+	for _, cat := range data.Categories {
+		count += len(cat.Services)
+	}
+	fmt.Fprintf(w, "event: services\ndata: %d\n\n", count)
 }
 
 func sseHeartbeat(w *bufio.Writer) {

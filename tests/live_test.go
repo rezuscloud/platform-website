@@ -16,10 +16,10 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.Equal(t, 1, doc.Find("#live").Length())
 	})
 
-	t.Run("has Live Infrastructure heading", func(t *testing.T) {
+	t.Run("has Live Platform heading", func(t *testing.T) {
 		heading := doc.Find("#live h2")
 		assert.Equal(t, 1, heading.Length())
-		assert.Contains(t, heading.Text(), "Live Infrastructure")
+		assert.Contains(t, heading.Text(), "Live Platform")
 	})
 
 	t.Run("has LIVE indicator", func(t *testing.T) {
@@ -42,97 +42,90 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.True(t, foundLive)
 	})
 
-	// SVG diagram
+	// Category columns
 
-	t.Run("has SVG diagram", func(t *testing.T) {
-		svgs := doc.Find("#live svg")
-		assert.Equal(t, 1, svgs.Length())
+	t.Run("has 5 category columns", func(t *testing.T) {
+		cats := doc.Find("[data-live-category]")
+		assert.Equal(t, 5, cats.Length())
 	})
 
-	t.Run("SVG has aria-label", func(t *testing.T) {
-		svg := doc.Find("#live svg")
-		label, exists := svg.Attr("aria-label")
-		assert.True(t, exists)
-		assert.Contains(t, label, "Service dependency")
+	t.Run("infrastructure column renders", func(t *testing.T) {
+		col := doc.Find("[data-live-category=\"infra\"]")
+		assert.Equal(t, 1, col.Length())
+		assert.Contains(t, col.Text(), "Infrastructure")
 	})
 
-	t.Run("SVG has 5 service nodes", func(t *testing.T) {
+	t.Run("development column renders", func(t *testing.T) {
+		col := doc.Find("[data-live-category=\"dev\"]")
+		assert.Equal(t, 1, col.Length())
+		assert.Contains(t, col.Text(), "Forgejo")
+		assert.Contains(t, col.Text(), "ARC Controller")
+	})
+
+	t.Run("delivery column renders", func(t *testing.T) {
+		col := doc.Find("[data-live-category=\"delivery\"]")
+		assert.Equal(t, 1, col.Length())
+		assert.Contains(t, col.Text(), "Flux Source")
+		assert.Contains(t, col.Text(), "KubeVela")
+		assert.Contains(t, col.Text(), "Cert Manager")
+	})
+
+	t.Run("runtime column renders", func(t *testing.T) {
+		col := doc.Find("[data-live-category=\"runtime\"]")
+		assert.Equal(t, 1, col.Length())
+		assert.Contains(t, col.Text(), "Cilium CNI")
+		assert.Contains(t, col.Text(), "platform-website")
+		assert.Contains(t, col.Text(), "Dapr Sidecar")
+	})
+
+	t.Run("observability column renders", func(t *testing.T) {
+		col := doc.Find("[data-live-category=\"observability\"]")
+		assert.Equal(t, 1, col.Length())
+		assert.Contains(t, col.Text(), "SigNoz Collector")
+		assert.Contains(t, col.Text(), "ClickHouse")
+	})
+
+	// All services
+
+	t.Run("all services render", func(t *testing.T) {
 		services := doc.Find("[data-live-service]")
-		assert.Equal(t, 5, services.Length())
+		assert.GreaterOrEqual(t, services.Length(), 15)
 	})
 
-	t.Run("cilium-gateway renders", func(t *testing.T) {
-		svc := doc.Find("[data-live-service=\"cilium-gateway\"]")
-		assert.Equal(t, 1, svc.Length())
-	})
+	// Status dots
 
-	t.Run("platform-website renders with hero border", func(t *testing.T) {
-		svc := doc.Find("[data-live-service=\"platform-website\"]")
-		assert.Equal(t, 1, svc.Length())
-		// Should have accent-colored border (hero treatment)
-		html, err := svc.Html()
+	t.Run("healthy services show green dots", func(t *testing.T) {
+		html, err := doc.Find("[data-live-service=\"platform-website\"]").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "stroke-accent-gold")
+		assert.Contains(t, html, "bg-green-600")
 	})
 
-	t.Run("daprd renders", func(t *testing.T) {
-		svc := doc.Find("[data-live-service=\"daprd\"]")
-		assert.Equal(t, 1, svc.Length())
-	})
-
-	t.Run("signoz-collector renders", func(t *testing.T) {
-		svc := doc.Find("[data-live-service=\"signoz-collector\"]")
-		assert.Equal(t, 1, svc.Length())
-	})
-
-	t.Run("dapr-control-plane renders", func(t *testing.T) {
-		svc := doc.Find("[data-live-service=\"dapr-control-plane\"]")
-		assert.Equal(t, 1, svc.Length())
-	})
-
-	// Lane labels
-
-	t.Run("lane labels render", func(t *testing.T) {
-		html, err := doc.Find("#live").Html()
+	t.Run("unmonitored services show hollow dots", func(t *testing.T) {
+		html, err := doc.Find("[data-live-service=\"forgejo\"]").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "INGRESS")
-		assert.Contains(t, html, "APPLICATION")
-		assert.Contains(t, html, "SIDECAR")
-		assert.Contains(t, html, "INFRA")
+		assert.Contains(t, html, "border border-rule")
 	})
 
-	// Edge labels
-
-	t.Run("edge labels render", func(t *testing.T) {
-		html, err := doc.Find("[data-live-infra]").Html()
+	t.Run("infrastructure nodes show accent dots", func(t *testing.T) {
+		html, err := doc.Find("[data-live-service=\"oci-cloud\"]").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "HTTPS")
-		assert.Contains(t, html, "localhost")
-		assert.Contains(t, html, "OTLP")
-		assert.Contains(t, html, "gRPC")
+		assert.Contains(t, html, "bg-accent-gold")
 	})
 
-	// Static banner (mock data = no SigNoz)
+	// Static banner
 
 	t.Run("static banner shows when no metrics", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "Showing static topology")
-		assert.Contains(t, html, "require SigNoz")
+		assert.Contains(t, html, "Showing platform topology")
 	})
 
-	// No health strip in mock mode
+	// Responsive grid
 
-	t.Run("no health strip in static mode", func(t *testing.T) {
-		health := doc.Find("[data-live-health]")
-		assert.Equal(t, 0, health.Length())
-	})
-
-	// SVG has arrow markers
-
-	t.Run("edges have arrow polygons", func(t *testing.T) {
-		html, err := doc.Find("[data-live-infra]").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "polygon")
+	t.Run("uses responsive grid classes", func(t *testing.T) {
+		grid := doc.Find("[data-live-infra]")
+		classes, _ := grid.Attr("class")
+		assert.Contains(t, classes, "lg:grid-cols-5")
+		assert.Contains(t, classes, "sm:grid-cols-2")
 	})
 }

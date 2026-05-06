@@ -1,51 +1,45 @@
 package obs
 
-import "context"
+import (
+	"context"
+)
 
-// ServiceNode is a service in the platform-website dependency tree.
-type ServiceNode struct {
-	Name    string // unique ID: "cilium-gateway"
-	Label   string // display: "Cilium Gateway"
-	Kind    string // "ingress", "app", "sidecar", "infra"
-	Status  string // "healthy" or "unknown"
-	Detail  string // e.g. "Go / Fiber v2"
-	Metrics []MetricSeries
-	Out     []ServiceEdge // outgoing edges to downstream services
+// PlatformCategory groups related services in the platform dashboard.
+type PlatformCategory struct {
+	Name     string
+	ID       string // "infra", "dev", "delivery", "runtime", "observability"
+	Services []PlatformService
 }
 
-// ServiceEdge is a directed connection to a downstream service.
-type ServiceEdge struct {
-	Label  string      // "HTTPS", "OTLP", "gRPC"
-	Target ServiceNode // the downstream service
+// PlatformService is one service in the platform dashboard.
+type PlatformService struct {
+	Name      string // unique ID
+	Label     string // display name
+	Detail    string // e.g. "Self-hosted Git"
+	Status    string // "healthy", "unknown", "unmonitored"
+	Namespace string // K8s namespace for SigNoz queries
+	Metric    string // compact metric value, e.g. "75 goroutines"
 }
 
-// MetricSeries holds a named metric value (compact: one key number per node).
-type MetricSeries struct {
-	Label string
-	Value string
-	Unit  string
-}
-
-// StatsStrip shows runtime metadata above the diagram.
+// StatsStrip shows runtime metadata above the dashboard.
 type StatsStrip struct {
-	Uptime    string // "47h" from process_start_time_seconds
-	GoVersion string // "go1.26" from go_info metric
-	NodeCount int    // physical cluster nodes
+	Uptime    string
+	GoVersion string
+	NodeCount int
 }
 
-// HealthCheck is one line in the health strip below the diagram.
+// HealthCheck is one line in the health strip below the dashboard.
 type HealthCheck struct {
 	ServiceName string
-	Status      string // "healthy" or "unknown"
-	LastCheck   string // "5s ago"
+	Status      string
+	LastCheck   string
 }
 
 // LiveData holds everything the live section template needs.
 type LiveData struct {
-	Root       ServiceNode
+	Categories []PlatformCategory
 	Stats      StatsStrip
-	Health     []HealthCheck
-	HasMetrics bool // false when SigNoz not configured
+	HasMetrics bool
 }
 
 // Client fetches live service tree data from SigNoz metrics.
@@ -53,62 +47,71 @@ type Client interface {
 	Fetch(ctx context.Context) (LiveData, error)
 }
 
-// Walk traverses the service tree depth-first, calling fn on each node.
-func (s *ServiceNode) Walk(fn func(*ServiceNode)) {
-	fn(s)
-	for i := range s.Out {
-		s.Out[i].Target.Walk(fn)
-	}
-}
-
-// ServiceCount returns the total number of services in the tree.
-func (s *ServiceNode) ServiceCount() int {
-	count := 1
-	for i := range s.Out {
-		count += s.Out[i].Target.ServiceCount()
-	}
-	return count
-}
-
-// Find returns the first node matching name, or nil.
-func (s *ServiceNode) Find(name string) *ServiceNode {
-	if s.Name == name {
-		return s
-	}
-	for i := range s.Out {
-		if found := s.Out[i].Target.Find(name); found != nil {
-			return found
-		}
-	}
-	return nil
-}
-
-// PlatformTopology returns the known dependency tree for platform-website.
-func PlatformTopology() ServiceNode {
-	return ServiceNode{
-		Name: "cilium-gateway", Label: "Cilium Gateway", Kind: "ingress",
-		Detail: "Gateway API + TLS", Status: "unknown",
-		Out: []ServiceEdge{
-			{Label: "HTTPS", Target: ServiceNode{
-				Name: "platform-website", Label: "platform-website", Kind: "app",
-				Detail: "Go / Fiber v2", Status: "unknown",
-				Out: []ServiceEdge{
-					{Label: "localhost", Target: ServiceNode{
-						Name: "daprd", Label: "Dapr Sidecar", Kind: "sidecar",
-						Detail: "daprd v1.15", Status: "unknown",
-						Out: []ServiceEdge{
-							{Label: "OTLP", Target: ServiceNode{
-								Name: "signoz-collector", Label: "SigNoz Collector", Kind: "infra",
-								Detail: "OTEL Receiver", Status: "unknown",
-							}},
-							{Label: "gRPC", Target: ServiceNode{
-								Name: "dapr-control-plane", Label: "Dapr Control Plane", Kind: "infra",
-								Detail: "Placement + Sentry", Status: "unknown",
-							}},
-						},
-					}},
-				},
-			}},
+// PlatformCategories returns the 5-column E2E platform topology.
+func PlatformCategories() []PlatformCategory {
+	return []PlatformCategory{
+		{
+			Name: "Infrastructure",
+			ID:   "infra",
+			Services: []PlatformService{
+				{Name: "oci-cloud", Label: "OCI Cloud Node", Detail: "ARM64 · Ampere A1", Namespace: ""},
+				{Name: "edge-node", Label: "Edge Node", Detail: "AMD64 · NUC", Namespace: ""},
+			},
 		},
+		{
+			Name: "Development",
+			ID:   "dev",
+			Services: []PlatformService{
+				{Name: "forgejo", Label: "Forgejo", Detail: "Self-hosted Git", Namespace: "forgejo"},
+				{Name: "arc-controller", Label: "ARC Controller", Detail: "GitHub Actions runners", Namespace: "arc-systems"},
+			},
+		},
+		{
+			Name: "Delivery",
+			ID:   "delivery",
+			Services: []PlatformService{
+				{Name: "flux-source", Label: "Flux Source", Detail: "Git repository sync", Namespace: "flux-system"},
+				{Name: "flux-kustomize", Label: "Flux Kustomize", Detail: "Manifest reconciliation", Namespace: "flux-system"},
+				{Name: "flux-helm", Label: "Flux Helm", Detail: "Helm release manager", Namespace: "flux-system"},
+				{Name: "kubevela", Label: "KubeVela", Detail: "Application delivery", Namespace: "vela-system"},
+				{Name: "external-dns", Label: "External DNS", Detail: "Cloudflare DNS automation", Namespace: "external-dns"},
+				{Name: "cert-manager", Label: "Cert Manager", Detail: "TLS certificate lifecycle", Namespace: "cert-manager"},
+			},
+		},
+		{
+			Name: "Runtime",
+			ID:   "runtime",
+			Services: []PlatformService{
+				{Name: "cilium", Label: "Cilium CNI", Detail: "eBPF data plane", Namespace: "kube-system"},
+				{Name: "platform-website", Label: "platform-website", Detail: "Go / Fiber v2", Namespace: "platform-website"},
+				{Name: "daprd", Label: "Dapr Sidecar", Detail: "daprd v1.15", Namespace: "platform-website"},
+				{Name: "dapr-control-plane", Label: "Dapr Control Plane", Detail: "Placement + Sentry", Namespace: "dapr-system"},
+			},
+		},
+		{
+			Name: "Observability",
+			ID:   "observability",
+			Services: []PlatformService{
+				{Name: "signoz-collector", Label: "SigNoz Collector", Detail: "OTEL Receiver", Namespace: "signoz"},
+				{Name: "signoz-clickhouse", Label: "ClickHouse", Detail: "Columnar telemetry store", Namespace: "signoz"},
+				{Name: "signoz-query", Label: "SigNoz Query Service", Detail: "API + Dashboards", Namespace: "signoz"},
+			},
+		},
+	}
+}
+
+// MonitoredNamespaces returns the set of namespaces that have SigNoz scrape data.
+func MonitoredNamespaces() map[string]bool {
+	return map[string]bool{
+		"flux-system":      true,
+		"vela-system":      true,
+		"kube-system":      true,
+		"platform-website": true,
+		"dapr-system":      true,
+		"cert-manager":     true,
+		"external-dns":     true,
+		"velero":           true,
+		"tikv-system":      true,
+		"juicefs-csi":      true,
 	}
 }
