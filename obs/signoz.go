@@ -223,6 +223,9 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	// Sort services: by category order, then by name
 	sortServices(services)
 
+	// Prepend static host entries
+	services = append(StaticHosts(), services...)
+
 	c.cached = LiveData{
 		Services:   services,
 		HasMetrics: true,

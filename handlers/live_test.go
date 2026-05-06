@@ -59,6 +59,15 @@ func TestDefaultMockData(t *testing.T) {
 		}
 	})
 
+	t.Run("hosts are present", func(t *testing.T) {
+		names := make(map[string]bool)
+		for _, svc := range data.Services {
+			names[svc.Name] = true
+		}
+		assert.True(t, names["oci-cloud"])
+		assert.True(t, names["edge-node"])
+	})
+
 	t.Run("has no live metrics in mock mode", func(t *testing.T) {
 		assert.False(t, data.HasMetrics)
 	})

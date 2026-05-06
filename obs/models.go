@@ -10,8 +10,9 @@ import (
 type Service struct {
 	Name      string  `json:"name"`              // deployment or statefulset name
 	Namespace string  `json:"namespace"`         // k8s namespace
-	Category  string  `json:"category"`          // infra, dev, delivery, runtime, observability
+	Category  string  `json:"category"`          // hosts, dev, deployment, runtime, observability, data
 	Status    string  `json:"status"`            // healthy, unknown, running, unmonitored
+	Detail    string  `json:"detail,omitempty"`  // e.g. "ARM64 · Ampere A1" for hosts
 	CPU       float64 `json:"cpu"`               // CPU % (rate over 5m)
 	RAM       float64 `json:"ram"`               // RAM in MB
 	Uptime    string  `json:"uptime,omitempty"`  // e.g. "4d", "12h", "45m"
@@ -32,38 +33,51 @@ type Client interface {
 }
 
 // CategoryForNamespace maps a namespace to a platform category.
-// This is the only hardcoded mapping: which column a namespace belongs to.
 func CategoryForNamespace(ns string) string {
 	switch ns {
 	case "forgejo", "arc-systems":
 		return "dev"
 	case "flux-system", "vela-system", "external-dns", "cert-manager":
-		return "delivery"
+		return "deployment"
 	case "kube-system", "platform-website", "dapr-system":
 		return "runtime"
 	case "signoz", "monitoring":
 		return "observability"
+	case "tikv-system", "juicefs-csi", "velero":
+		return "data"
 	default:
 		return "runtime"
 	}
 }
 
 // CategoryOrder defines the left-to-right column order.
-var CategoryOrder = []string{"dev", "delivery", "runtime", "observability"}
+var CategoryOrder = []string{"hosts", "dev", "deployment", "runtime", "observability", "data"}
 
 // CategoryLabel returns the display name for a category ID.
 func CategoryLabel(id string) string {
 	switch id {
+	case "hosts":
+		return "Hosts"
 	case "dev":
 		return "Development"
-	case "delivery":
-		return "Delivery"
+	case "deployment":
+		return "Deployment"
 	case "runtime":
 		return "Runtime"
 	case "observability":
 		return "Observability"
+	case "data":
+		return "Data"
 	default:
 		return id
+	}
+}
+
+// StaticHosts returns infrastructure host entries.
+func StaticHosts() []Service {
+	return []Service{
+		{Name: "oci-cloud", Namespace: "", Category: "hosts", Status: "running", Detail: "ARM64 · Ampere A1"},
+		{Name: "edge-node", Namespace: "", Category: "hosts", Status: "running", Detail: "AMD64 · Intel NUC"},
 	}
 }
 

@@ -109,7 +109,7 @@ func TestSigNozClientFetch(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
 		for _, svc := range data.Services {
 			if svc.Namespace == "flux-system" {
-				assert.Equal(t, "delivery", svc.Category)
+				assert.Equal(t, "deployment", svc.Category)
 			}
 			if svc.Namespace == "platform-website" {
 				assert.Equal(t, "runtime", svc.Category)
@@ -137,11 +137,13 @@ func TestSigNozClientFetch(t *testing.T) {
 }
 
 func TestSigNozClientGracefulDegradation(t *testing.T) {
-	t.Run("unreachable URL still returns empty data", func(t *testing.T) {
+	t.Run("unreachable URL still returns static hosts", func(t *testing.T) {
 		client := NewSigNozClient("http://127.0.0.1:1", "test-key")
 		data, err := client.Fetch(context.Background())
 		assert.NoError(t, err)
-		assert.Empty(t, data.Services)
+		// Static hosts are always present
+		assert.Equal(t, 2, len(data.Services))
+		assert.Equal(t, "hosts", data.Services[0].Category)
 	})
 }
 
@@ -165,8 +167,8 @@ func TestSparklinePoints(t *testing.T) {
 
 func TestCategoryForNamespace(t *testing.T) {
 	assert.Equal(t, "dev", CategoryForNamespace("forgejo"))
-	assert.Equal(t, "delivery", CategoryForNamespace("flux-system"))
-	assert.Equal(t, "runtime", CategoryForNamespace("platform-website"))
+	assert.Equal(t, "deployment", CategoryForNamespace("flux-system"))
+	assert.Equal(t, "data", CategoryForNamespace("tikv-system"))
 	assert.Equal(t, "observability", CategoryForNamespace("signoz"))
 }
 
