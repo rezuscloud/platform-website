@@ -65,8 +65,9 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	fetchCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	// Batch query 1: all up targets (health check per deployment)
-	healthMap := map[string]bool{} // "namespace/deployment" → alive
+	// Batch query 1: all up targets (health check per deployment + namespace)
+	healthMap := map[string]bool{}   // "namespace/deployment" → alive
+	nsHealthMap := map[string]bool{} // "namespace" → any alive
 	uptimeMap := map[string]string{}
 	upResults, err := c.queryInstant(fetchCtx, "up")
 	if err == nil {
@@ -76,11 +77,13 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 			if deploy == "" {
 				deploy = metricLabel(r, "k8s.statefulset.name")
 			}
-			if ns != "" && deploy != "" {
-				key := deploymentKey(ns, deploy)
-				healthMap[key] = metricValue(r) == "1"
+			alive := metricValue(r) == "1"
+			if ns != "" {
+				nsHealthMap[ns] = nsHealthMap[ns] || alive
 			}
-			// Track pod start time for uptime
+			if ns != "" && deploy != "" {
+				healthMap[deploymentKey(ns, deploy)] = alive
+			}
 			if ns == c.namespace {
 				if t := metricLabel(r, "k8s.pod.start_time"); t != "" {
 					uptimeMap[ns] = t
@@ -89,33 +92,43 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 		}
 	}
 
-	// Batch query 2: goroutines per deployment
-	goroutineMap := map[string]float64{} // "namespace/deployment" → count
+	// Batch query 2: goroutines per deployment + namespace
+	goroutineMap := map[string]float64{}   // "namespace/deployment" → count
+	nsGoroutineMap := map[string]float64{} // "namespace" → first count
 	goroutineResults, err := c.queryInstant(fetchCtx, "go_goroutines")
 	if err == nil {
 		for _, r := range goroutineResults {
 			ns := metricLabel(r, "k8s_namespace_name")
 			deploy := metricLabel(r, "k8s.deployment.name")
-			if ns != "" && deploy != "" {
-				key := deploymentKey(ns, deploy)
-				if v, err := parseFloat(metricValue(r)); err == nil {
-					goroutineMap[key] = v
+			if v, err := parseFloat(metricValue(r)); err == nil {
+				if ns != "" {
+					if _, exists := nsGoroutineMap[ns]; !exists {
+						nsGoroutineMap[ns] = v
+					}
+				}
+				if ns != "" && deploy != "" {
+					goroutineMap[deploymentKey(ns, deploy)] = v
 				}
 			}
 		}
 	}
 
-	// Batch query 3: memory per deployment
-	memoryMap := map[string]float64{} // "namespace/deployment" → bytes
+	// Batch query 3: memory per deployment + namespace
+	memoryMap := map[string]float64{}   // "namespace/deployment" → bytes
+	nsMemoryMap := map[string]float64{} // "namespace" → first bytes
 	memResults, err := c.queryInstant(fetchCtx, "process_resident_memory_bytes")
 	if err == nil {
 		for _, r := range memResults {
 			ns := metricLabel(r, "k8s_namespace_name")
 			deploy := metricLabel(r, "k8s.deployment.name")
-			if ns != "" && deploy != "" {
-				key := deploymentKey(ns, deploy)
-				if v, err := parseFloat(metricValue(r)); err == nil {
-					memoryMap[key] = v
+			if v, err := parseFloat(metricValue(r)); err == nil {
+				if ns != "" {
+					if _, exists := nsMemoryMap[ns]; !exists {
+						nsMemoryMap[ns] = v
+					}
+				}
+				if ns != "" && deploy != "" {
+					memoryMap[deploymentKey(ns, deploy)] = v
 				}
 			}
 		}
@@ -143,14 +156,27 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 				continue
 			}
 
-			// For services without deployment (same ns as another service),
-			// use namespace-level health
-			key := deploymentKey(svc.Namespace, svc.Deployment)
+			// For services without deployment, use namespace-level health
 			if svc.Deployment == "" {
-				// Unmonitored services (no SigNoz scrape annotations)
-				svc.Status = "unmonitored"
+				if alive, ok := nsHealthMap[svc.Namespace]; ok && alive {
+					svc.Status = "healthy"
+				} else if MonitoredNamespaces()[svc.Namespace] {
+					svc.Status = "unknown"
+				} else {
+					svc.Status = "unmonitored"
+				}
+
+				// Namespace-level metrics
+				if g, ok := nsGoroutineMap[svc.Namespace]; ok {
+					svc.Metric = fmt.Sprintf("%.0f goroutines", g)
+				}
+				if m, ok := nsMemoryMap[svc.Namespace]; ok {
+					svc.Memory = fmt.Sprintf("%.0f MB", m/1024/1024)
+				}
 				continue
 			}
+
+			key := deploymentKey(svc.Namespace, svc.Deployment)
 
 			if alive, ok := healthMap[key]; ok {
 				if alive {
