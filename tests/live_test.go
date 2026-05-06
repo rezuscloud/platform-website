@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/PuerkitoBio/goquery"
@@ -29,66 +30,100 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.Contains(t, d, "liveDashboard")
 	})
 
-	t.Run("has EventSource script", func(t *testing.T) {
+	t.Run("has EventSource", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
 		assert.Contains(t, html, "EventSource")
 		assert.Contains(t, html, "/api/live/stream")
 	})
 
-	t.Run("services render with data-live-svc", func(t *testing.T) {
-		services := doc.Find("[data-live-svc]")
-		assert.GreaterOrEqual(t, services.Length(), 5, "should have at least 5 services")
+	t.Run("has 6 category columns", func(t *testing.T) {
+		// Find the outer grid (the one with lg:grid-cols-6)
+		found := false
+		doc.Find("#live .grid").Each(func(i int, s *goquery.Selection) {
+			classes, _ := s.Attr("class")
+			if strings.Contains(classes, "lg:grid-cols-6") {
+				found = true
+			}
+		})
+		assert.True(t, found, "should find a grid with lg:grid-cols-6")
 	})
 
-	t.Run("services have status dots with data-dot", func(t *testing.T) {
+	t.Run("hosts column exists", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "Hosts")
+		assert.Contains(t, html, "oci-cloud")
+		assert.Contains(t, html, "edge-node")
+	})
+
+	t.Run("development column exists", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "Development")
+	})
+
+	t.Run("deployment column exists", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "Deployment")
+		assert.Contains(t, html, "source-controller")
+	})
+
+	t.Run("runtime column exists", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "Runtime")
+		assert.Contains(t, html, "platform-website")
+	})
+
+	t.Run("data column exists", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "Data")
+	})
+
+	t.Run("observability column exists", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "Observability")
+	})
+
+	t.Run("services have data-live-svc", func(t *testing.T) {
+		services := doc.Find("[data-live-svc]")
+		assert.GreaterOrEqual(t, services.Length(), 8)
+	})
+
+	t.Run("services have status dots", func(t *testing.T) {
 		dots := doc.Find("[data-dot]")
 		assert.Equal(t, doc.Find("[data-live-svc]").Length(), dots.Length())
 	})
 
-	t.Run("services have CPU elements", func(t *testing.T) {
+	t.Run("services have CPU and RAM elements", func(t *testing.T) {
 		cpu := doc.Find("[data-cpu]")
-		assert.GreaterOrEqual(t, cpu.Length(), 1)
-	})
-
-	t.Run("services have RAM elements", func(t *testing.T) {
 		ram := doc.Find("[data-ram]")
+		assert.GreaterOrEqual(t, cpu.Length(), 1)
 		assert.GreaterOrEqual(t, ram.Length(), 1)
 	})
 
-	t.Run("services have uptime elements", func(t *testing.T) {
-		uptime := doc.Find("[data-uptime]")
-		assert.GreaterOrEqual(t, uptime.Length(), 1)
-	})
-
-	t.Run("services have CPU sparklines", func(t *testing.T) {
-		charts := doc.Find("[data-cpu-hist]")
-		assert.GreaterOrEqual(t, charts.Length(), 1)
-	})
-
-	t.Run("services have RAM sparklines", func(t *testing.T) {
-		charts := doc.Find("[data-ram-hist]")
-		assert.GreaterOrEqual(t, charts.Length(), 1)
-	})
-
-	t.Run("unmonitored services show hollow dots", func(t *testing.T) {
-		html, err := doc.Find("[data-live-svc*=\"signoz\"]").Html()
+	t.Run("click-to-expand has toggleService", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "border border-rule")
+		assert.Contains(t, html, "toggleService")
+		assert.Contains(t, html, "selected")
+	})
+
+	t.Run("histogram panel exists", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "x-data-hist-cpu")
+		assert.Contains(t, html, "x-data-hist-ram")
 	})
 
 	t.Run("static banner shows", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
 		assert.Contains(t, html, "Showing platform topology")
-	})
-
-	t.Run("service names come from mock data", func(t *testing.T) {
-		html, err := doc.Find("#live").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "source-controller")
-		assert.Contains(t, html, "platform-website")
-		assert.Contains(t, html, "forgejo")
 	})
 
 	t.Run("after architecture in DOM order", func(t *testing.T) {

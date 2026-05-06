@@ -30,16 +30,44 @@ templ Live(data obs.LiveData) {
 				<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">Showing platform topology. Live metrics require SigNoz.</span>
 			</div>
 			<!-- SSE freshness -->
-			<div class="font-terminal text-xs text-ink-muted dark:text-next-subtle mb-4" x-show="connected" x-cloak>
+			<div class="font-terminal text-xs text-ink-muted dark:text-next-subtle mb-6" x-show="connected" x-cloak>
 				<span x-text="'Updated ' + lastUpdateAgo + 's ago'"></span>
 				<span class="mx-2">·</span>
 				<span x-text="serviceCount + ' services'"></span>
 			</div>
-			<!-- Service grid: one row per service -->
-			<div class="space-y-1" data-live-infra>
-				for _, svc := range data.Services {
-					@serviceRow(svc)
+			<!-- Category columns -->
+			<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
+				for _, catID := range obs.CategoryOrder {
+					@categoryColumn(data, catID)
 				}
+			</div>
+			<!-- Expanded histogram panel -->
+			<div
+				x-show="selected"
+				x-cloak
+				x-transition
+				class="mt-4 border border-rule dark:border-next-mid bg-surface dark:bg-next-dark p-4"
+			>
+				<div class="flex items-center gap-3 mb-3">
+					<span class="font-mac text-sm font-bold text-ink dark:text-next-white" x-text="selected ? selected.name : ''"></span>
+					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle" x-text="selected ? selected.namespace : ''"></span>
+				</div>
+				<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+					<!-- CPU chart -->
+					<div>
+						<span class="font-terminal text-xs text-accent-gold dark:text-next-teal block mb-1" x-text="selected ? selected.cpu.toFixed(2) + '% CPU (1h)' : ''"></span>
+						<svg viewBox="0 0 120 32" class="w-full h-8" preserveAspectRatio="none">
+							<polyline x-data-hist-cpu points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-accent-gold dark:text-next-teal"></polyline>
+						</svg>
+					</div>
+					<!-- RAM chart -->
+					<div>
+						<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle block mb-1" x-text="selected ? selected.ram.toFixed(0) + ' MB RAM (1h)' : ''"></span>
+						<svg viewBox="0 0 120 32" class="w-full h-8" preserveAspectRatio="none">
+							<polyline x-data-hist-ram points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
+						</svg>
+					</div>
+				</div>
 			</div>
 		</div>
 		<script>
@@ -49,6 +77,7 @@ templ Live(data obs.LiveData) {
 					lastUpdate: 0,
 					lastUpdateAgo: "",
 					serviceCount: 0,
+					selected: null,
 					initial: { hasMetrics: false },
 
 					init() {
@@ -64,10 +93,31 @@ templ Live(data obs.LiveData) {
 
 							if (data.services) {
 								data.services.forEach(function (svc) {
+									var key = svc.namespace + "/" + svc.name;
 									var el = document.querySelector(
-										'[data-live-svc="' + svc.namespace + "/" + svc.name + '"]',
+										'[data-live-svc="' + key + '"]',
 									);
 									if (el) self.updateService(el, svc);
+								});
+							}
+
+							// Update expanded panel if a service is selected
+							if (self.selected) {
+								data.services.forEach(function (svc) {
+									var key = svc.namespace + "/" + svc.name;
+									if (key === self.selected.key) {
+										self.selected = {
+											key: key,
+											name: svc.name,
+											namespace: svc.namespace,
+											cpu: svc.cpu,
+											ram: svc.ram,
+											uptime: svc.uptime,
+											cpuHist: svc.cpuHist,
+											ramHist: svc.ramHist,
+										};
+										self.updateCharts(svc);
+									}
 								});
 							}
 						});
@@ -85,46 +135,70 @@ templ Live(data obs.LiveData) {
 						}, 1000);
 					},
 
+					toggleService(
+						key,
+						name,
+						namespace,
+						cpu,
+						ram,
+						uptime,
+						cpuHist,
+						ramHist,
+					) {
+						if (this.selected && this.selected.key === key) {
+							this.selected = null;
+							return;
+						}
+						this.selected = {
+							key: key,
+							name: name,
+							namespace: namespace,
+							cpu: cpu,
+							ram: ram,
+							uptime: uptime,
+							cpuHist: cpuHist,
+							ramHist: ramHist,
+						};
+						this.updateCharts(this.selected);
+					},
+
+					updateCharts(svc) {
+						var cpuLine = document.querySelector("[x-data-hist-cpu]");
+						var ramLine = document.querySelector("[x-data-hist-ram]");
+						if (cpuLine && svc.cpuHist)
+							cpuLine.setAttribute("points", svc.cpuHist);
+						if (ramLine && svc.ramHist)
+							ramLine.setAttribute("points", svc.ramHist);
+					},
+
 					updateService(el, svc) {
 						var dot = el.querySelector("[data-dot]");
-						if (dot) {
-							dot.className = this.dotClass(svc.status);
-						}
+						if (dot) dot.className = this.dotClass(svc.status);
 						var cpu = el.querySelector("[data-cpu]");
 						if (cpu) {
-							cpu.textContent = svc.cpu.toFixed(2) + "% CPU";
+							cpu.textContent = svc.cpu > 0 ? svc.cpu.toFixed(2) + "%" : "";
 							cpu.style.display = svc.cpu > 0 ? "" : "none";
 						}
 						var ram = el.querySelector("[data-ram]");
 						if (ram) {
-							ram.textContent = svc.ram.toFixed(0) + " MB RAM";
+							ram.textContent = svc.ram > 0 ? svc.ram.toFixed(0) + "M" : "";
 							ram.style.display = svc.ram > 0 ? "" : "none";
 						}
-						var uptime = el.querySelector("[data-uptime]");
-						if (uptime) {
-							uptime.textContent = svc.uptime || "";
-							uptime.style.display = svc.uptime ? "" : "none";
-						}
-						var cpuHist = el.querySelector("[data-cpu-hist]");
-						if (cpuHist && svc.cpuHist) {
-							cpuHist.setAttribute("points", svc.cpuHist);
-							cpuHist.closest("svg").style.display = "";
-						}
-						var ramHist = el.querySelector("[data-ram-hist]");
-						if (ramHist && svc.ramHist) {
-							ramHist.setAttribute("points", svc.ramHist);
-							ramHist.closest("svg").style.display = "";
+						var up = el.querySelector("[data-uptime]");
+						if (up) {
+							up.textContent = svc.uptime || "";
+							up.style.display = svc.uptime ? "" : "none";
 						}
 					},
 
 					dotClass(status) {
-						var base = "inline-block w-2 h-2 shrink-0";
+						var b = "inline-block w-2 h-2 shrink-0";
 						if (status === "healthy")
-							return base + " bg-green-600 dark:bg-green-500";
+							return b + " bg-green-600 dark:bg-green-500";
 						if (status === "running")
-							return base + " bg-accent-gold dark:bg-next-teal";
-						if (status === "unknown") return base + " bg-rule dark:bg-next-mid";
-						return base + " border border-rule dark:border-next-mid";
+							return b + " bg-accent-gold dark:bg-next-teal";
+						if (status === "unknown") return b + " bg-rule dark:bg-next-mid";
+						return b + " border border-rule dark:border-next-mid";
 					},
 				};
 			}
@@ -132,77 +206,58 @@ templ Live(data obs.LiveData) {
 	</section>
 }
 
-templ serviceRow(svc obs.Service) {
-	<div
-		data-live-svc={ svc.Namespace + "/" + svc.Name }
-		class="grid grid-cols-[auto_1fr_auto_auto_auto] sm:grid-cols-[auto_2fr_1fr_1fr_1fr] items-center gap-x-3 sm:gap-x-6 py-1.5 border-b border-rule/30 dark:border-next-mid/30"
-	>
-		<!-- Status dot -->
-		if svc.Status == "healthy" {
-			<span data-dot class="inline-block w-2 h-2 shrink-0 bg-green-600 dark:bg-green-500"></span>
-		} else if svc.Status == "unknown" {
-			<span data-dot class="inline-block w-2 h-2 shrink-0 bg-rule dark:bg-next-mid"></span>
-		} else {
-			<span data-dot class="inline-block w-2 h-2 shrink-0 border border-rule dark:border-next-mid"></span>
-		}
-		<!-- Name + namespace -->
-		<div class="min-w-0">
-			<span class="font-mac text-sm font-bold text-ink dark:text-next-white">{ svc.Name }</span>
-			<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle ml-2">{ svc.Namespace }</span>
+templ categoryColumn(data obs.LiveData, catID string) {
+	<div>
+		<div class="border-b border-rule dark:border-next-mid pb-2 mb-3">
+			<span class="font-mac text-xs font-bold text-ink-muted dark:text-next-subtle uppercase tracking-widest">{ obs.CategoryLabel(catID) }</span>
 		</div>
-		<!-- CPU + sparkline -->
-		<div class="hidden sm:flex items-center gap-2">
-			<span
-				data-cpu
-				class="font-terminal text-xs text-accent-gold dark:text-next-teal tabular-nums"
-				style={ templ.KV("display", ternary(svc.CPU > 0, "", "none")) }
-			>
-				if svc.CPU > 0 {
-					{ fmt.Sprintf("%.2f%% CPU", svc.CPU) }
+		<div class="space-y-2">
+			for _, svc := range data.Services {
+				if svc.Category == catID {
+					@svcTile(svc)
 				}
-			</span>
-			{{ sparklineSVG := svc.CPUHist }}
-			if sparklineSVG != "" {
-				<svg viewBox="0 0 48 16" class="w-12 h-4" data-cpu-chart preserveAspectRatio="none">
-					<polyline data-cpu-hist points={ sparklineSVG } fill="none" stroke="currentColor" stroke-width="1" class="text-accent-gold dark:text-next-teal"></polyline>
-				</svg>
-			} else {
-				<svg viewBox="0 0 48 16" class="w-12 h-4" data-cpu-chart style="display:none" preserveAspectRatio="none">
-					<polyline data-cpu-hist points="" fill="none" stroke="currentColor" stroke-width="1" class="text-accent-gold dark:text-next-teal"></polyline>
-				</svg>
 			}
 		</div>
-		<!-- RAM + sparkline -->
-		<div class="hidden sm:flex items-center gap-2">
-			<span
-				data-ram
-				class="font-terminal text-xs text-ink-muted dark:text-next-subtle tabular-nums"
-				style={ templ.KV("display", ternary(svc.RAM > 0, "", "none")) }
-			>
-				if svc.RAM > 0 {
-					{ fmt.Sprintf("%.0f MB RAM", svc.RAM) }
-				}
-			</span>
-			{{ ramlineSVG := svc.RAMHist }}
-			if ramlineSVG != "" {
-				<svg viewBox="0 0 48 16" class="w-12 h-4" data-ram-chart preserveAspectRatio="none">
-					<polyline data-ram-hist points={ ramlineSVG } fill="none" stroke="currentColor" stroke-width="1" class="text-ink-muted dark:text-next-subtle"></polyline>
-				</svg>
-			} else {
-				<svg viewBox="0 0 48 16" class="w-12 h-4" data-ram-chart style="display:none" preserveAspectRatio="none">
-					<polyline data-ram-hist points="" fill="none" stroke="currentColor" stroke-width="1" class="text-ink-muted dark:text-next-subtle"></polyline>
-				</svg>
-			}
-		</div>
-		<!-- Uptime -->
-		<span
-			data-uptime
-			class="font-terminal text-xs text-ink-muted dark:text-next-subtle tabular-nums"
-			style={ templ.KV("display", ternary(svc.Uptime != "", "", "none")) }
-		>
-			{ svc.Uptime }
-		</span>
 	</div>
+}
+
+templ svcTile(svc obs.Service) {
+	<button
+		data-live-svc={ svc.Namespace + "/" + svc.Name }
+		class="w-full text-left cursor-pointer hover:bg-surface/50 dark:hover:bg-next-dark/50 px-1 py-1 -mx-1 transition-colors"
+		@click={ fmt.Sprintf("toggleService('%s/%s', '%s', '%s', %v, %v, '%s', `%s`, `%s`)",
+			svc.Namespace, svc.Name, svc.Name, svc.Namespace,
+			svc.CPU, svc.RAM, svc.Uptime,
+			svc.CPUHist, svc.RAMHist) }
+	>
+		<!-- Status dot + name -->
+		<div class="flex items-center gap-2">
+			if svc.Status == "healthy" {
+				<span data-dot class="inline-block w-2 h-2 shrink-0 bg-green-600 dark:bg-green-500"></span>
+			} else if svc.Status == "unknown" {
+				<span data-dot class="inline-block w-2 h-2 shrink-0 bg-rule dark:bg-next-mid"></span>
+			} else if svc.Status == "running" {
+				<span data-dot class="inline-block w-2 h-2 shrink-0 bg-accent-gold dark:bg-next-teal"></span>
+			} else {
+				<span data-dot class="inline-block w-2 h-2 shrink-0 border border-rule dark:border-next-mid"></span>
+			}
+			<span class="font-mac text-xs font-bold text-ink dark:text-next-white truncate">{ svc.Name }</span>
+		</div>
+		<!-- Metrics line: CPU · RAM · uptime -->
+		<div class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle ml-4 mt-0.5 flex gap-1.5 tabular-nums">
+			<span data-cpu style={ templ.KV("display", ternary(svc.CPU > 0, "", "none")) }>
+				if svc.CPU > 0 {
+					{ fmt.Sprintf("%.2f%%", svc.CPU) }
+				}
+			</span>
+			<span data-ram style={ templ.KV("display", ternary(svc.RAM > 0, "", "none")) }>
+				if svc.RAM > 0 {
+					{ fmt.Sprintf("%.0fM", svc.RAM) }
+				}
+			</span>
+			<span data-uptime style={ templ.KV("display", ternary(svc.Uptime != "", "", "none")) }>{ svc.Uptime }</span>
+		</div>
+	</button>
 }
 
 func ternary(cond bool, ifTrue, ifFalse string) string {

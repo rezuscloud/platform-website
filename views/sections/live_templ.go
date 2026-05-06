@@ -35,17 +35,17 @@ func Live(data obs.LiveData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"live\" class=\"py-16 sm:py-24 bg-surface-strong dark:bg-next-black\" x-data=\"liveDashboard()\" x-init=\"init()\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><!-- Header --><div class=\"flex items-center gap-3 mb-4\"><h2 class=\"font-mac text-2xl sm:text-3xl font-bold text-ink dark:text-next-white tracking-tight\">Live Platform</h2><div class=\"flex items-center gap-1.5\"><span class=\"inline-block w-2.5 h-2.5 bg-green-600 dark:bg-green-500 animate-pulse\" aria-hidden=\"true\"></span> <span class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle uppercase tracking-wider\">Live</span></div></div><!-- Static banner --><div class=\"border border-accent-gold/40 dark:border-next-teal/40 bg-accent-gold/5 dark:bg-next-teal/5 px-4 py-2 mb-6\" x-show=\"!connected && !initial.hasMetrics\"><span class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle\">Showing platform topology. Live metrics require SigNoz.</span></div><!-- SSE freshness --><div class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle mb-4\" x-show=\"connected\" x-cloak><span x-text=\"'Updated ' + lastUpdateAgo + 's ago'\"></span> <span class=\"mx-2\">·</span> <span x-text=\"serviceCount + ' services'\"></span></div><!-- Service grid: one row per service --><div class=\"space-y-1\" data-live-infra>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"live\" class=\"py-16 sm:py-24 bg-surface-strong dark:bg-next-black\" x-data=\"liveDashboard()\" x-init=\"init()\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><!-- Header --><div class=\"flex items-center gap-3 mb-4\"><h2 class=\"font-mac text-2xl sm:text-3xl font-bold text-ink dark:text-next-white tracking-tight\">Live Platform</h2><div class=\"flex items-center gap-1.5\"><span class=\"inline-block w-2.5 h-2.5 bg-green-600 dark:bg-green-500 animate-pulse\" aria-hidden=\"true\"></span> <span class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle uppercase tracking-wider\">Live</span></div></div><!-- Static banner --><div class=\"border border-accent-gold/40 dark:border-next-teal/40 bg-accent-gold/5 dark:bg-next-teal/5 px-4 py-2 mb-6\" x-show=\"!connected && !initial.hasMetrics\"><span class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle\">Showing platform topology. Live metrics require SigNoz.</span></div><!-- SSE freshness --><div class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle mb-6\" x-show=\"connected\" x-cloak><span x-text=\"'Updated ' + lastUpdateAgo + 's ago'\"></span> <span class=\"mx-2\">·</span> <span x-text=\"serviceCount + ' services'\"></span></div><!-- Category columns --><div class=\"grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, svc := range data.Services {
-			templ_7745c5c3_Err = serviceRow(svc).Render(ctx, templ_7745c5c3_Buffer)
+		for _, catID := range obs.CategoryOrder {
+			templ_7745c5c3_Err = categoryColumn(data, catID).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div><script>\n\t\tfunction liveDashboard() {\n\t\t\treturn {\n\t\t\t\tconnected: false,\n\t\t\t\tlastUpdate: 0,\n\t\t\t\tlastUpdateAgo: '',\n\t\t\t\tserviceCount: 0,\n\t\t\t\tinitial: { hasMetrics: false },\n\n\t\t\t\tinit() {\n\t\t\t\t\tvar self = this;\n\t\t\t\t\tvar es = new EventSource('/api/live/stream');\n\n\t\t\t\t\tes.addEventListener('update', function(e) {\n\t\t\t\t\t\tvar data = JSON.parse(e.data);\n\t\t\t\t\t\tself.connected = true;\n\t\t\t\t\t\tself.lastUpdate = Date.now();\n\t\t\t\t\t\tself.serviceCount = data.services ? data.services.length : 0;\n\t\t\t\t\t\tself.initial.hasMetrics = data.hasMetrics || false;\n\n\t\t\t\t\t\tif (data.services) {\n\t\t\t\t\t\t\tdata.services.forEach(function(svc) {\n\t\t\t\t\t\t\t\tvar el = document.querySelector('[data-live-svc=\"' + svc.namespace + '/' + svc.name + '\"]');\n\t\t\t\t\t\t\t\tif (el) self.updateService(el, svc);\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\n\t\t\t\t\tes.onerror = function() { self.connected = false; };\n\n\t\t\t\t\tsetInterval(function() {\n\t\t\t\t\t\tif (self.lastUpdate > 0) {\n\t\t\t\t\t\t\tself.lastUpdateAgo = Math.floor((Date.now() - self.lastUpdate) / 1000);\n\t\t\t\t\t\t}\n\t\t\t\t\t}, 1000);\n\t\t\t\t},\n\n\t\t\t\tupdateService(el, svc) {\n\t\t\t\t\tvar dot = el.querySelector('[data-dot]');\n\t\t\t\t\tif (dot) {\n\t\t\t\t\t\tdot.className = this.dotClass(svc.status);\n\t\t\t\t\t}\n\t\t\t\t\tvar cpu = el.querySelector('[data-cpu]');\n\t\t\t\t\tif (cpu) {\n\t\t\t\t\t\tcpu.textContent = svc.cpu.toFixed(2) + '% CPU';\n\t\t\t\t\t\tcpu.style.display = svc.cpu > 0 ? '' : 'none';\n\t\t\t\t\t}\n\t\t\t\t\tvar ram = el.querySelector('[data-ram]');\n\t\t\t\t\tif (ram) {\n\t\t\t\t\t\tram.textContent = svc.ram.toFixed(0) + ' MB RAM';\n\t\t\t\t\t\tram.style.display = svc.ram > 0 ? '' : 'none';\n\t\t\t\t\t}\n\t\t\t\t\tvar uptime = el.querySelector('[data-uptime]');\n\t\t\t\t\tif (uptime) {\n\t\t\t\t\t\tuptime.textContent = svc.uptime || '';\n\t\t\t\t\t\tuptime.style.display = svc.uptime ? '' : 'none';\n\t\t\t\t\t}\n\t\t\t\t\tvar cpuHist = el.querySelector('[data-cpu-hist]');\n\t\t\t\t\tif (cpuHist && svc.cpuHist) {\n\t\t\t\t\t\tcpuHist.setAttribute('points', svc.cpuHist);\n\t\t\t\t\t\tcpuHist.closest('svg').style.display = '';\n\t\t\t\t\t}\n\t\t\t\t\tvar ramHist = el.querySelector('[data-ram-hist]');\n\t\t\t\t\tif (ramHist && svc.ramHist) {\n\t\t\t\t\t\tramHist.setAttribute('points', svc.ramHist);\n\t\t\t\t\t\tramHist.closest('svg').style.display = '';\n\t\t\t\t\t}\n\t\t\t\t},\n\n\t\t\t\tdotClass(status) {\n\t\t\t\t\tvar base = 'inline-block w-2 h-2 shrink-0';\n\t\t\t\t\tif (status === 'healthy') return base + ' bg-green-600 dark:bg-green-500';\n\t\t\t\t\tif (status === 'running') return base + ' bg-accent-gold dark:bg-next-teal';\n\t\t\t\t\tif (status === 'unknown') return base + ' bg-rule dark:bg-next-mid';\n\t\t\t\t\treturn base + ' border border-rule dark:border-next-mid';\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\t</script></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><!-- Expanded histogram panel --><div x-show=\"selected\" x-cloak x-transition class=\"mt-4 border border-rule dark:border-next-mid bg-surface dark:bg-next-dark p-4\"><div class=\"flex items-center gap-3 mb-3\"><span class=\"font-mac text-sm font-bold text-ink dark:text-next-white\" x-text=\"selected ? selected.name : ''\"></span> <span class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle\" x-text=\"selected ? selected.namespace : ''\"></span></div><div class=\"grid grid-cols-1 sm:grid-cols-2 gap-6\"><!-- CPU chart --><div><span class=\"font-terminal text-xs text-accent-gold dark:text-next-teal block mb-1\" x-text=\"selected ? selected.cpu.toFixed(2) + '% CPU (1h)' : ''\"></span> <svg viewBox=\"0 0 120 32\" class=\"w-full h-8\" preserveAspectRatio=\"none\"><polyline x-data-hist-cpu points=\"\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" class=\"text-accent-gold dark:text-next-teal\"></polyline></svg></div><!-- RAM chart --><div><span class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle block mb-1\" x-text=\"selected ? selected.ram.toFixed(0) + ' MB RAM (1h)' : ''\"></span> <svg viewBox=\"0 0 120 32\" class=\"w-full h-8\" preserveAspectRatio=\"none\"><polyline x-data-hist-ram points=\"\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" class=\"text-ink-muted dark:text-next-subtle\"></polyline></svg></div></div></div></div><script>\n\t\tfunction liveDashboard() {\n\t\t\treturn {\n\t\t\t\tconnected: false,\n\t\t\t\tlastUpdate: 0,\n\t\t\t\tlastUpdateAgo: '',\n\t\t\t\tserviceCount: 0,\n\t\t\t\tselected: null,\n\t\t\t\tinitial: { hasMetrics: false },\n\n\t\t\t\tinit() {\n\t\t\t\t\tvar self = this;\n\t\t\t\t\tvar es = new EventSource('/api/live/stream');\n\n\t\t\t\t\tes.addEventListener('update', function(e) {\n\t\t\t\t\t\tvar data = JSON.parse(e.data);\n\t\t\t\t\t\tself.connected = true;\n\t\t\t\t\t\tself.lastUpdate = Date.now();\n\t\t\t\t\t\tself.serviceCount = data.services ? data.services.length : 0;\n\t\t\t\t\t\tself.initial.hasMetrics = data.hasMetrics || false;\n\n\t\t\t\t\t\tif (data.services) {\n\t\t\t\t\t\t\tdata.services.forEach(function(svc) {\n\t\t\t\t\t\t\t\tvar key = svc.namespace + '/' + svc.name;\n\t\t\t\t\t\t\t\tvar el = document.querySelector('[data-live-svc=\"' + key + '\"]');\n\t\t\t\t\t\t\t\tif (el) self.updateService(el, svc);\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t}\n\n\t\t\t\t\t\t// Update expanded panel if a service is selected\n\t\t\t\t\t\tif (self.selected) {\n\t\t\t\t\t\t\tdata.services.forEach(function(svc) {\n\t\t\t\t\t\t\t\tvar key = svc.namespace + '/' + svc.name;\n\t\t\t\t\t\t\t\tif (key === self.selected.key) {\n\t\t\t\t\t\t\t\t\tself.selected = { key: key, name: svc.name, namespace: svc.namespace, cpu: svc.cpu, ram: svc.ram, uptime: svc.uptime, cpuHist: svc.cpuHist, ramHist: svc.ramHist };\n\t\t\t\t\t\t\t\t\tself.updateCharts(svc);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\n\t\t\t\t\tes.onerror = function() { self.connected = false; };\n\n\t\t\t\t\tsetInterval(function() {\n\t\t\t\t\t\tif (self.lastUpdate > 0) {\n\t\t\t\t\t\t\tself.lastUpdateAgo = Math.floor((Date.now() - self.lastUpdate) / 1000);\n\t\t\t\t\t\t}\n\t\t\t\t\t}, 1000);\n\t\t\t\t},\n\n\t\t\t\ttoggleService(key, name, namespace, cpu, ram, uptime, cpuHist, ramHist) {\n\t\t\t\t\tif (this.selected && this.selected.key === key) {\n\t\t\t\t\t\tthis.selected = null;\n\t\t\t\t\t\treturn;\n\t\t\t\t\t}\n\t\t\t\t\tthis.selected = { key: key, name: name, namespace: namespace, cpu: cpu, ram: ram, uptime: uptime, cpuHist: cpuHist, ramHist: ramHist };\n\t\t\t\t\tthis.updateCharts(this.selected);\n\t\t\t\t},\n\n\t\t\t\tupdateCharts(svc) {\n\t\t\t\t\tvar cpuLine = document.querySelector('[x-data-hist-cpu]');\n\t\t\t\t\tvar ramLine = document.querySelector('[x-data-hist-ram]');\n\t\t\t\t\tif (cpuLine && svc.cpuHist) cpuLine.setAttribute('points', svc.cpuHist);\n\t\t\t\t\tif (ramLine && svc.ramHist) ramLine.setAttribute('points', svc.ramHist);\n\t\t\t\t},\n\n\t\t\t\tupdateService(el, svc) {\n\t\t\t\t\tvar dot = el.querySelector('[data-dot]');\n\t\t\t\t\tif (dot) dot.className = this.dotClass(svc.status);\n\t\t\t\t\tvar cpu = el.querySelector('[data-cpu]');\n\t\t\t\t\tif (cpu) {\n\t\t\t\t\t\tcpu.textContent = svc.cpu > 0 ? svc.cpu.toFixed(2) + '%' : '';\n\t\t\t\t\t\tcpu.style.display = svc.cpu > 0 ? '' : 'none';\n\t\t\t\t\t}\n\t\t\t\t\tvar ram = el.querySelector('[data-ram]');\n\t\t\t\t\tif (ram) {\n\t\t\t\t\t\tram.textContent = svc.ram > 0 ? svc.ram.toFixed(0) + 'M' : '';\n\t\t\t\t\t\tram.style.display = svc.ram > 0 ? '' : 'none';\n\t\t\t\t\t}\n\t\t\t\t\tvar up = el.querySelector('[data-uptime]');\n\t\t\t\t\tif (up) {\n\t\t\t\t\t\tup.textContent = svc.uptime || '';\n\t\t\t\t\t\tup.style.display = svc.uptime ? '' : 'none';\n\t\t\t\t\t}\n\t\t\t\t},\n\n\t\t\t\tdotClass(status) {\n\t\t\t\t\tvar b = 'inline-block w-2 h-2 shrink-0';\n\t\t\t\t\tif (status === 'healthy') return b + ' bg-green-600 dark:bg-green-500';\n\t\t\t\t\tif (status === 'running') return b + ' bg-accent-gold dark:bg-next-teal';\n\t\t\t\t\tif (status === 'unknown') return b + ' bg-rule dark:bg-next-mid';\n\t\t\t\t\treturn b + ' border border-rule dark:border-next-mid';\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\t</script></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -53,7 +53,7 @@ func Live(data obs.LiveData) templ.Component {
 	})
 }
 
-func serviceRow(svc obs.Service) templ.Component {
+func categoryColumn(data obs.LiveData, catID string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -74,132 +74,165 @@ func serviceRow(svc obs.Service) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div data-live-svc=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div><div class=\"border-b border-rule dark:border-next-mid pb-2 mb-3\"><span class=\"font-mac text-xs font-bold text-ink-muted dark:text-next-subtle uppercase tracking-widest\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Namespace + "/" + svc.Name)
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(obs.CategoryLabel(catID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 126, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 170, Col: 133}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"grid grid-cols-[auto_1fr_auto_auto_auto] sm:grid-cols-[auto_2fr_1fr_1fr_1fr] items-center gap-x-3 sm:gap-x-6 py-1.5 border-b border-rule/30 dark:border-next-mid/30\"><!-- Status dot -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span></div><div class=\"space-y-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if svc.Status == "healthy" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<span data-dot class=\"inline-block w-2 h-2 shrink-0 bg-green-600 dark:bg-green-500\"></span>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else if svc.Status == "unknown" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<span data-dot class=\"inline-block w-2 h-2 shrink-0 bg-rule dark:bg-next-mid\"></span>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span data-dot class=\"inline-block w-2 h-2 shrink-0 border border-rule dark:border-next-mid\"></span>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
+		for _, svc := range data.Services {
+			if svc.Category == catID {
+				templ_7745c5c3_Err = svcTile(svc).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<!-- Name + namespace --><div class=\"min-w-0\"><span class=\"font-mac text-sm font-bold text-ink dark:text-next-white\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Name)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 138, Col: 84}
+		return nil
+	})
+}
+
+func svcTile(svc obs.Service) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span> <span class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle ml-2\">")
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var4 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var4 == nil {
+			templ_7745c5c3_Var4 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<button data-live-svc=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Namespace)
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Namespace + "/" + svc.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 139, Col: 96}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 184, Col: 48}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span></div><!-- CPU + sparkline --><div class=\"hidden sm:flex items-center gap-2\"><span data-cpu class=\"font-terminal text-xs text-accent-gold dark:text-next-teal tabular-nums\" style=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"w-full text-left cursor-pointer hover:bg-surface/50 dark:hover:bg-next-dark/50 px-1 py-1 -mx-1 transition-colors\" @click=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
-		templ_7745c5c3_Var6, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(templ.KV("display", ternary(svc.CPU > 0, "", "none")))
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("toggleService('%s/%s', '%s', '%s', %v, %v, '%s', `%s`, `%s`)",
+			svc.Namespace, svc.Name, svc.Name, svc.Namespace,
+			svc.CPU, svc.RAM, svc.Uptime,
+			svc.CPUHist, svc.RAMHist))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 144, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 189, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"><!-- Status dot + name --><div class=\"flex items-center gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if svc.CPU > 0 {
-			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f%% CPU", svc.CPU))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 146, Col: 41}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if svc.Status == "healthy" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<span data-dot class=\"inline-block w-2 h-2 shrink-0 bg-green-600 dark:bg-green-500\"></span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</span>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		sparklineSVG := svc.CPUHist
-		if sparklineSVG != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<svg viewBox=\"0 0 48 16\" class=\"w-12 h-4\" data-cpu-chart preserveAspectRatio=\"none\"><polyline data-cpu-hist points=\"")
+		} else if svc.Status == "unknown" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<span data-dot class=\"inline-block w-2 h-2 shrink-0 bg-rule dark:bg-next-mid\"></span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var8 string
-			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(sparklineSVG)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 152, Col: 50}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" class=\"text-accent-gold dark:text-next-teal\"></polyline></svg>")
+		} else if svc.Status == "running" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span data-dot class=\"inline-block w-2 h-2 shrink-0 bg-accent-gold dark:bg-next-teal\"></span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<svg viewBox=\"0 0 48 16\" class=\"w-12 h-4\" data-cpu-chart style=\"display:none\" preserveAspectRatio=\"none\"><polyline data-cpu-hist points=\"\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" class=\"text-accent-gold dark:text-next-teal\"></polyline></svg>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span data-dot class=\"inline-block w-2 h-2 shrink-0 border border-rule dark:border-next-mid\"></span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div><!-- RAM + sparkline --><div class=\"hidden sm:flex items-center gap-2\"><span data-ram class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle tabular-nums\" style=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"font-mac text-xs font-bold text-ink dark:text-next-white truncate\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(templ.KV("display", ternary(svc.RAM > 0, "", "none")))
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 163, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 202, Col: 93}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</span></div><!-- Metrics line: CPU · RAM · uptime --><div class=\"font-terminal text-[10px] text-ink-muted dark:text-next-subtle ml-4 mt-0.5 flex gap-1.5 tabular-nums\"><span data-cpu style=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(templ.KV("display", ternary(svc.CPU > 0, "", "none")))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 206, Col: 79}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if svc.CPU > 0 {
+			var templ_7745c5c3_Var9 string
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f%%", svc.CPU))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 208, Col: 37}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</span> <span data-ram style=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var10 string
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(templ.KV("display", ternary(svc.RAM > 0, "", "none")))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 211, Col: 79}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -208,72 +241,43 @@ func serviceRow(svc obs.Service) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if svc.RAM > 0 {
-			var templ_7745c5c3_Var10 string
-			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.0f MB RAM", svc.RAM))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 165, Col: 42}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</span>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		ramlineSVG := svc.RAMHist
-		if ramlineSVG != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<svg viewBox=\"0 0 48 16\" class=\"w-12 h-4\" data-ram-chart preserveAspectRatio=\"none\"><polyline data-ram-hist points=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
 			var templ_7745c5c3_Var11 string
-			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(ramlineSVG)
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.0fM", svc.RAM))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 171, Col: 48}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 213, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" class=\"text-ink-muted dark:text-next-subtle\"></polyline></svg>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<svg viewBox=\"0 0 48 16\" class=\"w-12 h-4\" data-ram-chart style=\"display:none\" preserveAspectRatio=\"none\"><polyline data-ram-hist points=\"\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" class=\"text-ink-muted dark:text-next-subtle\"></polyline></svg>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div><!-- Uptime --><span data-uptime class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle tabular-nums\" style=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</span> <span data-uptime style=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(templ.KV("display", ternary(svc.Uptime != "", "", "none")))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 181, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 216, Col: 87}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Uptime)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 182, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 216, Col: 102}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</span></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</span></div></button>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
