@@ -135,7 +135,7 @@ jobs:
 
   docker-pr:
     needs: [build, test, e2e-test]
-    if: always() && needs.build.result == 'success' && needs.test.result == 'success'
+    if: always() && needs.build.result == 'success' && needs.test.result == 'success' && needs.e2e-test.result == 'success'
     runs-on: [self-hosted, Linux, X64]
     permissions:
       contents: read
