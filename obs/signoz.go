@@ -175,11 +175,14 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	}
 
 	// Dapr sidecar: show component count instead of goroutines (shares deployment with app)
+	// Clear memory since it shows the app's memory, not daprd's own process
 	for i := range cats {
 		for j := range cats[i].Services {
-			if cats[i].Services[j].Name == "daprd" && componentCount > 0 {
-				cats[i].Services[j].Metric = fmt.Sprintf("%d components", componentCount)
-				cats[i].Services[j].Status = "healthy"
+			if cats[i].Services[j].Name == "daprd" {
+				if componentCount > 0 {
+					cats[i].Services[j].Metric = fmt.Sprintf("%d components", componentCount)
+				}
+				cats[i].Services[j].Memory = ""
 			}
 		}
 	}
