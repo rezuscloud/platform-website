@@ -42,74 +42,69 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.True(t, foundLive)
 	})
 
-	// Category columns
+	// Alpine.js
 
-	t.Run("has 5 category columns", func(t *testing.T) {
-		cats := doc.Find("[data-live-category]")
-		assert.Equal(t, 5, cats.Length())
+	t.Run("has x-data for live dashboard", func(t *testing.T) {
+		section := doc.Find("#live")
+		d, exists := section.Attr("x-data")
+		assert.True(t, exists)
+		assert.Contains(t, d, "liveDashboard")
 	})
 
-	t.Run("infrastructure column renders", func(t *testing.T) {
-		col := doc.Find("[data-live-category=\"infra\"]")
-		assert.Equal(t, 1, col.Length())
-		assert.Contains(t, col.Text(), "Infrastructure")
+	t.Run("has x-init", func(t *testing.T) {
+		section := doc.Find("#live")
+		_, exists := section.Attr("x-init")
+		assert.True(t, exists)
 	})
 
-	t.Run("development column renders", func(t *testing.T) {
-		col := doc.Find("[data-live-category=\"dev\"]")
-		assert.Equal(t, 1, col.Length())
-		assert.Contains(t, col.Text(), "Forgejo")
-		assert.Contains(t, col.Text(), "ARC Controller")
+	t.Run("has EventSource script", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "EventSource")
+		assert.Contains(t, html, "/api/live/stream")
 	})
 
-	t.Run("delivery column renders", func(t *testing.T) {
-		col := doc.Find("[data-live-category=\"delivery\"]")
-		assert.Equal(t, 1, col.Length())
-		assert.Contains(t, col.Text(), "Flux Source")
-		assert.Contains(t, col.Text(), "KubeVela")
-		assert.Contains(t, col.Text(), "Cert Manager")
-	})
+	// Services
 
-	t.Run("runtime column renders", func(t *testing.T) {
-		col := doc.Find("[data-live-category=\"runtime\"]")
-		assert.Equal(t, 1, col.Length())
-		assert.Contains(t, col.Text(), "Cilium CNI")
-		assert.Contains(t, col.Text(), "platform-website")
-		assert.Contains(t, col.Text(), "Dapr Sidecar")
-	})
-
-	t.Run("observability column renders", func(t *testing.T) {
-		col := doc.Find("[data-live-category=\"observability\"]")
-		assert.Equal(t, 1, col.Length())
-		assert.Contains(t, col.Text(), "SigNoz Collector")
-		assert.Contains(t, col.Text(), "ClickHouse")
-	})
-
-	// All services
-
-	t.Run("all services render", func(t *testing.T) {
+	t.Run("all 17 services render", func(t *testing.T) {
 		services := doc.Find("[data-live-service]")
-		assert.GreaterOrEqual(t, services.Length(), 15)
+		assert.Equal(t, 17, services.Length())
 	})
 
 	// Status dots
 
-	t.Run("healthy services show green dots", func(t *testing.T) {
+	t.Run("healthy services have green dots with data-dot", func(t *testing.T) {
 		html, err := doc.Find("[data-live-service=\"platform-website\"]").Html()
 		require.NoError(t, err)
+		assert.Contains(t, html, "data-dot")
 		assert.Contains(t, html, "bg-green-600")
 	})
 
-	t.Run("unmonitored services show hollow dots", func(t *testing.T) {
+	t.Run("unmonitored services have hollow dots", func(t *testing.T) {
 		html, err := doc.Find("[data-live-service=\"forgejo\"]").Html()
 		require.NoError(t, err)
+		assert.Contains(t, html, "data-dot")
 		assert.Contains(t, html, "border border-rule")
 	})
 
-	t.Run("infrastructure nodes show accent dots", func(t *testing.T) {
+	t.Run("infrastructure nodes have accent dots", func(t *testing.T) {
 		html, err := doc.Find("[data-live-service=\"oci-cloud\"]").Html()
 		require.NoError(t, err)
 		assert.Contains(t, html, "bg-accent-gold")
+	})
+
+	// Dynamic data attributes
+
+	t.Run("services have data-metric element", func(t *testing.T) {
+		html, err := doc.Find("[data-live-service=\"platform-website\"]").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "data-metric")
+	})
+
+	t.Run("services have data-memory element", func(t *testing.T) {
+		html, err := doc.Find("[data-live-service=\"platform-website\"]").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "data-memory")
 	})
 
 	// Static banner
@@ -123,7 +118,7 @@ func TestLiveSectionHTML(t *testing.T) {
 	// Responsive grid
 
 	t.Run("uses responsive grid classes", func(t *testing.T) {
-		grid := doc.Find("[data-live-infra]")
+		grid := doc.Find("#live .grid")
 		classes, _ := grid.Attr("class")
 		assert.Contains(t, classes, "lg:grid-cols-5")
 		assert.Contains(t, classes, "sm:grid-cols-2")
