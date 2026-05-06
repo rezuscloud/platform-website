@@ -13,41 +13,49 @@ import (
 )
 
 func TestSigNozClientFetch(t *testing.T) {
-	// Mock server that returns deployment-level metrics
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "test-api-key", r.Header.Get("SIGNOZ-API-KEY"))
 		w.Header().Set("Content-Type", "application/json")
 
-		query := r.URL.Query().Get("query")
 		resp := promResponse{Status: "success", Data: struct {
 			ResultType string           `json:"resultType"`
 			Result     []promResultItem `json:"result"`
 		}{ResultType: "vector"}}
 
-		switch {
-		case query == "up":
-			resp.Data.Result = []promResultItem{
-				{Metric: map[string]string{"k8s_namespace_name": "platform-website", "k8s.deployment.name": "platform-website", "k8s.pod.start_time": time.Now().Add(-2 * time.Hour).Format(time.RFC3339)}, Value: []interface{}{float64(1714896000), "1"}},
-				{Metric: map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller"}, Value: []interface{}{float64(1714896000), "1"}},
-				{Metric: map[string]string{"k8s_namespace_name": "dapr-system", "k8s.deployment.name": "dapr-operator"}, Value: []interface{}{float64(1714896000), "1"}},
+		switch r.URL.Path {
+		case "/api/v1/query":
+			query := r.URL.Query().Get("query")
+			switch {
+			case query == "up":
+				resp.Data.Result = []promResultItem{
+					{Metric: map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller", "k8s.pod.start_time": time.Now().Add(-4 * 24 * time.Hour).Format(time.RFC3339)}, Value: []interface{}{float64(0), "1"}},
+					{Metric: map[string]string{"k8s_namespace_name": "platform-website", "k8s.deployment.name": "platform-website", "k8s.pod.start_time": time.Now().Add(-22 * time.Hour).Format(time.RFC3339)}, Value: []interface{}{float64(0), "1"}},
+					{Metric: map[string]string{"k8s_namespace_name": "dapr-system", "k8s.deployment.name": "dapr-operator"}, Value: []interface{}{float64(0), "1"}},
+				}
+			case query == "rate(process_cpu_seconds_total[5m])*100":
+				resp.Data.Result = []promResultItem{
+					{Metric: map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller"}, Value: []interface{}{float64(0), "0.25"}},
+					{Metric: map[string]string{"k8s_namespace_name": "platform-website", "k8s.deployment.name": "platform-website"}, Value: []interface{}{float64(0), "0.11"}},
+					{Metric: map[string]string{"k8s_namespace_name": "dapr-system", "k8s.deployment.name": "dapr-operator"}, Value: []interface{}{float64(0), "0.13"}},
+				}
+			case query == "process_resident_memory_bytes":
+				resp.Data.Result = []promResultItem{
+					{Metric: map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller"}, Value: []interface{}{float64(0), "110100480"}},     // 105 MB
+					{Metric: map[string]string{"k8s_namespace_name": "platform-website", "k8s.deployment.name": "platform-website"}, Value: []interface{}{float64(0), "126812160"}}, // 121 MB
+					{Metric: map[string]string{"k8s_namespace_name": "dapr-system", "k8s.deployment.name": "dapr-operator"}, Value: []interface{}{float64(0), "55574528"}},          // 53 MB
+				}
 			}
-		case query == "go_goroutines":
+		case "/api/v1/query_range":
+			resp.Data.ResultType = "matrix"
 			resp.Data.Result = []promResultItem{
-				{Metric: map[string]string{"k8s_namespace_name": "platform-website", "k8s.deployment.name": "platform-website"}, Value: []interface{}{float64(1714896000), "75"}},
-				{Metric: map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller"}, Value: []interface{}{float64(1714896000), "66"}},
-			}
-		case query == "process_resident_memory_bytes":
-			resp.Data.Result = []promResultItem{
-				{Metric: map[string]string{"k8s_namespace_name": "platform-website", "k8s.deployment.name": "platform-website"}, Value: []interface{}{float64(1714896000), "127926272"}}, // 122 MB
-				{Metric: map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller"}, Value: []interface{}{float64(1714896000), "111149056"}},     // 106 MB
-			}
-		case query == `dapr_runtime_component_loaded{k8s_namespace_name="platform-website"}`:
-			resp.Data.Result = []promResultItem{
-				{Metric: map[string]string{"k8s_namespace_name": "platform-website"}, Value: []interface{}{float64(1714896000), "2"}},
-			}
-		case query == `go_info{k8s_namespace_name="platform-website"}`:
-			resp.Data.Result = []promResultItem{
-				{Metric: map[string]string{"k8s_namespace_name": "platform-website", "version": "go1.23.6"}, Value: []interface{}{float64(1714896000), "1"}},
+				{
+					Metric: map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller"},
+					Values: []interface{}{
+						[]interface{}{float64(0), "0.20"},
+						[]interface{}{float64(300), "0.22"},
+						[]interface{}{float64(600), "0.25"},
+					},
+				},
 			}
 		}
 
@@ -57,107 +65,63 @@ func TestSigNozClientFetch(t *testing.T) {
 
 	client := NewSigNozClient(server.URL, "test-api-key")
 
-	t.Run("returns full category grid", func(t *testing.T) {
+	t.Run("discovers services from up metric", func(t *testing.T) {
 		data, err := client.Fetch(context.Background())
 		require.NoError(t, err)
-		assert.Len(t, data.Categories, 5)
 		assert.True(t, data.HasMetrics)
+		assert.GreaterOrEqual(t, len(data.Services), 3, "should discover at least 3 services")
 	})
 
-	t.Run("each category has services", func(t *testing.T) {
+	t.Run("services have CPU", func(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
-		for _, cat := range data.Categories {
-			assert.NotEmpty(t, cat.Services, "Category %s should have services", cat.Name)
-		}
-	})
-
-	t.Run("monitored services get goroutines", func(t *testing.T) {
-		data, _ := client.Fetch(context.Background())
-		for _, cat := range data.Categories {
-			for _, svc := range cat.Services {
-				if svc.Name == "platform-website" {
-					assert.Equal(t, "75 goroutines", svc.Metric)
-				}
-				if svc.Name == "flux-source" {
-					assert.Equal(t, "66 goroutines", svc.Metric)
-				}
+		for _, svc := range data.Services {
+			if svc.Name == "source-controller" {
+				assert.Equal(t, 0.25, svc.CPU)
+			}
+			if svc.Name == "platform-website" {
+				assert.Equal(t, 0.11, svc.CPU)
 			}
 		}
 	})
 
-	t.Run("monitored services get memory", func(t *testing.T) {
+	t.Run("services have RAM in MB", func(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
-		for _, cat := range data.Categories {
-			for _, svc := range cat.Services {
-				if svc.Name == "platform-website" {
-					assert.Equal(t, "122 MB", svc.Memory)
-				}
-				if svc.Name == "flux-source" {
-					assert.Equal(t, "106 MB", svc.Memory)
-				}
+		for _, svc := range data.Services {
+			if svc.Name == "source-controller" {
+				assert.Equal(t, 105.0, svc.RAM)
+			}
+			if svc.Name == "platform-website" {
+				assert.InDelta(t, 121.0, svc.RAM, 1.0)
 			}
 		}
 	})
 
-	t.Run("dapr sidecar shows component count", func(t *testing.T) {
+	t.Run("services have uptime", func(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
-		for _, cat := range data.Categories {
-			for _, svc := range cat.Services {
-				if svc.Name == "daprd" {
-					assert.Equal(t, "2 components", svc.Metric)
-					assert.Equal(t, "healthy", svc.Status)
-				}
+		for _, svc := range data.Services {
+			if svc.Name == "source-controller" {
+				assert.Equal(t, "4d", svc.Uptime)
 			}
 		}
 	})
 
-	t.Run("unmonitored services are unmonitored", func(t *testing.T) {
+	t.Run("services have category from namespace", func(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
-		for _, cat := range data.Categories {
-			for _, svc := range cat.Services {
-				// SigNoz and ARC are not in MonitoredNamespaces
-				if svc.Name == "signoz-collector" || svc.Name == "arc-controller" {
-					assert.Equal(t, "unmonitored", svc.Status, "Service %s", svc.Name)
-				}
+		for _, svc := range data.Services {
+			if svc.Namespace == "flux-system" {
+				assert.Equal(t, "delivery", svc.Category)
+			}
+			if svc.Namespace == "platform-website" {
+				assert.Equal(t, "runtime", svc.Category)
 			}
 		}
 	})
 
-	t.Run("forgejo is monitored at namespace level", func(t *testing.T) {
+	t.Run("services have CPU histogram", func(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
-		for _, cat := range data.Categories {
-			for _, svc := range cat.Services {
-				if svc.Name == "forgejo" {
-					// Monitored namespace but no data from test server: unknown
-					assert.Equal(t, "unknown", svc.Status)
-				}
-			}
-		}
-	})
-
-	t.Run("infrastructure nodes are running", func(t *testing.T) {
-		data, _ := client.Fetch(context.Background())
-		for _, svc := range data.Categories[0].Services {
-			assert.Equal(t, "running", svc.Status, "Node %s", svc.Name)
-		}
-	})
-
-	t.Run("stats strip populated", func(t *testing.T) {
-		data, _ := client.Fetch(context.Background())
-		assert.Contains(t, data.Stats.GoVersion, "go1.23.6")
-		assert.Equal(t, 2, data.Stats.NodeCount)
-	})
-
-	t.Run("timestamp is set", func(t *testing.T) {
-		data, _ := client.Fetch(context.Background())
-		assert.Greater(t, data.Timestamp, int64(0))
-	})
-
-	t.Run("each service has updatedAt", func(t *testing.T) {
-		data, _ := client.Fetch(context.Background())
-		for _, cat := range data.Categories {
-			for _, svc := range cat.Services {
-				assert.Greater(t, svc.UpdatedAt, int64(0), "Service %s", svc.Name)
+		for _, svc := range data.Services {
+			if svc.Name == "source-controller" {
+				assert.NotEmpty(t, svc.CPUHist, "should have CPU histogram")
 			}
 		}
 	})
@@ -166,75 +130,48 @@ func TestSigNozClientFetch(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
 		b, err := json.Marshal(data)
 		require.NoError(t, err)
-		assert.Contains(t, string(b), "platform-website")
-		assert.Contains(t, string(b), "goroutines")
-		assert.Contains(t, string(b), "MB")
+		assert.Contains(t, string(b), "source-controller")
+		assert.Contains(t, string(b), "cpu")
+		assert.Contains(t, string(b), "ram")
 	})
 }
 
 func TestSigNozClientGracefulDegradation(t *testing.T) {
-	t.Run("unreachable URL still returns topology", func(t *testing.T) {
+	t.Run("unreachable URL still returns empty data", func(t *testing.T) {
 		client := NewSigNozClient("http://127.0.0.1:1", "test-key")
 		data, err := client.Fetch(context.Background())
 		assert.NoError(t, err)
-		assert.Len(t, data.Categories, 5)
+		assert.Empty(t, data.Services)
 	})
 }
 
-func TestNewSigNozClientFromEnv(t *testing.T) {
-	t.Run("returns nil when env vars are missing", func(t *testing.T) {
-		result := NewSigNozClientFromEnv()
-		assert.Nil(t, result)
+func TestSparklinePoints(t *testing.T) {
+	t.Run("single value returns empty", func(t *testing.T) {
+		result := sparklinePoints([]float64{5.0}, 48, 16)
+		assert.Empty(t, result, "single point has no line")
+	})
+
+	t.Run("two values", func(t *testing.T) {
+		result := sparklinePoints([]float64{1.0, 2.0}, 48, 16)
+		assert.Contains(t, result, "0.0,")  // first point at x=0
+		assert.Contains(t, result, "48.0,") // last point at x=width
+	})
+
+	t.Run("constant values", func(t *testing.T) {
+		result := sparklinePoints([]float64{5.0, 5.0, 5.0}, 48, 16)
+		assert.NotEmpty(t, result)
 	})
 }
 
-func TestPlatformCategories(t *testing.T) {
-	cats := PlatformCategories()
-
-	t.Run("has 5 categories", func(t *testing.T) {
-		assert.Len(t, cats, 5)
-	})
-
-	t.Run("each category has services", func(t *testing.T) {
-		for _, cat := range cats {
-			assert.NotEmpty(t, cat.Services, "Category %s should have services", cat.Name)
-		}
-	})
-
-	t.Run("total service count is 17", func(t *testing.T) {
-		total := 0
-		for _, cat := range cats {
-			total += len(cat.Services)
-		}
-		assert.Equal(t, 17, total)
-	})
-
-	t.Run("services have deployment where monitored", func(t *testing.T) {
-		for _, cat := range cats {
-			for _, svc := range cat.Services {
-				if svc.Namespace != "" && MonitoredNamespaces()[svc.Namespace] && svc.Name != "forgejo" {
-					assert.NotEmpty(t, svc.Deployment, "Service %s should have deployment", svc.Name)
-				}
-			}
-		}
-	})
+func TestCategoryForNamespace(t *testing.T) {
+	assert.Equal(t, "dev", CategoryForNamespace("forgejo"))
+	assert.Equal(t, "delivery", CategoryForNamespace("flux-system"))
+	assert.Equal(t, "runtime", CategoryForNamespace("platform-website"))
+	assert.Equal(t, "observability", CategoryForNamespace("signoz"))
 }
 
-func TestMonitoredNamespaces(t *testing.T) {
-	monitored := MonitoredNamespaces()
-	assert.True(t, monitored["flux-system"])
-	assert.True(t, monitored["dapr-system"])
-	assert.True(t, monitored["platform-website"])
-	assert.True(t, monitored["forgejo"])
-	assert.False(t, monitored["signoz"])
-}
-
-func TestFormatDuration(t *testing.T) {
-	assert.Equal(t, "2d", formatDuration(48*time.Hour))
-	assert.Equal(t, "3h", formatDuration(3*time.Hour))
-	assert.Equal(t, "45m", formatDuration(45*time.Minute))
-}
-
-func TestDeploymentKey(t *testing.T) {
-	assert.Equal(t, "flux-system/source-controller", deploymentKey("flux-system", "source-controller"))
+func TestFormatUptime(t *testing.T) {
+	assert.Equal(t, "2d", FormatUptime(48*time.Hour))
+	assert.Equal(t, "3h", FormatUptime(3*time.Hour))
+	assert.Equal(t, "45m", FormatUptime(45*time.Minute))
 }

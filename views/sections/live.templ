@@ -1,6 +1,10 @@
 package sections
 
-import "github.com/rezuscloud/platform-website/obs"
+import (
+	"fmt"
+
+	"github.com/rezuscloud/platform-website/obs"
+)
 
 templ Live(data obs.LiveData) {
 	<section
@@ -18,37 +22,23 @@ templ Live(data obs.LiveData) {
 					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle uppercase tracking-wider">Live</span>
 				</div>
 			</div>
-			<!-- Stats strip -->
-			<div
-				class="font-terminal text-sm text-ink-muted dark:text-next-subtle mb-6"
-				x-show="stats.uptime || stats.goVersion"
-				x-cloak
-			>
-				<template x-if="stats.uptime">
-					<span x-text="'uptime ' + stats.uptime"></span>
-				</template>
-				<span x-show="stats.uptime && stats.goVersion" class="mx-2">·</span>
-				<template x-if="stats.goVersion">
-					<span x-text="stats.goVersion"></span>
-				</template>
-				<span x-show="(stats.uptime || stats.goVersion)" class="mx-2">·</span>
-				<span x-text="stats.nodeCount + ' nodes'"></span>
-			</div>
-			<!-- Static banner: only shown before SSE connects, when hasMetrics is false -->
+			<!-- Static banner -->
 			<div
 				class="border border-accent-gold/40 dark:border-next-teal/40 bg-accent-gold/5 dark:bg-next-teal/5 px-4 py-2 mb-6"
 				x-show="!connected && !initial.hasMetrics"
 			>
 				<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">Showing platform topology. Live metrics require SigNoz.</span>
 			</div>
-			<!-- SSE connection indicator -->
+			<!-- SSE freshness -->
 			<div class="font-terminal text-xs text-ink-muted dark:text-next-subtle mb-4" x-show="connected" x-cloak>
 				<span x-text="'Updated ' + lastUpdateAgo + 's ago'"></span>
+				<span class="mx-2">·</span>
+				<span x-text="serviceCount + ' services'"></span>
 			</div>
-			<!-- Category grid -->
-			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-3">
-				for _, cat := range data.Categories {
-					@categoryColumn(cat)
+			<!-- Service grid: one row per service -->
+			<div class="space-y-1" data-live-infra>
+				for _, svc := range data.Services {
+					@serviceRow(svc)
 				}
 			</div>
 		</div>
@@ -58,16 +48,10 @@ templ Live(data obs.LiveData) {
 					connected: false,
 					lastUpdate: 0,
 					lastUpdateAgo: "",
-					stats: { uptime: "", goVersion: "", nodeCount: 0 },
-					initial: null,
+					serviceCount: 0,
+					initial: { hasMetrics: false },
 
 					init() {
-						// Store initial server-rendered data
-						this.initial = {
-							hasMetrics: /* hasMetrics */ false,
-						};
-
-						// Start SSE
 						var self = this;
 						var es = new EventSource("/api/live/stream");
 
@@ -75,19 +59,15 @@ templ Live(data obs.LiveData) {
 							var data = JSON.parse(e.data);
 							self.connected = true;
 							self.lastUpdate = Date.now();
-							self.stats = data.stats || {};
+							self.serviceCount = data.services ? data.services.length : 0;
+							self.initial.hasMetrics = data.hasMetrics || false;
 
-							// Update each service in the DOM
-							if (data.categories) {
-								data.categories.forEach(function (cat) {
-									cat.services.forEach(function (svc) {
-										var el = document.querySelector(
-											'[data-live-service="' + svc.name + '"]',
-										);
-										if (el) {
-											self.updateService(el, svc);
-										}
-									});
+							if (data.services) {
+								data.services.forEach(function (svc) {
+									var el = document.querySelector(
+										'[data-live-svc="' + svc.namespace + "/" + svc.name + '"]',
+									);
+									if (el) self.updateService(el, svc);
 								});
 							}
 						});
@@ -96,38 +76,49 @@ templ Live(data obs.LiveData) {
 							self.connected = false;
 						};
 
-						// Update "ago" counter
 						setInterval(function () {
 							if (self.lastUpdate > 0) {
-								var ago = Math.floor((Date.now() - self.lastUpdate) / 1000);
-								self.lastUpdateAgo = ago;
+								self.lastUpdateAgo = Math.floor(
+									(Date.now() - self.lastUpdate) / 1000,
+								);
 							}
 						}, 1000);
 					},
 
 					updateService(el, svc) {
-						// Update status dot
 						var dot = el.querySelector("[data-dot]");
 						if (dot) {
 							dot.className = this.dotClass(svc.status);
-							dot.setAttribute("aria-label", this.statusLabel(svc.status));
 						}
-						// Update metric
-						var metric = el.querySelector("[data-metric]");
-						if (metric) {
-							metric.textContent = svc.metric || "";
-							metric.style.display = svc.metric ? "" : "none";
+						var cpu = el.querySelector("[data-cpu]");
+						if (cpu) {
+							cpu.textContent = svc.cpu.toFixed(2) + "% CPU";
+							cpu.style.display = svc.cpu > 0 ? "" : "none";
 						}
-						// Update memory
-						var memory = el.querySelector("[data-memory]");
-						if (memory) {
-							memory.textContent = svc.memory || "";
-							memory.style.display = svc.memory ? "" : "none";
+						var ram = el.querySelector("[data-ram]");
+						if (ram) {
+							ram.textContent = svc.ram.toFixed(0) + " MB RAM";
+							ram.style.display = svc.ram > 0 ? "" : "none";
+						}
+						var uptime = el.querySelector("[data-uptime]");
+						if (uptime) {
+							uptime.textContent = svc.uptime || "";
+							uptime.style.display = svc.uptime ? "" : "none";
+						}
+						var cpuHist = el.querySelector("[data-cpu-hist]");
+						if (cpuHist && svc.cpuHist) {
+							cpuHist.setAttribute("points", svc.cpuHist);
+							cpuHist.closest("svg").style.display = "";
+						}
+						var ramHist = el.querySelector("[data-ram-hist]");
+						if (ramHist && svc.ramHist) {
+							ramHist.setAttribute("points", svc.ramHist);
+							ramHist.closest("svg").style.display = "";
 						}
 					},
 
 					dotClass(status) {
-						var base = "mt-1.5 inline-block w-2 h-2 shrink-0";
+						var base = "inline-block w-2 h-2 shrink-0";
 						if (status === "healthy")
 							return base + " bg-green-600 dark:bg-green-500";
 						if (status === "running")
@@ -135,63 +126,88 @@ templ Live(data obs.LiveData) {
 						if (status === "unknown") return base + " bg-rule dark:bg-next-mid";
 						return base + " border border-rule dark:border-next-mid";
 					},
-
-					statusLabel(status) {
-						if (status === "healthy") return "Healthy";
-						if (status === "running") return "Running";
-						if (status === "unknown") return "Unknown";
-						return "Not monitored";
-					},
 				};
 			}
 		</script>
 	</section>
 }
 
-templ categoryColumn(cat obs.PlatformCategory) {
-	<div>
-		<!-- Column header -->
-		<div class="border-b border-rule dark:border-next-mid pb-2 mb-3">
-			<span class="font-mac text-xs font-bold text-ink-muted dark:text-next-subtle uppercase tracking-widest">{ cat.Name }</span>
+templ serviceRow(svc obs.Service) {
+	<div
+		data-live-svc={ svc.Namespace + "/" + svc.Name }
+		class="grid grid-cols-[auto_1fr_auto_auto_auto] sm:grid-cols-[auto_2fr_1fr_1fr_1fr] items-center gap-x-3 sm:gap-x-6 py-1.5 border-b border-rule/30 dark:border-next-mid/30"
+	>
+		<!-- Status dot -->
+		if svc.Status == "healthy" {
+			<span data-dot class="inline-block w-2 h-2 shrink-0 bg-green-600 dark:bg-green-500"></span>
+		} else if svc.Status == "unknown" {
+			<span data-dot class="inline-block w-2 h-2 shrink-0 bg-rule dark:bg-next-mid"></span>
+		} else {
+			<span data-dot class="inline-block w-2 h-2 shrink-0 border border-rule dark:border-next-mid"></span>
+		}
+		<!-- Name + namespace -->
+		<div class="min-w-0">
+			<span class="font-mac text-sm font-bold text-ink dark:text-next-white">{ svc.Name }</span>
+			<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle ml-2">{ svc.Namespace }</span>
 		</div>
-		<!-- Services -->
-		<div class="space-y-3">
-			for _, svc := range cat.Services {
-				@serviceRow(svc)
+		<!-- CPU + sparkline -->
+		<div class="hidden sm:flex items-center gap-2">
+			<span
+				data-cpu
+				class="font-terminal text-xs text-accent-gold dark:text-next-teal tabular-nums"
+				style={ templ.KV("display", ternary(svc.CPU > 0, "", "none")) }
+			>
+				if svc.CPU > 0 {
+					{ fmt.Sprintf("%.2f%% CPU", svc.CPU) }
+				}
+			</span>
+			{{ sparklineSVG := svc.CPUHist }}
+			if sparklineSVG != "" {
+				<svg viewBox="0 0 48 16" class="w-12 h-4" data-cpu-chart preserveAspectRatio="none">
+					<polyline data-cpu-hist points={ sparklineSVG } fill="none" stroke="currentColor" stroke-width="1" class="text-accent-gold dark:text-next-teal"></polyline>
+				</svg>
+			} else {
+				<svg viewBox="0 0 48 16" class="w-12 h-4" data-cpu-chart style="display:none" preserveAspectRatio="none">
+					<polyline data-cpu-hist points="" fill="none" stroke="currentColor" stroke-width="1" class="text-accent-gold dark:text-next-teal"></polyline>
+				</svg>
 			}
 		</div>
+		<!-- RAM + sparkline -->
+		<div class="hidden sm:flex items-center gap-2">
+			<span
+				data-ram
+				class="font-terminal text-xs text-ink-muted dark:text-next-subtle tabular-nums"
+				style={ templ.KV("display", ternary(svc.RAM > 0, "", "none")) }
+			>
+				if svc.RAM > 0 {
+					{ fmt.Sprintf("%.0f MB RAM", svc.RAM) }
+				}
+			</span>
+			{{ ramlineSVG := svc.RAMHist }}
+			if ramlineSVG != "" {
+				<svg viewBox="0 0 48 16" class="w-12 h-4" data-ram-chart preserveAspectRatio="none">
+					<polyline data-ram-hist points={ ramlineSVG } fill="none" stroke="currentColor" stroke-width="1" class="text-ink-muted dark:text-next-subtle"></polyline>
+				</svg>
+			} else {
+				<svg viewBox="0 0 48 16" class="w-12 h-4" data-ram-chart style="display:none" preserveAspectRatio="none">
+					<polyline data-ram-hist points="" fill="none" stroke="currentColor" stroke-width="1" class="text-ink-muted dark:text-next-subtle"></polyline>
+				</svg>
+			}
+		</div>
+		<!-- Uptime -->
+		<span
+			data-uptime
+			class="font-terminal text-xs text-ink-muted dark:text-next-subtle tabular-nums"
+			style={ templ.KV("display", ternary(svc.Uptime != "", "", "none")) }
+		>
+			{ svc.Uptime }
+		</span>
 	</div>
 }
 
-templ serviceRow(svc obs.PlatformService) {
-	<div data-live-service={ svc.Name }>
-		<div class="flex items-start gap-2">
-			<!-- Status dot -->
-			if svc.Status == "healthy" {
-				<span data-dot class="mt-1.5 inline-block w-2 h-2 shrink-0 bg-green-600 dark:bg-green-500" aria-label="Healthy"></span>
-			} else if svc.Status == "running" {
-				<span data-dot class="mt-1.5 inline-block w-2 h-2 shrink-0 bg-accent-gold dark:bg-next-teal" aria-label="Running"></span>
-			} else if svc.Status == "unknown" {
-				<span data-dot class="mt-1.5 inline-block w-2 h-2 shrink-0 bg-rule dark:bg-next-mid" aria-label="Unknown"></span>
-			} else {
-				<span data-dot class="mt-1.5 inline-block w-2 h-2 shrink-0 border border-rule dark:border-next-mid" aria-label="Not monitored"></span>
-			}
-			<div class="min-w-0">
-				<span class="font-mac text-sm font-bold text-ink dark:text-next-white leading-tight block">{ svc.Label }</span>
-				<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle leading-tight block">{ svc.Detail }</span>
-				<!-- Dynamic metric (goroutines, components, etc.) -->
-				if svc.Metric != "" {
-					<span data-metric class="font-terminal text-xs text-accent-gold dark:text-next-teal leading-tight block">{ svc.Metric }</span>
-				} else {
-					<span data-metric class="font-terminal text-xs text-accent-gold dark:text-next-teal leading-tight" style="display:none"></span>
-				}
-				<!-- Dynamic memory -->
-				if svc.Memory != "" {
-					<span data-memory class="font-terminal text-xs text-ink-muted dark:text-next-subtle leading-tight block">{ svc.Memory }</span>
-				} else {
-					<span data-memory class="font-terminal text-xs text-ink-muted dark:text-next-subtle leading-tight" style="display:none"></span>
-				}
-			</div>
-		</div>
-	</div>
+func ternary(cond bool, ifTrue, ifFalse string) string {
+	if cond {
+		return ifTrue
+	}
+	return ifFalse
 }

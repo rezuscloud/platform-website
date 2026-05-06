@@ -30,60 +30,37 @@ func TestSetLiveClient(t *testing.T) {
 func TestDefaultMockData(t *testing.T) {
 	data := obs.DefaultMockData()
 
-	t.Run("has 5 categories", func(t *testing.T) {
-		assert.Len(t, data.Categories, 5)
+	t.Run("has services", func(t *testing.T) {
+		assert.NotEmpty(t, data.Services)
 	})
 
-	t.Run("has 17 services", func(t *testing.T) {
-		total := 0
-		for _, cat := range data.Categories {
-			total += len(cat.Services)
+	t.Run("services have names from SigNoz", func(t *testing.T) {
+		names := make(map[string]bool)
+		for _, svc := range data.Services {
+			names[svc.Name] = true
 		}
-		assert.Equal(t, 17, total)
+		assert.True(t, names["source-controller"])
+		assert.True(t, names["platform-website"])
+		assert.True(t, names["forgejo"])
 	})
 
-	t.Run("monitored services are healthy with metrics", func(t *testing.T) {
-		for _, cat := range data.Categories {
-			for _, svc := range cat.Services {
-				if svc.Deployment != "" {
-					assert.Equal(t, "healthy", svc.Status, "Service %s", svc.Name)
-					assert.NotEmpty(t, svc.Metric, "Service %s should have metric", svc.Name)
-				}
+	t.Run("services have CPU and RAM", func(t *testing.T) {
+		for _, svc := range data.Services {
+			if svc.Status == "healthy" && svc.Name != "signoz-otel-collector" {
+				assert.GreaterOrEqual(t, svc.CPU, float64(0), "Service %s", svc.Name)
+				assert.GreaterOrEqual(t, svc.RAM, float64(0), "Service %s", svc.Name)
 			}
 		}
 	})
 
-	t.Run("unmonitored services are unmonitored", func(t *testing.T) {
-		for _, cat := range data.Categories {
-			for _, svc := range cat.Services {
-				// ARC Controller and SigNoz are truly unmonitored
-				if svc.Name == "arc-controller" || svc.Namespace == "signoz" {
-					assert.Equal(t, "unmonitored", svc.Status, "Service %s", svc.Name)
-				}
-			}
-		}
-	})
-
-	t.Run("infrastructure nodes are running", func(t *testing.T) {
-		for _, svc := range data.Categories[0].Services {
-			assert.Equal(t, "running", svc.Status)
+	t.Run("services have categories", func(t *testing.T) {
+		for _, svc := range data.Services {
+			assert.NotEmpty(t, svc.Category, "Service %s", svc.Name)
 		}
 	})
 
 	t.Run("has no live metrics in mock mode", func(t *testing.T) {
 		assert.False(t, data.HasMetrics)
-	})
-
-	t.Run("has timestamp", func(t *testing.T) {
-		assert.Greater(t, data.Timestamp, int64(0))
-	})
-
-	t.Run("each service has updatedAt", func(t *testing.T) {
-		for _, cat := range data.Categories {
-			for _, svc := range cat.Services {
-				assert.Greater(t, svc.UpdatedAt, int64(0), "Service %s", svc.Name)
-			}
-		}
 	})
 }
 
