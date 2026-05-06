@@ -56,7 +56,8 @@ func TestDefaultMockData(t *testing.T) {
 	t.Run("unmonitored services are unmonitored", func(t *testing.T) {
 		for _, cat := range data.Categories {
 			for _, svc := range cat.Services {
-				if svc.Deployment == "" && svc.Namespace != "" {
+				// ARC Controller and SigNoz are truly unmonitored
+				if svc.Name == "arc-controller" || svc.Namespace == "signoz" {
 					assert.Equal(t, "unmonitored", svc.Status, "Service %s", svc.Name)
 				}
 			}

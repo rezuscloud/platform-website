@@ -28,6 +28,8 @@ func DefaultMockData() LiveData {
 
 			if svc.Namespace == "" {
 				svc.Status = "running"
+			} else if svc.Deployment == "" && svc.Namespace == "forgejo" {
+				svc.Status = "healthy"
 			} else if svc.Deployment == "" {
 				svc.Status = "unmonitored"
 			} else {
@@ -48,6 +50,7 @@ func DefaultMockData() LiveData {
 		"platform-website":   {"75 goroutines", "121 MB"},
 		"daprd":              {"2 components", ""},
 		"dapr-control-plane": {"339 goroutines", "54 MB"},
+		"forgejo":            {"149 goroutines", "17 MB"},
 	}
 
 	for i := range cats {

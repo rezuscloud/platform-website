@@ -115,8 +115,21 @@ func TestSigNozClientFetch(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
 		for _, cat := range data.Categories {
 			for _, svc := range cat.Services {
-				if svc.Name == "forgejo" || svc.Name == "signoz-collector" {
+				// SigNoz and ARC are not in MonitoredNamespaces
+				if svc.Name == "signoz-collector" || svc.Name == "arc-controller" {
 					assert.Equal(t, "unmonitored", svc.Status, "Service %s", svc.Name)
+				}
+			}
+		}
+	})
+
+	t.Run("forgejo is monitored at namespace level", func(t *testing.T) {
+		data, _ := client.Fetch(context.Background())
+		for _, cat := range data.Categories {
+			for _, svc := range cat.Services {
+				if svc.Name == "forgejo" {
+					// Monitored namespace but no data from test server: unknown
+					assert.Equal(t, "unknown", svc.Status)
 				}
 			}
 		}
@@ -199,7 +212,7 @@ func TestPlatformCategories(t *testing.T) {
 	t.Run("services have deployment where monitored", func(t *testing.T) {
 		for _, cat := range cats {
 			for _, svc := range cat.Services {
-				if svc.Namespace != "" && MonitoredNamespaces()[svc.Namespace] {
+				if svc.Namespace != "" && MonitoredNamespaces()[svc.Namespace] && svc.Name != "forgejo" {
 					assert.NotEmpty(t, svc.Deployment, "Service %s should have deployment", svc.Name)
 				}
 			}
@@ -212,7 +225,7 @@ func TestMonitoredNamespaces(t *testing.T) {
 	assert.True(t, monitored["flux-system"])
 	assert.True(t, monitored["dapr-system"])
 	assert.True(t, monitored["platform-website"])
-	assert.False(t, monitored["forgejo"])
+	assert.True(t, monitored["forgejo"])
 	assert.False(t, monitored["signoz"])
 }
 

@@ -110,6 +110,7 @@ func MonitoredNamespaces() map[string]bool {
 		"dapr-system":      true,
 		"cert-manager":     true,
 		"external-dns":     true,
+		"forgejo":          true,
 	}
 }
 

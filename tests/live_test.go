@@ -81,7 +81,7 @@ func TestLiveSectionHTML(t *testing.T) {
 	})
 
 	t.Run("unmonitored services have hollow dots", func(t *testing.T) {
-		html, err := doc.Find("[data-live-service=\"forgejo\"]").Html()
+		html, err := doc.Find("[data-live-service=\"arc-controller\"]").Html()
 		require.NoError(t, err)
 		assert.Contains(t, html, "data-dot")
 		assert.Contains(t, html, "border border-rule")
