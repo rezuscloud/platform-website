@@ -44,8 +44,6 @@ func sendSnapshot(w *bufio.Writer) bool {
 		return false
 	}
 
-	log.Printf("SSE snapshot: %d categories, hasMetrics=%v", len(data.Categories), data.HasMetrics)
-
 	payload, err := json.Marshal(data)
 	if err != nil {
 		log.Printf("SSE marshal error: %v", err)
