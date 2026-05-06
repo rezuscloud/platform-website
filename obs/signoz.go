@@ -55,99 +55,155 @@ func getNamespace() string {
 	return "platform-website"
 }
 
-// Fetch returns the platform dashboard with live health data.
+// Fetch returns the platform dashboard with live per-deployment metrics.
 func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	if time.Since(c.cachedAt) < c.cacheTTL && len(c.cached.Categories) > 0 {
 		return c.cached, nil
 	}
 
 	cats := PlatformCategories()
-	monitored := MonitoredNamespaces()
-
-	fetchCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	fetchCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	// Query health for each monitored namespace
-	nsHealth := map[string]bool{}
-	for ns := range monitored {
-		results, err := c.queryInstant(fetchCtx, fmt.Sprintf(`up{k8s_namespace_name="%s"}`, ns))
-		if err == nil && len(results) > 0 {
-			nsHealth[ns] = true
-		}
-	}
-
-	// Apply health status
-	for i := range cats {
-		for j := range cats[i].Services {
-			svc := &cats[i].Services[j]
-			if svc.Namespace == "" {
-				svc.Status = "running"
-			} else if nsHealth[svc.Namespace] {
-				svc.Status = "healthy"
-			} else if monitored[svc.Namespace] {
-				svc.Status = "unknown"
-			} else {
-				svc.Status = "unmonitored"
+	// Batch query 1: all up targets (health check per deployment)
+	healthMap := map[string]bool{} // "namespace/deployment" → alive
+	uptimeMap := map[string]string{}
+	upResults, err := c.queryInstant(fetchCtx, "up")
+	if err == nil {
+		for _, r := range upResults {
+			ns := metricLabel(r, "k8s_namespace_name")
+			deploy := metricLabel(r, "k8s.deployment.name")
+			if deploy == "" {
+				deploy = metricLabel(r, "k8s.statefulset.name")
+			}
+			if ns != "" && deploy != "" {
+				key := deploymentKey(ns, deploy)
+				healthMap[key] = metricValue(r) == "1"
+			}
+			// Track pod start time for uptime
+			if ns == c.namespace {
+				if t := metricLabel(r, "k8s.pod.start_time"); t != "" {
+					uptimeMap[ns] = t
+				}
 			}
 		}
 	}
 
-	// Fetch compact metrics for platform-website
-	c.populateMetrics(fetchCtx, &cats)
+	// Batch query 2: goroutines per deployment
+	goroutineMap := map[string]float64{} // "namespace/deployment" → count
+	goroutineResults, err := c.queryInstant(fetchCtx, "go_goroutines")
+	if err == nil {
+		for _, r := range goroutineResults {
+			ns := metricLabel(r, "k8s_namespace_name")
+			deploy := metricLabel(r, "k8s.deployment.name")
+			if ns != "" && deploy != "" {
+				key := deploymentKey(ns, deploy)
+				if v, err := parseFloat(metricValue(r)); err == nil {
+					goroutineMap[key] = v
+				}
+			}
+		}
+	}
 
-	stats := c.populateStats(fetchCtx)
+	// Batch query 3: memory per deployment
+	memoryMap := map[string]float64{} // "namespace/deployment" → bytes
+	memResults, err := c.queryInstant(fetchCtx, "process_resident_memory_bytes")
+	if err == nil {
+		for _, r := range memResults {
+			ns := metricLabel(r, "k8s_namespace_name")
+			deploy := metricLabel(r, "k8s.deployment.name")
+			if ns != "" && deploy != "" {
+				key := deploymentKey(ns, deploy)
+				if v, err := parseFloat(metricValue(r)); err == nil {
+					memoryMap[key] = v
+				}
+			}
+		}
+	}
+
+	// Batch query 4: Dapr component count
+	componentCount := 0
+	daprResults, err := c.queryInstant(fetchCtx, fmt.Sprintf(`dapr_runtime_component_loaded{k8s_namespace_name="%s"}`, c.namespace))
+	if err == nil && len(daprResults) > 0 {
+		if v, err := parseFloat(metricValue(daprResults[0])); err == nil {
+			componentCount = int(v)
+		}
+	}
+
+	// Apply live data to services
+	now := time.Now()
+	for i := range cats {
+		for j := range cats[i].Services {
+			svc := &cats[i].Services[j]
+			svc.UpdatedAt = now.Unix()
+
+			if svc.Namespace == "" {
+				// Infrastructure nodes are always running
+				svc.Status = "running"
+				continue
+			}
+
+			// For services without deployment (same ns as another service),
+			// use namespace-level health
+			key := deploymentKey(svc.Namespace, svc.Deployment)
+			if svc.Deployment == "" {
+				// Unmonitored services (no SigNoz scrape annotations)
+				svc.Status = "unmonitored"
+				continue
+			}
+
+			if alive, ok := healthMap[key]; ok {
+				if alive {
+					svc.Status = "healthy"
+				} else {
+					svc.Status = "unknown"
+				}
+			} else {
+				svc.Status = "unknown"
+			}
+
+			// Goroutines
+			if g, ok := goroutineMap[key]; ok {
+				svc.Metric = fmt.Sprintf("%.0f goroutines", g)
+			}
+
+			// Memory
+			if m, ok := memoryMap[key]; ok {
+				svc.Memory = fmt.Sprintf("%.0f MB", m/1024/1024)
+			}
+		}
+	}
+
+	// Dapr sidecar: show component count instead of goroutines (shares deployment with app)
+	for i := range cats {
+		for j := range cats[i].Services {
+			if cats[i].Services[j].Name == "daprd" && componentCount > 0 {
+				cats[i].Services[j].Metric = fmt.Sprintf("%d components", componentCount)
+				cats[i].Services[j].Status = "healthy"
+			}
+		}
+	}
+
+	// Stats strip
+	stats := StatsStrip{NodeCount: 2}
+	if t, ok := uptimeMap[c.namespace]; ok {
+		if parsed, err := time.Parse(time.RFC3339, t); err == nil {
+			stats.Uptime = formatDuration(now.Sub(parsed))
+		}
+	}
+	goResults, err := c.queryInstant(fetchCtx, fmt.Sprintf(`go_info{k8s_namespace_name="%s"}`, c.namespace))
+	if err == nil && len(goResults) > 0 {
+		stats.GoVersion = metricLabel(goResults[0], "version")
+	}
 
 	c.cached = LiveData{
 		Categories: cats,
 		Stats:      stats,
 		HasMetrics: true,
+		Timestamp:  now.Unix(),
 	}
-	c.cachedAt = time.Now()
+	c.cachedAt = now
 	return c.cached, nil
-}
-
-func (c *SigNozClient) populateMetrics(ctx context.Context, cats *[]PlatformCategory) {
-	// Goroutines for the runtime column
-	goroutines, err := c.queryInstant(ctx,
-		fmt.Sprintf(`go_goroutines{k8s_namespace_name="%s"}`, c.namespace))
-	if err == nil && len(goroutines) > 0 && len(goroutines[0].Value) >= 2 {
-		if v, err := parseFloat(goroutines[0].Value[1]); err == nil {
-			for i := range *cats {
-				if (*cats)[i].ID == "runtime" {
-					for j := range (*cats)[i].Services {
-						if (*cats)[i].Services[j].Name == "platform-website" {
-							(*cats)[i].Services[j].Metric = fmt.Sprintf("%.0f goroutines", v)
-						}
-						if (*cats)[i].Services[j].Name == "daprd" {
-							(*cats)[i].Services[j].Metric = "2 components"
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-func (c *SigNozClient) populateStats(ctx context.Context) StatsStrip {
-	stats := StatsStrip{NodeCount: 2}
-
-	results, err := c.queryInstant(ctx,
-		fmt.Sprintf(`process_start_time_seconds{k8s_namespace_name="%s"}`, c.namespace))
-	if err == nil && len(results) > 0 && len(results[0].Value) >= 2 {
-		if ts, err := parseFloat(results[0].Value[1]); err == nil {
-			stats.Uptime = formatDuration(time.Since(time.Unix(int64(ts), 0)))
-		}
-	}
-
-	results, err = c.queryInstant(ctx,
-		fmt.Sprintf(`go_info{k8s_namespace_name="%s"}`, c.namespace))
-	if err == nil && len(results) > 0 {
-		if v, ok := results[0].Metric["version"]; ok {
-			stats.GoVersion = v
-		}
-	}
-
-	return stats
 }
 
 func parseFloat(v interface{}) (float64, error) {
@@ -156,15 +212,18 @@ func parseFloat(v interface{}) (float64, error) {
 	return f, err
 }
 
-func formatDuration(d time.Duration) string {
-	h := int(d.Hours())
-	if h >= 24 {
-		return fmt.Sprintf("%dd", h/24)
+func metricLabel(r promResultItem, key string) string {
+	if v, ok := r.Metric[key]; ok {
+		return v
 	}
-	if h >= 1 {
-		return fmt.Sprintf("%dh", h)
+	return ""
+}
+
+func metricValue(r promResultItem) string {
+	if len(r.Value) >= 2 {
+		return fmt.Sprintf("%v", r.Value[1])
 	}
-	return fmt.Sprintf("%dm", int(d.Minutes()))
+	return ""
 }
 
 func (c *SigNozClient) queryInstant(ctx context.Context, query string) ([]promResultItem, error) {
