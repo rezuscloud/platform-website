@@ -22,7 +22,6 @@ func LiveSSE(c *fiber.Ctx) error {
 		ticker := time.NewTicker(5 * time.Second)
 		defer ticker.Stop()
 
-		// Send initial snapshot immediately
 		if !sendSnapshot(w) {
 			return
 		}

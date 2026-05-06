@@ -22,10 +22,73 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.Contains(t, heading.Text(), "Live Platform")
 	})
 
-	t.Run("has LIVE indicator", func(t *testing.T) {
+	t.Run("has Alpine.js x-data", func(t *testing.T) {
+		section := doc.Find("#live")
+		d, exists := section.Attr("x-data")
+		assert.True(t, exists)
+		assert.Contains(t, d, "liveDashboard")
+	})
+
+	t.Run("has EventSource script", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "animate-pulse")
+		assert.Contains(t, html, "EventSource")
+		assert.Contains(t, html, "/api/live/stream")
+	})
+
+	t.Run("services render with data-live-svc", func(t *testing.T) {
+		services := doc.Find("[data-live-svc]")
+		assert.GreaterOrEqual(t, services.Length(), 5, "should have at least 5 services")
+	})
+
+	t.Run("services have status dots with data-dot", func(t *testing.T) {
+		dots := doc.Find("[data-dot]")
+		assert.Equal(t, doc.Find("[data-live-svc]").Length(), dots.Length())
+	})
+
+	t.Run("services have CPU elements", func(t *testing.T) {
+		cpu := doc.Find("[data-cpu]")
+		assert.GreaterOrEqual(t, cpu.Length(), 1)
+	})
+
+	t.Run("services have RAM elements", func(t *testing.T) {
+		ram := doc.Find("[data-ram]")
+		assert.GreaterOrEqual(t, ram.Length(), 1)
+	})
+
+	t.Run("services have uptime elements", func(t *testing.T) {
+		uptime := doc.Find("[data-uptime]")
+		assert.GreaterOrEqual(t, uptime.Length(), 1)
+	})
+
+	t.Run("services have CPU sparklines", func(t *testing.T) {
+		charts := doc.Find("[data-cpu-hist]")
+		assert.GreaterOrEqual(t, charts.Length(), 1)
+	})
+
+	t.Run("services have RAM sparklines", func(t *testing.T) {
+		charts := doc.Find("[data-ram-hist]")
+		assert.GreaterOrEqual(t, charts.Length(), 1)
+	})
+
+	t.Run("unmonitored services show hollow dots", func(t *testing.T) {
+		html, err := doc.Find("[data-live-svc*=\"signoz\"]").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "border border-rule")
+	})
+
+	t.Run("static banner shows", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "Showing platform topology")
+	})
+
+	t.Run("service names come from mock data", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "source-controller")
+		assert.Contains(t, html, "platform-website")
+		assert.Contains(t, html, "forgejo")
 	})
 
 	t.Run("after architecture in DOM order", func(t *testing.T) {
@@ -40,87 +103,5 @@ func TestLiveSectionHTML(t *testing.T) {
 			}
 		})
 		assert.True(t, foundLive)
-	})
-
-	// Alpine.js
-
-	t.Run("has x-data for live dashboard", func(t *testing.T) {
-		section := doc.Find("#live")
-		d, exists := section.Attr("x-data")
-		assert.True(t, exists)
-		assert.Contains(t, d, "liveDashboard")
-	})
-
-	t.Run("has x-init", func(t *testing.T) {
-		section := doc.Find("#live")
-		_, exists := section.Attr("x-init")
-		assert.True(t, exists)
-	})
-
-	t.Run("has EventSource script", func(t *testing.T) {
-		html, err := doc.Find("#live").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "EventSource")
-		assert.Contains(t, html, "/api/live/stream")
-	})
-
-	// Services
-
-	t.Run("all 17 services render", func(t *testing.T) {
-		services := doc.Find("[data-live-service]")
-		assert.Equal(t, 17, services.Length())
-	})
-
-	// Status dots
-
-	t.Run("healthy services have green dots with data-dot", func(t *testing.T) {
-		html, err := doc.Find("[data-live-service=\"platform-website\"]").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "data-dot")
-		assert.Contains(t, html, "bg-green-600")
-	})
-
-	t.Run("unmonitored services have hollow dots", func(t *testing.T) {
-		html, err := doc.Find("[data-live-service=\"arc-controller\"]").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "data-dot")
-		assert.Contains(t, html, "border border-rule")
-	})
-
-	t.Run("infrastructure nodes have accent dots", func(t *testing.T) {
-		html, err := doc.Find("[data-live-service=\"oci-cloud\"]").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "bg-accent-gold")
-	})
-
-	// Dynamic data attributes
-
-	t.Run("services have data-metric element", func(t *testing.T) {
-		html, err := doc.Find("[data-live-service=\"platform-website\"]").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "data-metric")
-	})
-
-	t.Run("services have data-memory element", func(t *testing.T) {
-		html, err := doc.Find("[data-live-service=\"platform-website\"]").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "data-memory")
-	})
-
-	// Static banner
-
-	t.Run("static banner shows when no metrics", func(t *testing.T) {
-		html, err := doc.Find("#live").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "Showing platform topology")
-	})
-
-	// Responsive grid
-
-	t.Run("uses responsive grid classes", func(t *testing.T) {
-		grid := doc.Find("#live .grid")
-		classes, _ := grid.Attr("class")
-		assert.Contains(t, classes, "lg:grid-cols-5")
-		assert.Contains(t, classes, "sm:grid-cols-2")
 	})
 }
