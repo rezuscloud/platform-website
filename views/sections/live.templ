@@ -243,7 +243,11 @@ templ svcTile(svc obs.Service) {
 			}
 			<span class="font-mac text-xs font-bold text-ink dark:text-next-white truncate">{ svc.Name }</span>
 		</div>
-		<!-- Metrics line: CPU · RAM · uptime -->
+		<!-- Detail line (hosts show hardware, others show namespace) -->
+		if svc.Detail != "" {
+			<div class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle ml-4">{ svc.Detail }</div>
+		}
+		<!-- Metrics line: CPU · RAM · uptime/service count -->
 		<div class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle ml-4 mt-0.5 flex gap-1.5 tabular-nums">
 			<span data-cpu style={ templ.KV("display", ternary(svc.CPU > 0, "", "none")) }>
 				if svc.CPU > 0 {

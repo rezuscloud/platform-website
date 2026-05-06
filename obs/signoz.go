@@ -171,6 +171,79 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 		}
 	}
 
+	// Query 6: Per-node aggregates (for hosts column)
+	nodeCPUMap := map[string]float64{} // node_name → total CPU%
+	nodeRAMMap := map[string]float64{} // node_name → total RAM bytes
+	nodeCountMap := map[string]int{}   // node_name → service count
+
+	// CPU per node
+	nodeCPUResults, err := c.queryInstant(fetchCtx, "sum(rate(process_cpu_seconds_total[5m])*100) by (k8s_node_name)")
+	if err == nil {
+		for _, r := range nodeCPUResults {
+			if node := metricLabel(r, "k8s_node_name"); node != "" {
+				if v, err := parseFloat(metricValue(r)); err == nil {
+					nodeCPUMap[node] = v
+				}
+			}
+		}
+	}
+
+	// RAM per node
+	nodeRAMResults, err := c.queryInstant(fetchCtx, "sum(process_resident_memory_bytes) by (k8s_node_name)")
+	if err == nil {
+		for _, r := range nodeRAMResults {
+			if node := metricLabel(r, "k8s_node_name"); node != "" {
+				if v, err := parseFloat(metricValue(r)); err == nil {
+					nodeRAMMap[node] = v
+				}
+			}
+		}
+	}
+
+	// Service count per node
+	nodeCountResults, err := c.queryInstant(fetchCtx, "count(up) by (k8s_node_name)")
+	if err == nil {
+		for _, r := range nodeCountResults {
+			if node := metricLabel(r, "k8s_node_name"); node != "" {
+				if v, err := parseFloat(metricValue(r)); err == nil {
+					nodeCountMap[node] = int(v)
+				}
+			}
+		}
+	}
+
+	// Per-node CPU histogram
+	nodeCPUHistMap := map[string]string{}
+	nodeCPUHistResults, err := c.queryRange(fetchCtx,
+		"sum(rate(process_cpu_seconds_total[5m])*100) by (k8s_node_name)",
+		now.Add(-60*time.Minute), now, 300)
+	if err == nil {
+		for _, r := range nodeCPUHistResults {
+			if node := metricLabel(r, "k8s_node_name"); node != "" {
+				values := extractValues(r)
+				if len(values) > 0 {
+					nodeCPUHistMap[node] = sparklinePoints(values, 48, 16)
+				}
+			}
+		}
+	}
+
+	// Per-node RAM histogram
+	nodeRAMHistMap := map[string]string{}
+	nodeRAMHistResults, err := c.queryRange(fetchCtx,
+		"sum(process_resident_memory_bytes) by (k8s_node_name)",
+		now.Add(-60*time.Minute), now, 300)
+	if err == nil {
+		for _, r := range nodeRAMHistResults {
+			if node := metricLabel(r, "k8s_node_name"); node != "" {
+				values := extractValues(r)
+				if len(values) > 0 {
+					nodeRAMHistMap[node] = sparklinePoints(values, 48, 16)
+				}
+			}
+		}
+	}
+
 	// Build service list from all discovered deployments
 	seen := map[string]bool{}
 	var services []Service
@@ -223,8 +296,9 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	// Sort services: by category order, then by name
 	sortServices(services)
 
-	// Prepend static host entries
-	services = append(StaticHosts(), services...)
+	// Prepend static host entries populated with node-level aggregates
+	hosts := buildHosts(nodeCPUMap, nodeRAMMap, nodeCountMap, nodeCPUHistMap, nodeRAMHistMap)
+	services = append(hosts, services...)
 
 	c.cached = LiveData{
 		Services:   services,
@@ -235,7 +309,48 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	return c.cached, nil
 }
 
-// sparklinePoints converts float64 values into SVG polyline points.
+// buildHosts creates host entries from per-node aggregate metrics.
+func buildHosts(
+	nodeCPUMap, nodeRAMMap map[string]float64,
+	nodeCountMap map[string]int,
+	nodeCPUHistMap, nodeRAMHistMap map[string]string,
+) []Service {
+	// Static host definitions (name, detail)
+	hostDefs := []struct{ name, detail string }{
+		{"talosoci-control-plane-legal-poodle", "ARM64 · Ampere A1"},
+		{"talosedge-genmachiche-flowing-bluejay", "AMD64 · Intel NUC"},
+	}
+
+	var hosts []Service
+	for _, h := range hostDefs {
+		svc := Service{
+			Name:     h.name,
+			Category: "hosts",
+			Status:   "running",
+			Detail:   h.detail,
+		}
+
+		if cpu, ok := nodeCPUMap[h.name]; ok {
+			svc.CPU = math.Round(cpu*100) / 100
+		}
+		if ram, ok := nodeRAMMap[h.name]; ok {
+			svc.RAM = math.Round(ram/1024/1024*10) / 10
+		}
+		if count, ok := nodeCountMap[h.name]; ok {
+			svc.Uptime = fmt.Sprintf("%d svcs", count)
+		}
+		if hist, ok := nodeCPUHistMap[h.name]; ok {
+			svc.CPUHist = hist
+		}
+		if hist, ok := nodeRAMHistMap[h.name]; ok {
+			svc.RAMHist = hist
+		}
+
+		hosts = append(hosts, svc)
+	}
+	return hosts
+}
+
 // Returns a string like "0,16 4,12 8,14 ..." fitting width x height.
 func sparklinePoints(values []float64, width, height int) string {
 	if len(values) < 2 {
