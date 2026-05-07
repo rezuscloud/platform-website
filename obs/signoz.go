@@ -65,9 +65,10 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	fetchCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	// Query 1: Health — which deployments are alive
-	healthMap := map[string]bool{}   // "ns/deploy" → alive
-	uptimeMap := map[string]string{} // "ns/deploy" → RFC3339 timestamp
+	// Query 1: Discovery — which deployments exist as scrape targets
+	discoveredMap := map[string]bool{} // "ns/deploy" → seen in up metric
+	scrapeOKMap := map[string]bool{}   // "ns/deploy" → up=1 (scrape succeeded)
+	uptimeMap := map[string]string{}   // "ns/deploy" → RFC3339 timestamp
 	upResults, err := c.queryInstant(fetchCtx, "up")
 	if err == nil {
 		for _, r := range upResults {
@@ -80,8 +81,10 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 				continue
 			}
 			key := ns + "/" + deploy
-			alive := metricValue(r) == "1"
-			healthMap[key] = alive
+			discoveredMap[key] = true
+			if metricValue(r) == "1" {
+				scrapeOKMap[key] = true
+			}
 			if t := metricLabel(r, "k8s.pod.start_time"); t != "" {
 				uptimeMap[key] = t
 			}
@@ -248,8 +251,8 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	seen := map[string]bool{}
 	var services []Service
 
-	// Collect all unique ns/deploy keys from health map
-	for key, alive := range healthMap {
+	// Collect all unique ns/deploy keys from discovery map
+	for key := range discoveredMap {
 		parts := strings.SplitN(key, "/", 2)
 		if len(parts) != 2 {
 			continue
@@ -266,10 +269,12 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 			Category:  CategoryForNamespace(ns),
 		}
 
-		if alive {
-			svc.Status = "healthy"
+		// Service discovered as scrape target = pod is running.
+		// up=0 means scrape failed (wrong port, timeout, TLS), not service down.
+		if scrapeOKMap[key] {
+			svc.Status = "healthy" // scrape OK, CPU/RAM metrics available
 		} else {
-			svc.Status = "unknown"
+			svc.Status = "running" // discovered, no metrics (scrape config issue)
 		}
 
 		if cpu, ok := cpuMap[key]; ok {

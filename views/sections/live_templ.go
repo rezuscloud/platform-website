@@ -172,7 +172,7 @@ func svcTile(svc obs.Service) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else if svc.Status == "running" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span data-dot class=\"inline-block w-2 h-2 shrink-0 bg-accent-gold dark:bg-next-teal\"></span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span data-dot class=\"inline-block w-2 h-2 shrink-0 bg-green-600 dark:bg-green-500\"></span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
