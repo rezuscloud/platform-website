@@ -77,8 +77,8 @@ func (c *SigNozClient) queryClickHouse(ctx context.Context, sql string, fn func(
 		return
 	}
 	req, err := http.NewRequestWithContext(ctx, "POST",
-		c.clickhouseURL+"/?query=FORMAT+JSONEachRow",
-		strings.NewReader(sql))
+		c.clickhouseURL,
+		strings.NewReader(sql+" FORMAT JSONEachRow"))
 	if err != nil {
 		return
 	}
