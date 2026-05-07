@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/PuerkitoBio/goquery"
@@ -27,7 +26,7 @@ func TestLiveSectionHTML(t *testing.T) {
 		section := doc.Find("#live")
 		d, exists := section.Attr("x-data")
 		assert.True(t, exists)
-		assert.Contains(t, d, "liveDashboard")
+		assert.Contains(t, d, "liveMap")
 	})
 
 	t.Run("has EventSource", func(t *testing.T) {
@@ -37,79 +36,54 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.Contains(t, html, "/api/live/stream")
 	})
 
-	t.Run("has 6 category columns", func(t *testing.T) {
-		// Find the outer grid (the one with lg:grid-cols-6)
-		found := false
-		doc.Find("#live .grid").Each(func(i int, s *goquery.Selection) {
-			classes, _ := s.Attr("class")
-			if strings.Contains(classes, "lg:grid-cols-6") {
-				found = true
-			}
-		})
-		assert.True(t, found, "should find a grid with lg:grid-cols-6")
-	})
-
-	t.Run("hosts column exists", func(t *testing.T) {
+	// Service map layer tests
+	t.Run("has 7 layers", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "Hosts")
-		assert.Contains(t, html, "talosoci-control-plane-legal-poodle")
-		assert.Contains(t, html, "talosedge-genmachiche-flowing-bluejay")
-	})
-
-	t.Run("development column exists", func(t *testing.T) {
-		html, err := doc.Find("#live").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "Development")
-	})
-
-	t.Run("deployment column exists", func(t *testing.T) {
-		html, err := doc.Find("#live").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "Deployment")
-		assert.Contains(t, html, "source-controller")
-	})
-
-	t.Run("runtime column exists", func(t *testing.T) {
-		html, err := doc.Find("#live").Html()
-		require.NoError(t, err)
+		assert.Contains(t, html, "Traffic")
+		assert.Contains(t, html, "Application")
 		assert.Contains(t, html, "Runtime")
-		assert.Contains(t, html, "platform-website")
-	})
-
-	t.Run("data column exists", func(t *testing.T) {
-		html, err := doc.Find("#live").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "Data")
-	})
-
-	t.Run("observability column exists", func(t *testing.T) {
-		html, err := doc.Find("#live").Html()
-		require.NoError(t, err)
+		assert.Contains(t, html, "Delivery")
 		assert.Contains(t, html, "Observability")
+		assert.Contains(t, html, "Storage")
+		assert.Contains(t, html, "Infrastructure")
 	})
 
-	t.Run("services have data-live-svc", func(t *testing.T) {
-		services := doc.Find("[data-live-svc]")
-		assert.GreaterOrEqual(t, services.Length(), 8)
-	})
-
-	t.Run("services have status dots", func(t *testing.T) {
-		dots := doc.Find("[data-dot]")
-		assert.Equal(t, doc.Find("[data-live-svc]").Length(), dots.Length())
-	})
-
-	t.Run("services have CPU and RAM elements", func(t *testing.T) {
-		cpu := doc.Find("[data-cpu]")
-		ram := doc.Find("[data-ram]")
-		assert.GreaterOrEqual(t, cpu.Length(), 1)
-		assert.GreaterOrEqual(t, ram.Length(), 1)
-	})
-
-	t.Run("click-to-expand has toggleService", func(t *testing.T) {
+	t.Run("traffic layer has Visitor and Gateway", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "toggleService")
+		assert.Contains(t, html, "Visitor")
+		assert.Contains(t, html, "Gateway")
+		assert.Contains(t, html, "→")
+	})
+
+	t.Run("infrastructure layer has real hosts", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "OCI Cloud")
+		assert.Contains(t, html, "Edge Node")
+	})
+
+	t.Run("live nodes have data-map-key", func(t *testing.T) {
+		nodes := doc.Find("[data-map-key]")
+		assert.GreaterOrEqual(t, nodes.Length(), 8, "should have at least 8 live nodes with data-map-key")
+	})
+
+	t.Run("live nodes have status dots", func(t *testing.T) {
+		dots := doc.Find("[data-map-key] [data-dot]")
+		liveNodes := doc.Find("[data-map-key]")
+		assert.Equal(t, liveNodes.Length(), dots.Length(), "each live node should have a status dot")
+	})
+
+	t.Run("live nodes have metric elements", func(t *testing.T) {
+		metrics := doc.Find("[data-map-key] [data-metric]")
+		assert.GreaterOrEqual(t, metrics.Length(), 1, "should have at least 1 node with metrics")
+	})
+
+	t.Run("click-to-expand has selectNode", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "selectNode")
 		assert.Contains(t, html, "selected")
 	})
 
