@@ -53,8 +53,8 @@ func TestLiveSectionHTML(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
 		assert.Contains(t, html, "Hosts")
-		assert.Contains(t, html, "oci-cloud")
-		assert.Contains(t, html, "edge-node")
+		assert.Contains(t, html, "talosoci-control-plane-legal-poodle")
+		assert.Contains(t, html, "talosedge-genmachiche-flowing-bluejay")
 	})
 
 	t.Run("development column exists", func(t *testing.T) {

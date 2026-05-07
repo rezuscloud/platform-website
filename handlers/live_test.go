@@ -64,8 +64,8 @@ func TestDefaultMockData(t *testing.T) {
 		for _, svc := range data.Services {
 			names[svc.Name] = true
 		}
-		assert.True(t, names["oci-cloud"])
-		assert.True(t, names["edge-node"])
+		assert.True(t, names["talosoci-control-plane-legal-poodle"])
+		assert.True(t, names["talosedge-genmachiche-flowing-bluejay"])
 	})
 
 	t.Run("has no live metrics in mock mode", func(t *testing.T) {

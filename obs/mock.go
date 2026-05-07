@@ -19,7 +19,9 @@ func (m *MockClient) Fetch(_ context.Context) (LiveData, error) {
 func DefaultMockData() LiveData {
 	now := time.Now().Unix()
 	return LiveData{
-		Services: append(StaticHosts(), []Service{
+		Services: []Service{
+			{Name: "talosoci-control-plane-legal-poodle", Category: "hosts", Status: "running", Detail: "ARM64 \u00b7 Ampere A1 \u00b7 4 svcs", CPU: 0.58, RAM: 5008, IOWait: 3.3, LoadAvg: 29.18, Uptime: "5d"},
+			{Name: "talosedge-genmachiche-flowing-bluejay", Category: "hosts", Status: "running", Detail: "AMD64 \u00b7 Intel NUC \u00b7 21 svcs", CPU: 4.77, RAM: 13126, IOWait: 2.2, LoadAvg: 6.92, Uptime: "5d"},
 			{Name: "forgejo", Namespace: "forgejo", Category: "dev", Status: "healthy", CPU: 0.03, RAM: 16, Uptime: "1h"},
 			{Name: "source-controller", Namespace: "flux-system", Category: "deployment", Status: "healthy", CPU: 0.25, RAM: 105, Uptime: "4d"},
 			{Name: "kustomize-controller", Namespace: "flux-system", Category: "deployment", Status: "healthy", CPU: 0.08, RAM: 79, Uptime: "4d"},
@@ -32,7 +34,7 @@ func DefaultMockData() LiveData {
 			{Name: "dapr-operator", Namespace: "dapr-system", Category: "runtime", Status: "healthy", CPU: 0.13, RAM: 53, Uptime: "12h"},
 			{Name: "signoz-otel-collector", Namespace: "signoz", Category: "observability", Status: "unmonitored"},
 			{Name: "juicefs-tikv-pd", Namespace: "tikv-system", Category: "data", Status: "healthy", CPU: 3.82, RAM: 173, Uptime: "4d"},
-		}...),
+		},
 		HasMetrics: false,
 		Timestamp:  now,
 	}

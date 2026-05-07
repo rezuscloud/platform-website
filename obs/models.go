@@ -15,6 +15,8 @@ type Service struct {
 	Detail    string  `json:"detail,omitempty"`  // e.g. "ARM64 · Ampere A1" for hosts
 	CPU       float64 `json:"cpu"`               // CPU % (rate over 5m)
 	RAM       float64 `json:"ram"`               // RAM in MB
+	LoadAvg   float64 `json:"loadAvg,omitempty"` // system load average 5m
+	IOWait    float64 `json:"ioWait,omitempty"`  // CPU % spent in iowait
 	Uptime    string  `json:"uptime,omitempty"`  // e.g. "4d", "12h", "45m"
 	CPUHist   string  `json:"cpuHist,omitempty"` // SVG polyline points for CPU sparkline
 	RAMHist   string  `json:"ramHist,omitempty"` // SVG polyline points for RAM sparkline

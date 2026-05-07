@@ -14,26 +14,40 @@ import (
 	"time"
 )
 
-// SigNozClient fetches live data from the SigNoz Prometheus-compatible API.
+// SigNozClient fetches live data from the SigNoz Prometheus-compatible API
+// and ClickHouse for real node-level metrics.
 type SigNozClient struct {
-	baseURL    string
-	apiKey     string
-	namespace  string
-	httpClient *http.Client
-	cached     LiveData
-	cachedAt   time.Time
-	cacheTTL   time.Duration
+	baseURL        string
+	apiKey         string
+	clickhouseURL  string
+	clickhouseAuth string
+	namespace      string
+	httpClient     *http.Client
+	cached         LiveData
+	cachedAt       time.Time
+	cacheTTL       time.Duration
+}
+
+// nodeMetrics holds real node-level metrics from ClickHouse.
+type nodeMetrics struct {
+	cpuPct  float64 // k8s.node.cpu.usage (%)
+	ramMB   float64 // k8s.node.memory.working_set (MB)
+	ioWait  float64 // system.cpu.time state=wait (% of total)
+	loadAvg float64 // system.cpu.load_average.5m
+	uptime  float64 // k8s.node.uptime (seconds)
 }
 
 func NewSigNozClient(baseURL, apiKey string) *SigNozClient {
 	ns := getNamespace()
 	log.Printf("SigNoz client: namespace=%s", ns)
 	return &SigNozClient{
-		baseURL:    strings.TrimRight(baseURL, "/"),
-		apiKey:     apiKey,
-		namespace:  ns,
-		httpClient: &http.Client{Timeout: 5 * time.Second},
-		cacheTTL:   30 * time.Second,
+		baseURL:        strings.TrimRight(baseURL, "/"),
+		apiKey:         apiKey,
+		clickhouseURL:  os.Getenv("CLICKHOUSE_URL"),
+		clickhouseAuth: os.Getenv("CLICKHOUSE_AUTH"),
+		namespace:      ns,
+		httpClient:     &http.Client{Timeout: 5 * time.Second},
+		cacheTTL:       30 * time.Second,
 	}
 }
 
@@ -56,6 +70,118 @@ func getNamespace() string {
 	return "platform-website"
 }
 
+// queryClickHouse runs a SQL query against the ClickHouse HTTP interface.
+// Results are decoded as JSONEachRow, one map per row.
+func (c *SigNozClient) queryClickHouse(ctx context.Context, sql string, fn func(row map[string]interface{})) {
+	if c.clickhouseURL == "" || c.clickhouseAuth == "" {
+		return
+	}
+	req, err := http.NewRequestWithContext(ctx, "POST",
+		c.clickhouseURL+"/?query=FORMAT+JSONEachRow",
+		strings.NewReader(sql))
+	if err != nil {
+		return
+	}
+	// CLICKHOUSE_AUTH is the password for the admin user.
+	req.SetBasicAuth("admin", c.clickhouseAuth)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+
+	dec := json.NewDecoder(resp.Body)
+	for {
+		var row map[string]interface{}
+		if err := dec.Decode(&row); err != nil {
+			break
+		}
+		fn(row)
+	}
+}
+
+// sparklinePoints returns SVG polyline points for a sparkline.
+func sparklinePoints(values []float64, width, height int) string {
+	if len(values) < 2 {
+		return ""
+	}
+	min, max := values[0], values[0]
+	for _, v := range values[1:] {
+		if v < min {
+			min = v
+		}
+		if v > max {
+			max = v
+		}
+	}
+	r := max - min
+	if r == 0 {
+		r = 1
+	}
+	var pts []string
+	for i, v := range values {
+		x := float64(i) * float64(width) / float64(len(values)-1)
+		y := float64(height) - ((v - min) / r * float64(height))
+		pts = append(pts, fmt.Sprintf("%.1f,%.1f", x, y))
+	}
+	return strings.Join(pts, " ")
+}
+
+// sortServices sorts by category order then by name.
+func sortServices(services []Service) {
+	catOrder := map[string]int{}
+	for i, c := range CategoryOrder {
+		catOrder[c] = i
+	}
+	for i := 0; i < len(services); i++ {
+		for j := i + 1; j < len(services); j++ {
+			ci := catOrder[services[i].Category]
+			cj := catOrder[services[j].Category]
+			if ci > cj || (ci == cj && services[i].Name > services[j].Name) {
+				services[i], services[j] = services[j], services[i]
+			}
+		}
+	}
+}
+
+// promResponse and promResultItem model the SigNoz /api/v1/query JSON response.
+type promResponse struct {
+	Status string `json:"status"`
+	Data   struct {
+		ResultType string           `json:"resultType"`
+		Result     []promResultItem `json:"result"`
+	} `json:"data"`
+}
+
+type promResultItem struct {
+	Metric map[string]string      `json:"metric"`
+	Value  interface{}            `json:"value,omitempty"`
+	Values interface{}            `json:"values,omitempty"`
+}
+
+// parseFloatArray extracts []float64 from a ClickHouse groupArray result.
+func parseFloatArray(v interface{}) []float64 {
+	arr, ok := v.([]interface{})
+	if !ok {
+		return nil
+	}
+	result := make([]float64, 0, len(arr))
+	for _, item := range arr {
+		if f, err := parseFloat(fmt.Sprintf("%v", item)); err == nil {
+			result = append(result, f)
+		}
+	}
+	return result
+}
+
+func getOrCreateNode(m map[string]*nodeMetrics, key string) *nodeMetrics {
+	if _, ok := m[key]; !ok {
+		m[key] = &nodeMetrics{}
+	}
+	return m[key]
+}
+
 // Fetch returns live services discovered from SigNoz metrics.
 func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	if time.Since(c.cachedAt) < c.cacheTTL && len(c.cached.Services) > 0 {
@@ -64,11 +190,13 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 
 	fetchCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
+	now := time.Now()
 
-	// Query 1: Discovery — which deployments exist as scrape targets
-	discoveredMap := map[string]bool{} // "ns/deploy" → seen in up metric
-	scrapeOKMap := map[string]bool{}   // "ns/deploy" → up=1 (scrape succeeded)
-	uptimeMap := map[string]string{}   // "ns/deploy" → RFC3339 timestamp
+	// --- Service discovery via Prometheus v1 API ---
+
+	discoveredMap := map[string]bool{}
+	scrapeOKMap := map[string]bool{}
+	uptimeMap := map[string]string{}
 	upResults, err := c.queryInstant(fetchCtx, "up")
 	if err == nil {
 		for _, r := range upResults {
@@ -91,167 +219,153 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 		}
 	}
 
-	// Query 2: CPU% (rate over 5m)
-	cpuMap := map[string]float64{} // "ns/deploy" → CPU%
-	cpuResults, err := c.queryInstant(fetchCtx, "rate(process_cpu_seconds_total[5m])*100")
-	if err == nil {
-		for _, r := range cpuResults {
-			ns := metricLabel(r, "k8s_namespace_name")
-			deploy := metricLabel(r, "k8s.deployment.name")
-			if deploy == "" {
-				deploy = metricLabel(r, "k8s.statefulset.name")
-			}
-			if ns != "" && deploy != "" {
+	cpuMap := map[string]float64{}
+	if results, err := c.queryInstant(fetchCtx, "rate(process_cpu_seconds_total[5m])*100"); err == nil {
+		for _, r := range results {
+			if key := serviceKey(r); key != "" {
 				if v, err := parseFloat(metricValue(r)); err == nil {
-					cpuMap[ns+"/"+deploy] = v
+					cpuMap[key] = v
 				}
 			}
 		}
 	}
 
-	// Query 3: RAM
-	ramMap := map[string]float64{} // "ns/deploy" → bytes
-	ramResults, err := c.queryInstant(fetchCtx, "process_resident_memory_bytes")
-	if err == nil {
-		for _, r := range ramResults {
-			ns := metricLabel(r, "k8s_namespace_name")
-			deploy := metricLabel(r, "k8s.deployment.name")
-			if deploy == "" {
-				deploy = metricLabel(r, "k8s.statefulset.name")
-			}
-			if ns != "" && deploy != "" {
+	ramMap := map[string]float64{}
+	if results, err := c.queryInstant(fetchCtx, "process_resident_memory_bytes"); err == nil {
+		for _, r := range results {
+			if key := serviceKey(r); key != "" {
 				if v, err := parseFloat(metricValue(r)); err == nil {
-					ramMap[ns+"/"+deploy] = v
+					ramMap[key] = v
 				}
 			}
 		}
 	}
 
-	// Query 4: CPU histogram (12 points, 5min step = 1h lookback)
-	now := time.Now()
-	cpuHistMap := map[string]string{} // "ns/deploy" → SVG polyline points
-	cpuHistResults, err := c.queryRange(fetchCtx,
-		"rate(process_cpu_seconds_total[5m])*100",
-		now.Add(-60*time.Minute), now, 300)
-	if err == nil {
-		for _, r := range cpuHistResults {
-			ns := metricLabel(r, "k8s_namespace_name")
-			deploy := metricLabel(r, "k8s.deployment.name")
-			if deploy == "" {
-				deploy = metricLabel(r, "k8s.statefulset.name")
-			}
-			if ns == "" || deploy == "" {
-				continue
-			}
-			key := ns + "/" + deploy
-			values := extractValues(r)
-			if len(values) > 0 {
-				cpuHistMap[key] = sparklinePoints(values, 48, 16)
+	cpuHistMap := map[string]string{}
+	if results, err := c.queryRange(fetchCtx, "rate(process_cpu_seconds_total[5m])*100",
+		now.Add(-60*time.Minute), now, 300); err == nil {
+		for _, r := range results {
+			if key := serviceKey(r); key != "" {
+				if values := extractValues(r); len(values) > 0 {
+					cpuHistMap[key] = sparklinePoints(values, 48, 16)
+				}
 			}
 		}
 	}
 
-	// Query 5: RAM histogram
 	ramHistMap := map[string]string{}
-	ramHistResults, err := c.queryRange(fetchCtx,
-		"process_resident_memory_bytes",
-		now.Add(-60*time.Minute), now, 300)
-	if err == nil {
-		for _, r := range ramHistResults {
-			ns := metricLabel(r, "k8s_namespace_name")
-			deploy := metricLabel(r, "k8s.deployment.name")
-			if deploy == "" {
-				deploy = metricLabel(r, "k8s.statefulset.name")
-			}
-			if ns == "" || deploy == "" {
-				continue
-			}
-			key := ns + "/" + deploy
-			values := extractValues(r)
-			if len(values) > 0 {
-				ramHistMap[key] = sparklinePoints(values, 48, 16)
-			}
-		}
-	}
-
-	// Query 6: Per-node aggregates (for hosts column)
-	nodeCPUMap := map[string]float64{} // node_name → total CPU%
-	nodeRAMMap := map[string]float64{} // node_name → total RAM bytes
-	nodeCountMap := map[string]int{}   // node_name → service count
-
-	// CPU per node
-	nodeCPUResults, err := c.queryInstant(fetchCtx, "sum(rate(process_cpu_seconds_total[5m])*100) by (k8s_node_name)")
-	if err == nil {
-		for _, r := range nodeCPUResults {
-			if node := metricLabel(r, "k8s_node_name"); node != "" {
-				if v, err := parseFloat(metricValue(r)); err == nil {
-					nodeCPUMap[node] = v
+	if results, err := c.queryRange(fetchCtx, "process_resident_memory_bytes",
+		now.Add(-60*time.Minute), now, 300); err == nil {
+		for _, r := range results {
+			if key := serviceKey(r); key != "" {
+				if values := extractValues(r); len(values) > 0 {
+					ramHistMap[key] = sparklinePoints(values, 48, 16)
 				}
 			}
 		}
 	}
 
-	// RAM per node
-	nodeRAMResults, err := c.queryInstant(fetchCtx, "sum(process_resident_memory_bytes) by (k8s_node_name)")
-	if err == nil {
-		for _, r := range nodeRAMResults {
-			if node := metricLabel(r, "k8s_node_name"); node != "" {
-				if v, err := parseFloat(metricValue(r)); err == nil {
-					nodeRAMMap[node] = v
+	// --- Host metrics from ClickHouse ---
+	// Prometheus v1 only has process-level metrics from scraped Go binaries.
+	// Real node metrics (CPU, RAM, IOWait, LoadAvg) come from the OTEL
+	// kubeletstats and hostmetrics receivers stored in ClickHouse.
+
+	nodeMap := map[string]*nodeMetrics{}
+
+	// CPU% per node
+	c.queryClickHouse(fetchCtx,
+		"SELECT argMax(s.value, s.unix_milli) as v, "+
+			"JSONExtractString(t.labels, 'k8s.node.name') as node "+
+			"FROM signoz_metrics.samples_v4 s "+
+			"INNER JOIN signoz_metrics.time_series_v4 t ON s.fingerprint = t.fingerprint "+
+			"WHERE s.metric_name = 'k8s.node.cpu.usage' "+
+			"AND s.unix_milli >= toUnixTimestamp(now() - INTERVAL 5 MINUTE) * 1000 "+
+			"GROUP BY node ORDER BY node",
+		func(row map[string]interface{}) {
+			if node, ok := chString(row, "node"); ok {
+				if v, ok := chFloat(row, "v"); ok {
+					getOrCreateNode(nodeMap, node).cpuPct = v
 				}
 			}
-		}
-	}
+		})
 
-	// Service count per node
-	nodeCountResults, err := c.queryInstant(fetchCtx, "count(up) by (k8s_node_name)")
-	if err == nil {
-		for _, r := range nodeCountResults {
-			if node := metricLabel(r, "k8s_node_name"); node != "" {
-				if v, err := parseFloat(metricValue(r)); err == nil {
-					nodeCountMap[node] = int(v)
+	// RAM working_set per node
+	c.queryClickHouse(fetchCtx,
+		"SELECT argMax(s.value, s.unix_milli) as v, "+
+			"JSONExtractString(t.labels, 'k8s.node.name') as node "+
+			"FROM signoz_metrics.samples_v4 s "+
+			"INNER JOIN signoz_metrics.time_series_v4 t ON s.fingerprint = t.fingerprint "+
+			"WHERE s.metric_name = 'k8s.node.memory.working_set' "+
+			"AND s.unix_milli >= toUnixTimestamp(now() - INTERVAL 5 MINUTE) * 1000 "+
+			"GROUP BY node ORDER BY node",
+		func(row map[string]interface{}) {
+			if node, ok := chString(row, "node"); ok {
+				if v, ok := chFloat(row, "v"); ok {
+					getOrCreateNode(nodeMap, node).ramMB = v / 1024 / 1024
 				}
 			}
-		}
-	}
+		})
 
-	// Per-node CPU histogram
-	nodeCPUHistMap := map[string]string{}
-	nodeCPUHistResults, err := c.queryRange(fetchCtx,
-		"sum(rate(process_cpu_seconds_total[5m])*100) by (k8s_node_name)",
-		now.Add(-60*time.Minute), now, 300)
-	if err == nil {
-		for _, r := range nodeCPUHistResults {
-			if node := metricLabel(r, "k8s_node_name"); node != "" {
-				values := extractValues(r)
-				if len(values) > 0 {
-					nodeCPUHistMap[node] = sparklinePoints(values, 48, 16)
+	// Load average 5m per node
+	c.queryClickHouse(fetchCtx,
+		"SELECT argMax(s.value, s.unix_milli) as v, "+
+			"JSONExtractString(t.labels, 'k8s.node.name') as node "+
+			"FROM signoz_metrics.samples_v4 s "+
+			"INNER JOIN signoz_metrics.time_series_v4 t ON s.fingerprint = t.fingerprint "+
+			"WHERE s.metric_name = 'system.cpu.load_average.5m' "+
+			"AND s.unix_milli >= toUnixTimestamp(now() - INTERVAL 5 MINUTE) * 1000 "+
+			"GROUP BY node ORDER BY node",
+		func(row map[string]interface{}) {
+			if node, ok := chString(row, "node"); ok {
+				if v, ok := chFloat(row, "v"); ok {
+					getOrCreateNode(nodeMap, node).loadAvg = v
 				}
 			}
-		}
-	}
+		})
 
-	// Per-node RAM histogram
-	nodeRAMHistMap := map[string]string{}
-	nodeRAMHistResults, err := c.queryRange(fetchCtx,
-		"sum(process_resident_memory_bytes) by (k8s_node_name)",
-		now.Add(-60*time.Minute), now, 300)
-	if err == nil {
-		for _, r := range nodeRAMHistResults {
-			if node := metricLabel(r, "k8s_node_name"); node != "" {
-				values := extractValues(r)
-				if len(values) > 0 {
-					nodeRAMHistMap[node] = sparklinePoints(values, 48, 16)
+	// IOWait: rate of system.cpu.time state=wait as % of total CPU time
+	c.queryClickHouse(fetchCtx,
+		"WITH rates AS ("+
+			"SELECT JSONExtractString(t.labels, 'k8s.node.name') as node, "+
+			"JSONExtractString(t.labels, 'state') as state, "+
+			"(max(s.value)-min(s.value))/(max(s.unix_milli)-min(s.unix_milli)) as rate "+
+			"FROM signoz_metrics.samples_v4 s "+
+			"INNER JOIN signoz_metrics.time_series_v4 t ON s.fingerprint = t.fingerprint "+
+			"WHERE s.metric_name = 'system.cpu.time' "+
+			"AND s.unix_milli >= toUnixTimestamp(now() - INTERVAL 10 MINUTE) * 1000 "+
+			"GROUP BY node, state) "+
+			"SELECT node, sumIf(rate, state = 'wait') / sum(rate) * 100 as iowait_pct "+
+			"FROM rates GROUP BY node ORDER BY node",
+		func(row map[string]interface{}) {
+			if node, ok := chString(row, "node"); ok {
+				if v, ok := chFloat(row, "iowait_pct"); ok {
+					getOrCreateNode(nodeMap, node).ioWait = v
 				}
 			}
-		}
-	}
+		})
 
-	// Build service list from all discovered deployments
+	// Uptime per node (seconds)
+	c.queryClickHouse(fetchCtx,
+		"SELECT argMax(s.value, s.unix_milli) as v, "+
+			"JSONExtractString(t.labels, 'k8s.node.name') as node "+
+			"FROM signoz_metrics.samples_v4 s "+
+			"INNER JOIN signoz_metrics.time_series_v4 t ON s.fingerprint = t.fingerprint "+
+			"WHERE s.metric_name = 'k8s.node.uptime' "+
+			"AND s.unix_milli >= toUnixTimestamp(now() - INTERVAL 5 MINUTE) * 1000 "+
+			"GROUP BY node ORDER BY node",
+		func(row map[string]interface{}) {
+			if node, ok := chString(row, "node"); ok {
+				if v, ok := chFloat(row, "v"); ok {
+					getOrCreateNode(nodeMap, node).uptime = v
+				}
+			}
+		})
+
+	// --- Build service list ---
+
 	seen := map[string]bool{}
 	var services []Service
 
-	// Collect all unique ns/deploy keys from discovery map
 	for key := range discoveredMap {
 		parts := strings.SplitN(key, "/", 2)
 		if len(parts) != 2 {
@@ -268,15 +382,11 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 			Namespace: ns,
 			Category:  CategoryForNamespace(ns),
 		}
-
-		// Service discovered as scrape target = pod is running.
-		// up=0 means scrape failed (wrong port, timeout, TLS), not service down.
 		if scrapeOKMap[key] {
-			svc.Status = "healthy" // scrape OK, CPU/RAM metrics available
+			svc.Status = "healthy"
 		} else {
-			svc.Status = "running" // discovered, no metrics (scrape config issue)
+			svc.Status = "running"
 		}
-
 		if cpu, ok := cpuMap[key]; ok {
 			svc.CPU = math.Round(cpu*100) / 100
 		}
@@ -294,15 +404,24 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 		if hist, ok := ramHistMap[key]; ok {
 			svc.RAMHist = hist
 		}
-
 		services = append(services, svc)
 	}
 
-	// Sort services: by category order, then by name
 	sortServices(services)
 
-	// Prepend static host entries populated with node-level aggregates
-	hosts := buildHosts(nodeCPUMap, nodeRAMMap, nodeCountMap, nodeCPUHistMap, nodeRAMHistMap)
+	// Service count per node
+	nodeCountMap := map[string]int{}
+	if results, err := c.queryInstant(fetchCtx, "count(up) by (k8s_node_name)"); err == nil {
+		for _, r := range results {
+			if node := metricLabel(r, "k8s_node_name"); node != "" {
+				if v, err := parseFloat(metricValue(r)); err == nil {
+					nodeCountMap[node] = int(v)
+				}
+			}
+		}
+	}
+
+	hosts := buildHosts(nodeMap, nodeCountMap)
 	services = append(hosts, services...)
 
 	c.cached = LiveData{
@@ -314,16 +433,11 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	return c.cached, nil
 }
 
-// buildHosts creates host entries from per-node aggregate metrics.
-func buildHosts(
-	nodeCPUMap, nodeRAMMap map[string]float64,
-	nodeCountMap map[string]int,
-	nodeCPUHistMap, nodeRAMHistMap map[string]string,
-) []Service {
-	// Static host definitions (name, detail)
+// buildHosts creates host entries from real node-level metrics.
+func buildHosts(nodeMap map[string]*nodeMetrics, nodeCountMap map[string]int) []Service {
 	hostDefs := []struct{ name, detail string }{
-		{"talosoci-control-plane-legal-poodle", "ARM64 · Ampere A1"},
-		{"talosedge-genmachiche-flowing-bluejay", "AMD64 · Intel NUC"},
+		{"talosoci-control-plane-legal-poodle", "ARM64 \u00b7 Ampere A1"},
+		{"talosedge-genmachiche-flowing-bluejay", "AMD64 \u00b7 Intel NUC"},
 	}
 
 	var hosts []Service
@@ -335,20 +449,17 @@ func buildHosts(
 			Detail:   h.detail,
 		}
 
-		if cpu, ok := nodeCPUMap[h.name]; ok {
-			svc.CPU = math.Round(cpu*100) / 100
-		}
-		if ram, ok := nodeRAMMap[h.name]; ok {
-			svc.RAM = math.Round(ram/1024/1024*10) / 10
+		if m, ok := nodeMap[h.name]; ok {
+			svc.CPU = math.Round(m.cpuPct*100) / 100
+			svc.RAM = math.Round(m.ramMB*10) / 10
+			svc.IOWait = math.Round(m.ioWait*10) / 10
+			svc.LoadAvg = math.Round(m.loadAvg*100) / 100
+			if m.uptime > 0 {
+				svc.Uptime = FormatUptime(time.Duration(m.uptime) * time.Second)
+			}
 		}
 		if count, ok := nodeCountMap[h.name]; ok {
-			svc.Uptime = fmt.Sprintf("%d svcs", count)
-		}
-		if hist, ok := nodeCPUHistMap[h.name]; ok {
-			svc.CPUHist = hist
-		}
-		if hist, ok := nodeRAMHistMap[h.name]; ok {
-			svc.RAMHist = hist
+			svc.Detail = fmt.Sprintf("%s \u00b7 %d svcs", svc.Detail, count)
 		}
 
 		hosts = append(hosts, svc)
@@ -356,113 +467,41 @@ func buildHosts(
 	return hosts
 }
 
-// Returns a string like "0,16 4,12 8,14 ..." fitting width x height.
-func sparklinePoints(values []float64, width, height int) string {
-	if len(values) < 2 {
-		return ""
-	}
+// --- ClickHouse JSON helpers ---
 
-	min, max := values[0], values[0]
-	for _, v := range values[1:] {
-		if v < min {
-			min = v
-		}
-		if v > max {
-			max = v
-		}
-	}
-
-	// Avoid division by zero
-	range_ := max - min
-	if range_ == 0 {
-		range_ = 1
-	}
-
-	var points []string
-	for i, v := range values {
-		x := float64(i) * float64(width) / float64(len(values)-1)
-		y := float64(height) - ((v - min) / range_ * float64(height))
-		points = append(points, fmt.Sprintf("%.1f,%.1f", x, y))
-	}
-
-	return strings.Join(points, " ")
-}
-
-func sortServices(services []Service) {
-	catOrder := map[string]int{}
-	for i, c := range CategoryOrder {
-		catOrder[c] = i
-	}
-	for i := 0; i < len(services); i++ {
-		for j := i + 1; j < len(services); j++ {
-			ci := catOrder[services[i].Category]
-			cj := catOrder[services[j].Category]
-			if ci > cj || (ci == cj && services[i].Name > services[j].Name) {
-				services[i], services[j] = services[j], services[i]
-			}
-		}
-	}
-}
-
-func extractValues(r promResultItem) []float64 {
-	raw, ok := r.Values.([]interface{})
+func chFloat(row map[string]interface{}, key string) (float64, bool) {
+	v, ok := row[key]
 	if !ok {
-		return nil
+		return 0, false
 	}
-	var values []float64
-	for _, v := range raw {
-		if pair, ok := v.([]interface{}); ok && len(pair) >= 2 {
-			if f, err := parseFloat(fmt.Sprintf("%v", pair[1])); err == nil {
-				values = append(values, f)
-			}
-		}
+	f, err := parseFloat(fmt.Sprintf("%v", v))
+	return f, err == nil
+}
+
+func chString(row map[string]interface{}, key string) (string, bool) {
+	v, ok := row[key]
+	if !ok {
+		return "", false
 	}
-	return values
+	s, ok := v.(string)
+	return s, ok
 }
 
-func parseFloat(v interface{}) (float64, error) {
-	var f float64
-	_, err := fmt.Sscanf(fmt.Sprintf("%v", v), "%f", &f)
-	return f, err
+// --- Prometheus v1 HTTP helpers ---
+
+func (c *SigNozClient) queryInstant(ctx context.Context, query string) ([]map[string]interface{}, error) {
+	u := c.baseURL + "/api/v1/query?query=" + url.QueryEscape(query)
+	return c.doQuery(ctx, u)
 }
 
-func metricLabel(r promResultItem, key string) string {
-	if v, ok := r.Metric[key]; ok {
-		return v
-	}
-	return ""
+func (c *SigNozClient) queryRange(ctx context.Context, query string, start, end time.Time, step int64) ([]map[string]interface{}, error) {
+	u := fmt.Sprintf("%s/api/v1/query_range?query=%s&start=%d&end=%d&step=%d",
+		c.baseURL, url.QueryEscape(query), start.Unix(), end.Unix(), step)
+	return c.doQuery(ctx, u)
 }
 
-func metricValue(r promResultItem) string {
-	if len(r.Value) >= 2 {
-		return fmt.Sprintf("%v", r.Value[1])
-	}
-	return ""
-}
-
-func (c *SigNozClient) queryInstant(ctx context.Context, query string) ([]promResultItem, error) {
-	u, _ := url.Parse(c.baseURL)
-	u.Path = "/api/v1/query"
-	q := u.Query()
-	q.Set("query", query)
-	u.RawQuery = q.Encode()
-	return c.doQuery(ctx, u.String())
-}
-
-func (c *SigNozClient) queryRange(ctx context.Context, query string, start, end time.Time, step int) ([]promResultItem, error) {
-	u, _ := url.Parse(c.baseURL)
-	u.Path = "/api/v1/query_range"
-	q := u.Query()
-	q.Set("query", query)
-	q.Set("start", fmt.Sprintf("%d", start.Unix()))
-	q.Set("end", fmt.Sprintf("%d", end.Unix()))
-	q.Set("step", fmt.Sprintf("%d", step))
-	u.RawQuery = q.Encode()
-	return c.doQuery(ctx, u.String())
-}
-
-func (c *SigNozClient) doQuery(ctx context.Context, fullURL string) ([]promResultItem, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", fullURL, nil)
+func (c *SigNozClient) doQuery(ctx context.Context, u string) ([]map[string]interface{}, error) {
+	req, err := http.NewRequestWithContext(ctx, "GET", u, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -479,26 +518,77 @@ func (c *SigNozClient) doQuery(ctx context.Context, fullURL string) ([]promResul
 		return nil, err
 	}
 
-	var pr promResponse
-	if err := json.Unmarshal(body, &pr); err != nil {
-		return nil, fmt.Errorf("parse: %w", err)
+	var result struct {
+		Status string `json:"status"`
+		Data   struct {
+			ResultType string                   `json:"resultType"`
+			Result     []map[string]interface{} `json:"result"`
+		} `json:"data"`
 	}
-	if pr.Status != "success" {
-		return nil, fmt.Errorf("sigNoz: %s", string(body))
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, err
 	}
-	return pr.Data.Result, nil
+	return result.Data.Result, nil
 }
 
-type promResponse struct {
-	Status string `json:"status"`
-	Data   struct {
-		ResultType string           `json:"resultType"`
-		Result     []promResultItem `json:"result"`
-	} `json:"data"`
+// --- Metric parsing helpers ---
+
+func serviceKey(r map[string]interface{}) string {
+	ns := metricLabel(r, "k8s_namespace_name")
+	deploy := metricLabel(r, "k8s.deployment.name")
+	if deploy == "" {
+		deploy = metricLabel(r, "k8s.statefulset.name")
+	}
+	if ns == "" || deploy == "" {
+		return ""
+	}
+	return ns + "/" + deploy
 }
 
-type promResultItem struct {
-	Metric map[string]string `json:"metric"`
-	Value  []interface{}     `json:"value,omitempty"`
-	Values interface{}       `json:"values,omitempty"`
+func metricLabel(r map[string]interface{}, key string) string {
+	labels, ok := r["metric"].(map[string]interface{})
+	if !ok {
+		return ""
+	}
+	v, ok := labels[key].(string)
+	return v
+}
+
+func metricValue(r map[string]interface{}) string {
+	v, ok := r["value"]
+	if !ok {
+		return ""
+	}
+	if val, ok := v.([]interface{}); ok && len(val) == 2 {
+		return fmt.Sprintf("%v", val[1])
+	}
+	return ""
+}
+
+func extractValues(r map[string]interface{}) []float64 {
+	raw, ok := r["values"]
+	if !ok {
+		return nil
+	}
+	pairs, ok := raw.([]interface{})
+	if !ok {
+		return nil
+	}
+	values := make([]float64, 0, len(pairs))
+	for _, p := range pairs {
+		pair, ok := p.([]interface{})
+		if !ok || len(pair) < 2 {
+			continue
+		}
+		if f, err := parseFloat(fmt.Sprintf("%v", pair[1])); err == nil {
+			values = append(values, f)
+		}
+	}
+	return values
+}
+
+func parseFloat(s string) (float64, error) {
+	var f float64
+	_, err := fmt.Sscanf(s, "%f", &f)
+	return f, err
 }
