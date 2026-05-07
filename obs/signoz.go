@@ -155,9 +155,9 @@ type promResponse struct {
 }
 
 type promResultItem struct {
-	Metric map[string]string      `json:"metric"`
-	Value  interface{}            `json:"value,omitempty"`
-	Values interface{}            `json:"values,omitempty"`
+	Metric map[string]string `json:"metric"`
+	Value  interface{}       `json:"value,omitempty"`
+	Values interface{}       `json:"values,omitempty"`
 }
 
 // parseFloatArray extracts []float64 from a ClickHouse groupArray result.
