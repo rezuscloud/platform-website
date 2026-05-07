@@ -47,7 +47,8 @@ func main() {
 	app.Get("/api/version", handlers.APIVersion)
 	app.Get("/api/live/stream", handlers.LiveSSE)
 
-	// Wire SigNoz client if env vars are present
+	// Wire SigNoz client — try Dapr secrets first, fall back to env vars
+	obs.LoadSecretsFromDapr()
 	if signoz := obs.NewSigNozClientFromEnv(); signoz != nil {
 		handlers.SetLiveClient(signoz)
 		log.Printf("Live section using SigNoz metrics from %s", os.Getenv("SIGNOZ_URL"))
