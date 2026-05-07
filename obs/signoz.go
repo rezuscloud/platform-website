@@ -87,14 +87,11 @@ func (c *SigNozClient) queryClickHouse(ctx context.Context, sql string, fn func(
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		log.Printf("ClickHouse query error: %v", err)
 		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		body, _ := io.ReadAll(resp.Body)
-		log.Printf("ClickHouse query HTTP %d: %s", resp.StatusCode, string(body[:200]))
 		return
 	}
 
