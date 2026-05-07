@@ -176,22 +176,34 @@ templ Live(data obs.LiveData) {
 						if (dot) dot.className = this.dotClass(svc.status);
 						var cpu = el.querySelector("[data-cpu]");
 						if (cpu) {
-							cpu.textContent = svc.cpu > 0 ? (svc.category === 'hosts' ? 'CPU ' + svc.cpu.toFixed(1) + '%' : svc.cpu.toFixed(2) + '%') : "";
+							cpu.textContent =
+								svc.cpu > 0
+									? svc.category === "hosts"
+										? "CPU " + svc.cpu.toFixed(1) + "%"
+										: svc.cpu.toFixed(2) + "%"
+									: "";
 							cpu.style.display = svc.cpu > 0 ? "" : "none";
 						}
 						var ram = el.querySelector("[data-ram]");
 						if (ram) {
-							ram.textContent = svc.ram > 0 ? (svc.category === 'hosts' ? svc.ram.toFixed(0) + ' MB' : svc.ram.toFixed(0) + 'M') : "";
+							ram.textContent =
+								svc.ram > 0
+									? svc.category === "hosts"
+										? svc.ram.toFixed(0) + " MB"
+										: svc.ram.toFixed(0) + "M"
+									: "";
 							ram.style.display = svc.ram > 0 ? "" : "none";
 						}
 						var io = el.querySelector("[data-iowait]");
 						if (io) {
-							io.textContent = svc.ioWait > 0 ? 'IO ' + svc.ioWait.toFixed(1) + '%' : "";
+							io.textContent =
+								svc.ioWait > 0 ? "IO " + svc.ioWait.toFixed(1) + "%" : "";
 							io.style.display = svc.ioWait > 0 ? "" : "none";
 						}
 						var load = el.querySelector("[data-loadavg]");
 						if (load) {
-							load.textContent = svc.loadAvg > 0 ? 'Load ' + svc.loadAvg.toFixed(2) : "";
+							load.textContent =
+								svc.loadAvg > 0 ? "Load " + svc.loadAvg.toFixed(2) : "";
 							load.style.display = svc.loadAvg > 0 ? "" : "none";
 						}
 						var up = el.querySelector("[data-uptime]");
