@@ -41,7 +41,7 @@ func TestDefaultMockData(t *testing.T) {
 		}
 		assert.True(t, names["source-controller"])
 		assert.True(t, names["platform-website"])
-		assert.True(t, names["forgejo"])
+		assert.True(t, names["cilium-operator"])
 	})
 
 	t.Run("services have CPU and RAM", func(t *testing.T) {
