@@ -1,6 +1,7 @@
 package obs
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -8,39 +9,22 @@ import (
 	"log"
 	"math"
 	"net/http"
-	"net/url"
 	"os"
 	"strings"
 	"time"
 )
 
 // SigNozClient fetches live platform data from SigNoz.
-// It runs 3 queries per fetch cycle (every 30s):
-//  1. PromQL: "up" → discovers services, maps to hosts
-//  2. ClickHouse: pod metrics → CPU, RAM, Disk + sparklines
-//  3. ClickHouse: node metrics → host CPU, RAM, Load, Uptime
-//
-// Network rate is computed from rolling buffer deltas (no extra query).
+// A single v3 query_range call returns all metrics + sparkline history.
 type SigNozClient struct {
 	baseURL   string
 	apiKey    string
-	chURL     string
-	chAuth    string
 	namespace string
 	http      *http.Client
 	cached    LiveData
 	cachedAt  time.Time
 	cacheTTL  time.Duration
-	netBuf    map[string][]netEntry // rolling buffer for network rate
 }
-
-// netEntry stores a timestamped cumulative network byte count.
-type netEntry struct {
-	ts    time.Time
-	bytes float64
-}
-
-const sparklineLen = 12
 
 func NewSigNozClient(baseURL, apiKey string) *SigNozClient {
 	ns := getNamespace()
@@ -48,12 +32,9 @@ func NewSigNozClient(baseURL, apiKey string) *SigNozClient {
 	return &SigNozClient{
 		baseURL:   strings.TrimRight(baseURL, "/"),
 		apiKey:    apiKey,
-		chURL:     os.Getenv("CLICKHOUSE_URL"),
-		chAuth:    os.Getenv("CLICKHOUSE_AUTH"),
 		namespace: ns,
 		http:      &http.Client{Timeout: 10 * time.Second},
 		cacheTTL:  30 * time.Second,
-		netBuf:    map[string][]netEntry{},
 	}
 }
 
@@ -76,7 +57,53 @@ func getNamespace() string {
 	return "platform-website"
 }
 
-// Fetch returns live platform data. Uses 30s cache.
+// ── v3 API types ──
+
+type v3Request struct {
+	Start          int64       `json:"start"`
+	End            int64       `json:"end"`
+	Step           int64       `json:"step"`
+	CompositeQuery v3Composite `json:"compositeQuery"`
+}
+
+type v3Composite struct {
+	PanelType   string                 `json:"panelType"`
+	QueryType   string                 `json:"queryType"`
+	PromQueries map[string]v3PromQuery `json:"promQueries"`
+}
+
+type v3PromQuery struct {
+	Query    string `json:"query"`
+	Disabled bool   `json:"disabled"`
+}
+
+type v3Response struct {
+	Status string     `json:"status"`
+	Error  string     `json:"error,omitempty"`
+	Data   v3DataRoot `json:"data"`
+}
+
+type v3DataRoot struct {
+	Result []v3Result `json:"result"`
+}
+
+type v3Result struct {
+	QueryName string     `json:"queryName"`
+	Series    []v3Series `json:"series"`
+}
+
+type v3Series struct {
+	Labels map[string]string `json:"labels"`
+	Values []v3Point         `json:"values"`
+}
+
+type v3Point struct {
+	Timestamp int64  `json:"timestamp"`
+	Value     string `json:"value"`
+}
+
+// ── Fetch ──
+
 func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	if time.Since(c.cachedAt) < c.cacheTTL && len(c.cached.Services) > 0 {
 		return c.cached, nil
@@ -84,19 +111,48 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 
 	fctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
+
 	now := time.Now()
+	startMs := now.Add(-1 * time.Hour).UnixMilli()
+	endMs := now.UnixMilli()
 
-	// ── Query 1: Service discovery via PromQL "up" ──
-	services, nodeCountMap := c.discoverServices(fctx, now)
+	// Single v3 query_range call for all metrics.
+	resp, err := c.queryV3(fctx, v3Request{
+		Start: startMs,
+		End:   endMs,
+		Step:  300,
+		CompositeQuery: v3Composite{
+			PanelType: "graph",
+			QueryType: "promql",
+			PromQueries: map[string]v3PromQuery{
+				"up":       {Query: "up", Disabled: false},
+				"cpu":      {Query: `{__name__="k8s.pod.cpu.usage"}`, Disabled: false},
+				"ram":      {Query: `{__name__="k8s.pod.memory.working_set"}`, Disabled: false},
+				"disk":     {Query: `{__name__="k8s.pod.filesystem.usage"}`, Disabled: false},
+				"net":      {Query: `rate({__name__="k8s.pod.network.io"}[5m])`, Disabled: false},
+				"nodeCpu":  {Query: `{__name__="k8s.node.cpu.usage"}`, Disabled: false},
+				"nodeRam":  {Query: `{__name__="k8s.node.memory.working_set"}`, Disabled: false},
+				"nodeLoad": {Query: `{__name__="system.cpu.load_average.5m"}`, Disabled: false},
+				"nodeUp":   {Query: `{__name__="k8s.node.uptime"}`, Disabled: false},
+			},
+		},
+	})
+	if err != nil {
+		// Return static hosts on failure
+		return LiveData{
+			Hosts:     staticHosts(),
+			Timestamp: now.Unix(),
+		}, nil
+	}
 
-	// ── Query 2: Pod metrics (CPU, RAM, Disk + sparklines) ──
-	c.fetchPodMetrics(fctx, services, now)
+	// Parse results by query name
+	results := map[string][]v3Series{}
+	for _, r := range resp.Data.Result {
+		results[r.QueryName] = r.Series
+	}
 
-	// ── Query 3: Node metrics (CPU, RAM, Load, Uptime) ──
-	nodeMap := c.fetchNodeMetrics(fctx)
-
-	// ── Build result ──
-	hosts := buildHosts(nodeMap, nodeCountMap)
+	services := buildServices(results["up"], results, now)
+	hosts := buildHosts(results)
 
 	c.cached = LiveData{
 		Hosts:      hosts,
@@ -108,23 +164,20 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	return c.cached, nil
 }
 
-// discoverServices queries PromQL "up" to find all monitored deployments.
-func (c *SigNozClient) discoverServices(ctx context.Context, now time.Time) ([]Service, map[string]int) {
+// ── Service builder ──
+
+func buildServices(upSeries []v3Series, allResults map[string][]v3Series, now time.Time) []Service {
 	type svcInfo struct {
 		ns, deploy, host, uptime string
 		healthy                  bool
 	}
 	svcMap := map[string]*svcInfo{}
 
-	results, err := c.queryProm(ctx, "up")
-	if err != nil {
-		return nil, nil
-	}
-	for _, r := range results {
-		ns := label(r, "k8s_namespace_name")
-		deploy := label(r, "k8s.deployment.name")
+	for _, s := range upSeries {
+		ns := s.Labels["k8s_namespace_name"]
+		deploy := s.Labels["k8s.deployment.name"]
 		if deploy == "" {
-			deploy = label(r, "k8s.statefulset.name")
+			deploy = s.Labels["k8s.statefulset.name"]
 		}
 		if ns == "" || deploy == "" {
 			continue
@@ -135,19 +188,30 @@ func (c *SigNozClient) discoverServices(ctx context.Context, now time.Time) ([]S
 			info = &svcInfo{ns: ns, deploy: deploy}
 			svcMap[key] = info
 		}
-		if value(r) == "1" {
+		if len(s.Values) > 0 && s.Values[len(s.Values)-1].Value == "1" {
 			info.healthy = true
 		}
-		if t := label(r, "k8s.pod.start_time"); t != "" {
+		if t := s.Labels["k8s.pod.start_time"]; t != "" {
 			info.uptime = t
 		}
-		if node := label(r, "k8s_node_name"); node != "" {
+		if node := s.Labels["k8s_node_name"]; node != "" {
 			info.host = node
 		}
 	}
 
+	// Build pod metric lookups
+	podCPU := latestByPod(allResults["cpu"])
+	podRAM := latestByPod(allResults["ram"])
+	podDisk := latestByPod(allResults["disk"])
+	podNet := latestByPod(allResults["net"])
+
+	sparkCPU := sparkByPod(allResults["cpu"])
+	sparkRAM := sparkByPod(allResults["ram"])
+	sparkDisk := sparkByPod(allResults["disk"])
+	sparkNet := sparkByPod(allResults["net"])
+
 	services := make([]Service, 0, len(svcMap))
-	for key, info := range svcMap {
+	for _, info := range svcMap {
 		svc := Service{
 			Name:      info.deploy,
 			Namespace: info.ns,
@@ -164,253 +228,124 @@ func (c *SigNozClient) discoverServices(ctx context.Context, now time.Time) ([]S
 				svc.Uptime = FormatUptime(now.Sub(parsed))
 			}
 		}
-		_ = key
+
+		// Match pod metrics to deployment (prefix matching)
+		var cpuMax, ramMax, netSum, diskSum float64
+		for podKey, v := range podCPU {
+			if matchPod(podKey, svc.Namespace, svc.Name) {
+				if v > cpuMax {
+					cpuMax = v
+				}
+			}
+		}
+		for podKey, v := range podRAM {
+			if matchPod(podKey, svc.Namespace, svc.Name) {
+				if v/1024/1024 > ramMax {
+					ramMax = v / 1024 / 1024
+				}
+			}
+		}
+		for podKey, v := range podNet {
+			if matchPod(podKey, svc.Namespace, svc.Name) {
+				netSum += v / 1024 // bytes/s to KB/s
+			}
+		}
+		for podKey, v := range podDisk {
+			if matchPod(podKey, svc.Namespace, svc.Name) {
+				diskSum += v / 1024 / 1024
+			}
+		}
+
+		svc.CPU = math.Round(cpuMax*100) / 100
+		svc.RAM = math.Round(ramMax*10) / 10
+		svc.NetKB = math.Round(netSum*10) / 10
+		svc.DiskMB = math.Round(diskSum*10) / 10
+
+		// Sparklines: first matching pod's series
+		for podKey, pts := range sparkCPU {
+			if matchPod(podKey, svc.Namespace, svc.Name) {
+				svc.CPUHist = pts
+				break
+			}
+		}
+		for podKey, pts := range sparkRAM {
+			if matchPod(podKey, svc.Namespace, svc.Name) {
+				svc.RAMHist = pts
+				break
+			}
+		}
+		for podKey, pts := range sparkNet {
+			if matchPod(podKey, svc.Namespace, svc.Name) {
+				svc.NetHist = pts
+				break
+			}
+		}
+		for podKey, pts := range sparkDisk {
+			if matchPod(podKey, svc.Namespace, svc.Name) {
+				svc.DiskHist = pts
+				break
+			}
+		}
+
 		services = append(services, svc)
 	}
+
 	sortServices(services)
-
-	// Per-node service counts
-	nodeCountMap := map[string]int{}
-	results2, err := c.queryProm(ctx, "count(up) by (k8s_node_name)")
-	if err == nil {
-		for _, r := range results2 {
-			if node := label(r, "k8s_node_name"); node != "" {
-				if v, err := parseFloat(value(r)); err == nil {
-					nodeCountMap[node] = int(v)
-				}
-			}
-		}
-	}
-
-	return services, nodeCountMap
+	return services
 }
 
-// fetchPodMetrics runs ONE ClickHouse query to get CPU, RAM, Disk
-// for all pods, with 1h of sparkline history from the agg table.
-// Network rate is computed from the rolling buffer.
-func (c *SigNozClient) fetchPodMetrics(ctx context.Context, services []Service, now time.Time) {
-	// Single query: latest value + 1h sparkline history for CPU, RAM, Disk
-	type podRow struct {
-		metric string
-		ns     string
-		pod    string
-		latest float64
-		vals   []float64
-	}
-	rows := []podRow{}
-
-	c.queryCH(ctx,
-		"SELECT a.metric_name, "+
-			"JSONExtractString(t.labels, 'k8s.namespace.name') as ns, "+
-			"JSONExtractString(t.labels, 'k8s.pod.name') as pod, "+
-			"argMax(a.last, a.unix_milli) as latest, "+
-			"groupArray(a.last) as vals "+
-			"FROM signoz_metrics.samples_v4_agg_5m a "+
-			"INNER JOIN signoz_metrics.time_series_v4 t ON a.fingerprint = t.fingerprint "+
-			"WHERE a.metric_name IN ('k8s.pod.cpu.usage', 'k8s.pod.memory.working_set', 'k8s.pod.filesystem.usage', 'k8s.pod.network.io') "+
-			"AND a.unix_milli >= toUnixTimestamp(now() - INTERVAL 1 HOUR) * 1000 "+
-			"GROUP BY a.metric_name, ns, pod",
-		func(row map[string]interface{}) {
-			r := podRow{}
-			if s, ok := chStr(row, "metric_name"); ok {
-				r.metric = s
-			}
-			if s, ok := chStr(row, "ns"); ok {
-				r.ns = s
-			}
-			if s, ok := chStr(row, "pod"); ok {
-				r.pod = s
-			}
-			if v, ok := chNum(row, "latest"); ok {
-				r.latest = v
-			}
-			r.vals = chArr(row["vals"])
-			rows = append(rows, r)
-		})
-
-	// Build per-pod lookup
-	type podMetrics struct {
-		cpuLatest, ramLatest, diskLatest, netLatest float64
-		cpuHist, ramHist, diskHist                  []float64
-	}
-	pods := map[string]*podMetrics{}
-	for _, r := range rows {
-		key := r.ns + "/" + r.pod
-		m, ok := pods[key]
-		if !ok {
-			m = &podMetrics{}
-			pods[key] = m
+// latestByPod returns map[podKey]latestValue from a v3 series result.
+// podKey = namespace/pod-name.
+func latestByPod(series []v3Series) map[string]float64 {
+	m := map[string]float64{}
+	for _, s := range series {
+		ns := s.Labels["k8s_namespace_name"]
+		pod := s.Labels["k8s.pod.name"]
+		if ns == "" || pod == "" || len(s.Values) == 0 {
+			continue
 		}
-		switch r.metric {
-		case "k8s.pod.cpu.usage":
-			m.cpuLatest = r.latest
-			m.cpuHist = r.vals
-		case "k8s.pod.memory.working_set":
-			m.ramLatest = r.latest / 1024 / 1024
-			m.ramHist = make([]float64, len(r.vals))
-			for i, v := range r.vals {
-				m.ramHist[i] = v / 1024 / 1024
-			}
-		case "k8s.pod.filesystem.usage":
-			m.diskLatest = r.latest / 1024 / 1024
-			m.diskHist = make([]float64, len(r.vals))
-			for i, v := range r.vals {
-				m.diskHist[i] = v / 1024 / 1024
-			}
-		case "k8s.pod.network.io":
-			// Cumulative counter: push to rolling buffer for rate computation
-			m.netLatest = r.latest
-			// Skip sparkline from raw counter — we compute rate from buffer
+		last := s.Values[len(s.Values)-1].Value
+		if v, err := parseFloat(last); err == nil {
+			m[ns+"/"+pod] = v
 		}
 	}
-
-	// Push network bytes to rolling buffer
-	for key, m := range pods {
-		if m.netLatest > 0 {
-			c.netBuf[key] = append(c.netBuf[key], netEntry{ts: now, bytes: m.netLatest})
-			if len(c.netBuf[key]) > sparklineLen {
-				c.netBuf[key] = c.netBuf[key][len(c.netBuf[key])-sparklineLen:]
-			}
-		}
-	}
-
-	// Compute network rates from rolling buffer
-	netRates := map[string]float64{}     // latest rate in KB/s
-	netSparklines := map[string]string{} // sparkline SVG
-	for key, buf := range c.netBuf {
-		if len(buf) >= 2 {
-			last := buf[len(buf)-1]
-			prev := buf[len(buf)-2]
-			dt := last.ts.Sub(prev.ts).Seconds()
-			if dt > 0 && last.bytes >= prev.bytes {
-				netRates[key] = (last.bytes - prev.bytes) / dt / 1024
-			}
-			// Build sparkline from rate between consecutive entries
-			if len(buf) >= 2 {
-				rates := []float64{}
-				for i := 1; i < len(buf); i++ {
-					dt := buf[i].ts.Sub(buf[i-1].ts).Seconds()
-					if dt > 0 && buf[i].bytes >= buf[i-1].bytes {
-						rates = append(rates, (buf[i].bytes-buf[i-1].bytes)/dt/1024)
-					}
-				}
-				netSparklines[key] = sparklinePoints(rates, 48, 16)
-			}
-		}
-	}
-
-	// Match pod metrics to services
-	for i := range services {
-		svcKey := services[i].Namespace + "/" + services[i].Name
-		var cpuMax, ramMax, diskSum float64
-		var diskCount int
-
-		for podKey, m := range pods {
-			if !matchPod(podKey, svcKey) {
-				continue
-			}
-			if m.cpuLatest > cpuMax {
-				cpuMax = m.cpuLatest
-			}
-			if m.ramLatest > ramMax {
-				ramMax = m.ramLatest
-			}
-			diskSum += m.diskLatest
-			if m.diskLatest > 0 {
-				diskCount++
-			}
-			// Sparklines: use first matching pod's history
-			if len(m.cpuHist) >= 2 && services[i].CPUHist == "" {
-				services[i].CPUHist = sparklinePoints(m.cpuHist, 48, 16)
-			}
-			if len(m.ramHist) >= 2 && services[i].RAMHist == "" {
-				services[i].RAMHist = sparklinePoints(m.ramHist, 48, 16)
-			}
-			if len(m.diskHist) >= 2 && services[i].DiskHist == "" {
-				services[i].DiskHist = sparklinePoints(m.diskHist, 48, 16)
-			}
-		}
-
-		// Network rate from rolling buffer (per-service, not per-pod)
-		var netSum float64
-		for podKey := range pods {
-			if matchPod(podKey, svcKey) {
-				if rate, ok := netRates[podKey]; ok {
-					netSum += rate
-				}
-				if sl, ok := netSparklines[podKey]; ok && services[i].NetHist == "" {
-					services[i].NetHist = sl
-				}
-			}
-		}
-
-		if cpuMax > 0 {
-			services[i].CPU = math.Round(cpuMax*100) / 100
-		}
-		if ramMax > 0 {
-			services[i].RAM = math.Round(ramMax*10) / 10
-		}
-		if netSum > 0 {
-			services[i].NetKB = math.Round(netSum*10) / 10
-		}
-		if diskSum > 0 {
-			services[i].DiskMB = math.Round(diskSum*10) / 10
-		}
-	}
+	return m
 }
 
-// fetchNodeMetrics runs ONE ClickHouse query for all node metrics.
-func (c *SigNozClient) fetchNodeMetrics(ctx context.Context) map[string]*nodeMetrics {
-	nodeMap := map[string]*nodeMetrics{}
-
-	c.queryCH(ctx,
-		"SELECT a.metric_name, "+
-			"JSONExtractString(t.labels, 'k8s.node.name') as node, "+
-			"argMax(a.last, a.unix_milli) as val "+
-			"FROM signoz_metrics.samples_v4_agg_5m a "+
-			"INNER JOIN signoz_metrics.time_series_v4 t ON a.fingerprint = t.fingerprint "+
-			"WHERE a.metric_name IN ('k8s.node.cpu.usage', 'k8s.node.memory.working_set', 'system.cpu.load_average.5m', 'k8s.node.uptime') "+
-			"AND a.unix_milli >= toUnixTimestamp(now() - INTERVAL 10 MINUTE) * 1000 "+
-			"GROUP BY a.metric_name, node",
-		func(row map[string]interface{}) {
-			node, ok := chStr(row, "node")
-			if !ok {
-				return
-			}
-			val, ok := chNum(row, "val")
-			if !ok {
-				return
-			}
-			metric, _ := chStr(row, "metric_name")
-			nm := getNode(nodeMap, node)
-			switch metric {
-			case "k8s.node.cpu.usage":
-				nm.cpuPct = val
-			case "k8s.node.memory.working_set":
-				nm.ramMB = val / 1024 / 1024
-			case "system.cpu.load_average.5m":
-				nm.loadAvg = val
-			case "k8s.node.uptime":
-				nm.uptime = val
-			}
-		})
-
-	return nodeMap
-}
-
-type nodeMetrics struct {
-	cpuPct, ramMB, loadAvg, uptime float64
-}
-
-func getNode(m map[string]*nodeMetrics, k string) *nodeMetrics {
-	if _, ok := m[k]; !ok {
-		m[k] = &nodeMetrics{}
+// sparkByPod returns map[podKey]svgPolyline from a v3 series result.
+func sparkByPod(series []v3Series) map[string]string {
+	m := map[string]string{}
+	for _, s := range series {
+		ns := s.Labels["k8s_namespace_name"]
+		pod := s.Labels["k8s.pod.name"]
+		if ns == "" || pod == "" || len(s.Values) < 2 {
+			continue
+		}
+		vals := make([]float64, len(s.Values))
+		for i, p := range s.Values {
+			vals[i], _ = parseFloat(p.Value)
+		}
+		m[ns+"/"+pod] = sparklinePoints(vals, 48, 16)
 	}
-	return m[k]
+	return m
 }
 
-// buildHosts creates the host list from node metrics.
-func buildHosts(nodeMap map[string]*nodeMetrics, nodeCountMap map[string]int) []Host {
+// ── Host builder ──
+
+func buildHosts(results map[string][]v3Series) []Host {
+	nodeCPU := latestByNode(results["nodeCpu"])
+	nodeRAM := latestByNode(results["nodeRam"])
+	nodeLoad := latestByNode(results["nodeLoad"])
+	nodeUp := latestByNode(results["nodeUp"])
+
+	// Count services per node from "up" results
+	nodeCount := map[string]int{}
+	for _, s := range results["up"] {
+		if node := s.Labels["k8s_node_name"]; node != "" {
+			nodeCount[node]++
+		}
+	}
+
 	defs := []struct{ name, label, detail string }{
 		{"talosoci-control-plane-legal-poodle", "OCI Cloud", "ARM64 \u00b7 Ampere A1"},
 		{"talosedge-genmachiche-flowing-bluejay", "Edge Node", "AMD64 \u00b7 Intel NUC"},
@@ -418,15 +353,19 @@ func buildHosts(nodeMap map[string]*nodeMetrics, nodeCountMap map[string]int) []
 	hosts := make([]Host, 0, len(defs))
 	for _, d := range defs {
 		h := Host{Name: d.name, Label: d.label, Detail: d.detail}
-		if m, ok := nodeMap[d.name]; ok {
-			h.CPU = math.Round(m.cpuPct*100) / 100
-			h.RAM = math.Round(m.ramMB*10) / 10
-			h.LoadAvg = math.Round(m.loadAvg*100) / 100
-			if m.uptime > 0 {
-				h.Uptime = FormatUptime(time.Duration(m.uptime) * time.Second)
-			}
+		if v, ok := nodeCPU[d.name]; ok {
+			h.CPU = math.Round(v*100) / 100
 		}
-		if n, ok := nodeCountMap[d.name]; ok {
+		if v, ok := nodeRAM[d.name]; ok {
+			h.RAM = math.Round(v/1024/1024*10) / 10
+		}
+		if v, ok := nodeLoad[d.name]; ok {
+			h.LoadAvg = math.Round(v*100) / 100
+		}
+		if v, ok := nodeUp[d.name]; ok {
+			h.Uptime = FormatUptime(time.Duration(v) * time.Second)
+		}
+		if n, ok := nodeCount[d.name]; ok {
 			h.SvcCount = n
 		}
 		hosts = append(hosts, h)
@@ -434,120 +373,69 @@ func buildHosts(nodeMap map[string]*nodeMetrics, nodeCountMap map[string]int) []
 	return hosts
 }
 
-// matchPod checks if a pod key (ns/pod-name-hash) belongs to a service (ns/deploy).
-func matchPod(podKey, svcKey string) bool {
-	return strings.HasPrefix(podKey, svcKey+"-") || podKey == svcKey
-}
-
-// ── ClickHouse ──
-
-func (c *SigNozClient) queryCH(ctx context.Context, sql string, fn func(map[string]interface{})) {
-	if c.chURL == "" || c.chAuth == "" {
-		return
-	}
-	req, err := http.NewRequestWithContext(ctx, "POST", c.chURL,
-		strings.NewReader(sql+" FORMAT JSONEachRow"))
-	if err != nil {
-		return
-	}
-	req.SetBasicAuth("admin", c.chAuth)
-	resp, err := c.http.Do(req)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
-		return
-	}
-	dec := json.NewDecoder(resp.Body)
-	for {
-		var row map[string]interface{}
-		if err := dec.Decode(&row); err != nil {
-			break
+func latestByNode(series []v3Series) map[string]float64 {
+	m := map[string]float64{}
+	for _, s := range series {
+		node := s.Labels["k8s.node.name"]
+		if node == "" || len(s.Values) == 0 {
+			continue
 		}
-		fn(row)
-	}
-}
-
-func chStr(row map[string]interface{}, key string) (string, bool) {
-	v, ok := row[key]
-	if !ok {
-		return "", false
-	}
-	s, ok := v.(string)
-	return s, ok
-}
-
-func chNum(row map[string]interface{}, key string) (float64, bool) {
-	v, ok := row[key]
-	if !ok {
-		return 0, false
-	}
-	f, err := parseFloat(fmt.Sprintf("%v", v))
-	return f, err == nil
-}
-
-func chArr(v interface{}) []float64 {
-	arr, ok := v.([]interface{})
-	if !ok {
-		return nil
-	}
-	out := make([]float64, 0, len(arr))
-	for _, item := range arr {
-		if f, err := parseFloat(fmt.Sprintf("%v", item)); err == nil {
-			out = append(out, f)
+		last := s.Values[len(s.Values)-1].Value
+		if v, err := parseFloat(last); err == nil {
+			m[node] = v
 		}
 	}
-	return out
+	return m
 }
 
-// ── Prometheus v1 API ──
+func staticHosts() []Host {
+	return []Host{
+		{Name: "talosoci-control-plane-legal-poodle", Label: "OCI Cloud", Detail: "ARM64 \u00b7 Ampere A1"},
+		{Name: "talosedge-genmachiche-flowing-bluejay", Label: "Edge Node", Detail: "AMD64 \u00b7 Intel NUC"},
+	}
+}
 
-func (c *SigNozClient) queryProm(ctx context.Context, query string) ([]map[string]interface{}, error) {
-	u := c.baseURL + "/api/v1/query?query=" + url.QueryEscape(query)
-	req, err := http.NewRequestWithContext(ctx, "GET", u, nil)
+// matchPod checks if a pod key (ns/pod-name-hash) belongs to a deployment (ns/deploy).
+func matchPod(podKey, ns, deploy string) bool {
+	prefix := ns + "/" + deploy + "-"
+	return strings.HasPrefix(podKey, prefix) || podKey == ns+"/"+deploy
+}
+
+// ── SigNoz v3 API call ──
+
+func (c *SigNozClient) queryV3(ctx context.Context, req v3Request) (*v3Response, error) {
+	body, err := json.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("SIGNOZ-API-KEY", c.apiKey)
-	resp, err := c.http.Do(req)
+
+	httpReq, err := http.NewRequestWithContext(ctx, "POST",
+		c.baseURL+"/api/v3/query_range", bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("SIGNOZ-API-KEY", c.apiKey)
+
+	resp, err := c.http.Do(httpReq)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
-	var result struct {
-		Data struct {
-			Result []map[string]interface{} `json:"result"`
-		} `json:"data"`
-	}
-	if err := json.Unmarshal(body, &result); err != nil {
+
+	var v3Resp v3Response
+	if err := json.Unmarshal(respBody, &v3Resp); err != nil {
 		return nil, err
 	}
-	return result.Data.Result, nil
-}
-
-func label(r map[string]interface{}, key string) string {
-	labels, ok := r["metric"].(map[string]interface{})
-	if !ok {
-		return ""
+	if v3Resp.Status == "error" {
+		return nil, fmt.Errorf("signoz: %s", v3Resp.Error)
 	}
-	s, _ := labels[key].(string)
-	return s
-}
-
-func value(r map[string]interface{}) string {
-	v, ok := r["value"]
-	if !ok {
-		return ""
-	}
-	if arr, ok := v.([]interface{}); ok && len(arr) == 2 {
-		return fmt.Sprintf("%v", arr[1])
-	}
-	return ""
+	return &v3Resp, nil
 }
 
 // ── Sparkline ──
