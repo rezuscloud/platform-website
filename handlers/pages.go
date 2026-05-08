@@ -32,6 +32,11 @@ func Home(c *fiber.Ctx) error {
 	return render(c, pages.Home(data))
 }
 
+// AIPlayground renders the LocalAI iframe page.
+func AIPlayground(c *fiber.Ctx) error {
+	return render(c, pages.AIPlayground())
+}
+
 // Section renders an individual section for HTMX partial swaps.
 func Section(c *fiber.Ctx) error {
 	name := c.Params("name")
