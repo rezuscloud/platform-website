@@ -41,6 +41,7 @@ func Section(c *fiber.Ctx) error {
 		"challenge":    sections.Challenge(),
 		"architecture": sections.Architecture(),
 		"features":     sections.Features(),
+		"ai":           sections.AI(),
 		"networking":   sections.Networking(),
 		"comparison":   sections.Comparison(),
 		"usecases":     sections.UseCases(),
