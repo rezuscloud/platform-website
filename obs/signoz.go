@@ -451,12 +451,6 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 		} else {
 			svc.Status = "running"
 		}
-		if cpu, ok := cpuMap[key]; ok {
-			svc.CPU = math.Round(cpu*100) / 100
-		}
-		if ram, ok := ramMap[key]; ok {
-			svc.RAM = math.Round(ram/1024/1024*10) / 10
-		}
 		if t, ok := uptimeMap[key]; ok {
 			if parsed, err := time.Parse(time.RFC3339, t); err == nil {
 				svc.Uptime = FormatUptime(now.Sub(parsed))
@@ -506,7 +500,7 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 			if ns, ok := chString(row, "ns"); ok {
 				if pod, ok := chString(row, "pod"); ok {
 					if v, ok := chFloat(row, "cpu"); ok {
-						podCPUMap[ns+"/"+pod] = v * 100 // convert fraction to %
+						podCPUMap[ns+"/"+pod] = v // raw: CPU cores
 					}
 					if v, ok := chFloat(row, "ram"); ok && v > 0 {
 						podRAMMap[ns+"/"+pod] = v / 1024 / 1024 // bytes to MB
@@ -564,18 +558,20 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	// pod "cilium-operator-598475cd5-xwzb8".
 	for i := range services {
 		svcKey := services[i].Namespace + "/" + services[i].Name
-		var cpuSum, ramSum, netSum, diskSum float64
-		var cpuCount, ramCount, netCount, diskCount int
+		var cpuMax, ramMax, netSum, diskSum float64
+		var netCount, diskCount int
 		for podKey, cpu := range podCPUMap {
 			if strings.HasPrefix(podKey, svcKey+"-") || podKey == svcKey {
-				cpuSum += cpu
-				cpuCount++
+				if cpu > cpuMax {
+					cpuMax = cpu
+				}
 			}
 		}
 		for podKey, ram := range podRAMMap {
 			if strings.HasPrefix(podKey, svcKey+"-") || podKey == svcKey {
-				ramSum += ram
-				ramCount++
+				if ram > ramMax {
+					ramMax = ram
+				}
 			}
 		}
 		for podKey, net := range podNetMap {
@@ -590,11 +586,11 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 				diskCount++
 			}
 		}
-		if cpuCount > 0 && services[i].CPU == 0 {
-			services[i].CPU = math.Round(cpuSum*100) / 100
+		if cpuMax > 0 {
+			services[i].CPU = math.Round(cpuMax*100) / 100
 		}
-		if ramCount > 0 && services[i].RAM == 0 {
-			services[i].RAM = math.Round(ramSum*10) / 10
+		if ramMax > 0 {
+			services[i].RAM = math.Round(ramMax*10) / 10
 		}
 		if netCount > 0 {
 			services[i].NetKB = math.Round(netSum*10) / 10
@@ -607,13 +603,15 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	// --- Sparklines from ClickHouse time-bucketed data ---
 	// Each metric: 12 buckets of 5min over 1h, aggregated per deployment.
 
-	// CPU sparklines (k8s.pod.cpu.usage * 100 = %)
+	// CPU sparklines (raw CPU cores)
 	podCPUHist := c.queryPodTimeSeries(fetchCtx,
-		"k8s.pod.cpu.usage", "avg(s.value) * 100")
+		"k8s.pod.cpu.usage", "avg(s.value)")
+	// RAM sparklines (MB)
 	podRAMHist := c.queryPodTimeSeries(fetchCtx,
-		"k8s.pod.memory.working_set", "avg(s.value) / 1024 / 1024") // MB
+		"k8s.pod.memory.working_set", "avg(s.value) / 1024 / 1024")
+	// Disk sparklines (MB)
 	podDiskHist := c.queryPodTimeSeries(fetchCtx,
-		"k8s.pod.filesystem.usage", "avg(s.value) / 1024 / 1024") // MB
+		"k8s.pod.filesystem.usage", "avg(s.value) / 1024 / 1024")
 
 	// Network: cumulative counter, compute rate per bucket
 	podNetHist := map[string][]float64{}
@@ -641,18 +639,15 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 			}
 		})
 
-	// Aggregate per-deployment and generate sparkline points
+	// Aggregate per-deployment and generate sparkline points.
+	// Always fill from ClickHouse (covers more services than Prometheus).
 	for i := range services {
 		svcKey := services[i].Namespace + "/" + services[i].Name
-		if services[i].CPUHist == "" {
-			if vals := aggregatePodSeries(podCPUHist, svcKey); len(vals) >= 2 {
-				services[i].CPUHist = sparklinePoints(vals, 48, 16)
-			}
+		if vals := aggregatePodSeries(podCPUHist, svcKey); len(vals) >= 2 {
+			services[i].CPUHist = sparklinePoints(vals, 48, 16)
 		}
-		if services[i].RAMHist == "" {
-			if vals := aggregatePodSeries(podRAMHist, svcKey); len(vals) >= 2 {
-				services[i].RAMHist = sparklinePoints(vals, 48, 16)
-			}
+		if vals := aggregatePodSeries(podRAMHist, svcKey); len(vals) >= 2 {
+			services[i].RAMHist = sparklinePoints(vals, 48, 16)
 		}
 		if vals := aggregatePodSeries(podNetHist, svcKey); len(vals) >= 2 {
 			services[i].NetHist = sparklinePoints(vals, 48, 16)

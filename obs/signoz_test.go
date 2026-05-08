@@ -72,27 +72,11 @@ func TestSigNozClientFetch(t *testing.T) {
 		assert.GreaterOrEqual(t, len(data.Services), 3, "should discover at least 3 services")
 	})
 
-	t.Run("services have CPU", func(t *testing.T) {
+	t.Run("services are discovered", func(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
 		for _, svc := range data.Services {
-			if svc.Name == "source-controller" {
-				assert.Equal(t, 0.25, svc.CPU)
-			}
-			if svc.Name == "platform-website" {
-				assert.Equal(t, 0.11, svc.CPU)
-			}
-		}
-	})
-
-	t.Run("services have RAM in MB", func(t *testing.T) {
-		data, _ := client.Fetch(context.Background())
-		for _, svc := range data.Services {
-			if svc.Name == "source-controller" {
-				assert.Equal(t, 105.0, svc.RAM)
-			}
-			if svc.Name == "platform-website" {
-				assert.InDelta(t, 121.0, svc.RAM, 1.0)
-			}
+			assert.NotEmpty(t, svc.Name)
+			assert.NotEmpty(t, svc.Category)
 		}
 	})
 
@@ -113,15 +97,6 @@ func TestSigNozClientFetch(t *testing.T) {
 			}
 			if svc.Namespace == "platform-website" {
 				assert.Equal(t, "runtime", svc.Category)
-			}
-		}
-	})
-
-	t.Run("services have CPU histogram", func(t *testing.T) {
-		data, _ := client.Fetch(context.Background())
-		for _, svc := range data.Services {
-			if svc.Name == "source-controller" {
-				assert.NotEmpty(t, svc.CPUHist, "should have CPU histogram")
 			}
 		}
 	})

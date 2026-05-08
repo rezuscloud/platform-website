@@ -230,7 +230,7 @@ templ Live(data obs.LiveData) {
 						var met = el.querySelector("[data-metric]");
 						if (met) {
 							var parts = [];
-							if (svc.cpu > 0) parts.push(svc.cpu.toFixed(2) + "%");
+							if (svc.cpu > 0) parts.push(svc.cpu.toFixed(2));
 							if (svc.ram > 0) parts.push(svc.ram.toFixed(0) + "M");
 							met.textContent = parts.join(" · ");
 							met.style.display = parts.length > 0 ? "" : "none";
@@ -336,7 +336,7 @@ templ serviceRow(svc obs.Service, hostNames []string, data obs.LiveData) {
 				</div>
 				<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
 					<div>
-						<span class="font-terminal text-[10px] text-accent-gold dark:text-next-teal block mb-0.5" x-text="selected ? selected.cpu.toFixed(2) + '% CPU' : ''"></span>
+						<span class="font-terminal text-[10px] text-accent-gold dark:text-next-teal block mb-0.5" x-text="selected ? selected.cpu.toFixed(2) + ' CPU cores' : ''"></span>
 						<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
 							<polyline x-data-hist-cpu points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-accent-gold dark:text-next-teal"></polyline>
 						</svg>
@@ -385,7 +385,7 @@ templ hostCell(svc obs.Service, hostName string) {
 				}
 				<span data-metric class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle tabular-nums" style={ templ.KV("display", ternary(svc.CPU > 0 || svc.RAM > 0, "", "none")) }>
 					if svc.CPU > 0 {
-						{ fmt.Sprintf("%.2f%%", svc.CPU) }
+						{ fmt.Sprintf("%.2f", svc.CPU) }
 					}
 					if svc.RAM > 0 {
 						if svc.CPU > 0 {
