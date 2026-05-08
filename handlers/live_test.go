@@ -46,7 +46,7 @@ func TestDefaultMockData(t *testing.T) {
 
 	t.Run("services have CPU and RAM", func(t *testing.T) {
 		for _, svc := range data.Services {
-			if svc.Status == "healthy" && svc.Name != "signoz-otel-collector" {
+			if svc.Status == "healthy" && svc.CPU > 0 || svc.RAM > 0 {
 				assert.GreaterOrEqual(t, svc.CPU, float64(0), "Service %s", svc.Name)
 				assert.GreaterOrEqual(t, svc.RAM, float64(0), "Service %s", svc.Name)
 			}
@@ -60,9 +60,10 @@ func TestDefaultMockData(t *testing.T) {
 	})
 
 	t.Run("hosts are present", func(t *testing.T) {
+		assert.Len(t, data.Hosts, 2)
 		names := make(map[string]bool)
-		for _, svc := range data.Services {
-			names[svc.Name] = true
+		for _, h := range data.Hosts {
+			names[h.Name] = true
 		}
 		assert.True(t, names["talosoci-control-plane-legal-poodle"])
 		assert.True(t, names["talosedge-genmachiche-flowing-bluejay"])

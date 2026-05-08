@@ -201,6 +201,7 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	discoveredMap := map[string]bool{}
 	scrapeOKMap := map[string]bool{}
 	uptimeMap := map[string]string{}
+	hostMap := map[string]string{} // service key -> node name
 	upResults, err := c.queryInstant(fetchCtx, "up")
 	if err == nil {
 		for _, r := range upResults {
@@ -219,6 +220,9 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 			}
 			if t := metricLabel(r, "k8s.pod.start_time"); t != "" {
 				uptimeMap[key] = t
+			}
+			if node := metricLabel(r, "k8s_node_name"); node != "" {
+				hostMap[key] = node
 			}
 		}
 	}
@@ -385,6 +389,7 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 			Name:      deploy,
 			Namespace: ns,
 			Category:  CategoryForNamespace(ns),
+			Host:      hostMap[key],
 		}
 		if scrapeOKMap[key] {
 			svc.Status = "healthy"
@@ -413,7 +418,9 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 
 	sortServices(services)
 
-	// Service count per node
+	// --- Build host list ---
+
+	// Service count per node from Prometheus
 	nodeCountMap := map[string]int{}
 	if results, err := c.queryInstant(fetchCtx, "count(up) by (k8s_node_name)"); err == nil {
 		for _, r := range results {
@@ -425,50 +432,44 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 		}
 	}
 
-	hosts := buildHosts(nodeMap, nodeCountMap)
-	services = append(hosts, services...)
+	var hosts []Host
+	hostDefs := []struct {
+		name, label, detail string
+	}{
+		{"talosoci-control-plane-legal-poodle", "OCI Cloud", "ARM64 \u00b7 Ampere A1"},
+		{"talosedge-genmachiche-flowing-bluejay", "Edge Node", "AMD64 \u00b7 Intel NUC"},
+	}
+	for _, h := range hostDefs {
+		host := Host{
+			Name:   h.name,
+			Label:  h.label,
+			Detail: h.detail,
+		}
+		if m, ok := nodeMap[h.name]; ok {
+			host.CPU = math.Round(m.cpuPct*100) / 100
+			host.RAM = math.Round(m.ramMB*10) / 10
+			host.IOWait = math.Round(m.ioWait*10) / 10
+			host.LoadAvg = math.Round(m.loadAvg*100) / 100
+			if m.uptime > 0 {
+				host.Uptime = FormatUptime(time.Duration(m.uptime) * time.Second)
+			}
+		}
+		if count, ok := nodeCountMap[h.name]; ok {
+			host.SvcCount = count
+		}
+		hosts = append(hosts, host)
+	}
+
+	sortServices(services)
 
 	c.cached = LiveData{
+		Hosts:      hosts,
 		Services:   services,
 		HasMetrics: true,
 		Timestamp:  now.Unix(),
 	}
 	c.cachedAt = now
 	return c.cached, nil
-}
-
-// buildHosts creates host entries from real node-level metrics.
-func buildHosts(nodeMap map[string]*nodeMetrics, nodeCountMap map[string]int) []Service {
-	hostDefs := []struct{ name, detail string }{
-		{"talosoci-control-plane-legal-poodle", "ARM64 \u00b7 Ampere A1"},
-		{"talosedge-genmachiche-flowing-bluejay", "AMD64 \u00b7 Intel NUC"},
-	}
-
-	var hosts []Service
-	for _, h := range hostDefs {
-		svc := Service{
-			Name:     h.name,
-			Category: "hosts",
-			Status:   "running",
-			Detail:   h.detail,
-		}
-
-		if m, ok := nodeMap[h.name]; ok {
-			svc.CPU = math.Round(m.cpuPct*100) / 100
-			svc.RAM = math.Round(m.ramMB*10) / 10
-			svc.IOWait = math.Round(m.ioWait*10) / 10
-			svc.LoadAvg = math.Round(m.loadAvg*100) / 100
-			if m.uptime > 0 {
-				svc.Uptime = FormatUptime(time.Duration(m.uptime) * time.Second)
-			}
-		}
-		if count, ok := nodeCountMap[h.name]; ok {
-			svc.Detail = fmt.Sprintf("%s \u00b7 %d svcs", svc.Detail, count)
-		}
-
-		hosts = append(hosts, svc)
-	}
-	return hosts
 }
 
 // --- ClickHouse JSON helpers ---

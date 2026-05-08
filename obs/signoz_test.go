@@ -28,9 +28,9 @@ func TestSigNozClientFetch(t *testing.T) {
 			switch {
 			case query == "up":
 				resp.Data.Result = []promResultItem{
-					{Metric: map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller", "k8s.pod.start_time": time.Now().Add(-4 * 24 * time.Hour).Format(time.RFC3339)}, Value: []interface{}{float64(0), "1"}},
-					{Metric: map[string]string{"k8s_namespace_name": "platform-website", "k8s.deployment.name": "platform-website", "k8s.pod.start_time": time.Now().Add(-22 * time.Hour).Format(time.RFC3339)}, Value: []interface{}{float64(0), "1"}},
-					{Metric: map[string]string{"k8s_namespace_name": "dapr-system", "k8s.deployment.name": "dapr-operator"}, Value: []interface{}{float64(0), "1"}},
+					{Metric: map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller", "k8s_node_name": "node-a", "k8s.pod.start_time": time.Now().Add(-4 * 24 * time.Hour).Format(time.RFC3339)}, Value: []interface{}{float64(0), "1"}},
+					{Metric: map[string]string{"k8s_namespace_name": "platform-website", "k8s.deployment.name": "platform-website", "k8s_node_name": "node-b", "k8s.pod.start_time": time.Now().Add(-22 * time.Hour).Format(time.RFC3339)}, Value: []interface{}{float64(0), "1"}},
+					{Metric: map[string]string{"k8s_namespace_name": "dapr-system", "k8s.deployment.name": "dapr-operator", "k8s_node_name": "node-b"}, Value: []interface{}{float64(0), "1"}},
 				}
 			case query == "rate(process_cpu_seconds_total[5m])*100":
 				resp.Data.Result = []promResultItem{
@@ -141,9 +141,8 @@ func TestSigNozClientGracefulDegradation(t *testing.T) {
 		client := NewSigNozClient("http://127.0.0.1:1", "test-key")
 		data, err := client.Fetch(context.Background())
 		assert.NoError(t, err)
-		// Static hosts are always present
-		assert.Equal(t, 2, len(data.Services))
-		assert.Equal(t, "hosts", data.Services[0].Category)
+		// Static hosts are always present even without SigNoz
+		assert.Equal(t, 2, len(data.Hosts))
 	})
 }
 

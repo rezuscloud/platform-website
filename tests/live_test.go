@@ -26,7 +26,7 @@ func TestLiveSectionHTML(t *testing.T) {
 		section := doc.Find("#live")
 		d, exists := section.Attr("x-data")
 		assert.True(t, exists)
-		assert.Contains(t, d, "liveMap")
+		assert.Contains(t, d, "liveMatrix")
 	})
 
 	t.Run("has EventSource", func(t *testing.T) {
@@ -36,54 +36,43 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.Contains(t, html, "/api/live/stream")
 	})
 
-	// Service map layer tests
-	t.Run("has 7 layers", func(t *testing.T) {
+	// Matrix structure tests
+	t.Run("has table with hosts as columns", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "Traffic")
-		assert.Contains(t, html, "Application")
-		assert.Contains(t, html, "Runtime")
-		assert.Contains(t, html, "Delivery")
-		assert.Contains(t, html, "Observability")
-		assert.Contains(t, html, "Storage")
-		assert.Contains(t, html, "Infrastructure")
-	})
-
-	t.Run("traffic layer has Visitor and Gateway", func(t *testing.T) {
-		html, err := doc.Find("#live").Html()
-		require.NoError(t, err)
-		assert.Contains(t, html, "Visitor")
-		assert.Contains(t, html, "Gateway")
-		assert.Contains(t, html, "→")
-	})
-
-	t.Run("infrastructure layer has real hosts", func(t *testing.T) {
-		html, err := doc.Find("#live").Html()
-		require.NoError(t, err)
+		// Host headers
 		assert.Contains(t, html, "OCI Cloud")
 		assert.Contains(t, html, "Edge Node")
+		// Host detail
+		assert.Contains(t, html, "ARM64")
+		assert.Contains(t, html, "AMD64")
 	})
 
-	t.Run("live nodes have data-map-key", func(t *testing.T) {
-		nodes := doc.Find("[data-map-key]")
-		assert.GreaterOrEqual(t, nodes.Length(), 8, "should have at least 8 live nodes with data-map-key")
-	})
-
-	t.Run("live nodes have status dots", func(t *testing.T) {
-		dots := doc.Find("[data-map-key] [data-dot]")
-		liveNodes := doc.Find("[data-map-key]")
-		assert.Equal(t, liveNodes.Length(), dots.Length(), "each live node should have a status dot")
-	})
-
-	t.Run("live nodes have metric elements", func(t *testing.T) {
-		metrics := doc.Find("[data-map-key] [data-metric]")
-		assert.GreaterOrEqual(t, metrics.Length(), 1, "should have at least 1 node with metrics")
-	})
-
-	t.Run("click-to-expand has selectNode", func(t *testing.T) {
+	t.Run("has 5 category groups", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "selectNode")
+		assert.Contains(t, html, "Development")
+		assert.Contains(t, html, "Deployment")
+		assert.Contains(t, html, "Runtime")
+		assert.Contains(t, html, "Observability")
+		assert.Contains(t, html, "Data")
+	})
+
+	t.Run("service rows have clickable cells", func(t *testing.T) {
+		cells := doc.Find("[data-svc-key]")
+		assert.GreaterOrEqual(t, cells.Length(), 8, "should have at least 8 clickable service cells")
+	})
+
+	t.Run("cells have status dots", func(t *testing.T) {
+		dots := doc.Find("[data-svc-key] [data-dot]")
+		cells := doc.Find("[data-svc-key]")
+		assert.Equal(t, cells.Length(), dots.Length(), "each cell should have a status dot")
+	})
+
+	t.Run("click-to-expand has selectService", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "selectService")
 		assert.Contains(t, html, "selected")
 	})
 
