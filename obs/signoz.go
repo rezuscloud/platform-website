@@ -418,6 +418,82 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 
 	sortServices(services)
 
+	// --- Fill gaps from ClickHouse pod-level metrics ---
+	// kubeletstats collects CPU/RAM for ALL pods regardless of Prometheus scrape.
+	// This fills metrics for services like cilium-operator that don't expose
+	// Go process metrics but do have OTel-collected kubelet data.
+	podCPUMap := map[string]float64{} // "namespace/pod-name" -> cpu %
+	podRAMMap := map[string]float64{} // "namespace/pod-name" -> ram MB
+
+	c.queryClickHouse(fetchCtx,
+		"SELECT "+
+			"JSONExtractString(t.labels, 'k8s.namespace.name') as ns, "+
+			"JSONExtractString(t.labels, 'k8s.pod.name') as pod, "+
+			"argMax(s.value, s.unix_milli) as cpu "+
+			"FROM signoz_metrics.samples_v4 s "+
+			"INNER JOIN signoz_metrics.time_series_v4 t ON s.fingerprint = t.fingerprint "+
+			"WHERE t.metric_name = 'k8s.pod.cpu.usage' "+
+			"AND s.unix_milli >= toUnixTimestamp(now() - INTERVAL 10 MINUTE) * 1000 "+
+			"GROUP BY ns, pod",
+		func(row map[string]interface{}) {
+			if ns, ok := chString(row, "ns"); ok {
+				if pod, ok := chString(row, "pod"); ok {
+					if v, ok := chFloat(row, "cpu"); ok {
+						podCPUMap[ns+"/"+pod] = v * 100 // convert fraction to %
+					}
+				}
+			}
+		})
+
+	c.queryClickHouse(fetchCtx,
+		"SELECT "+
+			"JSONExtractString(t.labels, 'k8s.namespace.name') as ns, "+
+			"JSONExtractString(t.labels, 'k8s.pod.name') as pod, "+
+			"argMax(s.value, s.unix_milli) as ram "+
+			"FROM signoz_metrics.samples_v4 s "+
+			"INNER JOIN signoz_metrics.time_series_v4 t ON s.fingerprint = t.fingerprint "+
+			"WHERE t.metric_name = 'k8s.pod.memory.working_set' "+
+			"AND s.unix_milli >= toUnixTimestamp(now() - INTERVAL 10 MINUTE) * 1000 "+
+			"GROUP BY ns, pod",
+		func(row map[string]interface{}) {
+			if ns, ok := chString(row, "ns"); ok {
+				if pod, ok := chString(row, "pod"); ok {
+					if v, ok := chFloat(row, "ram"); ok {
+						podRAMMap[ns+"/"+pod] = v / 1024 / 1024 // bytes to MB
+					}
+				}
+			}
+		})
+
+	// Match pod metrics to services by prefix: deployment "cilium-operator" matches
+	// pod "cilium-operator-598475cd5-xwzb8".
+	for i := range services {
+		if services[i].CPU > 0 && services[i].RAM > 0 {
+			continue // already has Prometheus metrics
+		}
+		svcKey := services[i].Namespace + "/" + services[i].Name
+		var cpuSum, ramSum float64
+		var cpuCount, ramCount int
+		for podKey, cpu := range podCPUMap {
+			if strings.HasPrefix(podKey, svcKey+"-") || podKey == svcKey {
+				cpuSum += cpu
+				cpuCount++
+			}
+		}
+		for podKey, ram := range podRAMMap {
+			if strings.HasPrefix(podKey, svcKey+"-") || podKey == svcKey {
+				ramSum += ram
+				ramCount++
+			}
+		}
+		if cpuCount > 0 && services[i].CPU == 0 {
+			services[i].CPU = math.Round(cpuSum*100) / 100
+		}
+		if ramCount > 0 && services[i].RAM == 0 {
+			services[i].RAM = math.Round(ramSum*10) / 10
+		}
+	}
+
 	// --- Build host list ---
 
 	// Service count per node from Prometheus
