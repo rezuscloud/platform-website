@@ -152,9 +152,11 @@ templ Live(data obs.LiveData) {
 
 					selectService(key, name, host, ns, cpu, ram, cpuHist, ramHist) {
 						if (this.selected && this.selected.key === key) {
+							this.deselectAll();
 							this.selected = null;
 							return;
 						}
+						this.deselectAll();
 						this.selected = {
 							key: key,
 							name: name,
@@ -165,7 +167,27 @@ templ Live(data obs.LiveData) {
 							cpuHist: cpuHist,
 							ramHist: ramHist,
 						};
+						// Show the detail row
+						var detailRow = document.querySelector(
+							'[data-detail-key="' + key + '"]',
+						);
+						if (detailRow) detailRow.style.display = "";
+						// Highlight the service row
+						var svcRow = document.querySelector('[data-svc-row="' + key + '"]');
+						if (svcRow)
+							svcRow.classList.add("bg-accent-gold/5", "dark:bg-next-teal/5");
 						this.updateCharts(this.selected);
+					},
+
+					deselectAll() {
+						document
+							.querySelectorAll("[data-detail-key]")
+							.forEach(function (el) {
+								el.style.display = "none";
+							});
+						document.querySelectorAll("[data-svc-row]").forEach(function (el) {
+							el.classList.remove("bg-accent-gold/5", "dark:bg-next-teal/5");
+						});
 					},
 
 					updateCharts(svc) {
@@ -269,7 +291,7 @@ templ serviceRow(svc obs.Service, hostNames []string, data obs.LiveData) {
 	<!-- Service data row -->
 	<tr
 		class="border-b border-rule/20 dark:border-next-mid/20 hover:bg-surface/50 dark:hover:bg-next-dark/50"
-		x-bind:class="selected && selected.key === '{ key }' ? 'bg-accent-gold/5 dark:bg-next-teal/5' : ''"
+		data-svc-row={ key }
 	>
 		<!-- Service name (sticky) -->
 		<td class="font-mac text-xs text-ink dark:text-next-white py-1.5 px-2 sticky left-0 bg-surface-strong dark:bg-next-black truncate max-w-40" title={ svc.Namespace + "/" + svc.Name }>
@@ -283,25 +305,23 @@ templ serviceRow(svc obs.Service, hostNames []string, data obs.LiveData) {
 	<!-- Inline detail row (hidden until selected) -->
 	<tr
 		data-detail-key={ key }
-		x-show="selected && selected.key === '{ key }'"
-		x-cloak
-		x-transition
+		style="display:none"
 	>
 		<td colspan={ fmt.Sprintf("%d", len(hostNames)+1) } class="p-0">
 			<div class="border-t border-accent-gold/30 dark:border-next-teal/30 bg-accent-gold/5 dark:bg-next-teal/5 px-4 py-3">
 				<div class="flex items-center gap-3 mb-2">
-					<span class="font-mac text-xs font-bold text-ink dark:text-next-white" x-text="selected && selected.key === '{ key }' ? selected.name : ''"></span>
-					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle" x-text="selected && selected.key === '{ key }' ? selected.host + ' · ' + selected.detail : ''"></span>
+					<span class="font-mac text-xs font-bold text-ink dark:text-next-white" x-text="selected ? selected.name : ''"></span>
+					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle" x-text="selected ? selected.host + ' · ' + selected.detail : ''"></span>
 				</div>
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
 					<div>
-						<span class="font-terminal text-[10px] text-accent-gold dark:text-next-teal block mb-0.5" x-text="selected && selected.key === '{ key }' ? selected.cpu.toFixed(2) + '% CPU (1h)' : ''"></span>
+						<span class="font-terminal text-[10px] text-accent-gold dark:text-next-teal block mb-0.5" x-text="selected ? selected.cpu.toFixed(2) + '% CPU (1h)' : ''"></span>
 						<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
 							<polyline x-data-hist-cpu points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-accent-gold dark:text-next-teal"></polyline>
 						</svg>
 					</div>
 					<div>
-						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected && selected.key === '{ key }' ? selected.ram.toFixed(0) + ' MB RAM (1h)' : ''"></span>
+						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? selected.ram.toFixed(0) + ' MB RAM (1h)' : ''"></span>
 						<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
 							<polyline x-data-hist-ram points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
 						</svg>

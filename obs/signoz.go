@@ -192,7 +192,7 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 		return c.cached, nil
 	}
 
-	fetchCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	fetchCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 	now := time.Now()
 
@@ -426,7 +426,8 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	podRAMMap := map[string]float64{} // "namespace/pod-name" -> ram MB
 
 	c.queryClickHouse(fetchCtx,
-		"SELECT "+
+		"SELECT p.ns as ns, p.pod as pod, p.cpu as cpu, m.ram as ram FROM ("+
+			"SELECT "+
 			"JSONExtractString(t.labels, 'k8s.namespace.name') as ns, "+
 			"JSONExtractString(t.labels, 'k8s.pod.name') as pod, "+
 			"argMax(s.value, s.unix_milli) as cpu "+
@@ -434,19 +435,9 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 			"INNER JOIN signoz_metrics.time_series_v4 t ON s.fingerprint = t.fingerprint "+
 			"WHERE t.metric_name = 'k8s.pod.cpu.usage' "+
 			"AND s.unix_milli >= toUnixTimestamp(now() - INTERVAL 10 MINUTE) * 1000 "+
-			"GROUP BY ns, pod",
-		func(row map[string]interface{}) {
-			if ns, ok := chString(row, "ns"); ok {
-				if pod, ok := chString(row, "pod"); ok {
-					if v, ok := chFloat(row, "cpu"); ok {
-						podCPUMap[ns+"/"+pod] = v * 100 // convert fraction to %
-					}
-				}
-			}
-		})
-
-	c.queryClickHouse(fetchCtx,
-		"SELECT "+
+			"GROUP BY ns, pod"+
+			") p INNER JOIN ("+
+			"SELECT "+
 			"JSONExtractString(t.labels, 'k8s.namespace.name') as ns, "+
 			"JSONExtractString(t.labels, 'k8s.pod.name') as pod, "+
 			"argMax(s.value, s.unix_milli) as ram "+
@@ -454,11 +445,15 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 			"INNER JOIN signoz_metrics.time_series_v4 t ON s.fingerprint = t.fingerprint "+
 			"WHERE t.metric_name = 'k8s.pod.memory.working_set' "+
 			"AND s.unix_milli >= toUnixTimestamp(now() - INTERVAL 10 MINUTE) * 1000 "+
-			"GROUP BY ns, pod",
+			"GROUP BY ns, pod"+
+			") m ON p.ns = m.ns AND p.pod = m.pod",
 		func(row map[string]interface{}) {
 			if ns, ok := chString(row, "ns"); ok {
 				if pod, ok := chString(row, "pod"); ok {
-					if v, ok := chFloat(row, "ram"); ok {
+					if v, ok := chFloat(row, "cpu"); ok {
+						podCPUMap[ns+"/"+pod] = v * 100 // convert fraction to %
+					}
+					if v, ok := chFloat(row, "ram"); ok && v > 0 {
 						podRAMMap[ns+"/"+pod] = v / 1024 / 1024 // bytes to MB
 					}
 				}
