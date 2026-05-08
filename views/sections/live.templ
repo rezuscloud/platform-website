@@ -55,32 +55,6 @@ templ Live(data obs.LiveData) {
 					</tbody>
 				</table>
 			</div>
-			<!-- Expanded detail panel -->
-			<div
-				x-show="selected"
-				x-cloak
-				x-transition
-				class="mt-6 border border-rule dark:border-next-mid bg-surface dark:bg-next-dark p-4"
-			>
-				<div class="flex items-center gap-3 mb-3">
-					<span class="font-mac text-sm font-bold text-ink dark:text-next-white" x-text="selected ? selected.name : ''"></span>
-					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle" x-text="selected ? selected.host + ' · ' + selected.detail : ''"></span>
-				</div>
-				<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-					<div>
-						<span class="font-terminal text-xs text-accent-gold dark:text-next-teal block mb-1" x-text="selected ? selected.cpu.toFixed(2) + '% CPU (1h)' : ''"></span>
-						<svg viewBox="0 0 120 32" class="w-full h-8" preserveAspectRatio="none">
-							<polyline x-data-hist-cpu points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-accent-gold dark:text-next-teal"></polyline>
-						</svg>
-					</div>
-					<div>
-						<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle block mb-1" x-text="selected ? selected.ram.toFixed(0) + ' MB RAM (1h)' : ''"></span>
-						<svg viewBox="0 0 120 32" class="w-full h-8" preserveAspectRatio="none">
-							<polyline x-data-hist-ram points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
-						</svg>
-					</div>
-				</div>
-			</div>
 		</div>
 		<script>
 			function liveMatrix() {
@@ -146,7 +120,7 @@ templ Live(data obs.LiveData) {
 								});
 							}
 
-							// Update expanded panel
+							// Update expanded panel if open
 							if (self.selected) {
 								var svc = idx[self.selected.key];
 								if (svc) {
@@ -195,8 +169,12 @@ templ Live(data obs.LiveData) {
 					},
 
 					updateCharts(svc) {
-						var cpuLine = document.querySelector("[x-data-hist-cpu]");
-						var ramLine = document.querySelector("[x-data-hist-ram]");
+						var row = document.querySelector(
+							'[data-detail-key="' + svc.key + '"]',
+						);
+						if (!row) return;
+						var cpuLine = row.querySelector("[x-data-hist-cpu]");
+						var ramLine = row.querySelector("[x-data-hist-ram]");
 						if (cpuLine && svc.cpuHist)
 							cpuLine.setAttribute("points", svc.cpuHist);
 						if (ramLine && svc.ramHist)
@@ -279,7 +257,7 @@ templ categoryRows(cat string, data obs.LiveData) {
 				{ obs.CategoryLabel(cat) }
 			</td>
 		</tr>
-		<!-- Service rows -->
+		<!-- Service rows (each with inline detail row) -->
 		for _, svc := range services {
 			@serviceRow(svc, hostNames, data)
 		}
@@ -287,7 +265,12 @@ templ categoryRows(cat string, data obs.LiveData) {
 }
 
 templ serviceRow(svc obs.Service, hostNames []string, data obs.LiveData) {
-	<tr class="border-b border-rule/20 dark:border-next-mid/20 hover:bg-surface/50 dark:hover:bg-next-dark/50">
+	{{ key := svc.Namespace + "/" + svc.Name + "@" + svc.Host }}
+	<!-- Service data row -->
+	<tr
+		class="border-b border-rule/20 dark:border-next-mid/20 hover:bg-surface/50 dark:hover:bg-next-dark/50"
+		x-bind:class="selected && selected.key === '{ key }' ? 'bg-accent-gold/5 dark:bg-next-teal/5' : ''"
+	>
 		<!-- Service name (sticky) -->
 		<td class="font-mac text-xs text-ink dark:text-next-white py-1.5 px-2 sticky left-0 bg-surface-strong dark:bg-next-black truncate max-w-40" title={ svc.Namespace + "/" + svc.Name }>
 			{ svc.Name }
@@ -296,6 +279,36 @@ templ serviceRow(svc obs.Service, hostNames []string, data obs.LiveData) {
 		for _, hostName := range hostNames {
 			@hostCell(svc, hostName)
 		}
+	</tr>
+	<!-- Inline detail row (hidden until selected) -->
+	<tr
+		data-detail-key={ key }
+		x-show="selected && selected.key === '{ key }'"
+		x-cloak
+		x-transition
+	>
+		<td colspan={ fmt.Sprintf("%d", len(hostNames)+1) } class="p-0">
+			<div class="border-t border-accent-gold/30 dark:border-next-teal/30 bg-accent-gold/5 dark:bg-next-teal/5 px-4 py-3">
+				<div class="flex items-center gap-3 mb-2">
+					<span class="font-mac text-xs font-bold text-ink dark:text-next-white" x-text="selected && selected.key === '{ key }' ? selected.name : ''"></span>
+					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle" x-text="selected && selected.key === '{ key }' ? selected.host + ' · ' + selected.detail : ''"></span>
+				</div>
+				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
+					<div>
+						<span class="font-terminal text-[10px] text-accent-gold dark:text-next-teal block mb-0.5" x-text="selected && selected.key === '{ key }' ? selected.cpu.toFixed(2) + '% CPU (1h)' : ''"></span>
+						<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
+							<polyline x-data-hist-cpu points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-accent-gold dark:text-next-teal"></polyline>
+						</svg>
+					</div>
+					<div>
+						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected && selected.key === '{ key }' ? selected.ram.toFixed(0) + ' MB RAM (1h)' : ''"></span>
+						<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
+							<polyline x-data-hist-ram points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
+						</svg>
+					</div>
+				</div>
+			</div>
+		</td>
 	</tr>
 }
 
