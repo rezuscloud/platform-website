@@ -149,10 +149,10 @@ jobs:
             echo "number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
             echo "sha=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
           else
-            PR_DATA=$(gh pr list --repo ${{ github.repository }} --head ${{ github.ref_name }} --state open --json number --jq '.[0]')
-            PR_NUMBER=$(echo "$PR_DATA" | jq -r '.number')
-            if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
-              echo "No open PR found for branch ${{ github.ref_name }}, skipping docker-pr"
+            PR_DATA=$(gh pr list --repo ${{ github.repository }} --head ${{ github.ref_name }} --state open --json number --jq '.[0]' 2>/dev/null || echo '{}')
+            PR_NUMBER=$(echo "$PR_DATA" | jq -r '.number // empty' 2>/dev/null || echo "")
+            if [ -z "$PR_NUMBER" ]; then
+              echo "No open PR for branch ${{ github.ref_name }}, skipping docker-pr"
               echo "skip=true" >> "$GITHUB_OUTPUT"
             else
               echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
