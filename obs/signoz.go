@@ -460,15 +460,57 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 			}
 		})
 
+	// Network throughput: rate of k8s.pod.network.io (cumulative counter) over 10min
+	podNetMap := map[string]float64{} // "namespace/pod-name" -> KB/s
+	c.queryClickHouse(fetchCtx,
+		"SELECT "+
+			"JSONExtractString(t.labels, 'k8s.namespace.name') as ns, "+
+			"JSONExtractString(t.labels, 'k8s.pod.name') as pod, "+
+			"(max(s.value) - min(s.value)) / 600 as rate "+
+			"FROM signoz_metrics.samples_v4 s "+
+			"INNER JOIN signoz_metrics.time_series_v4 t ON s.fingerprint = t.fingerprint "+
+			"WHERE t.metric_name = 'k8s.pod.network.io' "+
+			"AND s.unix_milli >= toUnixTimestamp(now() - INTERVAL 10 MINUTE) * 1000 "+
+			"GROUP BY ns, pod "+
+			"HAVING rate > 0",
+		func(row map[string]interface{}) {
+			if ns, ok := chString(row, "ns"); ok {
+				if pod, ok := chString(row, "pod"); ok {
+					if v, ok := chFloat(row, "rate"); ok {
+						podNetMap[ns+"/"+pod] = v / 1024 // bytes/s to KB/s
+					}
+				}
+			}
+		})
+
+	// Disk usage: current k8s.pod.filesystem.usage in MB
+	podDiskMap := map[string]float64{} // "namespace/pod-name" -> MB
+	c.queryClickHouse(fetchCtx,
+		"SELECT "+
+			"JSONExtractString(t.labels, 'k8s.namespace.name') as ns, "+
+			"JSONExtractString(t.labels, 'k8s.pod.name') as pod, "+
+			"argMax(s.value, s.unix_milli) as usage "+
+			"FROM signoz_metrics.samples_v4 s "+
+			"INNER JOIN signoz_metrics.time_series_v4 t ON s.fingerprint = t.fingerprint "+
+			"WHERE t.metric_name = 'k8s.pod.filesystem.usage' "+
+			"AND s.unix_milli >= toUnixTimestamp(now() - INTERVAL 10 MINUTE) * 1000 "+
+			"GROUP BY ns, pod",
+		func(row map[string]interface{}) {
+			if ns, ok := chString(row, "ns"); ok {
+				if pod, ok := chString(row, "pod"); ok {
+					if v, ok := chFloat(row, "usage"); ok {
+						podDiskMap[ns+"/"+pod] = v / 1024 / 1024 // bytes to MB
+					}
+				}
+			}
+		})
+
 	// Match pod metrics to services by prefix: deployment "cilium-operator" matches
 	// pod "cilium-operator-598475cd5-xwzb8".
 	for i := range services {
-		if services[i].CPU > 0 && services[i].RAM > 0 {
-			continue // already has Prometheus metrics
-		}
 		svcKey := services[i].Namespace + "/" + services[i].Name
-		var cpuSum, ramSum float64
-		var cpuCount, ramCount int
+		var cpuSum, ramSum, netSum, diskSum float64
+		var cpuCount, ramCount, netCount, diskCount int
 		for podKey, cpu := range podCPUMap {
 			if strings.HasPrefix(podKey, svcKey+"-") || podKey == svcKey {
 				cpuSum += cpu
@@ -481,11 +523,29 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 				ramCount++
 			}
 		}
+		for podKey, net := range podNetMap {
+			if strings.HasPrefix(podKey, svcKey+"-") || podKey == svcKey {
+				netSum += net
+				netCount++
+			}
+		}
+		for podKey, disk := range podDiskMap {
+			if strings.HasPrefix(podKey, svcKey+"-") || podKey == svcKey {
+				diskSum += disk
+				diskCount++
+			}
+		}
 		if cpuCount > 0 && services[i].CPU == 0 {
 			services[i].CPU = math.Round(cpuSum*100) / 100
 		}
 		if ramCount > 0 && services[i].RAM == 0 {
 			services[i].RAM = math.Round(ramSum*10) / 10
+		}
+		if netCount > 0 {
+			services[i].NetKB = math.Round(netSum*10) / 10
+		}
+		if diskCount > 0 {
+			services[i].DiskMB = math.Round(diskSum*10) / 10
 		}
 	}
 

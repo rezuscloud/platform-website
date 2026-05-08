@@ -131,6 +131,8 @@ templ Live(data obs.LiveData) {
 										detail: svc.namespace || "",
 										cpu: svc.cpu,
 										ram: svc.ram,
+										netKB: svc.netKB || 0,
+										diskMB: svc.diskMB || 0,
 										cpuHist: svc.cpuHist,
 										ramHist: svc.ramHist,
 									};
@@ -150,7 +152,18 @@ templ Live(data obs.LiveData) {
 						}, 1000);
 					},
 
-					selectService(key, name, host, ns, cpu, ram, cpuHist, ramHist) {
+					selectService(
+						key,
+						name,
+						host,
+						ns,
+						cpu,
+						ram,
+						netKB,
+						diskMB,
+						cpuHist,
+						ramHist,
+					) {
 						if (this.selected && this.selected.key === key) {
 							this.deselectAll();
 							this.selected = null;
@@ -164,6 +177,8 @@ templ Live(data obs.LiveData) {
 							detail: ns,
 							cpu: cpu,
 							ram: ram,
+							netKB: netKB,
+							diskMB: diskMB,
 							cpuHist: cpuHist,
 							ramHist: ramHist,
 						};
@@ -313,18 +328,26 @@ templ serviceRow(svc obs.Service, hostNames []string, data obs.LiveData) {
 					<span class="font-mac text-xs font-bold text-ink dark:text-next-white" x-text="selected ? selected.name : ''"></span>
 					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle" x-text="selected ? selected.host + ' · ' + selected.detail : ''"></span>
 				</div>
-				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
+				<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
 					<div>
-						<span class="font-terminal text-[10px] text-accent-gold dark:text-next-teal block mb-0.5" x-text="selected ? selected.cpu.toFixed(2) + '% CPU (1h)' : ''"></span>
+						<span class="font-terminal text-[10px] text-accent-gold dark:text-next-teal block mb-0.5" x-text="selected ? selected.cpu.toFixed(2) + '% CPU' : ''"></span>
 						<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
 							<polyline x-data-hist-cpu points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-accent-gold dark:text-next-teal"></polyline>
 						</svg>
 					</div>
 					<div>
-						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? selected.ram.toFixed(0) + ' MB RAM (1h)' : ''"></span>
+						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? selected.ram.toFixed(0) + ' MB RAM' : ''"></span>
 						<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
 							<polyline x-data-hist-ram points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
 						</svg>
+					</div>
+					<div>
+						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? (selected.netKB >= 1024 ? (selected.netKB / 1024).toFixed(1) + ' MB/s Net' : selected.netKB.toFixed(0) + ' KB/s Net') : ''"></span>
+						<span class="font-terminal text-[10px] text-ink/30 dark:text-next-white/30">tx + rx (10m avg)</span>
+					</div>
+					<div>
+						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? (selected.diskMB >= 1024 ? (selected.diskMB / 1024).toFixed(1) + ' GB Disk' : selected.diskMB.toFixed(0) + ' MB Disk') : ''"></span>
+						<span class="font-terminal text-[10px] text-ink/30 dark:text-next-white/30">filesystem usage</span>
 					</div>
 				</div>
 			</div>
@@ -339,10 +362,10 @@ templ hostCell(svc obs.Service, hostName string) {
 			<button
 				class="inline-flex items-center gap-1.5 px-2 py-1 border border-ink/15 dark:border-next-white/15 dark:border-next-mid/60 bg-surface dark:bg-next-dark cursor-pointer hover:border-accent-gold dark:hover:border-next-teal transition-colors"
 				data-svc-key={ svc.Namespace + "/" + svc.Name + "@" + svc.Host }
-				@click={ fmt.Sprintf("selectService('%s', '%s', '%s', '%s', %v, %v, `%s`, `%s`)",
+				@click={ fmt.Sprintf("selectService('%s', '%s', '%s', '%s', %v, %v, %v, %v, `%s`, `%s`)",
 					svc.Namespace+"/"+svc.Name+"@"+svc.Host,
 					svc.Name, svc.Host, svc.Namespace,
-					svc.CPU, svc.RAM, svc.CPUHist, svc.RAMHist) }
+					svc.CPU, svc.RAM, svc.NetKB, svc.DiskMB, svc.CPUHist, svc.RAMHist) }
 			>
 				if svc.Status == "healthy" || svc.Status == "running" {
 					<span data-dot class="inline-block w-1.5 h-1.5 shrink-0 bg-green-600 dark:bg-green-500"></span>

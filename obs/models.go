@@ -16,6 +16,8 @@ type Service struct {
 	Detail    string  `json:"detail,omitempty"`  // e.g. "ARM64 · Ampere A1" for hosts
 	CPU       float64 `json:"cpu"`               // CPU % (rate over 5m)
 	RAM       float64 `json:"ram"`               // RAM in MB
+	NetKB     float64 `json:"netKB"`             // Network throughput in KB/s
+	DiskMB    float64 `json:"diskMB"`            // Disk (filesystem) usage in MB
 	LoadAvg   float64 `json:"loadAvg,omitempty"` // system load average 5m (hosts only)
 	IOWait    float64 `json:"ioWait,omitempty"`  // CPU % spent in iowait (hosts only)
 	Uptime    string  `json:"uptime,omitempty"`  // e.g. "4d", "12h", "45m"
