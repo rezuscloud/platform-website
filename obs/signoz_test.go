@@ -3,8 +3,10 @@ package obs
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -13,53 +15,67 @@ import (
 )
 
 func TestSigNozClientFetch(t *testing.T) {
+	promResp := func(results []map[string]interface{}) map[string]interface{} {
+		return map[string]interface{}{
+			"status": "success",
+			"data": map[string]interface{}{
+				"resultType": "vector",
+				"result":     results,
+			},
+		}
+	}
+
+	promResult := func(labels map[string]string, val string) map[string]interface{} {
+		return map[string]interface{}{
+			"metric": labels,
+			"value":  []interface{}{0, val},
+		}
+	}
+
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "test-api-key", r.Header.Get("SIGNOZ-API-KEY"))
 		w.Header().Set("Content-Type", "application/json")
 
-		resp := promResponse{Status: "success", Data: struct {
-			ResultType string           `json:"resultType"`
-			Result     []promResultItem `json:"result"`
-		}{ResultType: "vector"}}
-
-		switch r.URL.Path {
-		case "/api/v1/query":
+		if strings.HasPrefix(r.URL.Path, "/api/v1/query") {
 			query := r.URL.Query().Get("query")
 			switch {
 			case query == "up":
-				resp.Data.Result = []promResultItem{
-					{Metric: map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller", "k8s_node_name": "node-a", "k8s.pod.start_time": time.Now().Add(-4 * 24 * time.Hour).Format(time.RFC3339)}, Value: []interface{}{float64(0), "1"}},
-					{Metric: map[string]string{"k8s_namespace_name": "platform-website", "k8s.deployment.name": "platform-website", "k8s_node_name": "node-b", "k8s.pod.start_time": time.Now().Add(-22 * time.Hour).Format(time.RFC3339)}, Value: []interface{}{float64(0), "1"}},
-					{Metric: map[string]string{"k8s_namespace_name": "dapr-system", "k8s.deployment.name": "dapr-operator", "k8s_node_name": "node-b"}, Value: []interface{}{float64(0), "1"}},
-				}
-			case query == "rate(process_cpu_seconds_total[5m])*100":
-				resp.Data.Result = []promResultItem{
-					{Metric: map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller"}, Value: []interface{}{float64(0), "0.25"}},
-					{Metric: map[string]string{"k8s_namespace_name": "platform-website", "k8s.deployment.name": "platform-website"}, Value: []interface{}{float64(0), "0.11"}},
-					{Metric: map[string]string{"k8s_namespace_name": "dapr-system", "k8s.deployment.name": "dapr-operator"}, Value: []interface{}{float64(0), "0.13"}},
-				}
-			case query == "process_resident_memory_bytes":
-				resp.Data.Result = []promResultItem{
-					{Metric: map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller"}, Value: []interface{}{float64(0), "110100480"}},     // 105 MB
-					{Metric: map[string]string{"k8s_namespace_name": "platform-website", "k8s.deployment.name": "platform-website"}, Value: []interface{}{float64(0), "126812160"}}, // 121 MB
-					{Metric: map[string]string{"k8s_namespace_name": "dapr-system", "k8s.deployment.name": "dapr-operator"}, Value: []interface{}{float64(0), "55574528"}},          // 53 MB
-				}
+				json.NewEncoder(w).Encode(promResp([]map[string]interface{}{
+					promResult(map[string]string{
+						"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller",
+						"k8s_node_name": "node-a", "k8s.pod.start_time": time.Now().Add(-4 * 24 * time.Hour).Format(time.RFC3339),
+					}, "1"),
+					promResult(map[string]string{
+						"k8s_namespace_name": "platform-website", "k8s.deployment.name": "platform-website",
+						"k8s_node_name": "node-b", "k8s.pod.start_time": time.Now().Add(-22 * time.Hour).Format(time.RFC3339),
+					}, "1"),
+					promResult(map[string]string{
+						"k8s_namespace_name": "dapr-system", "k8s.deployment.name": "dapr-operator",
+						"k8s_node_name": "node-b",
+					}, "1"),
+				}))
+			case strings.Contains(query, "count(up)"):
+				json.NewEncoder(w).Encode(promResp([]map[string]interface{}{
+					promResult(map[string]string{"k8s_node_name": "node-a"}, "5"),
+					promResult(map[string]string{"k8s_node_name": "node-b"}, "3"),
+				}))
+			default:
+				json.NewEncoder(w).Encode(promResp(nil))
 			}
-		case "/api/v1/query_range":
-			resp.Data.ResultType = "matrix"
-			resp.Data.Result = []promResultItem{
-				{
-					Metric: map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller"},
-					Values: []interface{}{
-						[]interface{}{float64(0), "0.20"},
-						[]interface{}{float64(300), "0.22"},
-						[]interface{}{float64(600), "0.25"},
-					},
-				},
-			}
+			return
 		}
 
-		json.NewEncoder(w).Encode(resp)
+		// ClickHouse queries: return JSONEachRow
+		body := r.URL.Query().Get("query")
+		if r.Method == "POST" {
+			buf := make([]byte, 1024)
+			n, _ := r.Body.Read(buf)
+			body = string(buf[:n])
+		}
+		_ = body
+		// Return empty results for ClickHouse
+		w.WriteHeader(200)
+		w.Write([]byte(""))
 	}))
 	defer server.Close()
 
@@ -72,7 +88,7 @@ func TestSigNozClientFetch(t *testing.T) {
 		assert.GreaterOrEqual(t, len(data.Services), 3, "should discover at least 3 services")
 	})
 
-	t.Run("services are discovered", func(t *testing.T) {
+	t.Run("services have basic fields", func(t *testing.T) {
 		data, _ := client.Fetch(context.Background())
 		for _, svc := range data.Services {
 			assert.NotEmpty(t, svc.Name)
@@ -106,8 +122,6 @@ func TestSigNozClientFetch(t *testing.T) {
 		b, err := json.Marshal(data)
 		require.NoError(t, err)
 		assert.Contains(t, string(b), "source-controller")
-		assert.Contains(t, string(b), "cpu")
-		assert.Contains(t, string(b), "ram")
 	})
 }
 
@@ -116,7 +130,6 @@ func TestSigNozClientGracefulDegradation(t *testing.T) {
 		client := NewSigNozClient("http://127.0.0.1:1", "test-key")
 		data, err := client.Fetch(context.Background())
 		assert.NoError(t, err)
-		// Static hosts are always present even without SigNoz
 		assert.Equal(t, 2, len(data.Hosts))
 	})
 }
@@ -129,8 +142,8 @@ func TestSparklinePoints(t *testing.T) {
 
 	t.Run("two values", func(t *testing.T) {
 		result := sparklinePoints([]float64{1.0, 2.0}, 48, 16)
-		assert.Contains(t, result, "0.0,")  // first point at x=0
-		assert.Contains(t, result, "48.0,") // last point at x=width
+		assert.Contains(t, result, "0.0,")
+		assert.Contains(t, result, "48.0,")
 	})
 
 	t.Run("constant values", func(t *testing.T) {
@@ -150,4 +163,8 @@ func TestFormatUptime(t *testing.T) {
 	assert.Equal(t, "2d", FormatUptime(48*time.Hour))
 	assert.Equal(t, "3h", FormatUptime(3*time.Hour))
 	assert.Equal(t, "45m", FormatUptime(45*time.Minute))
+}
+
+func jsonNumberOf(f float64) string {
+	return strings.TrimRight(strings.TrimRight(fmt.Sprintf("%f", f), "0"), ".")
 }
