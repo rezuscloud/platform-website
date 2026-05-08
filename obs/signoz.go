@@ -179,6 +179,61 @@ func parseFloatArray(v interface{}) []float64 {
 	return result
 }
 
+// queryPodTimeSeries returns time-bucketed values per pod for a given metric.
+// The metricExpr defines how to aggregate within each bucket.
+// Returns map["ns/pod"] -> []float64 ordered by time.
+func (c *SigNozClient) queryPodTimeSeries(ctx context.Context, metricName, metricExpr string) map[string][]float64 {
+	result := map[string][]float64{}
+	c.queryClickHouse(ctx,
+		"SELECT "+
+			"JSONExtractString(t.labels, 'k8s.namespace.name') as ns, "+
+			"JSONExtractString(t.labels, 'k8s.pod.name') as pod, "+
+			"toStartOfInterval(fromUnixTimestamp64Milli(s.unix_milli), INTERVAL 5 MINUTE) as bucket, "+
+			metricExpr+" as val "+
+			"FROM signoz_metrics.samples_v4 s "+
+			"INNER JOIN signoz_metrics.time_series_v4 t ON s.fingerprint = t.fingerprint "+
+			"WHERE t.metric_name = '"+metricName+"' "+
+			"AND s.unix_milli >= toUnixTimestamp(now() - INTERVAL 1 HOUR) * 1000 "+
+			"GROUP BY ns, pod, bucket "+
+			"ORDER BY ns, pod, bucket",
+		func(row map[string]interface{}) {
+			if ns, ok := chString(row, "ns"); ok {
+				if pod, ok := chString(row, "pod"); ok {
+					if v, ok := chFloat(row, "val"); ok {
+						key := ns + "/" + pod
+						result[key] = append(result[key], v)
+					}
+				}
+			}
+		})
+	return result
+}
+
+// aggregatePodSeries sums time-series values from all pods matching a deployment prefix.
+func aggregatePodSeries(podData map[string][]float64, svcKey string) []float64 {
+	var maxLen int
+	var matched [][]float64
+	for podKey, vals := range podData {
+		if strings.HasPrefix(podKey, svcKey+"-") || podKey == svcKey {
+			matched = append(matched, vals)
+			if len(vals) > maxLen {
+				maxLen = len(vals)
+			}
+		}
+	}
+	if len(matched) == 0 || maxLen < 2 {
+		return nil
+	}
+	// Sum values at each time index across matching pods
+	result := make([]float64, maxLen)
+	for _, vals := range matched {
+		for i, v := range vals {
+			result[i] += v
+		}
+	}
+	return result
+}
+
 func getOrCreateNode(m map[string]*nodeMetrics, key string) *nodeMetrics {
 	if _, ok := m[key]; !ok {
 		m[key] = &nodeMetrics{}
@@ -546,6 +601,64 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 		}
 		if diskCount > 0 {
 			services[i].DiskMB = math.Round(diskSum*10) / 10
+		}
+	}
+
+	// --- Sparklines from ClickHouse time-bucketed data ---
+	// Each metric: 12 buckets of 5min over 1h, aggregated per deployment.
+
+	// CPU sparklines (k8s.pod.cpu.usage * 100 = %)
+	podCPUHist := c.queryPodTimeSeries(fetchCtx,
+		"k8s.pod.cpu.usage", "avg(s.value) * 100")
+	podRAMHist := c.queryPodTimeSeries(fetchCtx,
+		"k8s.pod.memory.working_set", "avg(s.value) / 1024 / 1024") // MB
+	podDiskHist := c.queryPodTimeSeries(fetchCtx,
+		"k8s.pod.filesystem.usage", "avg(s.value) / 1024 / 1024") // MB
+
+	// Network: cumulative counter, compute rate per bucket
+	podNetHist := map[string][]float64{}
+	c.queryClickHouse(fetchCtx,
+		"SELECT "+
+			"JSONExtractString(t.labels, 'k8s.namespace.name') as ns, "+
+			"JSONExtractString(t.labels, 'k8s.pod.name') as pod, "+
+			"toStartOfInterval(fromUnixTimestamp64Milli(s.unix_milli), INTERVAL 5 MINUTE) as bucket, "+
+			"(max(s.value) - min(s.value)) / 300 as rate "+
+			"FROM signoz_metrics.samples_v4 s "+
+			"INNER JOIN signoz_metrics.time_series_v4 t ON s.fingerprint = t.fingerprint "+
+			"WHERE t.metric_name = 'k8s.pod.network.io' "+
+			"AND s.unix_milli >= toUnixTimestamp(now() - INTERVAL 1 HOUR) * 1000 "+
+			"GROUP BY ns, pod, bucket "+
+			"HAVING rate > 0 "+
+			"ORDER BY ns, pod, bucket",
+		func(row map[string]interface{}) {
+			if ns, ok := chString(row, "ns"); ok {
+				if pod, ok := chString(row, "pod"); ok {
+					if v, ok := chFloat(row, "rate"); ok {
+						key := ns + "/" + pod
+						podNetHist[key] = append(podNetHist[key], v/1024) // bytes/s to KB/s
+					}
+				}
+			}
+		})
+
+	// Aggregate per-deployment and generate sparkline points
+	for i := range services {
+		svcKey := services[i].Namespace + "/" + services[i].Name
+		if services[i].CPUHist == "" {
+			if vals := aggregatePodSeries(podCPUHist, svcKey); len(vals) >= 2 {
+				services[i].CPUHist = sparklinePoints(vals, 48, 16)
+			}
+		}
+		if services[i].RAMHist == "" {
+			if vals := aggregatePodSeries(podRAMHist, svcKey); len(vals) >= 2 {
+				services[i].RAMHist = sparklinePoints(vals, 48, 16)
+			}
+		}
+		if vals := aggregatePodSeries(podNetHist, svcKey); len(vals) >= 2 {
+			services[i].NetHist = sparklinePoints(vals, 48, 16)
+		}
+		if vals := aggregatePodSeries(podDiskHist, svcKey); len(vals) >= 2 {
+			services[i].DiskHist = sparklinePoints(vals, 48, 16)
 		}
 	}
 

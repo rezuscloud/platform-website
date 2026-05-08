@@ -212,10 +212,16 @@ templ Live(data obs.LiveData) {
 						if (!row) return;
 						var cpuLine = row.querySelector("[x-data-hist-cpu]");
 						var ramLine = row.querySelector("[x-data-hist-ram]");
+						var netLine = row.querySelector("[x-data-hist-net]");
+						var diskLine = row.querySelector("[x-data-hist-disk]");
 						if (cpuLine && svc.cpuHist)
 							cpuLine.setAttribute("points", svc.cpuHist);
 						if (ramLine && svc.ramHist)
 							ramLine.setAttribute("points", svc.ramHist);
+						if (netLine && svc.netHist)
+							netLine.setAttribute("points", svc.netHist);
+						if (diskLine && svc.diskHist)
+							diskLine.setAttribute("points", svc.diskHist);
 					},
 
 					updateCell(el, svc) {
@@ -342,12 +348,16 @@ templ serviceRow(svc obs.Service, hostNames []string, data obs.LiveData) {
 						</svg>
 					</div>
 					<div>
-						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? (selected.netKB >= 1024 ? (selected.netKB / 1024).toFixed(1) + ' MB/s Net' : selected.netKB.toFixed(0) + ' KB/s Net') : ''"></span>
-						<span class="font-terminal text-[10px] text-ink/30 dark:text-next-white/30">tx + rx (10m avg)</span>
+						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? (selected.netKB >= 1024 ? (selected.netKB / 1024).toFixed(1) + ' MB/s' : selected.netKB.toFixed(0) + ' KB/s') + ' Net' : ''"></span>
+						<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
+							<polyline x-data-hist-net points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
+						</svg>
 					</div>
 					<div>
-						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? (selected.diskMB >= 1024 ? (selected.diskMB / 1024).toFixed(1) + ' GB Disk' : selected.diskMB.toFixed(0) + ' MB Disk') : ''"></span>
-						<span class="font-terminal text-[10px] text-ink/30 dark:text-next-white/30">filesystem usage</span>
+						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? (selected.diskMB >= 1024 ? (selected.diskMB / 1024).toFixed(1) + ' GB' : selected.diskMB.toFixed(0) + ' MB') + ' Disk' : ''"></span>
+						<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
+							<polyline x-data-hist-disk points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
+						</svg>
 					</div>
 				</div>
 			</div>
@@ -362,10 +372,11 @@ templ hostCell(svc obs.Service, hostName string) {
 			<button
 				class="inline-flex items-center gap-1.5 px-2 py-1 border border-ink/15 dark:border-next-white/15 dark:border-next-mid/60 bg-surface dark:bg-next-dark cursor-pointer hover:border-accent-gold dark:hover:border-next-teal transition-colors"
 				data-svc-key={ svc.Namespace + "/" + svc.Name + "@" + svc.Host }
-				@click={ fmt.Sprintf("selectService('%s', '%s', '%s', '%s', %v, %v, %v, %v, `%s`, `%s`)",
+				@click={ fmt.Sprintf("selectService('%s', '%s', '%s', '%s', %v, %v, %v, %v, `%s`, `%s`, `%s`, `%s`)",
 					svc.Namespace+"/"+svc.Name+"@"+svc.Host,
 					svc.Name, svc.Host, svc.Namespace,
-					svc.CPU, svc.RAM, svc.NetKB, svc.DiskMB, svc.CPUHist, svc.RAMHist) }
+					svc.CPU, svc.RAM, svc.NetKB, svc.DiskMB,
+					svc.CPUHist, svc.RAMHist, svc.NetHist, svc.DiskHist) }
 			>
 				if svc.Status == "healthy" || svc.Status == "running" {
 					<span data-dot class="inline-block w-1.5 h-1.5 shrink-0 bg-green-600 dark:bg-green-500"></span>

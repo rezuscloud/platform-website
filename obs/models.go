@@ -8,21 +8,23 @@ import (
 
 // Service represents one live service discovered from SigNoz metrics.
 type Service struct {
-	Name      string  `json:"name"`              // deployment or statefulset name
-	Namespace string  `json:"namespace"`         // k8s namespace
-	Category  string  `json:"category"`          // dev, deployment, runtime, observability, data
-	Host      string  `json:"host"`              // k8s node name this service runs on
-	Status    string  `json:"status"`            // healthy, running
-	Detail    string  `json:"detail,omitempty"`  // e.g. "ARM64 · Ampere A1" for hosts
-	CPU       float64 `json:"cpu"`               // CPU % (rate over 5m)
-	RAM       float64 `json:"ram"`               // RAM in MB
-	NetKB     float64 `json:"netKB"`             // Network throughput in KB/s
-	DiskMB    float64 `json:"diskMB"`            // Disk (filesystem) usage in MB
-	LoadAvg   float64 `json:"loadAvg,omitempty"` // system load average 5m (hosts only)
-	IOWait    float64 `json:"ioWait,omitempty"`  // CPU % spent in iowait (hosts only)
-	Uptime    string  `json:"uptime,omitempty"`  // e.g. "4d", "12h", "45m"
-	CPUHist   string  `json:"cpuHist,omitempty"` // SVG polyline points for CPU sparkline
-	RAMHist   string  `json:"ramHist,omitempty"` // SVG polyline points for RAM sparkline
+	Name      string  `json:"name"`               // deployment or statefulset name
+	Namespace string  `json:"namespace"`          // k8s namespace
+	Category  string  `json:"category"`           // dev, deployment, runtime, observability, data
+	Host      string  `json:"host"`               // k8s node name this service runs on
+	Status    string  `json:"status"`             // healthy, running
+	Detail    string  `json:"detail,omitempty"`   // e.g. "ARM64 · Ampere A1" for hosts
+	CPU       float64 `json:"cpu"`                // CPU % (rate over 5m)
+	RAM       float64 `json:"ram"`                // RAM in MB
+	NetKB     float64 `json:"netKB"`              // Network throughput in KB/s
+	DiskMB    float64 `json:"diskMB"`             // Disk (filesystem) usage in MB
+	LoadAvg   float64 `json:"loadAvg,omitempty"`  // system load average 5m (hosts only)
+	IOWait    float64 `json:"ioWait,omitempty"`   // CPU % spent in iowait (hosts only)
+	Uptime    string  `json:"uptime,omitempty"`   // e.g. "4d", "12h", "45m"
+	CPUHist   string  `json:"cpuHist,omitempty"`  // SVG polyline points for CPU sparkline
+	RAMHist   string  `json:"ramHist,omitempty"`  // SVG polyline points for RAM sparkline
+	NetHist   string  `json:"netHist,omitempty"`  // SVG polyline points for network sparkline
+	DiskHist  string  `json:"diskHist,omitempty"` // SVG polyline points for disk sparkline
 }
 
 // Host represents a physical or virtual machine node.
