@@ -29,13 +29,13 @@ func AI() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"ai\" data-reveal class=\"py-20 sm:py-28 bg-surface dark:bg-next-dark\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"mb-4\"><div class=\"inline-flex items-center gap-2 px-4 py-1.5 bg-surface-strong dark:bg-next-dark border border-rule dark:next-raised text-ink dark:text-next-white text-xs font-mac uppercase tracking-wider mb-8\"><span class=\"w-2 h-2 bg-accent-gold dark:bg-next-teal-hi\"></span> AI Inference // OpenAI-Compatible API</div></div><div class=\"mb-12 max-w-2xl\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white\">AI, On Your Hardware</h2><p class=\"text-lg text-ink dark:text-next-white font-mac-body leading-relaxed\">Run large language models behind your firewall. Drop-in OpenAI-compatible API, no API keys to rotate, no data leaving your network. Add GPUs, add capacity.</p></div><!-- Terminal: API call demo --><div class=\"mb-14 max-w-2xl\" data-terminal data-base-delay=\"400\" data-line-delay=\"180\"><div class=\"border border-ink dark:next-sunken bg-next-black overflow-hidden mac-window-shadow dark:shadow-none\"><div class=\"flex items-center gap-1.5 px-3 py-2 border-b border-ink dark:border-next-mid bg-ink mac-title-bar dark:bg-next-mid\"><span class=\"w-2.5 h-2.5 border border-ink-muted dark:hidden\" style=\"background:oklch(55% 0.15 25)\"></span> <span class=\"w-2.5 h-2.5 border border-ink-muted dark:hidden\" style=\"background:oklch(75% 0.15 90)\"></span> <span class=\"w-2.5 h-2.5 border border-ink-muted dark:hidden\" style=\"background:oklch(55% 0.15 150)\"></span> <span class=\"ml-2 text-[10px] uppercase tracking-wider font-mac text-ink-muted dark:text-next-subtle\">curl</span></div><div class=\"p-4 font-mac-mono text-sm\"><p data-line class=\"text-ink-muted dark:text-next-subtle\"><span class=\"text-accent-gold dark:text-next-teal\">$</span> curl <span class=\"text-accent-gold dark:text-next-teal\">https://</span>ai.rezus.cloud/v1/chat/completions</p><p data-line class=\"text-ink-muted dark:text-next-subtle pl-4\">-H \"Authorization: Bearer $TOKEN\"</p><p data-line class=\"text-ink-muted dark:text-next-subtle pl-4\">-d @request.json</p><p data-line class=\"text-positive dark:text-positive-next mt-2\">200 OK // model loaded // streaming response</p><p data-line class=\"text-ink-muted dark:text-next-subtle\"><span class=\"text-accent-gold dark:text-next-teal\">$</span> <span class=\"animate-blink\">_</span></p></div></div></div><!-- Capability grid --><div class=\"grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-8 max-w-5xl\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"ai\" data-reveal class=\"py-20 sm:py-28 bg-surface dark:bg-next-dark\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"mb-4\"><div class=\"inline-flex items-center gap-2 px-4 py-1.5 bg-surface-strong dark:bg-next-dark border border-rule dark:next-raised text-ink dark:text-next-white text-xs font-mac uppercase tracking-wider mb-8\"><span class=\"w-2 h-2 bg-accent-gold dark:bg-next-teal-hi\"></span> AI Platform</div></div><div class=\"mb-12 max-w-2xl\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white\">Any AI. On Your Metal.</h2><p class=\"text-lg text-ink dark:text-next-white font-mac-body leading-relaxed\">LLMs, vision models, audio, embeddings, custom runtimes. Run any inference engine on your own hardware, behind your firewall. No vendor lock-in, no API keys to rotate, no data leaving your network.</p></div><!-- Terminal: inference on cluster --><div class=\"mb-14 max-w-2xl\" data-terminal data-base-delay=\"400\" data-line-delay=\"180\"><div class=\"border border-ink dark:next-sunken bg-next-black overflow-hidden mac-window-shadow dark:shadow-none\"><div class=\"flex items-center gap-1.5 px-3 py-2 border-b border-ink dark:border-next-mid bg-ink mac-title-bar dark:bg-next-mid\"><span class=\"w-2.5 h-2.5 border border-ink-muted dark:hidden\" style=\"background:oklch(55% 0.15 25)\"></span> <span class=\"w-2.5 h-2.5 border border-ink-muted dark:hidden\" style=\"background:oklch(75% 0.15 90)\"></span> <span class=\"w-2.5 h-2.5 border border-ink-muted dark:hidden\" style=\"background:oklch(55% 0.15 150)\"></span> <span class=\"ml-2 text-[10px] uppercase tracking-wider font-mac text-ink-muted dark:text-next-subtle\">rezus.cloud</span></div><div class=\"p-4 font-mac-mono text-sm\"><p data-line class=\"text-ink-muted dark:text-next-subtle\"><span class=\"text-accent-gold dark:text-next-teal\">$</span> kubectl get pods -l app=llamacpp</p><p data-line class=\"text-ink-muted dark:text-next-subtle\">llamacpp-7d9f4b Running 1/1 edge-node</p><p data-line class=\"text-ink-muted dark:text-next-subtle mt-1\"><span class=\"text-accent-gold dark:text-next-teal\">$</span> curl <span class=\"text-accent-gold dark:text-next-teal\">https://</span>llamacpp.rezus.cloud/v1/chat/completions</p><p data-line class=\"text-ink-muted dark:text-next-subtle pl-4\">-d @request.json</p><p data-line class=\"text-positive dark:text-positive-next mt-2\">200 OK // 5.2 tok/s // Vulkan iGPU // streaming</p><p data-line class=\"text-ink-muted dark:text-next-subtle\"><span class=\"text-accent-gold dark:text-next-teal\">$</span> <span class=\"animate-blink\">_</span></p></div></div></div><!-- Capability grid --><div class=\"grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-8 max-w-5xl\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = aiCap(
-			"OpenAI-Compatible",
-			"Drop-in for any tool or SDK that targets the OpenAI API. No code changes, no migration.",
+			"Engine Agnostic",
+			"LocalAI, vLLM, TGI, Ollama, Triton, or your own runtime. The platform runs any inference engine you bring.",
 			openaiIcon(),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -43,7 +43,7 @@ func AI() templ.Component {
 		}
 		templ_7745c5c3_Err = aiCap(
 			"Multi-Modal",
-			"Text generation, image understanding, audio transcription, embeddings. One endpoint, many modalities.",
+			"Text generation, image understanding, audio transcription, embeddings. One cluster, many modalities.",
 			multimodalIcon(),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -51,7 +51,7 @@ func AI() templ.Component {
 		}
 		templ_7745c5c3_Err = aiCap(
 			"Hardware Accelerated",
-			"GPU scheduling across your cluster. AMD, NVIDIA, or CPU-only. Run on what you have.",
+			"GPU scheduling across your nodes. AMD, NVIDIA, Intel, or CPU-only. Run on what you already have.",
 			gpuIcon(),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -59,7 +59,7 @@ func AI() templ.Component {
 		}
 		templ_7745c5c3_Err = aiCap(
 			"Scales With You",
-			"Add a node, add capacity. From a single board with 8 GB to a rack of GPUs, same platform, same API.",
+			"Add a node, add capacity. From a single board with 8 GB to a rack of GPUs. Same platform, same deployment flow.",
 			scaleIcon(),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
@@ -67,21 +67,21 @@ func AI() templ.Component {
 		}
 		templ_7745c5c3_Err = aiCap(
 			"Private by Design",
-			"Your models, your data, your network. Nothing reaches a third-party API. Full audit trail on every request.",
+			"Your models, your data, your network. Nothing reaches a third party. Full audit trail on every request.",
 			privateIcon(),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = aiCap(
-			"Open Source",
-			"Built on LocalAI. Inspect, modify, contribute. No black boxes in your inference pipeline.",
+			"Open Source Core",
+			"Built on open-source inference engines. Inspect, modify, contribute. No black boxes in your AI pipeline.",
 			opensourceIcon(),
 		).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><!-- Link to LocalAI fork --><div class=\"mt-12 pt-10 border-t border-rule dark:border-next-mid max-w-5xl flex items-center gap-4\"><div class=\"w-10 h-10 bg-accent-gold dark:bg-next-teal-hi flex items-center justify-center shrink-0 border border-ink dark:next-raised\"><svg class=\"w-5 h-5 text-ink dark:text-next-black\" fill=\"currentColor\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z\"></path></svg></div><div><a href=\"https://github.com/rezuscloud/LocalAI\" class=\"text-lg font-bold font-mac text-ink dark:text-next-white hover:text-accent-gold dark:hover:text-next-teal transition-colors\" target=\"_blank\" rel=\"noopener noreferrer\">github.com/rezuscloud/LocalAI</a><p class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body mt-1\">Open source AI inference. Forked, tested, running.</p></div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div><!-- Live demo link --><div class=\"mt-12 pt-10 border-t border-rule dark:border-next-mid max-w-5xl\"><a href=\"/ai\" class=\"group flex items-center gap-4\"><div class=\"w-10 h-10 bg-accent-gold dark:bg-next-teal-hi flex items-center justify-center shrink-0 border border-ink dark:next-raised group-hover:translate-x-1 transition-transform\"><svg class=\"w-5 h-5 text-ink dark:text-next-black\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z\"></path></svg></div><div><span class=\"text-lg font-bold font-mac text-ink dark:text-next-white group-hover:text-accent-gold dark:group-hover:text-next-teal transition-colors\">Open AI Playground</span><p class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body mt-1\">Live inference running on-cluster. Qwen3.5 and Granite models on AMD Barcelo iGPU.</p></div></a></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -125,7 +125,7 @@ func aiCap(title string, description string, icon templ.Component) templ.Compone
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/ai.templ`, Line: 91, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/ai.templ`, Line: 94, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -138,7 +138,7 @@ func aiCap(title string, description string, icon templ.Component) templ.Compone
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/ai.templ`, Line: 92, Col: 107}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/ai.templ`, Line: 95, Col: 107}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -173,7 +173,7 @@ func openaiIcon() templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<svg class=\"w-5 h-5 text-ink dark:text-next-black\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5\"></path></svg>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<svg class=\"w-5 h-5 text-ink dark:text-next-black\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 12a6 6 0 1112 0 6 6 0 01-12 0z\"></path></svg>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

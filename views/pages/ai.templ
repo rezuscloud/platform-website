@@ -1,0 +1,30 @@
+package pages
+
+import (
+	"github.com/rezuscloud/platform-website/views"
+)
+
+templ AIPlayground() {
+	@views.Layout("AI Playground | RezusCloud") {
+		<div class="pt-14 h-screen flex flex-col bg-next-black">
+			<div class="flex items-center justify-between px-4 py-2 bg-surface-strong dark:bg-next-dark border-b border-rule dark:border-next-mid">
+				<div class="flex items-center gap-3">
+					<a href="/" class="text-sm font-mac text-ink-muted dark:text-next-subtle hover:text-accent-gold dark:hover:text-next-teal transition-colors">&larr; RezusCloud</a>
+					<span class="text-rule dark:text-next-mid">|</span>
+					<span class="text-sm font-mac text-ink dark:text-next-white">AI Playground</span>
+				</div>
+				<div class="flex items-center gap-2">
+					<span class="w-2 h-2 bg-positive-next animate-pulse"></span>
+					<span class="text-xs font-mac-mono text-next-subtle">llamacpp.rezus.cloud</span>
+				</div>
+			</div>
+			<iframe
+				src="https://llamacpp.rezus.cloud"
+				class="flex-1 w-full border-0"
+				title="LocalAI Playground"
+				loading="lazy"
+				allow="clipboard-write"
+			></iframe>
+		</div>
+	}
+}
