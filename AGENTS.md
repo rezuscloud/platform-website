@@ -2,6 +2,8 @@
 
 Guidelines for agentic coding agents operating in this repository.
 
+When informations are partial or questions need to be asked, please search online starting from the official documentation.
+
 ## Project Overview
 
 This is a marketing website for RezusCloud Enterprise Kubernetes Platform, built with:

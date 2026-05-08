@@ -1,0 +1,152 @@
+name: Cleanup Container Images
+
+on:
+  pull_request:
+    types: [closed]
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      prune_untagged:
+        description: Delete untagged versions
+        type: boolean
+        default: true
+      prune_legacy:
+        description: Delete non-semver tagged versions older than 7 days
+        type: boolean
+        default: true
+      keep_last_n:
+        description: Number of semver releases to keep
+        type: number
+        default: 5
+
+permissions:
+  packages: write
+
+jobs:
+  cleanup-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - name: Delete PR images from GHCR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+
+          TAG_PREFIX="pr-${PR_NUMBER}-"
+          echo "Looking for images with tag prefix: ${TAG_PREFIX}"
+
+          VERSIONS=$(gh api "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}/versions?per_page=100" --paginate 2>/dev/null || echo '[]')
+
+          MATCHING=$(echo "$VERSIONS" | jq -c "[.[]? | select(.metadata.container.tags[]? // \"\" | startswith(\"${TAG_PREFIX}\"))]")
+          TOTAL=$(echo "$MATCHING" | jq 'length')
+
+          echo "Found ${TOTAL} matching versions"
+
+          DELETED=0
+          FAILED=0
+
+          for VID in $(echo "$MATCHING" | jq -r '.[].id'); do
+            if gh api -X DELETE "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}/versions/${VID}" 2>/dev/null; then
+              echo "  Deleted version ${VID}"
+              DELETED=$((DELETED + 1))
+            else
+              echo "  Failed to delete version ${VID}"
+              FAILED=$((FAILED + 1))
+            fi
+          done
+
+          echo "Cleanup complete: ${DELETED} deleted, ${FAILED} failed out of ${TOTAL}"
+
+  cleanup-untagged:
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - name: Delete untagged orphaned versions
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          echo "Deleting untagged orphaned versions..."
+
+          VERSIONS=$(gh api "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}/versions?per_page=100" --paginate 2>/dev/null || echo '[]')
+
+          UNTAGGED=$(echo "$VERSIONS" | jq -c "[.[]? | select((.metadata.container.tags // []) | length == 0)]")
+          TOTAL=$(echo "$UNTAGGED" | jq 'length')
+
+          echo "Found ${TOTAL} untagged versions"
+
+          DELETED=0
+          FAILED=0
+
+          for VID in $(echo "$UNTAGGED" | jq -r '.[].id'); do
+            if gh api -X DELETE "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}/versions/${VID}" 2>/dev/null; then
+              DELETED=$((DELETED + 1))
+            else
+              echo "  Failed to delete untagged version ${VID}"
+              FAILED=$((FAILED + 1))
+            fi
+          done
+
+          echo "Untagged cleanup: ${DELETED} deleted, ${FAILED} failed out of ${TOTAL}"
+
+  cleanup-manual:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - name: Delete untagged and old versions
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRUNE_UNTAGGED: ${{ inputs.prune_untagged }}
+          PRUNE_LEGACY: ${{ inputs.prune_legacy }}
+          KEEP_LAST_N: ${{ inputs.keep_last_n }}
+        run: |
+          set -euo pipefail
+
+          VERSIONS=$(gh api "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}/versions?per_page=100" --paginate 2>/dev/null || echo '[]')
+
+          TO_DELETE="[]"
+
+          if [ "$PRUNE_UNTAGGED" = "true" ]; then
+            echo "Collecting untagged versions..."
+            UNTAGGED=$(echo "$VERSIONS" | jq -c "[.[]? | select((.metadata.container.tags // []) | length == 0)]")
+            TO_DELETE=$(echo "$TO_DELETE" | jq --argjson add "$UNTAGGED" '. + $add')
+          fi
+
+          if [ "$PRUNE_LEGACY" = "true" ]; then
+            echo "Collecting non-semver versions older than 7 days..."
+            CUTOFF=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -v-7d +%Y-%m-%dT%H:%M:%SZ)
+            LEGACY=$(echo "$VERSIONS" | jq -c --arg cutoff "$CUTOFF" '
+              [.[]? | select(
+                (.metadata.container.tags // []) | length > 0
+                and (.metadata.container.tags | all(. as $t | (startswith("v") and ($t | test("^v[0-9]+\\.[0-9]+\\.[0-9]+"))) | not))
+                and .created_at < $cutoff
+              )]
+            ')
+            TO_DELETE=$(echo "$TO_DELETE" | jq --argjson add "$LEGACY" '. + $add')
+          fi
+
+          TO_DELETE=$(echo "$TO_DELETE" | jq 'unique_by(.id)')
+          TOTAL=$(echo "$TO_DELETE" | jq 'length')
+
+          echo "Total versions to delete: ${TOTAL}"
+
+          DELETED=0
+          FAILED=0
+
+          for VID in $(echo "$TO_DELETE" | jq -r '.[].id'); do
+            if gh api -X DELETE "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}/versions/${VID}" 2>/dev/null; then
+              DELETED=$((DELETED + 1))
+            else
+              echo "  Failed to delete version ${VID}"
+              FAILED=$((FAILED + 1))
+            fi
+          done
+
+          echo "Manual cleanup: ${DELETED} deleted, ${FAILED} failed out of ${TOTAL}"
