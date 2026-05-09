@@ -5,7 +5,7 @@ import "github.com/rezuscloud/platform-website/views"
 templ AIPlayground() {
 	@views.Layout("AI Playground | RezusCloud") {
 		<div
-			class="pt-14 h-screen flex flex-col bg-next-black"
+			class="fixed inset-0 pt-14 flex flex-col bg-next-black z-10"
 			x-data="{
 				iframe: null,
 				syncTheme() {
