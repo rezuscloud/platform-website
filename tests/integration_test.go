@@ -155,11 +155,11 @@ func TestNavigationHTML(t *testing.T) {
 		href string
 		text string
 	}{
-		{"#hero", "Home"},
-		{"#architecture", "Architecture"},
-		{"#features", "Features"},
-		{"#comparison", "Compare"},
-		{"#getstarted", "Get Started"},
+		{"/#hero", "Home"},
+		{"/#architecture", "Architecture"},
+		{"/#features", "Features"},
+		{"/#comparison", "Compare"},
+		{"/#getstarted", "Get Started"},
 	}
 
 	for _, link := range navLinks {
@@ -672,7 +672,7 @@ func TestProgressiveEnhancement(t *testing.T) {
 	})
 
 	t.Run("navigation links work without JavaScript", func(t *testing.T) {
-		navLinks := doc.Find("nav a[href^='#']")
+		navLinks := doc.Find("nav a[href^='/#']")
 		assert.GreaterOrEqual(t, navLinks.Length(), 5, "Should have navigation links")
 	})
 
