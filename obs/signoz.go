@@ -120,7 +120,7 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	resp, err := c.queryV3(fctx, v3Request{
 		Start: startMs,
 		End:   endMs,
-		Step:  300,
+		Step:  60,
 		CompositeQuery: v3Composite{
 			PanelType: "graph",
 			QueryType: "promql",
@@ -174,10 +174,10 @@ func buildServices(upSeries []v3Series, allResults map[string][]v3Series, now ti
 	svcMap := map[string]*svcInfo{}
 
 	for _, s := range upSeries {
-		ns := s.Labels["k8s_namespace_name"]
-		deploy := s.Labels["k8s.deployment.name"]
+		ns := labelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
+		deploy := labelStr(s.Labels, "k8s.deployment.name")
 		if deploy == "" {
-			deploy = s.Labels["k8s.statefulset.name"]
+			deploy = labelStr(s.Labels, "k8s.statefulset.name")
 		}
 		if ns == "" || deploy == "" {
 			continue
@@ -191,10 +191,10 @@ func buildServices(upSeries []v3Series, allResults map[string][]v3Series, now ti
 		if len(s.Values) > 0 && s.Values[len(s.Values)-1].Value == "1" {
 			info.healthy = true
 		}
-		if t := s.Labels["k8s.pod.start_time"]; t != "" {
+		if t := labelStr(s.Labels, "k8s.pod.start_time"); t != "" {
 			info.uptime = t
 		}
-		if node := s.Labels["k8s_node_name"]; node != "" {
+		if node := labelStr(s.Labels, "k8s_node_name", "k8s.node.name"); node != "" {
 			info.host = node
 		}
 	}
@@ -299,8 +299,8 @@ func buildServices(upSeries []v3Series, allResults map[string][]v3Series, now ti
 func latestByPod(series []v3Series) map[string]float64 {
 	m := map[string]float64{}
 	for _, s := range series {
-		ns := s.Labels["k8s_namespace_name"]
-		pod := s.Labels["k8s.pod.name"]
+		ns := labelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
+		pod := labelStr(s.Labels, "k8s.pod.name")
 		if ns == "" || pod == "" || len(s.Values) == 0 {
 			continue
 		}
@@ -316,8 +316,8 @@ func latestByPod(series []v3Series) map[string]float64 {
 func sparkByPod(series []v3Series) map[string]string {
 	m := map[string]string{}
 	for _, s := range series {
-		ns := s.Labels["k8s_namespace_name"]
-		pod := s.Labels["k8s.pod.name"]
+		ns := labelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
+		pod := labelStr(s.Labels, "k8s.pod.name")
 		if ns == "" || pod == "" || len(s.Values) < 2 {
 			continue
 		}
@@ -341,7 +341,7 @@ func buildHosts(results map[string][]v3Series) []Host {
 	// Count services per node from "up" results
 	nodeCount := map[string]int{}
 	for _, s := range results["up"] {
-		if node := s.Labels["k8s_node_name"]; node != "" {
+		if node := labelStr(s.Labels, "k8s_node_name", "k8s.node.name"); node != "" {
 			nodeCount[node]++
 		}
 	}
@@ -393,6 +393,16 @@ func staticHosts() []Host {
 		{Name: "talosoci-control-plane-legal-poodle", Label: "OCI Cloud", Detail: "ARM64 \u00b7 Ampere A1"},
 		{Name: "talosedge-genmachiche-flowing-bluejay", Label: "Edge Node", Detail: "AMD64 \u00b7 Intel NUC"},
 	}
+}
+
+// labelStr returns the first non-empty value from the given label keys.
+func labelStr(labels map[string]string, keys ...string) string {
+	for _, k := range keys {
+		if v, ok := labels[k]; ok && v != "" {
+			return v
+		}
+	}
+	return ""
 }
 
 // matchPod checks if a pod key (ns/pod-name-hash) belongs to a deployment (ns/deploy).
