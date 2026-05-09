@@ -43,7 +43,6 @@ func main() {
 	})
 
 	app.Get("/", handlers.Home)
-	app.Get("/ai", handlers.AIPlayground)
 	app.Get("/sections/:name", handlers.Section)
 	app.Get("/api/version", handlers.APIVersion)
 	app.Get("/api/live/stream", handlers.LiveSSE)
