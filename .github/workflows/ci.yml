@@ -140,6 +140,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      pull-requests: read
     steps:
       - uses: actions/checkout@v6
       - name: Resolve PR context
