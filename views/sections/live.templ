@@ -163,6 +163,8 @@ templ Live(data obs.LiveData) {
 						diskMB,
 						cpuHist,
 						ramHist,
+						netHist,
+						diskHist,
 					) {
 						if (this.selected && this.selected.key === key) {
 							this.deselectAll();
@@ -181,6 +183,8 @@ templ Live(data obs.LiveData) {
 							diskMB: diskMB,
 							cpuHist: cpuHist,
 							ramHist: ramHist,
+							netHist: netHist,
+							diskHist: diskHist,
 						};
 						// Show the detail row
 						var detailRow = document.querySelector(
@@ -230,7 +234,7 @@ templ Live(data obs.LiveData) {
 						var met = el.querySelector("[data-metric]");
 						if (met) {
 							var parts = [];
-							if (svc.cpu > 0) parts.push(svc.cpu.toFixed(2));
+							if (svc.cpu > 0) parts.push(svc.cpu.toFixed(3));
 							if (svc.ram > 0) parts.push(svc.ram.toFixed(0) + "M");
 							met.textContent = parts.join(" · ");
 							met.style.display = parts.length > 0 ? "" : "none";

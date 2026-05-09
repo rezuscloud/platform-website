@@ -256,7 +256,7 @@ func buildServices(upSeries []v3Series, allResults map[string][]v3Series, now ti
 			}
 		}
 
-		svc.CPU = math.Round(cpuMax*100) / 100
+		svc.CPU = math.Round(cpuMax*1000) / 1000
 		svc.RAM = math.Round(ramMax*10) / 10
 		svc.NetKB = math.Round(netSum*10) / 10
 		svc.DiskMB = math.Round(diskSum*10) / 10
