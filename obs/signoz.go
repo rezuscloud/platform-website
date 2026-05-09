@@ -113,14 +113,14 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	defer cancel()
 
 	now := time.Now()
-	startMs := now.Add(-1 * time.Hour).UnixMilli()
+	startMs := now.Add(-30 * time.Minute).UnixMilli()
 	endMs := now.UnixMilli()
 
 	// Single v3 query_range call for all metrics.
 	resp, err := c.queryV3(fctx, v3Request{
 		Start: startMs,
 		End:   endMs,
-		Step:  60,
+		Step:  300,
 		CompositeQuery: v3Composite{
 			PanelType: "graph",
 			QueryType: "promql",
@@ -129,7 +129,7 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 				"cpu":      {Query: `{__name__="k8s.pod.cpu.usage"}`, Disabled: false},
 				"ram":      {Query: `{__name__="k8s.pod.memory.working_set"}`, Disabled: false},
 				"disk":     {Query: `{__name__="k8s.pod.filesystem.usage"}`, Disabled: false},
-				"net":      {Query: `rate({__name__="k8s.pod.network.io"}[5m])`, Disabled: false},
+				"net":      {Query: `rate({__name__="k8s.pod.network.io",direction="receive"}[5m])`, Disabled: false},
 				"nodeCpu":  {Query: `{__name__="k8s.node.cpu.usage"}`, Disabled: false},
 				"nodeRam":  {Query: `{__name__="k8s.node.memory.working_set"}`, Disabled: false},
 				"nodeLoad": {Query: `{__name__="system.cpu.load_average.5m"}`, Disabled: false},
