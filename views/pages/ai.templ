@@ -6,7 +6,20 @@ import (
 
 templ AIPlayground() {
 	@views.Layout("AI Playground | RezusCloud") {
-		<div class="pt-14 h-screen flex flex-col bg-next-black">
+		<div
+			class="pt-14 h-screen flex flex-col bg-next-black"
+			x-data="{
+				iframe: null,
+				syncTheme() {
+					if (!this.iframe?.contentWindow) return
+					this.iframe.contentWindow.postMessage({
+						type: 'theme-sync',
+						theme: $store.theme.dark ? 'dark' : 'light'
+					}, 'https://ai.rezus.cloud')
+				}
+			}"
+			x-effect="syncTheme()"
+		>
 			<div class="flex items-center justify-between px-4 py-2 bg-surface-strong dark:bg-next-dark border-b border-rule dark:border-next-mid">
 				<div class="flex items-center gap-3">
 					<a href="/" class="text-sm font-mac text-ink-muted dark:text-next-subtle hover:text-accent-gold dark:hover:text-next-teal transition-colors">&larr; RezusCloud</a>
@@ -24,6 +37,8 @@ templ AIPlayground() {
 				title="LocalAI Playground"
 				loading="lazy"
 				allow="clipboard-write"
+				x-ref="iframe"
+				x-init="iframe = $refs.iframe; $refs.iframe.addEventListener('load', () => syncTheme())"
 			></iframe>
 		</div>
 	}
