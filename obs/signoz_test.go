@@ -46,14 +46,10 @@ func TestSigNozClientFetch(t *testing.T) {
 			result = append(result, map[string]interface{}{"queryName": qn, "series": s})
 		}
 
-		addResult("up",
-			series(podLabels("flux-system", "source-controller-abc123", "source-controller", "node-a"), "1"),
-			series(podLabels("platform-website", "platform-website-def456", "platform-website", "node-b"), "1"),
-			series(podLabels("dapr-system", "dapr-operator-ghi789", "dapr-operator", "node-b"), "1"),
-		)
 		addResult("cpu",
 			series(podLabels("flux-system", "source-controller-abc123", "source-controller", "node-a"), "0.25", "0.22", "0.28"),
 			series(podLabels("platform-website", "platform-website-def456", "platform-website", "node-b"), "0.11", "0.12", "0.10"),
+			series(podLabels("dapr-system", "dapr-operator-ghi789", "dapr-operator", "node-b"), "0.08", "0.09", "0.07"),
 		)
 		addResult("ram",
 			series(podLabels("flux-system", "source-controller-abc123", "source-controller", "node-a"), "110100480", "110100480", "110100480"),
@@ -102,7 +98,7 @@ func TestSigNozClientFetch(t *testing.T) {
 
 	client := NewSigNozClient(server.URL, "test-api-key")
 
-	t.Run("discovers services from up metric", func(t *testing.T) {
+	t.Run("discovers services from CPU metric", func(t *testing.T) {
 		data, err := client.Fetch(context.Background())
 		require.NoError(t, err)
 		assert.True(t, data.HasMetrics)

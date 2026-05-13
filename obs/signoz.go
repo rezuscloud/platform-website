@@ -113,10 +113,14 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	defer cancel()
 
 	now := time.Now()
-	startMs := now.Add(-30 * time.Minute).UnixMilli()
+	startMs := now.Add(-2 * time.Hour).UnixMilli()
 	endMs := now.UnixMilli()
 
 	// Single v3 query_range call for all metrics.
+	// Uses 2h window for resilience against SigNoz data gaps after restarts.
+	// step=300 over 2h gives ~24 data points per series (good sparklines).
+	// No `up` query: service discovery uses the CPU metric directly,
+	// which has k8s.deployment.name, k8s.node.name, k8s.pod.start_time labels.
 	resp, err := c.queryV3(fctx, v3Request{
 		Start: startMs,
 		End:   endMs,
@@ -125,7 +129,6 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 			PanelType: "graph",
 			QueryType: "promql",
 			PromQueries: map[string]v3PromQuery{
-				"up":       {Query: "up", Disabled: false},
 				"cpu":      {Query: `{__name__="k8s.pod.cpu.usage"}`, Disabled: false},
 				"ram":      {Query: `{__name__="k8s.pod.memory.working_set"}`, Disabled: false},
 				"disk":     {Query: `{__name__="k8s.pod.filesystem.usage"}`, Disabled: false},
@@ -151,7 +154,7 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 		results[r.QueryName] = r.Series
 	}
 
-	services := buildServices(results["up"], results, now)
+	services := buildServices(results["cpu"], results, now)
 	hosts := buildHosts(results)
 
 	c.cached = LiveData{
@@ -166,31 +169,33 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 
 // ── Service builder ──
 
-func buildServices(upSeries []v3Series, allResults map[string][]v3Series, now time.Time) []Service {
+func buildServices(cpuSeries []v3Series, allResults map[string][]v3Series, now time.Time) []Service {
 	type svcInfo struct {
 		ns, deploy, host, uptime string
-		healthy                  bool
 	}
 	svcMap := map[string]*svcInfo{}
 
-	for _, s := range upSeries {
+	// Discover services from CPU metric labels.
+	// k8s.pod.cpu.usage has: k8s.deployment.name, k8s.statefulset.name,
+	// k8s.daemonset.name, k8s.node.name, k8s.pod.start_time.
+	for _, s := range cpuSeries {
 		ns := labelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
 		deploy := labelStr(s.Labels, "k8s.deployment.name")
 		if deploy == "" {
 			deploy = labelStr(s.Labels, "k8s.statefulset.name")
 		}
+		if deploy == "" {
+			deploy = labelStr(s.Labels, "k8s.daemonset.name")
+		}
 		if ns == "" || deploy == "" {
 			continue
 		}
 		key := ns + "/" + deploy
-		info, ok := svcMap[key]
-		if !ok {
-			info = &svcInfo{ns: ns, deploy: deploy}
-			svcMap[key] = info
+		if _, exists := svcMap[key]; exists {
+			continue
 		}
-		if len(s.Values) > 0 && s.Values[len(s.Values)-1].Value == "1" {
-			info.healthy = true
-		}
+		info := &svcInfo{ns: ns, deploy: deploy}
+		svcMap[key] = info
 		if t := labelStr(s.Labels, "k8s.pod.start_time"); t != "" {
 			info.uptime = t
 		}
@@ -218,11 +223,8 @@ func buildServices(upSeries []v3Series, allResults map[string][]v3Series, now ti
 			Category:  CategoryForNamespace(info.ns),
 			Host:      info.host,
 		}
-		if info.healthy {
-			svc.Status = "healthy"
-		} else {
-			svc.Status = "running"
-		}
+		// All discovered services are running (they have metric data)
+		svc.Status = "running"
 		if info.uptime != "" {
 			if parsed, err := time.Parse(time.RFC3339, info.uptime); err == nil {
 				svc.Uptime = FormatUptime(now.Sub(parsed))
@@ -338,9 +340,9 @@ func buildHosts(results map[string][]v3Series) []Host {
 	nodeLoad := latestByNode(results["nodeLoad"])
 	nodeUp := latestByNode(results["nodeUp"])
 
-	// Count services per node from "up" results
+	// Count services per node from CPU results
 	nodeCount := map[string]int{}
-	for _, s := range results["up"] {
+	for _, s := range results["cpu"] {
 		if node := labelStr(s.Labels, "k8s_node_name", "k8s.node.name"); node != "" {
 			nodeCount[node]++
 		}
