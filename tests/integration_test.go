@@ -191,12 +191,12 @@ func TestFooterHTML(t *testing.T) {
 		assert.Greater(t, links.Length(), 0, "Footer should contain links")
 	})
 
-	t.Run("footer links are internal anchors or internal pages", func(t *testing.T) {
+	t.Run("footer links are valid", func(t *testing.T) {
 		doc.Find("footer a").Each(func(i int, s *goquery.Selection) {
 			href, exists := s.Attr("href")
 			assert.True(t, exists)
 			assert.True(t, strings.HasPrefix(href, "#") || strings.HasPrefix(href, "/"),
-				"Footer link href should start with '#' or '/', got: %s", href)
+				"Footer link href should be anchor or internal path, got: %s", href)
 		})
 	})
 }
