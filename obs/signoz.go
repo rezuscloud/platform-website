@@ -114,12 +114,12 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	defer cancel()
 
 	now := time.Now()
-	startMs := now.Add(-2 * time.Hour).UnixMilli()
+	startMs := now.Add(-6 * time.Hour).UnixMilli()
 	endMs := now.UnixMilli()
 
 	// Single v3 query_range call for all metrics.
-	// Uses 2h window for resilience against SigNoz data gaps after restarts.
-	// step=300 over 2h gives ~24 data points per series (good sparklines).
+	// Uses 6h window for resilience against SigNoz collection gaps.
+	// step=300 over 6h gives ~72 data points per series (good sparklines).
 	// No `up` query: service discovery uses the CPU metric directly,
 	// which has k8s.deployment.name, k8s.node.name, k8s.pod.start_time labels.
 	resp, err := c.queryV3(fctx, v3Request{
