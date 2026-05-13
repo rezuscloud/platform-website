@@ -10,6 +10,7 @@ import (
 	"math"
 	"net/http"
 	"os"
+	"sort"
 	"strings"
 	"time"
 )
@@ -348,31 +349,71 @@ func buildHosts(results map[string][]v3Series) []Host {
 		}
 	}
 
-	defs := []struct{ name, label, detail string }{
-		{"talosoci-control-plane-legal-poodle", "OCI Cloud", "ARM64 \u00b7 Ampere A1"},
-		{"talosedge-genmachiche-flowing-bluejay", "Edge Node", "AMD64 \u00b7 Intel NUC"},
-	}
-	hosts := make([]Host, 0, len(defs))
-	for _, d := range defs {
-		h := Host{Name: d.name, Label: d.label, Detail: d.detail}
-		if v, ok := nodeCPU[d.name]; ok {
+	// Discover node names dynamically from all available sources
+	nodeNames := discoverNodeNames(nodeCPU, nodeRAM, nodeLoad, nodeUp, nodeCount)
+
+	hosts := make([]Host, 0, len(nodeNames))
+	for _, name := range nodeNames {
+		h := Host{Name: name}
+		if strings.Contains(name, "control-plane") {
+			h.Label = "Cloud"
+			h.Detail = "Control Plane"
+		} else {
+			h.Label = "Edge"
+			h.Detail = "Worker Node"
+		}
+		if v, ok := nodeCPU[name]; ok {
 			h.CPU = math.Round(v*100) / 100
 		}
-		if v, ok := nodeRAM[d.name]; ok {
+		if v, ok := nodeRAM[name]; ok {
 			h.RAM = math.Round(v/1024/1024*10) / 10
 		}
-		if v, ok := nodeLoad[d.name]; ok {
+		if v, ok := nodeLoad[name]; ok {
 			h.LoadAvg = math.Round(v*100) / 100
 		}
-		if v, ok := nodeUp[d.name]; ok {
+		if v, ok := nodeUp[name]; ok {
 			h.Uptime = FormatUptime(time.Duration(v) * time.Second)
 		}
-		if n, ok := nodeCount[d.name]; ok {
+		if n, ok := nodeCount[name]; ok {
 			h.SvcCount = n
 		}
 		hosts = append(hosts, h)
 	}
 	return hosts
+}
+
+// discoverNodeNames returns sorted unique node names from multiple maps.
+// Control-plane nodes come first.
+func discoverNodeNames(sources ...any) []string {
+	seen := map[string]bool{}
+	var names []string
+	for _, src := range sources {
+		switch m := src.(type) {
+		case map[string]float64:
+			for k := range m {
+				if !seen[k] {
+					seen[k] = true
+					names = append(names, k)
+				}
+			}
+		case map[string]int:
+			for k := range m {
+				if !seen[k] {
+					seen[k] = true
+					names = append(names, k)
+				}
+			}
+		}
+	}
+	sort.Slice(names, func(i, j int) bool {
+		ci := strings.Contains(names[i], "control-plane")
+		cj := strings.Contains(names[j], "control-plane")
+		if ci != cj {
+			return ci
+		}
+		return names[i] < names[j]
+	})
+	return names
 }
 
 func latestByNode(series []v3Series) map[string]float64 {
@@ -391,10 +432,7 @@ func latestByNode(series []v3Series) map[string]float64 {
 }
 
 func staticHosts() []Host {
-	return []Host{
-		{Name: "talosoci-control-plane-legal-poodle", Label: "OCI Cloud", Detail: "ARM64 \u00b7 Ampere A1"},
-		{Name: "talosedge-genmachiche-flowing-bluejay", Label: "Edge Node", Detail: "AMD64 \u00b7 Intel NUC"},
-	}
+	return []Host{}
 }
 
 // labelStr returns the first non-empty value from the given label keys.

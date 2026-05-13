@@ -162,11 +162,11 @@ func TestSigNozClientFetch(t *testing.T) {
 }
 
 func TestSigNozClientGracefulDegradation(t *testing.T) {
-	t.Run("unreachable URL still returns static hosts", func(t *testing.T) {
+	t.Run("unreachable URL returns empty hosts", func(t *testing.T) {
 		client := NewSigNozClient("http://127.0.0.1:1", "test-key")
 		data, err := client.Fetch(context.Background())
 		assert.NoError(t, err)
-		assert.Equal(t, 2, len(data.Hosts))
+		assert.Equal(t, 0, len(data.Hosts))
 	})
 }
 
