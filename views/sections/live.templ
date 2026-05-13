@@ -259,8 +259,16 @@ templ Live(data obs.LiveData) {
 							var parts = [];
 							if (svc.cpu > 0) parts.push(svc.cpu.toFixed(3));
 							if (svc.ram > 0) parts.push(svc.ram.toFixed(0) + "M");
-							met.textContent = parts.join(" · ");
-							met.style.display = parts.length > 0 ? "" : "none";
+							if (parts.length > 0) {
+								met.textContent = parts.join(" \u00b7 ");
+								met.className =
+									"font-terminal text-[10px] text-ink dark:text-next-white tabular-nums leading-none";
+							} else {
+								met.innerHTML =
+									'<span class="text-ink-muted/50 dark:text-next-subtle/50">' +
+									(svc.name || "") +
+									"</span>";
+							}
 						}
 					},
 
@@ -366,7 +374,7 @@ templ hostColumn(host obs.Host, cat string, services []obs.Service) {
 templ serviceBox(svc obs.Service) {
 	{{ key := svc.Namespace + "/" + svc.Name + "@" + svc.Host }}
 	<button
-		class="w-full text-left px-2 py-1.5 border border-ink/25 dark:border-next-mid/70 bg-paper dark:bg-next-dark hover:border-accent-gold/60 dark:hover:border-next-teal/60 focus-visible:outline-2 focus-visible:outline-accent-gold dark:focus-visible:outline-next-teal focus-visible:outline-offset-1 transition-colors cursor-pointer"
+		class="w-full text-left px-1.5 py-1 border border-ink/25 dark:border-next-mid/70 bg-paper dark:bg-next-dark hover:border-accent-gold/60 dark:hover:border-next-teal/60 focus-visible:outline-2 focus-visible:outline-accent-gold dark:focus-visible:outline-next-teal focus-visible:outline-offset-1 transition-colors cursor-pointer"
 		data-svc-row={ key }
 		data-svc-key={ key }
 		aria-expanded="false"
@@ -377,25 +385,28 @@ templ serviceBox(svc obs.Service) {
 			svc.CPU, svc.RAM, svc.NetKB, svc.DiskMB,
 			svc.CPUHist, svc.RAMHist, svc.NetHist, svc.DiskHist) }
 	>
-		<div class="flex items-center gap-1 mb-0.5">
+		<div class="flex items-center gap-1">
 			if svc.Status == "healthy" || svc.Status == "running" {
 				<span data-dot class="inline-block w-1.5 h-1.5 shrink-0 bg-green-600 dark:bg-green-500" aria-label="Running"></span>
 			} else {
 				<span data-dot class="inline-block w-1.5 h-1.5 shrink-0 bg-rule dark:bg-next-mid" aria-label="Unknown"></span>
 			}
-			<span class="font-mac text-[10px] text-ink dark:text-next-white/90 truncate">{ svc.Name }</span>
-		</div>
-		<span data-metric class="font-terminal text-[10px] text-ink-muted/80 dark:text-next-subtle/80 tabular-nums" style={ templ.KV("display", ternary(svc.CPU > 0 || svc.RAM > 0, "", "none")) }>
-			if svc.CPU > 0 {
-				{ fmt.Sprintf("%.2f", svc.CPU) }
-			}
-			if svc.RAM > 0 {
-				if svc.CPU > 0 {
-					{ " · " }
+			<span data-metric class="font-terminal text-[10px] text-ink dark:text-next-white tabular-nums leading-none">
+				if svc.CPU > 0 || svc.RAM > 0 {
+					if svc.CPU > 0 {
+						{ fmt.Sprintf("%.2f", svc.CPU) }
+					}
+					if svc.RAM > 0 {
+						if svc.CPU > 0 {
+							{ " · " }
+						}
+						{ fmt.Sprintf("%.0fM", svc.RAM) }
+					}
+				} else {
+					<span class="text-ink-muted/50 dark:text-next-subtle/50">{ svc.Name }</span>
 				}
-				{ fmt.Sprintf("%.0fM", svc.RAM) }
-			}
-		</span>
+			</span>
+		</div>
 	</button>
 }
 
