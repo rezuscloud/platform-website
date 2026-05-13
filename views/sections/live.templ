@@ -41,19 +41,11 @@ templ Live(data obs.LiveData) {
 				<span class="font-terminal text-xs text-negative dark:text-negative-next">Connection lost. Data shown may be stale.</span>
 			</div>
 			<!-- SSE freshness -->
-			<div class="font-terminal text-xs text-ink-muted dark:text-next-subtle mb-8" x-show="connected" x-cloak aria-live="polite">
+			<div class="font-terminal text-xs text-ink-muted dark:text-next-subtle mb-6" x-show="connected" x-cloak aria-live="polite">
 				<span x-text="'Updated ' + lastUpdateAgo + 's ago'"></span>
 				<span class="mx-2">·</span>
 				<span x-text="hostCount + ' hosts, ' + serviceCount + ' services'"></span>
 			</div>
-			<!-- Host summary bar -->
-			if len(data.Hosts) > 0 {
-				<div class="flex flex-wrap gap-4 mb-8 border-b border-rule/30 dark:border-next-mid/30 pb-4">
-					for _, host := range data.Hosts {
-						@hostSummary(host)
-					}
-				</div>
-			}
 			<!-- Legend -->
 			<div class="flex items-center gap-4 mb-6">
 				<div class="flex items-center gap-1">
@@ -64,9 +56,13 @@ templ Live(data obs.LiveData) {
 					<span class="font-terminal text-[10px] text-ink-muted/70 dark:text-next-subtle/70">Click any service to inspect metrics</span>
 				</div>
 			</div>
-			<!-- Category blocks -->
-			for _, cat := range obs.CategoryOrder {
-				@categoryBlock(cat, data)
+			<!-- Host columns: one full-height column per node -->
+			if len(data.Hosts) > 0 {
+				<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
+					for _, host := range data.Hosts {
+						@hostColumn(host, data)
+					}
+				</div>
 			}
 		</div>
 		<script>
@@ -119,7 +115,7 @@ templ Live(data obs.LiveData) {
 										if (host.ram > 0) parts.push(host.ram.toFixed(0) + " MB");
 										if (host.loadAvg > 0)
 											parts.push("Load " + host.loadAvg.toFixed(2));
-										met.textContent = parts.join(" · ");
+										met.textContent = parts.join(" \u00b7 ");
 									}
 									var up = hdr.querySelector("[data-host-uptime]");
 									if (up) up.textContent = host.uptime || "";
@@ -284,75 +280,62 @@ templ Live(data obs.LiveData) {
 	</section>
 }
 
-templ hostSummary(host obs.Host) {
-	<div class="flex-1 min-w-48" data-host-name={ host.Name }>
-		<div class="flex items-baseline gap-2">
-			<span class="font-mac text-xs font-bold text-ink dark:text-next-white">{ host.Label }</span>
-			<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">{ host.Detail }</span>
-		</div>
-		<div data-host-metric class="font-terminal text-[10px] text-accent-gold dark:text-next-teal tabular-nums">
-			if host.CPU > 0 || host.RAM > 0 {
-				if host.CPU > 0 {
-					{ fmt.Sprintf("CPU %.1f", host.CPU) }
-				}
-				if host.RAM > 0 {
+templ hostColumn(host obs.Host, data obs.LiveData) {
+	<div class="border border-ink/15 dark:border-next-mid/50">
+		<!-- Host header -->
+		<div class="bg-paper dark:bg-next-dark px-3 py-2 border-b border-ink/15 dark:border-next-mid/50" data-host-name={ host.Name }>
+			<div class="flex items-baseline gap-2">
+				<span class="font-mac text-xs font-bold text-ink dark:text-next-white">{ host.Label }</span>
+				<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">{ host.Detail }</span>
+			</div>
+			<div data-host-metric class="font-terminal text-[10px] text-accent-gold dark:text-next-teal tabular-nums mt-0.5">
+				if host.CPU > 0 || host.RAM > 0 {
 					if host.CPU > 0 {
-						{ " · " }
+						{ fmt.Sprintf("CPU %.1f", host.CPU) }
 					}
-					{ fmt.Sprintf("%.0f MB", host.RAM) }
+					if host.RAM > 0 {
+						if host.CPU > 0 {
+							{ " · " }
+						}
+						{ fmt.Sprintf("%.0f MB", host.RAM) }
+					}
+					if host.LoadAvg > 0 {
+						{ fmt.Sprintf(" · Load %.2f", host.LoadAvg) }
+					}
 				}
-				if host.LoadAvg > 0 {
-					{ fmt.Sprintf(" · Load %.2f", host.LoadAvg) }
-				}
-			}
+			</div>
+			<div class="flex items-center gap-2 mt-0.5">
+				<span data-host-uptime class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">{ host.Uptime }</span>
+				<span data-host-svcs class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">
+					if host.SvcCount > 0 {
+						{ fmt.Sprintf("%d svcs", host.SvcCount) }
+					}
+				</span>
+			</div>
 		</div>
-		<div class="flex items-center gap-2 mt-0.5">
-			<span data-host-uptime class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">{ host.Uptime }</span>
-			<span data-host-svcs class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">
-				if host.SvcCount > 0 {
-					{ fmt.Sprintf("%d svcs", host.SvcCount) }
-				}
-			</span>
+		<!-- Categories stacked vertically within this host column -->
+		<div class="px-3 py-3 space-y-4">
+			for _, cat := range obs.CategoryOrder {
+				@categoryInHost(cat, host.Name, data.Services)
+			}
 		</div>
 	</div>
 }
 
-templ categoryBlock(cat string, data obs.LiveData) {
-	{{ services := obs.ServicesByCategory(data.Services, cat) }}
-	if len(services) > 0 {
-		<div class="mb-8">
-			<!-- Category label -->
-			<div class="font-terminal text-[10px] text-accent-gold dark:text-next-teal uppercase tracking-[0.15em] mb-3">
-				{ obs.CategoryLabel(cat) }
-			</div>
-			<!-- Host columns -->
-			<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
-				for _, host := range data.Hosts {
-					@hostColumn(host, cat, services)
-				}
-			</div>
-		</div>
-	}
-}
-
-templ hostColumn(host obs.Host, cat string, services []obs.Service) {
-	<!-- Filter services for this host within this category -->
+templ categoryInHost(cat string, hostName string, services []obs.Service) {
 	{{ var hostSvcs []obs.Service }}
 	for _, svc := range services {
-		if svc.Host == host.Name {
+		if svc.Host == hostName && obs.CategoryForNamespace(svc.Namespace) == cat {
 			{{ hostSvcs = append(hostSvcs, svc) }}
 		}
 	}
-	<div>
-		<!-- Host label: use host.Label from data model -->
-		<div class="font-terminal text-[10px] text-ink-muted/70 dark:text-next-subtle/70 uppercase tracking-wider mb-1.5">
-			{ host.Label }
-			if len(hostSvcs) > 0 {
-				{ fmt.Sprintf(" (%d)", len(hostSvcs)) }
-			}
-		</div>
-		if len(hostSvcs) > 0 {
-			<!-- Grid of boxes for this host -->
+	if len(hostSvcs) > 0 {
+		<div>
+			<!-- Category label -->
+			<div class="font-terminal text-[10px] text-accent-gold dark:text-next-teal uppercase tracking-[0.15em] mb-1.5">
+				{ obs.CategoryLabel(cat) }
+			</div>
+			<!-- Grid of boxes -->
 			<div class="grid gap-1.5" style="grid-template-columns: repeat(auto-fill, minmax(90px, 1fr))">
 				for _, svc := range hostSvcs {
 					@serviceBox(svc)
@@ -362,13 +345,8 @@ templ hostColumn(host obs.Host, cat string, services []obs.Service) {
 			for _, svc := range hostSvcs {
 				@detailPanel(svc)
 			}
-		} else {
-			<!-- Empty column placeholder -->
-			<div class="font-terminal text-[10px] text-ink-muted/40 dark:text-next-subtle/40 italic py-4 text-center border border-ink/15 dark:border-next-mid/30">
-				No services
-			</div>
-		}
-	</div>
+		</div>
+	}
 }
 
 templ serviceBox(svc obs.Service) {
