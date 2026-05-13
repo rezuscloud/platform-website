@@ -35,26 +35,18 @@ templ Live(data obs.LiveData) {
 				<span class="mx-2">·</span>
 				<span x-text="hostCount + ' hosts, ' + serviceCount + ' services'"></span>
 			</div>
-			<!-- Host-Column Matrix -->
-			<div class="overflow-x-auto">
-				<table class="w-full border-collapse text-left" role="grid" aria-label="Live platform service matrix">
-					<!-- Host headers -->
-					<thead>
-						<tr>
-							<th class="font-mac text-xs text-ink-muted dark:text-next-subtle uppercase tracking-wider p-2 w-40 min-w-40 sticky left-0 bg-surface-strong dark:bg-next-black"></th>
-							for _, host := range data.Hosts {
-								@hostHeader(host)
-							}
-						</tr>
-					</thead>
-					<!-- Service rows grouped by category -->
-					<tbody>
-						for _, cat := range obs.CategoryOrder {
-							@categoryRows(cat, data)
-						}
-					</tbody>
-				</table>
-			</div>
+			<!-- Host summary bar -->
+			if len(data.Hosts) > 0 {
+				<div class="flex flex-wrap gap-4 mb-8 border-b border-rule/30 dark:border-next-mid/30 pb-4">
+					for _, host := range data.Hosts {
+						@hostSummary(host)
+					}
+				</div>
+			}
+			<!-- Category blocks -->
+			for _, cat := range obs.CategoryOrder {
+				@categoryBlock(cat, data)
+			}
 		</div>
 		<script>
 			function liveMatrix() {
@@ -78,7 +70,6 @@ templ Live(data obs.LiveData) {
 							self.serviceCount = data.services ? data.services.length : 0;
 							self.initial.hasMetrics = data.hasMetrics || false;
 
-							// Index services by unique key: namespace/name on host
 							var idx = {};
 							if (data.services) {
 								data.services.forEach(function (svc) {
@@ -87,15 +78,15 @@ templ Live(data obs.LiveData) {
 								});
 							}
 
-							// Update each cell
+							// Update each box
 							document
 								.querySelectorAll("[data-svc-key]")
 								.forEach(function (el) {
 									var svc = idx[el.getAttribute("data-svc-key")];
-									if (svc) self.updateCell(el, svc);
+									if (svc) self.updateBox(el, svc);
 								});
 
-							// Update host headers
+							// Update host summaries
 							if (data.hosts) {
 								data.hosts.forEach(function (host) {
 									var hdr = document.querySelector(
@@ -103,12 +94,10 @@ templ Live(data obs.LiveData) {
 									);
 									if (!hdr) return;
 									var met = hdr.querySelector("[data-host-metric]");
-									if (met && host.cpu >= 0) {
+									if (met) {
 										var parts = [];
-										parts.push("CPU " + host.cpu.toFixed(1) + "%");
-										parts.push(host.ram.toFixed(0) + " MB");
-										if (host.ioWait > 0)
-											parts.push("IO " + host.ioWait.toFixed(1) + "%");
+										if (host.cpu > 0) parts.push("CPU " + host.cpu.toFixed(1));
+										if (host.ram > 0) parts.push(host.ram.toFixed(0) + " MB");
 										if (host.loadAvg > 0)
 											parts.push("Load " + host.loadAvg.toFixed(2));
 										met.textContent = parts.join(" · ");
@@ -135,6 +124,8 @@ templ Live(data obs.LiveData) {
 										diskMB: svc.diskMB || 0,
 										cpuHist: svc.cpuHist,
 										ramHist: svc.ramHist,
+										netHist: svc.netHist,
+										diskHist: svc.diskHist,
 									};
 									self.updateCharts(svc);
 								}
@@ -186,15 +177,19 @@ templ Live(data obs.LiveData) {
 							netHist: netHist,
 							diskHist: diskHist,
 						};
-						// Show the detail row
-						var detailRow = document.querySelector(
+						var detailEl = document.querySelector(
 							'[data-detail-key="' + key + '"]',
 						);
-						if (detailRow) detailRow.style.display = "";
-						// Highlight the service row
-						var svcRow = document.querySelector('[data-svc-row="' + key + '"]');
-						if (svcRow)
-							svcRow.classList.add("bg-accent-gold/5", "dark:bg-next-teal/5");
+						if (detailEl) detailEl.style.display = "";
+						var svcEl = document.querySelector('[data-svc-row="' + key + '"]');
+						if (svcEl) {
+							svcEl.classList.add(
+								"border-accent-gold/60",
+								"dark:border-next-teal/60",
+								"bg-accent-gold/10",
+								"dark:bg-next-teal/10",
+							);
+						}
 						this.updateCharts(this.selected);
 					},
 
@@ -205,7 +200,12 @@ templ Live(data obs.LiveData) {
 								el.style.display = "none";
 							});
 						document.querySelectorAll("[data-svc-row]").forEach(function (el) {
-							el.classList.remove("bg-accent-gold/5", "dark:bg-next-teal/5");
+							el.classList.remove(
+								"border-accent-gold/60",
+								"dark:border-next-teal/60",
+								"bg-accent-gold/10",
+								"dark:bg-next-teal/10",
+							);
 						});
 					},
 
@@ -228,7 +228,7 @@ templ Live(data obs.LiveData) {
 							diskLine.setAttribute("points", svc.diskHist);
 					},
 
-					updateCell(el, svc) {
+					updateBox(el, svc) {
 						var dot = el.querySelector("[data-dot]");
 						if (dot) dot.className = this.dotClass(svc.status);
 						var met = el.querySelector("[data-metric]");
@@ -239,18 +239,11 @@ templ Live(data obs.LiveData) {
 							met.textContent = parts.join(" · ");
 							met.style.display = parts.length > 0 ? "" : "none";
 						}
-						var up = el.querySelector("[data-uptime]");
-						if (up) {
-							up.textContent = svc.uptime || "";
-							up.style.display = svc.uptime ? "" : "none";
-						}
 					},
 
 					dotClass(status) {
 						var b = "inline-block w-1.5 h-1.5 shrink-0";
-						if (status === "healthy")
-							return b + " bg-green-600 dark:bg-green-500";
-						if (status === "running")
+						if (status === "healthy" || status === "running")
 							return b + " bg-green-600 dark:bg-green-500";
 						return b + " bg-rule dark:bg-next-mid";
 					},
@@ -260,14 +253,16 @@ templ Live(data obs.LiveData) {
 	</section>
 }
 
-templ hostHeader(host obs.Host) {
-	<th class="p-2 text-center border-b border-rule dark:border-next-mid" data-host-name={ host.Name }>
-		<div class="font-mac text-xs font-bold text-ink dark:text-next-white">{ host.Label }</div>
-		<div class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle">{ host.Detail }</div>
+templ hostSummary(host obs.Host) {
+	<div class="flex-1 min-w-48" data-host-name={ host.Name }>
+		<div class="flex items-baseline gap-2">
+			<span class="font-mac text-xs font-bold text-ink dark:text-next-white">{ host.Label }</span>
+			<span class="font-terminal text-[10px] text-ink-muted/50 dark:text-next-subtle/50">{ host.Detail }</span>
+		</div>
 		<div data-host-metric class="font-terminal text-[10px] text-accent-gold dark:text-next-teal tabular-nums">
 			if host.CPU > 0 || host.RAM > 0 {
 				if host.CPU > 0 {
-					{ fmt.Sprintf("CPU %.1f%%", host.CPU) }
+					{ fmt.Sprintf("CPU %.1f", host.CPU) }
 				}
 				if host.RAM > 0 {
 					if host.CPU > 0 {
@@ -275,138 +270,109 @@ templ hostHeader(host obs.Host) {
 					}
 					{ fmt.Sprintf("%.0f MB", host.RAM) }
 				}
-				if host.IOWait > 0 {
-					{ fmt.Sprintf(" · IO %.1f%%", host.IOWait) }
-				}
 				if host.LoadAvg > 0 {
 					{ fmt.Sprintf(" · Load %.2f", host.LoadAvg) }
 				}
 			}
 		</div>
-		<div class="flex items-center justify-center gap-2 mt-0.5">
-			<span data-host-uptime class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">{ host.Uptime }</span>
-			<span data-host-svcs class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">
+		<div class="flex items-center gap-2 mt-0.5">
+			<span data-host-uptime class="font-terminal text-[10px] text-ink-muted/50 dark:text-next-subtle/50">{ host.Uptime }</span>
+			<span data-host-svcs class="font-terminal text-[10px] text-ink-muted/50 dark:text-next-subtle/50">
 				if host.SvcCount > 0 {
 					{ fmt.Sprintf("%d svcs", host.SvcCount) }
 				}
 			</span>
 		</div>
-	</th>
+	</div>
 }
 
-templ categoryRows(cat string, data obs.LiveData) {
+templ categoryBlock(cat string, data obs.LiveData) {
 	{{ services := obs.ServicesByCategory(data.Services, cat) }}
-	{{ hostNames := obs.HostNames(data.Hosts) }}
 	if len(services) > 0 {
-		<!-- Category label row -->
-		<tr>
-			<td class="font-terminal text-[10px] text-accent-gold/70 dark:text-next-teal/70 uppercase tracking-[0.15em] pt-4 pb-1 px-2 sticky left-0 bg-surface-strong dark:bg-next-black" colspan={ fmt.Sprintf("%d", len(hostNames)+1) }>
+		<div class="mb-6">
+			<!-- Category label -->
+			<div class="font-terminal text-[10px] text-accent-gold/70 dark:text-next-teal/70 uppercase tracking-[0.15em] mb-2">
 				{ obs.CategoryLabel(cat) }
-			</td>
-		</tr>
-		<!-- Service rows (each with inline detail row) -->
-		for _, svc := range services {
-			@serviceRow(svc, hostNames, data)
-		}
+			</div>
+			<!-- Responsive grid of service boxes -->
+			<div class="grid gap-1.5" style="grid-template-columns: repeat(auto-fill, minmax(100px, 1fr))">
+				for _, svc := range services {
+					@serviceBox(svc)
+				}
+			</div>
+		</div>
 	}
 }
 
-templ serviceRow(svc obs.Service, hostNames []string, data obs.LiveData) {
+templ serviceBox(svc obs.Service) {
 	{{ key := svc.Namespace + "/" + svc.Name + "@" + svc.Host }}
-	<!-- Service data row -->
-	<tr
-		class="border-b border-rule/20 dark:border-next-mid/20 hover:bg-surface/50 dark:hover:bg-next-dark/50"
-		data-svc-row={ key }
-	>
-		<!-- Service name (sticky) -->
-		<td class="font-mac text-xs text-ink dark:text-next-white py-1.5 px-2 sticky left-0 bg-surface-strong dark:bg-next-black truncate max-w-40" title={ svc.Namespace + "/" + svc.Name }>
-			{ svc.Name }
-		</td>
-		<!-- One cell per host -->
-		for _, hostName := range hostNames {
-			@hostCell(svc, hostName)
-		}
-	</tr>
-	<!-- Inline detail row (hidden until selected) -->
-	<tr
-		data-detail-key={ key }
-		style="display:none"
-	>
-		<td colspan={ fmt.Sprintf("%d", len(hostNames)+1) } class="p-0">
-			<div class="border-t border-accent-gold/30 dark:border-next-teal/30 bg-accent-gold/5 dark:bg-next-teal/5 px-4 py-3">
-				<div class="flex items-center gap-3 mb-2">
-					<span class="font-mac text-xs font-bold text-ink dark:text-next-white" x-text="selected ? selected.name : ''"></span>
-					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle" x-text="selected ? selected.host + ' · ' + selected.detail : ''"></span>
-				</div>
-				<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-					<div>
-						<span class="font-terminal text-[10px] text-accent-gold dark:text-next-teal block mb-0.5" x-text="selected ? selected.cpu.toFixed(2) + ' CPU cores' : ''"></span>
-						<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
-							<polyline x-data-hist-cpu points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-accent-gold dark:text-next-teal"></polyline>
-						</svg>
-					</div>
-					<div>
-						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? selected.ram.toFixed(0) + ' MB RAM' : ''"></span>
-						<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
-							<polyline x-data-hist-ram points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
-						</svg>
-					</div>
-					<div>
-						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? (selected.netKB >= 1024 ? (selected.netKB / 1024).toFixed(1) + ' MB/s' : selected.netKB.toFixed(0) + ' KB/s') + ' Net' : ''"></span>
-						<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
-							<polyline x-data-hist-net points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
-						</svg>
-					</div>
-					<div>
-						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? (selected.diskMB >= 1024 ? (selected.diskMB / 1024).toFixed(1) + ' GB' : selected.diskMB.toFixed(0) + ' MB') + ' Disk' : ''"></span>
-						<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
-							<polyline x-data-hist-disk points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
-						</svg>
-					</div>
-				</div>
-			</div>
-		</td>
-	</tr>
-}
-
-templ hostCell(svc obs.Service, hostName string) {
-	if svc.Host == hostName {
-		<!-- Service runs on this host -->
-		<td class="py-1.5 px-2 text-center">
-			<button
-				class="inline-flex items-center gap-1.5 px-2 py-1 border border-ink/15 dark:border-next-white/15 dark:border-next-mid/60 bg-surface dark:bg-next-dark cursor-pointer hover:border-accent-gold dark:hover:border-next-teal transition-colors"
-				data-svc-key={ svc.Namespace + "/" + svc.Name + "@" + svc.Host }
-				@click={ fmt.Sprintf("selectService('%s', '%s', '%s', '%s', %v, %v, %v, %v, `%s`, `%s`, `%s`, `%s`)",
-					svc.Namespace+"/"+svc.Name+"@"+svc.Host,
-					svc.Name, svc.Host, svc.Namespace,
-					svc.CPU, svc.RAM, svc.NetKB, svc.DiskMB,
-					svc.CPUHist, svc.RAMHist, svc.NetHist, svc.DiskHist) }
-			>
+	<!-- Box -->
+	<div data-svc-row={ key }>
+		<button
+			class="w-full text-left px-2 py-1.5 border border-ink/10 dark:border-next-mid/40 bg-paper dark:bg-next-dark hover:border-accent-gold/50 dark:hover:border-next-teal/50 transition-colors cursor-pointer"
+			data-svc-key={ key }
+			@click={ fmt.Sprintf("selectService('%s', '%s', '%s', '%s', %v, %v, %v, %v, `%s`, `%s`, `%s`, `%s`)",
+				key,
+				svc.Name, svc.Host, svc.Namespace,
+				svc.CPU, svc.RAM, svc.NetKB, svc.DiskMB,
+				svc.CPUHist, svc.RAMHist, svc.NetHist, svc.DiskHist) }
+		>
+			<div class="flex items-center gap-1 mb-0.5">
 				if svc.Status == "healthy" || svc.Status == "running" {
 					<span data-dot class="inline-block w-1.5 h-1.5 shrink-0 bg-green-600 dark:bg-green-500"></span>
 				} else {
 					<span data-dot class="inline-block w-1.5 h-1.5 shrink-0 bg-rule dark:bg-next-mid"></span>
 				}
-				<span data-metric class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle tabular-nums" style={ templ.KV("display", ternary(svc.CPU > 0 || svc.RAM > 0, "", "none")) }>
+				<span class="font-mac text-[10px] text-ink dark:text-next-white truncate">{ svc.Name }</span>
+			</div>
+			<span data-metric class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle tabular-nums" style={ templ.KV("display", ternary(svc.CPU > 0 || svc.RAM > 0, "", "none")) }>
+				if svc.CPU > 0 {
+					{ fmt.Sprintf("%.2f", svc.CPU) }
+				}
+				if svc.RAM > 0 {
 					if svc.CPU > 0 {
-						{ fmt.Sprintf("%.2f", svc.CPU) }
+						{ " · " }
 					}
-					if svc.RAM > 0 {
-						if svc.CPU > 0 {
-							{ " · " }
-						}
-						{ fmt.Sprintf("%.0fM", svc.RAM) }
-					}
-				</span>
-				<span data-uptime class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60" style={ templ.KV("display", ternary(svc.Uptime != "", "", "none")) }>{ svc.Uptime }</span>
-			</button>
-		</td>
-	} else {
-		<!-- Empty cell (service not on this host) -->
-		<td class="py-1.5 px-2">
-			<span class="inline-block w-1 h-1 bg-rule/20 dark:bg-next-mid/20"></span>
-		</td>
-	}
+					{ fmt.Sprintf("%.0fM", svc.RAM) }
+				}
+			</span>
+		</button>
+		<!-- Detail panel (hidden until selected) -->
+		<div data-detail-key={ key } style="display:none">
+			<div class="border-t border-accent-gold/30 dark:border-next-teal/30 bg-accent-gold/5 dark:bg-next-teal/5 px-3 py-2">
+				<div class="flex items-center gap-2 mb-1.5">
+					<span class="font-mac text-xs font-bold text-ink dark:text-next-white" x-text="selected ? selected.name : ''"></span>
+					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle" x-text="selected ? selected.host + ' · ' + selected.detail : ''"></span>
+				</div>
+				<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+					<div>
+						<span class="font-terminal text-[10px] text-accent-gold dark:text-next-teal block mb-0.5" x-text="selected ? selected.cpu.toFixed(2) + ' CPU cores' : ''"></span>
+						<svg viewBox="0 0 120 24" class="w-full h-5" preserveAspectRatio="none">
+							<polyline x-data-hist-cpu points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-accent-gold dark:text-next-teal"></polyline>
+						</svg>
+					</div>
+					<div>
+						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? selected.ram.toFixed(0) + ' MB RAM' : ''"></span>
+						<svg viewBox="0 0 120 24" class="w-full h-5" preserveAspectRatio="none">
+							<polyline x-data-hist-ram points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
+						</svg>
+					</div>
+					<div>
+						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? (selected.netKB >= 1024 ? (selected.netKB / 1024).toFixed(1) + ' MB/s' : selected.netKB.toFixed(0) + ' KB/s') + ' Net' : ''"></span>
+						<svg viewBox="0 0 120 24" class="w-full h-5" preserveAspectRatio="none">
+							<polyline x-data-hist-net points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
+						</svg>
+					</div>
+					<div>
+						<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? (selected.diskMB >= 1024 ? (selected.diskMB / 1024).toFixed(1) + ' GB' : selected.diskMB.toFixed(0) + ' MB') + ' Disk' : ''"></span>
+						<svg viewBox="0 0 120 24" class="w-full h-5" preserveAspectRatio="none">
+							<polyline x-data-hist-disk points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
+						</svg>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 }
 
 func ternary(cond bool, ifTrue, ifFalse string) string {
