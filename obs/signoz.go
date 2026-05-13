@@ -321,12 +321,16 @@ func sparkByPod(series []v3Series) map[string]string {
 	for _, s := range series {
 		ns := labelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
 		pod := labelStr(s.Labels, "k8s.pod.name")
-		if ns == "" || pod == "" || len(s.Values) < 2 {
+		if ns == "" || pod == "" || len(s.Values) < 1 {
 			continue
 		}
 		vals := make([]float64, len(s.Values))
 		for i, p := range s.Values {
 			vals[i], _ = parseFloat(p.Value)
+		}
+		if len(vals) == 1 {
+			// Single point: create a flat line for visual consistency
+			vals = []float64{vals[0], vals[0]}
 		}
 		m[ns+"/"+pod] = sparklinePoints(vals, 48, 16)
 	}
