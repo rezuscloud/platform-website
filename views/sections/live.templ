@@ -12,6 +12,8 @@ templ Live(data obs.LiveData) {
 		class="py-16 sm:py-24 bg-surface-strong dark:bg-next-black"
 		x-data="liveMatrix()"
 		x-init="init()"
+		role="region"
+		aria-label="Live platform observability"
 	>
 		<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 			<!-- Header -->
@@ -22,15 +24,24 @@ templ Live(data obs.LiveData) {
 					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle uppercase tracking-wider">Live</span>
 				</div>
 			</div>
-			<!-- Static banner -->
+			<!-- Static banner (no SigNoz) -->
 			<div
 				class="border border-accent-gold/40 dark:border-next-teal/40 bg-accent-gold/5 dark:bg-next-teal/5 px-4 py-2 mb-6"
 				x-show="!connected && !initial.hasMetrics"
 			>
 				<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">Showing platform topology. Live metrics require SigNoz.</span>
 			</div>
+			<!-- Connection lost banner -->
+			<div
+				class="border border-negative/40 dark:border-negative-next/40 bg-negative/5 dark:bg-negative-next/5 px-4 py-2 mb-6"
+				x-show="!connected && initial.hasMetrics"
+				x-cloak
+				role="alert"
+			>
+				<span class="font-terminal text-xs text-negative dark:text-negative-next">Connection lost. Data shown may be stale.</span>
+			</div>
 			<!-- SSE freshness -->
-			<div class="font-terminal text-xs text-ink-muted dark:text-next-subtle mb-8" x-show="connected" x-cloak>
+			<div class="font-terminal text-xs text-ink-muted dark:text-next-subtle mb-8" x-show="connected" x-cloak aria-live="polite">
 				<span x-text="'Updated ' + lastUpdateAgo + 's ago'"></span>
 				<span class="mx-2">·</span>
 				<span x-text="hostCount + ' hosts, ' + serviceCount + ' services'"></span>
@@ -43,6 +54,16 @@ templ Live(data obs.LiveData) {
 					}
 				</div>
 			}
+			<!-- Legend -->
+			<div class="flex items-center gap-4 mb-6">
+				<div class="flex items-center gap-1">
+					<span class="inline-block w-1.5 h-1.5 bg-green-600 dark:bg-green-500" aria-hidden="true"></span>
+					<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">Running</span>
+				</div>
+				<div class="flex items-center gap-1">
+					<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">Click any service to inspect metrics</span>
+				</div>
+			</div>
 			<!-- Category blocks -->
 			for _, cat := range obs.CategoryOrder {
 				@categoryBlock(cat, data)
@@ -173,20 +194,23 @@ templ Live(data obs.LiveData) {
 							netHist: netHist,
 							diskHist: diskHist,
 						};
-						// Show the detail panel
 						var detailEl = document.querySelector(
 							'[data-detail-key="' + key + '"]',
 						);
-						if (detailEl) detailEl.style.display = "";
-						// Highlight the box
+						if (detailEl) {
+							detailEl.style.display = "";
+							detailEl.setAttribute("aria-hidden", "false");
+						}
 						var svcEl = document.querySelector('[data-svc-row="' + key + '"]');
-						if (svcEl)
+						if (svcEl) {
 							svcEl.classList.add(
 								"border-accent-gold/60",
 								"dark:border-next-teal/60",
 								"bg-accent-gold/10",
 								"dark:bg-next-teal/10",
 							);
+							svcEl.setAttribute("aria-expanded", "true");
+						}
 						this.updateCharts(this.selected);
 					},
 
@@ -195,6 +219,7 @@ templ Live(data obs.LiveData) {
 							.querySelectorAll("[data-detail-key]")
 							.forEach(function (el) {
 								el.style.display = "none";
+								el.setAttribute("aria-hidden", "true");
 							});
 						document.querySelectorAll("[data-svc-row]").forEach(function (el) {
 							el.classList.remove(
@@ -203,6 +228,7 @@ templ Live(data obs.LiveData) {
 								"bg-accent-gold/10",
 								"dark:bg-next-teal/10",
 							);
+							el.setAttribute("aria-expanded", "false");
 						});
 					},
 
@@ -285,7 +311,6 @@ templ hostSummary(host obs.Host) {
 
 templ categoryBlock(cat string, data obs.LiveData) {
 	{{ services := obs.ServicesByCategory(data.Services, cat) }}
-	{{ hostNames := obs.HostNames(data.Hosts) }}
 	if len(services) > 0 {
 		<div class="mb-8">
 			<!-- Category label -->
@@ -294,48 +319,58 @@ templ categoryBlock(cat string, data obs.LiveData) {
 			</div>
 			<!-- Host columns -->
 			<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
-				for _, hostName := range hostNames {
-					@hostColumn(hostName, cat, services)
+				for _, host := range data.Hosts {
+					@hostColumn(host, cat, services)
 				}
 			</div>
 		</div>
 	}
 }
 
-templ hostColumn(hostName string, cat string, services []obs.Service) {
+templ hostColumn(host obs.Host, cat string, services []obs.Service) {
 	<!-- Filter services for this host within this category -->
 	{{ var hostSvcs []obs.Service }}
 	for _, svc := range services {
-		if svc.Host == hostName {
+		if svc.Host == host.Name {
 			{{ hostSvcs = append(hostSvcs, svc) }}
 		}
 	}
-	if len(hostSvcs) > 0 {
-		<div>
-			<!-- Host label within column -->
-			<div class="font-terminal text-[10px] text-ink-muted/40 dark:text-next-subtle/40 uppercase tracking-wider mb-1.5">
-				{ hostLabel(hostName, len(hostSvcs)) }
-			</div>
+	<div>
+		<!-- Host label: use host.Label from data model -->
+		<div class="font-terminal text-[10px] text-ink-muted/50 dark:text-next-subtle/50 uppercase tracking-wider mb-1.5">
+			{ host.Label }
+			if len(hostSvcs) > 0 {
+				{ fmt.Sprintf(" (%d)", len(hostSvcs)) }
+			}
+		</div>
+		if len(hostSvcs) > 0 {
 			<!-- Grid of boxes for this host -->
 			<div class="grid gap-1" style="grid-template-columns: repeat(auto-fill, minmax(90px, 1fr))">
 				for _, svc := range hostSvcs {
 					@serviceBox(svc)
 				}
 			</div>
-			<!-- Detail panels for this host's services (full-width) -->
+			<!-- Detail panels (full-width, one visible at a time) -->
 			for _, svc := range hostSvcs {
 				@detailPanel(svc)
 			}
-		</div>
-	}
+		} else {
+			<!-- Empty column placeholder -->
+			<div class="font-terminal text-[10px] text-ink-muted/20 dark:text-next-subtle/20 italic py-4 text-center border border-ink/5 dark:border-next-mid/10">
+				No services
+			</div>
+		}
+	</div>
 }
 
 templ serviceBox(svc obs.Service) {
 	{{ key := svc.Namespace + "/" + svc.Name + "@" + svc.Host }}
 	<button
-		class="w-full text-left px-2 py-1.5 border border-ink/10 dark:border-next-mid/40 bg-paper dark:bg-next-dark hover:border-accent-gold/50 dark:hover:border-next-teal/50 transition-colors cursor-pointer"
+		class="w-full text-left px-2 py-1.5 border border-ink/10 dark:border-next-mid/40 bg-paper dark:bg-next-dark hover:border-accent-gold/50 dark:hover:border-next-teal/50 focus-visible:outline-2 focus-visible:outline-accent-gold dark:focus-visible:outline-next-teal focus-visible:outline-offset-1 transition-colors cursor-pointer"
 		data-svc-row={ key }
 		data-svc-key={ key }
+		aria-expanded="false"
+		title={ fmt.Sprintf("%s/%s on %s", svc.Namespace, svc.Name, svc.Host) }
 		@click={ fmt.Sprintf("selectService('%s', '%s', '%s', '%s', %v, %v, %v, %v, `%s`, `%s`, `%s`, `%s`)",
 			key,
 			svc.Name, svc.Host, svc.Namespace,
@@ -344,9 +379,9 @@ templ serviceBox(svc obs.Service) {
 	>
 		<div class="flex items-center gap-1 mb-0.5">
 			if svc.Status == "healthy" || svc.Status == "running" {
-				<span data-dot class="inline-block w-1.5 h-1.5 shrink-0 bg-green-600 dark:bg-green-500"></span>
+				<span data-dot class="inline-block w-1.5 h-1.5 shrink-0 bg-green-600 dark:bg-green-500" aria-label="Running"></span>
 			} else {
-				<span data-dot class="inline-block w-1.5 h-1.5 shrink-0 bg-rule dark:bg-next-mid"></span>
+				<span data-dot class="inline-block w-1.5 h-1.5 shrink-0 bg-rule dark:bg-next-mid" aria-label="Unknown"></span>
 			}
 			<span class="font-mac text-[10px] text-ink dark:text-next-white truncate">{ svc.Name }</span>
 		</div>
@@ -366,7 +401,7 @@ templ serviceBox(svc obs.Service) {
 
 templ detailPanel(svc obs.Service) {
 	{{ key := svc.Namespace + "/" + svc.Name + "@" + svc.Host }}
-	<div data-detail-key={ key } style="display:none" class="mt-1">
+	<div data-detail-key={ key } style="display:none" aria-hidden="true" class="mt-1">
 		<div class="border border-accent-gold/30 dark:border-next-teal/30 bg-accent-gold/5 dark:bg-next-teal/5 px-4 py-3">
 			<div class="flex items-center gap-2 mb-2">
 				<span class="font-mac text-xs font-bold text-ink dark:text-next-white" x-text="selected ? selected.name : ''"></span>
@@ -375,25 +410,25 @@ templ detailPanel(svc obs.Service) {
 			<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
 				<div>
 					<span class="font-terminal text-[10px] text-accent-gold dark:text-next-teal block mb-0.5" x-text="selected ? selected.cpu.toFixed(2) + ' CPU cores' : ''"></span>
-					<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
+					<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none" aria-label="CPU usage history">
 						<polyline x-data-hist-cpu points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-accent-gold dark:text-next-teal"></polyline>
 					</svg>
 				</div>
 				<div>
 					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? selected.ram.toFixed(0) + ' MB RAM' : ''"></span>
-					<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
+					<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none" aria-label="RAM usage history">
 						<polyline x-data-hist-ram points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
 					</svg>
 				</div>
 				<div>
 					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? (selected.netKB >= 1024 ? (selected.netKB / 1024).toFixed(1) + ' MB/s' : selected.netKB.toFixed(0) + ' KB/s') + ' Net' : ''"></span>
-					<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
+					<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none" aria-label="Network usage history">
 						<polyline x-data-hist-net points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
 					</svg>
 				</div>
 				<div>
 					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? (selected.diskMB >= 1024 ? (selected.diskMB / 1024).toFixed(1) + ' GB' : selected.diskMB.toFixed(0) + ' MB') + ' Disk' : ''"></span>
-					<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none">
+					<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none" aria-label="Disk usage history">
 						<polyline x-data-hist-disk points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
 					</svg>
 				</div>
@@ -407,22 +442,4 @@ func ternary(cond bool, ifTrue, ifFalse string) string {
 		return ifTrue
 	}
 	return ifFalse
-}
-
-func hostLabel(hostName string, count int) string {
-	short := hostName
-	// Trim common prefix
-	if len(short) > 20 {
-		// Extract a readable part
-		for _, prefix := range []string{"talosedge-genmachiche-", "talosoci-control-plane-"} {
-			if len(short) > len(prefix) {
-				trimmed := short[len(prefix):]
-				if len(trimmed) > 0 {
-					short = trimmed
-					break
-				}
-			}
-		}
-	}
-	return fmt.Sprintf("%s (%d)", short, count)
 }
