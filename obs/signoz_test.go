@@ -221,12 +221,6 @@ func TestFormatUptime(t *testing.T) {
 	assert.Equal(t, "45m", FormatUptime(45*time.Minute))
 }
 
-func TestMatchPod(t *testing.T) {
-	assert.True(t, matchPod("kube-system/cilium-operator-598475cd5-xwzb8", "kube-system", "cilium-operator"))
-	assert.True(t, matchPod("signoz/my-statefulset-0", "signoz", "my-statefulset"))
-	assert.False(t, matchPod("kube-system/other-pod", "kube-system", "cilium-operator"))
-}
-
 // Helper used by tests
 func jsonNumberOf(f float64) string {
 	return strings.TrimRight(strings.TrimRight(fmt.Sprintf("%f", f), "0"), ".")

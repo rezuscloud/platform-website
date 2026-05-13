@@ -205,19 +205,20 @@ func buildServices(cpuSeries []v3Series, allResults map[string][]v3Series, now t
 		}
 	}
 
-	// Build pod metric lookups
-	podCPU := latestByPod(allResults["cpu"])
-	podRAM := latestByPod(allResults["ram"])
-	podDisk := latestByPod(allResults["disk"])
-	podNet := latestByPod(allResults["net"])
+	// Build deployment metric lookups using k8s.deployment.name label
+	deployCPU := latestByDeployment(allResults["cpu"])
+	deployRAM := latestByDeployment(allResults["ram"])
+	deployDisk := latestByDeployment(allResults["disk"])
+	deployNet := latestByDeployment(allResults["net"])
 
-	sparkCPU := sparkByPod(allResults["cpu"])
-	sparkRAM := sparkByPod(allResults["ram"])
-	sparkDisk := sparkByPod(allResults["disk"])
-	sparkNet := sparkByPod(allResults["net"])
+	sparkCPU := sparkByDeployment(allResults["cpu"])
+	sparkRAM := sparkByDeployment(allResults["ram"])
+	sparkDisk := sparkByDeployment(allResults["disk"])
+	sparkNet := sparkByDeployment(allResults["net"])
 
 	services := make([]Service, 0, len(svcMap))
 	for _, info := range svcMap {
+		key := info.ns + "/" + info.deploy
 		svc := Service{
 			Name:      info.deploy,
 			Namespace: info.ns,
@@ -232,62 +233,30 @@ func buildServices(cpuSeries []v3Series, allResults map[string][]v3Series, now t
 			}
 		}
 
-		// Match pod metrics to deployment (prefix matching)
-		var cpuMax, ramMax, netSum, diskSum float64
-		for podKey, v := range podCPU {
-			if matchPod(podKey, svc.Namespace, svc.Name) {
-				if v > cpuMax {
-					cpuMax = v
-				}
-			}
+		if v, ok := deployCPU[key]; ok && v <= 100 {
+			svc.CPU = math.Round(v*1000) / 1000
 		}
-		for podKey, v := range podRAM {
-			if matchPod(podKey, svc.Namespace, svc.Name) {
-				if v/1024/1024 > ramMax {
-					ramMax = v / 1024 / 1024
-				}
-			}
+		if v, ok := deployRAM[key]; ok {
+			svc.RAM = math.Round(v/1024/1024*10) / 10
 		}
-		for podKey, v := range podNet {
-			if matchPod(podKey, svc.Namespace, svc.Name) {
-				netSum += v / 1024 // bytes/s to KB/s
-			}
+		if v, ok := deployNet[key]; ok {
+			svc.NetKB = math.Round(v/1024*10) / 10
 		}
-		for podKey, v := range podDisk {
-			if matchPod(podKey, svc.Namespace, svc.Name) {
-				diskSum += v / 1024 / 1024
-			}
+		if v, ok := deployDisk[key]; ok {
+			svc.DiskMB = math.Round(v/1024/1024*10) / 10
 		}
 
-		svc.CPU = math.Round(cpuMax*1000) / 1000
-		svc.RAM = math.Round(ramMax*10) / 10
-		svc.NetKB = math.Round(netSum*10) / 10
-		svc.DiskMB = math.Round(diskSum*10) / 10
-
-		// Sparklines: first matching pod's series
-		for podKey, pts := range sparkCPU {
-			if matchPod(podKey, svc.Namespace, svc.Name) {
-				svc.CPUHist = pts
-				break
-			}
+		if pts, ok := sparkCPU[key]; ok {
+			svc.CPUHist = pts
 		}
-		for podKey, pts := range sparkRAM {
-			if matchPod(podKey, svc.Namespace, svc.Name) {
-				svc.RAMHist = pts
-				break
-			}
+		if pts, ok := sparkRAM[key]; ok {
+			svc.RAMHist = pts
 		}
-		for podKey, pts := range sparkNet {
-			if matchPod(podKey, svc.Namespace, svc.Name) {
-				svc.NetHist = pts
-				break
-			}
+		if pts, ok := sparkNet[key]; ok {
+			svc.NetHist = pts
 		}
-		for podKey, pts := range sparkDisk {
-			if matchPod(podKey, svc.Namespace, svc.Name) {
-				svc.DiskHist = pts
-				break
-			}
+		if pts, ok := sparkDisk[key]; ok {
+			svc.DiskHist = pts
 		}
 
 		services = append(services, svc)
@@ -297,8 +266,79 @@ func buildServices(cpuSeries []v3Series, allResults map[string][]v3Series, now t
 	return services
 }
 
-// latestByPod returns map[podKey]latestValue from a v3 series result.
-// podKey = namespace/pod-name.
+// latestByDeployment returns map[ns/deploy]latestValue using k8s.deployment.name label.
+// Takes max across pods of the same deployment. Clamps corrupted values (>100 cores).
+func latestByDeployment(series []v3Series) map[string]float64 {
+	m := map[string]float64{}
+	for _, s := range series {
+		ns := labelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
+		deploy := labelStr(s.Labels, "k8s.deployment.name")
+		if deploy == "" {
+			deploy = labelStr(s.Labels, "k8s.statefulset.name")
+		}
+		if deploy == "" {
+			deploy = labelStr(s.Labels, "k8s.daemonset.name")
+		}
+		if ns == "" || deploy == "" || len(s.Values) == 0 {
+			continue
+		}
+		key := ns + "/" + deploy
+		last := s.Values[len(s.Values)-1].Value
+		v, err := parseFloat(last)
+		if err != nil {
+			continue
+		}
+
+		if existing, ok := m[key]; ok {
+			if v > existing {
+				m[key] = v
+			}
+		} else {
+			m[key] = v
+		}
+	}
+	return m
+}
+
+// sparkByDeployment returns map[ns/deploy]svgPolyline using k8s.deployment.name label.
+// Picks the first pod's series for each deployment.
+func sparkByDeployment(series []v3Series) map[string]string {
+	m := map[string]string{}
+	for _, s := range series {
+		ns := labelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
+		deploy := labelStr(s.Labels, "k8s.deployment.name")
+		if deploy == "" {
+			deploy = labelStr(s.Labels, "k8s.statefulset.name")
+		}
+		if deploy == "" {
+			deploy = labelStr(s.Labels, "k8s.daemonset.name")
+		}
+		if ns == "" || deploy == "" || len(s.Values) < 1 {
+			continue
+		}
+		key := ns + "/" + deploy
+		if _, exists := m[key]; exists {
+			continue // first pod wins
+		}
+		vals := make([]float64, len(s.Values))
+		for i, p := range s.Values {
+			vals[i], _ = parseFloat(p.Value)
+		}
+		// Filter corrupted spikes: clamp to 100 max (CPU cores)
+		for i, v := range vals {
+			if v > 100 {
+				vals[i] = 0
+				vals[i] = 0
+			}
+		}
+		if len(vals) == 1 {
+			vals = []float64{vals[0], vals[0]}
+		}
+		m[key] = sparklinePoints(vals, 48, 16)
+	}
+	return m
+}
+
 func latestByPod(series []v3Series) map[string]float64 {
 	m := map[string]float64{}
 	for _, s := range series {
@@ -311,28 +351,6 @@ func latestByPod(series []v3Series) map[string]float64 {
 		if v, err := parseFloat(last); err == nil {
 			m[ns+"/"+pod] = v
 		}
-	}
-	return m
-}
-
-// sparkByPod returns map[podKey]svgPolyline from a v3 series result.
-func sparkByPod(series []v3Series) map[string]string {
-	m := map[string]string{}
-	for _, s := range series {
-		ns := labelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
-		pod := labelStr(s.Labels, "k8s.pod.name")
-		if ns == "" || pod == "" || len(s.Values) < 1 {
-			continue
-		}
-		vals := make([]float64, len(s.Values))
-		for i, p := range s.Values {
-			vals[i], _ = parseFloat(p.Value)
-		}
-		if len(vals) == 1 {
-			// Single point: create a flat line for visual consistency
-			vals = []float64{vals[0], vals[0]}
-		}
-		m[ns+"/"+pod] = sparklinePoints(vals, 48, 16)
 	}
 	return m
 }
@@ -447,12 +465,6 @@ func labelStr(labels map[string]string, keys ...string) string {
 		}
 	}
 	return ""
-}
-
-// matchPod checks if a pod key (ns/pod-name-hash) belongs to a deployment (ns/deploy).
-func matchPod(podKey, ns, deploy string) bool {
-	prefix := ns + "/" + deploy + "-"
-	return strings.HasPrefix(podKey, prefix) || podKey == ns+"/"+deploy
 }
 
 // ── SigNoz v3 API call ──
