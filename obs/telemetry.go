@@ -20,10 +20,11 @@ import (
 var promHandler http.Handler
 
 func InitTelemetry() metric.MeterProvider {
-	res, err := resource.Merge(
-		resource.Default(),
-		resource.NewWithAttributes(
-			semconv.SchemaURL,
+	res, err := resource.New(
+		context.Background(),
+		resource.WithFromEnv(),
+		resource.WithHost(),
+		resource.WithAttributes(
 			semconv.ServiceNameKey.String("platform-website"),
 			semconv.ServiceVersionKey.String(os.Getenv("APP_VERSION")),
 		),
