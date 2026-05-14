@@ -41,7 +41,9 @@ func main() {
 		mux := http.NewServeMux()
 		mux.Handle("/metrics", obs.MetricsHandler())
 		log.Println("Starting metrics server on :9091")
-		log.Fatal(http.ListenAndServe(":9091", mux))
+		if err := http.ListenAndServe(":9091", mux); err != nil {
+			log.Printf("Metrics server failed: %v", err)
+		}
 	}()
 
 	app.Static("/assets", "./assets", fiber.Static{
