@@ -112,6 +112,9 @@ jobs:
             echo "Warning: Unsupported package manager. Chrome must be pre-installed."
           fi
 
+      - name: Free port 3000
+        run: sudo fuser -k 3000/tcp 2>/dev/null || true
+
       - name: Build container
         run: |
           docker rm -f platform-website 2>/dev/null || true
