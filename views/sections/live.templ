@@ -119,8 +119,6 @@ templ Live(data obs.LiveData) {
 									}
 									var up = hdr.querySelector("[data-host-uptime]");
 									if (up) up.textContent = host.uptime || "";
-									var sc = hdr.querySelector("[data-host-svcs]");
-									if (sc) sc.textContent = host.svcCount + " svcs";
 								});
 							}
 
@@ -286,7 +284,6 @@ templ hostColumn(host obs.Host, data obs.LiveData) {
 		<div class="bg-paper dark:bg-next-dark px-3 py-2 border-b border-ink/15 dark:border-next-mid/50" data-host-name={ host.Name }>
 			<div class="flex items-baseline gap-2">
 				<span class="font-mac text-xs font-bold text-ink dark:text-next-white">{ host.Label }</span>
-				<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">{ host.Detail }</span>
 			</div>
 			<div data-host-metric class="font-terminal text-[10px] text-accent-gold dark:text-next-teal tabular-nums mt-0.5">
 				if host.CPU > 0 || host.RAM > 0 {
@@ -306,11 +303,6 @@ templ hostColumn(host obs.Host, data obs.LiveData) {
 			</div>
 			<div class="flex items-center gap-2 mt-0.5">
 				<span data-host-uptime class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">{ host.Uptime }</span>
-				<span data-host-svcs class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">
-					if host.SvcCount > 0 {
-						{ fmt.Sprintf("%d svcs", host.SvcCount) }
-					}
-				</span>
 			</div>
 		</div>
 		<!-- Categories stacked vertically within this host column -->
