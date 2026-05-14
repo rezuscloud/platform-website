@@ -378,8 +378,10 @@ func buildHosts(results map[string][]v3Series) []Host {
 		h := Host{Name: name}
 		if strings.Contains(name, "control-plane") {
 			h.Label = "Cloud"
+			h.Detail = "Control plane"
 		} else {
 			h.Label = "Edge"
+			h.Detail = "Worker node"
 		}
 		if v, ok := nodeCPU[name]; ok {
 			h.CPU = math.Round(v*100) / 100

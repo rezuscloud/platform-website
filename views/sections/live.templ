@@ -74,6 +74,7 @@ templ Live(data obs.LiveData) {
 					hostCount: 0,
 					serviceCount: 0,
 					selected: null,
+					expandedHost: null,
 					initial: { hasMetrics: false },
 
 					init() {
@@ -113,12 +114,15 @@ templ Live(data obs.LiveData) {
 										var parts = [];
 										if (host.cpu > 0) parts.push("CPU " + host.cpu.toFixed(1));
 										if (host.ram > 0) parts.push(host.ram.toFixed(0) + " MB");
-										if (host.loadAvg > 0)
-											parts.push("Load " + host.loadAvg.toFixed(2));
 										met.textContent = parts.join(" \u00b7 ");
 									}
 									var up = hdr.querySelector("[data-host-uptime]");
 									if (up) up.textContent = host.uptime || "";
+
+									// Update expanded host detail if this host is open
+									if (self.expandedHost === host.name) {
+										self.updateHostDetail(host);
+									}
 								});
 							}
 
@@ -152,6 +156,60 @@ templ Live(data obs.LiveData) {
 									(Date.now() - self.lastUpdate) / 1000,
 								);
 						}, 1000);
+					},
+
+					toggleHost(name) {
+						if (this.expandedHost === name) {
+							this.expandedHost = null;
+							var el = document.querySelector(
+								'[data-host-detail="' + name + '"]',
+							);
+							if (el) el.style.display = "none";
+							var btn = document.querySelector(
+								'[data-host-btn="' + name + '"]',
+							);
+							if (btn) btn.setAttribute("aria-expanded", "false");
+						} else {
+							// Collapse previous
+							if (this.expandedHost) {
+								var prev = document.querySelector(
+									'[data-host-detail="' + this.expandedHost + '"]',
+								);
+								if (prev) prev.style.display = "none";
+								var prevBtn = document.querySelector(
+									'[data-host-btn="' + this.expandedHost + '"]',
+								);
+								if (prevBtn) prevBtn.setAttribute("aria-expanded", "false");
+							}
+							this.expandedHost = name;
+							var el = document.querySelector(
+								'[data-host-detail="' + name + '"]',
+							);
+							if (el) el.style.display = "";
+							var btn = document.querySelector(
+								'[data-host-btn="' + name + '"]',
+							);
+							if (btn) btn.setAttribute("aria-expanded", "true");
+						}
+					},
+
+					updateHostDetail(host) {
+						var el = document.querySelector(
+							'[data-host-detail="' + host.name + '"]',
+						);
+						if (!el) return;
+						var d = el.querySelector("[data-hd-cpu]");
+						if (d)
+							d.textContent = host.cpu
+								? host.cpu.toFixed(1) + " CPU cores"
+								: "-";
+						var r = el.querySelector("[data-hd-ram]");
+						if (r)
+							r.textContent = host.ram ? host.ram.toFixed(0) + " MB RAM" : "-";
+						var u = el.querySelector("[data-hd-uptime]");
+						if (u) u.textContent = host.uptime || "-";
+						var s = el.querySelector("[data-hd-svcs]");
+						if (s) s.textContent = host.svcCount + " services";
 					},
 
 					selectService(
@@ -280,10 +338,18 @@ templ Live(data obs.LiveData) {
 
 templ hostColumn(host obs.Host, data obs.LiveData) {
 	<div class="border border-ink/15 dark:border-next-mid/50">
-		<!-- Host header -->
-		<div class="bg-paper dark:bg-next-dark px-3 py-2 border-b border-ink/15 dark:border-next-mid/50" data-host-name={ host.Name }>
+		<!-- Host header: clickable to expand details -->
+		<button
+			class="w-full text-left bg-paper dark:bg-next-dark px-3 py-2 border-b border-ink/15 dark:border-next-mid/50 hover:bg-surface dark:hover:bg-next-mid/30 focus-visible:outline-2 focus-visible:outline-accent-gold dark:focus-visible:outline-next-teal focus-visible:outline-offset-1 transition-colors cursor-pointer"
+			data-host-btn={ host.Name }
+			data-host-name={ host.Name }
+			aria-expanded="false"
+			title={ fmt.Sprintf("Click to inspect %s node", host.Label) }
+			@click={ fmt.Sprintf("toggleHost('%s')", host.Name) }
+		>
 			<div class="flex items-baseline gap-2">
 				<span class="font-mac text-xs font-bold text-ink dark:text-next-white">{ host.Label }</span>
+				<span class="font-terminal text-[10px] text-ink-muted/40 dark:text-next-subtle/40" x-text="expandedHost === '{ host.Name }' ? '\u25b2' : '\u25bc'"></span>
 			</div>
 			<div data-host-metric class="font-terminal text-[10px] text-accent-gold dark:text-next-teal tabular-nums mt-0.5">
 				if host.CPU > 0 || host.RAM > 0 {
@@ -296,13 +362,64 @@ templ hostColumn(host obs.Host, data obs.LiveData) {
 						}
 						{ fmt.Sprintf("%.0f MB", host.RAM) }
 					}
-					if host.LoadAvg > 0 {
-						{ fmt.Sprintf(" · Load %.2f", host.LoadAvg) }
-					}
 				}
 			</div>
 			<div class="flex items-center gap-2 mt-0.5">
 				<span data-host-uptime class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">{ host.Uptime }</span>
+			</div>
+		</button>
+		<!-- Host detail panel (hidden by default) -->
+		<div data-host-detail={ host.Name } style="display:none" aria-hidden="true">
+			<div class="bg-paper/50 dark:bg-next-dark/50 border-b border-ink/15 dark:border-next-mid/50 px-3 py-2">
+				<div class="font-terminal text-[10px] text-accent-gold dark:text-next-teal uppercase tracking-[0.15em] mb-1.5">Node Details</div>
+				<div class="grid grid-cols-2 gap-x-4 gap-y-1">
+					<div class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">Role</div>
+					<div class="font-terminal text-[10px] text-ink dark:text-next-white">
+						if host.Detail != "" {
+							{ host.Detail }
+						} else {
+							if host.Label == "Cloud" {
+								<span>Control plane</span>
+							} else {
+								<span>Worker node</span>
+							}
+						}
+					</div>
+					<div class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">Node</div>
+					<div class="font-terminal text-[10px] text-ink dark:text-next-white truncate" title={ host.Name }>{ host.Name }</div>
+					<div class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">CPU</div>
+					<div data-hd-cpu class="font-terminal text-[10px] text-ink dark:text-next-white tabular-nums">
+						if host.CPU > 0 {
+							{ fmt.Sprintf("%.1f cores", host.CPU) }
+						} else {
+							<span>-</span>
+						}
+					</div>
+					<div class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">RAM</div>
+					<div data-hd-ram class="font-terminal text-[10px] text-ink dark:text-next-white tabular-nums">
+						if host.RAM > 0 {
+							{ fmt.Sprintf("%.0f MB", host.RAM) }
+						} else {
+							<span>-</span>
+						}
+					</div>
+					<div class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">Uptime</div>
+					<div data-hd-uptime class="font-terminal text-[10px] text-ink dark:text-next-white">
+						if host.Uptime != "" {
+							{ host.Uptime }
+						} else {
+							<span>-</span>
+						}
+					</div>
+					<div class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">Services</div>
+					<div data-hd-svcs class="font-terminal text-[10px] text-ink dark:text-next-white">
+						if host.SvcCount > 0 {
+							{ fmt.Sprintf("%d monitored", host.SvcCount) }
+						} else {
+							<span>-</span>
+						}
+					</div>
+				</div>
 			</div>
 		</div>
 		<!-- Categories stacked vertically within this host column -->
@@ -364,7 +481,7 @@ templ serviceBox(svc obs.Service) {
 			<span data-metric class="font-terminal text-[10px] text-ink dark:text-next-white tabular-nums leading-none">
 				if svc.CPU > 0 || svc.RAM > 0 {
 					if svc.CPU > 0 {
-						{ fmt.Sprintf("%.2f", svc.CPU) }
+						{ fmt.Sprintf("%.3f", svc.CPU) }
 					}
 					if svc.RAM > 0 {
 						if svc.CPU > 0 {
@@ -386,11 +503,11 @@ templ detailPanel(svc obs.Service) {
 		<div class="border border-accent-gold/30 dark:border-next-teal/30 bg-accent-gold/5 dark:bg-next-teal/5 px-4 py-3">
 			<div class="flex items-center gap-2 mb-2">
 				<span class="font-mac text-xs font-bold text-ink dark:text-next-white" x-text="selected ? selected.name : ''"></span>
-				<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle" x-text="selected ? selected.host + ' · ' + selected.detail : ''"></span>
+				<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle" x-text="selected ? selected.host + ' \u00b7 ' + selected.detail : ''"></span>
 			</div>
 			<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
 				<div>
-					<span class="font-terminal text-[10px] text-accent-gold dark:text-next-teal block mb-0.5" x-text="selected ? selected.cpu.toFixed(2) + ' CPU cores' : ''"></span>
+					<span class="font-terminal text-[10px] text-accent-gold dark:text-next-teal block mb-0.5" x-text="selected ? selected.cpu.toFixed(3) + ' CPU cores' : ''"></span>
 					<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none" aria-label="CPU usage history">
 						<polyline x-data-hist-cpu points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-accent-gold dark:text-next-teal"></polyline>
 					</svg>
