@@ -364,9 +364,7 @@ templ hostColumn(host obs.Host, data obs.LiveData) {
 					}
 				}
 			</div>
-			<div class="flex items-center gap-2 mt-0.5">
-				<span data-host-uptime class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">{ host.Uptime }</span>
-			</div>
+
 		</button>
 		<!-- Host detail panel (hidden by default) -->
 		<div data-host-detail={ host.Name } style="display:none" aria-hidden="true">
