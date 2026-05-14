@@ -38,12 +38,8 @@ func Section(c *fiber.Ctx) error {
 
 	sectionMap := map[string]templ.Component{
 		"hero":         sections.Hero(),
-		"challenge":    sections.Challenge(),
 		"architecture": sections.Architecture(),
 		"features":     sections.Features(),
-		"networking":   sections.Networking(),
-		"comparison":   sections.Comparison(),
-		"usecases":     sections.UseCases(),
 		"getstarted":   sections.GetStarted(),
 	}
 
