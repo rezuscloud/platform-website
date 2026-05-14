@@ -56,11 +56,18 @@ templ Live(data obs.LiveData) {
 					<span class="font-terminal text-[10px] text-ink-muted/70 dark:text-next-subtle/70">Click any service to inspect metrics</span>
 				</div>
 			</div>
-			<!-- Host columns: one full-height column per node -->
+			<!-- Host columns grid: categories as rows, hosts as columns -->
 			if len(data.Hosts) > 0 {
-				<div class="grid gap-6" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
+				<div class="grid gap-x-6 gap-y-0" style={ fmt.Sprintf("grid-template-columns: repeat(%d, 1fr)", len(data.Hosts)) }>
+					<!-- Row 1: host headers -->
 					for _, host := range data.Hosts {
-						@hostColumn(host, data)
+						@hostHeaderCell(host)
+					}
+					<!-- Rows 2+: one row per category -->
+					for _, cat := range obs.CategoryOrder {
+						for _, host := range data.Hosts {
+							@categoryCell(cat, host, data.Services)
+						}
 					}
 				</div>
 			}
@@ -116,10 +123,7 @@ templ Live(data obs.LiveData) {
 										if (host.ram > 0) parts.push(host.ram.toFixed(0) + " MB");
 										met.textContent = parts.join(" \u00b7 ");
 									}
-									var up = hdr.querySelector("[data-host-uptime]");
-									if (up) up.textContent = host.uptime || "";
 
-									// Update expanded host detail if this host is open
 									if (self.expandedHost === host.name) {
 										self.updateHostDetail(host);
 									}
@@ -170,7 +174,6 @@ templ Live(data obs.LiveData) {
 							);
 							if (btn) btn.setAttribute("aria-expanded", "false");
 						} else {
-							// Collapse previous
 							if (this.expandedHost) {
 								var prev = document.querySelector(
 									'[data-host-detail="' + this.expandedHost + '"]',
@@ -336,11 +339,10 @@ templ Live(data obs.LiveData) {
 	</section>
 }
 
-templ hostColumn(host obs.Host, data obs.LiveData) {
-	<div class="border border-ink/15 dark:border-next-mid/50">
-		<!-- Host header: clickable to expand details -->
+templ hostHeaderCell(host obs.Host) {
+	<div class="relative border border-ink/15 dark:border-next-mid/50">
 		<button
-			class="w-full text-left bg-paper dark:bg-next-dark px-3 py-2 border-b border-ink/15 dark:border-next-mid/50 hover:bg-surface dark:hover:bg-next-mid/30 focus-visible:outline-2 focus-visible:outline-accent-gold dark:focus-visible:outline-next-teal focus-visible:outline-offset-1 transition-colors cursor-pointer"
+			class="w-full text-left bg-paper dark:bg-next-dark px-3 py-2 hover:bg-surface dark:hover:bg-next-mid/30 focus-visible:outline-2 focus-visible:outline-accent-gold dark:focus-visible:outline-next-teal focus-visible:outline-offset-1 transition-colors cursor-pointer"
 			data-host-btn={ host.Name }
 			data-host-name={ host.Name }
 			aria-expanded="false"
@@ -365,9 +367,9 @@ templ hostColumn(host obs.Host, data obs.LiveData) {
 				}
 			</div>
 		</button>
-		<!-- Host detail panel (hidden by default) -->
-		<div data-host-detail={ host.Name } style="display:none" aria-hidden="true">
-			<div class="bg-paper/50 dark:bg-next-dark/50 border-b border-ink/15 dark:border-next-mid/50 px-3 py-2">
+		<!-- Host detail panel (absolute positioned to not affect category alignment) -->
+		<div data-host-detail={ host.Name } style="display:none" aria-hidden="true" class="absolute left-0 right-0 top-full z-10 border border-ink/15 dark:border-next-mid/50 bg-paper dark:bg-next-dark shadow-lg">
+			<div class="px-3 py-2">
 				<div class="font-terminal text-[10px] text-accent-gold dark:text-next-teal uppercase tracking-[0.15em] mb-1.5">Node Details</div>
 				<div class="grid grid-cols-2 gap-x-4 gap-y-1">
 					<div class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">Role</div>
@@ -419,40 +421,39 @@ templ hostColumn(host obs.Host, data obs.LiveData) {
 				</div>
 			</div>
 		</div>
-		<!-- Categories stacked vertically within this host column -->
-		<div class="px-3 py-3 space-y-4">
-			for _, cat := range obs.CategoryOrder {
-				@categoryInHost(cat, host.Name, data.Services)
-			}
-		</div>
 	</div>
 }
 
-templ categoryInHost(cat string, hostName string, services []obs.Service) {
+templ categoryCell(cat string, host obs.Host, services []obs.Service) {
 	{{ var hostSvcs []obs.Service }}
 	for _, svc := range services {
-		if svc.Host == hostName && obs.CategoryForNamespace(svc.Namespace) == cat {
+		if svc.Host == host.Name && obs.CategoryForNamespace(svc.Namespace) == cat {
 			{{ hostSvcs = append(hostSvcs, svc) }}
 		}
 	}
-	if len(hostSvcs) > 0 {
-		<div>
+	<div class="border-x border-b border-ink/15 dark:border-next-mid/50">
+		<div class="px-3 py-2">
 			<!-- Category label -->
 			<div class="font-terminal text-[10px] text-accent-gold dark:text-next-teal uppercase tracking-[0.15em] mb-1.5">
 				{ obs.CategoryLabel(cat) }
 			</div>
-			<!-- Grid of boxes -->
-			<div class="grid gap-1.5" style="grid-template-columns: repeat(auto-fill, minmax(90px, 1fr))">
+			if len(hostSvcs) > 0 {
+				<!-- Grid of boxes -->
+				<div class="grid gap-1.5" style="grid-template-columns: repeat(auto-fill, minmax(90px, 1fr))">
+					for _, svc := range hostSvcs {
+						@serviceBox(svc)
+					}
+				</div>
+				<!-- Detail panels (full-width, one visible at a time) -->
 				for _, svc := range hostSvcs {
-					@serviceBox(svc)
+					@detailPanel(svc)
 				}
-			</div>
-			<!-- Detail panels (full-width, one visible at a time) -->
-			for _, svc := range hostSvcs {
-				@detailPanel(svc)
+			} else {
+				<!-- Empty placeholder for alignment -->
+				<div class="font-terminal text-[10px] text-ink-muted/20 dark:text-next-subtle/20">-</div>
 			}
 		</div>
-	}
+	</div>
 }
 
 templ serviceBox(svc obs.Service) {
