@@ -130,13 +130,13 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 			PanelType: "graph",
 			QueryType: "promql",
 			PromQueries: map[string]v3PromQuery{
-				"cpu":      {Query: `{__name__="k8s.pod.cpu.usage"}`, Disabled: false},
-				"ram":      {Query: `{__name__="k8s.pod.memory.working_set"}`, Disabled: false},
-				"disk":     {Query: `{__name__="k8s.pod.filesystem.usage"}`, Disabled: false},
-				"net":      {Query: `rate({__name__="k8s.pod.network.io",direction="receive"}[5m])`, Disabled: false},
-				"nodeCpu":  {Query: `{__name__="k8s.node.cpu.usage"}`, Disabled: false},
-				"nodeRam":  {Query: `{__name__="k8s.node.memory.working_set"}`, Disabled: false},
-				"nodeUp":   {Query: `{__name__="k8s.node.uptime"}`, Disabled: false},
+				"cpu":     {Query: `{__name__="k8s.pod.cpu.usage"}`, Disabled: false},
+				"ram":     {Query: `{__name__="k8s.pod.memory.working_set"}`, Disabled: false},
+				"disk":    {Query: `{__name__="k8s.pod.filesystem.usage"}`, Disabled: false},
+				"net":     {Query: `rate({__name__="k8s.pod.network.io",direction="receive"}[5m])`, Disabled: false},
+				"nodeCpu": {Query: `{__name__="k8s.node.cpu.usage"}`, Disabled: false},
+				"nodeRam": {Query: `{__name__="k8s.node.memory.working_set"}`, Disabled: false},
+				"nodeUp":  {Query: `{__name__="k8s.node.uptime"}`, Disabled: false},
 			},
 		},
 	})
@@ -359,7 +359,7 @@ func latestByPod(series []v3Series) map[string]float64 {
 func buildHosts(results map[string][]v3Series) []Host {
 	nodeCPU := latestByNode(results["nodeCpu"])
 	nodeRAM := latestByNode(results["nodeRam"])
-	
+
 	nodeUp := latestByNode(results["nodeUp"])
 
 	// Count services per node from CPU results
