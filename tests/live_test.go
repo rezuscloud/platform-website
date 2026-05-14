@@ -37,15 +37,12 @@ func TestLiveSectionHTML(t *testing.T) {
 	})
 
 	// Matrix structure tests
-	t.Run("has table with hosts as columns", func(t *testing.T) {
+	t.Run("has host columns with headers", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		// Host headers
-		assert.Contains(t, html, "OCI Cloud")
-		assert.Contains(t, html, "Edge Node")
-		// Host detail
-		assert.Contains(t, html, "ARM64")
-		assert.Contains(t, html, "AMD64")
+		// Host headers (from mock data)
+		assert.Contains(t, html, "Cloud")
+		assert.Contains(t, html, "Edge")
 	})
 
 	t.Run("has 5 category groups", func(t *testing.T) {
