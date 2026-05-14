@@ -136,7 +136,6 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 				"net":      {Query: `rate({__name__="k8s.pod.network.io",direction="receive"}[5m])`, Disabled: false},
 				"nodeCpu":  {Query: `{__name__="k8s.node.cpu.usage"}`, Disabled: false},
 				"nodeRam":  {Query: `{__name__="k8s.node.memory.working_set"}`, Disabled: false},
-				"nodeLoad": {Query: `{__name__="system.cpu.load_average.5m"}`, Disabled: false},
 				"nodeUp":   {Query: `{__name__="k8s.node.uptime"}`, Disabled: false},
 			},
 		},
@@ -360,7 +359,7 @@ func latestByPod(series []v3Series) map[string]float64 {
 func buildHosts(results map[string][]v3Series) []Host {
 	nodeCPU := latestByNode(results["nodeCpu"])
 	nodeRAM := latestByNode(results["nodeRam"])
-	nodeLoad := latestByNode(results["nodeLoad"])
+	
 	nodeUp := latestByNode(results["nodeUp"])
 
 	// Count services per node from CPU results
@@ -372,7 +371,7 @@ func buildHosts(results map[string][]v3Series) []Host {
 	}
 
 	// Discover node names dynamically from all available sources
-	nodeNames := discoverNodeNames(nodeCPU, nodeRAM, nodeLoad, nodeUp, nodeCount)
+	nodeNames := discoverNodeNames(nodeCPU, nodeRAM, nodeUp, nodeCount)
 
 	hosts := make([]Host, 0, len(nodeNames))
 	for _, name := range nodeNames {
@@ -387,9 +386,6 @@ func buildHosts(results map[string][]v3Series) []Host {
 		}
 		if v, ok := nodeRAM[name]; ok {
 			h.RAM = math.Round(v/1024/1024*10) / 10
-		}
-		if v, ok := nodeLoad[name]; ok {
-			h.LoadAvg = math.Round(v*100) / 100
 		}
 		if v, ok := nodeUp[name]; ok {
 			h.Uptime = FormatUptime(time.Duration(v) * time.Second)
