@@ -17,12 +17,15 @@ import (
 )
 
 func main() {
+	meterProvider := obs.InitTelemetry()
+
 	app := fiber.New(fiber.Config{
 		AppName:      "platform-website",
 		ServerHeader: "Fiber",
 	})
 
 	app.Use(recover.New())
+	app.Use(obs.OTelFiberMiddleware(meterProvider))
 	app.Use(logger.New())
 	app.Use(compress.New())
 
@@ -33,6 +36,13 @@ func main() {
 			log.Fatal(http.ListenAndServe(":6060", nil))
 		}()
 	}
+
+	go func() {
+		mux := http.NewServeMux()
+		mux.Handle("/metrics", obs.MetricsHandler())
+		log.Println("Starting metrics server on :9091")
+		log.Fatal(http.ListenAndServe(":9091", mux))
+	}()
 
 	app.Static("/assets", "./assets", fiber.Static{
 		CacheDuration: -1,
