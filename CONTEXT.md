@@ -25,6 +25,18 @@ _Avoid_: user (too generic), developer (excludes ops), customer (implies transac
 - A **Personal Cloud** is composed of one or more **Machine Rooms** connected by encrypted tunnels
 - The **Golden Path** is what makes a **Personal Cloud** operable without Kubernetes expertise
 - A **Builder** operates a **Personal Cloud**, regardless of whether they are solo or part of an organization
+- The **Machine Room** provides building blocks (compute, storage, networking, orchestration) that enable any containerized workload: AI inference, data pipelines, CI/CD, observability, edge computing
+
+## Cloud pain points addressed
+
+The Personal Cloud eliminates six structural problems with rented cloud infrastructure:
+
+1. **Traffic costs**: Data moves between owned nodes through encrypted tunnels. No per-byte egress tolls.
+2. **Denial of wallet attacks**: No per-request billing. Attackers cannot inflate a bill that doesn't exist.
+3. **Egress fees**: Data stays on owned disks. No provider charges for accessing your own files.
+4. **Pricing policy changes**: No vendor can change costs. Hardware depreciation and electricity are predictable years ahead.
+5. **Idle resource waste**: 30% of cloud spend is pure waste. Owned hardware at any utilization is free headroom, not money burned.
+6. **Vendor lock-in**: Every component is open source and replaceable. Standard container protocols, standard orchestration.
 
 ## Example dialogue
 
