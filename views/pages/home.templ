@@ -9,13 +9,9 @@ import (
 templ Home(liveData obs.LiveData) {
 	@views.Layout("Your Personal Cloud | RezusCloud") {
 		@sections.Hero()
-		@sections.Challenge()
 		@sections.Architecture()
 		@sections.Live(liveData)
 		@sections.Features()
-		@sections.Networking()
-		@sections.Comparison()
-		@sections.UseCases()
 		@sections.GetStarted()
 	}
 }

@@ -42,10 +42,11 @@ type Host struct {
 
 // LiveData holds everything the live section needs.
 type LiveData struct {
-	Hosts      []Host    `json:"hosts"`
-	Services   []Service `json:"services"`
-	HasMetrics bool      `json:"hasMetrics"`
-	Timestamp  int64     `json:"timestamp"`
+	Hosts         []Host    `json:"hosts"`
+	Services      []Service `json:"services"`
+	HasMetrics    bool      `json:"hasMetrics"`
+	Timestamp     int64     `json:"timestamp"`
+	SelfNamespace string    `json:"selfNamespace"`
 }
 
 // Client fetches live service data from SigNoz metrics.
