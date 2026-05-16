@@ -12,7 +12,7 @@ import (
 )
 
 func setupApp() *fiber.App {
-	app := fiber.New(fiber.Config{})
+	app := fiber.New(fiber.Config{ErrorHandler: ErrorHandler})
 	app.Get("/", Home)
 	app.Get("/sections/:name", Section)
 	return app
@@ -104,6 +104,10 @@ func TestSectionHandlerNotFound(t *testing.T) {
 	defer resp.Body.Close()
 
 	assert.Equal(t, 404, resp.StatusCode)
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+	assert.Contains(t, string(body), "Return to rezus.cloud")
 }
 
 func TestSectionHandlerReturnsSectionID(t *testing.T) {

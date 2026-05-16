@@ -50,7 +50,7 @@ func Section(c *fiber.Ctx) error {
 
 	component, ok := sectionMap[name]
 	if !ok {
-		return c.SendStatus(fiber.StatusNotFound)
+		return fiber.NewError(fiber.StatusNotFound)
 	}
 
 	return render(c, component)
