@@ -28,10 +28,11 @@ func securityHeaders(c *fiber.Ctx) error {
 	c.Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
 
 	// CSP allows self + inline scripts/styles (needed for Alpine.js + Tailwind).
+	// Alpine.js v3 requires 'unsafe-eval' for its expression evaluator (new Function()).
 	// connect-src self is needed for SSE /api/live/stream.
 	c.Set("Content-Security-Policy",
 		"default-src 'self'; "+
-			"script-src 'self' 'unsafe-inline'; "+
+			"script-src 'self' 'unsafe-inline' 'unsafe-eval'; "+
 			"style-src 'self' 'unsafe-inline'; "+
 			"font-src 'self'; "+
 			"img-src 'self' data: https:; "+
