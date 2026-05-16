@@ -76,6 +76,9 @@ jobs:
             exit 0
           fi
 
-          docker buildx imagetools inspect "ghcr.io/${{ github.repository }}:pr-${pr_number}-${head_sha}"
+          if ! docker buildx imagetools inspect "ghcr.io/${{ github.repository }}:pr-${pr_number}-${head_sha}" 2>/dev/null; then
+            echo "Image pr-${pr_number}-${head_sha} not found in registry, skipping"
+            exit 0
+          fi
           gh api --silent --method POST repos/${{ github.repository }}/issues/${pr_number}/labels -f labels[]=preview-ready
           echo "Added preview-ready label to PR #${pr_number}"
