@@ -10,13 +10,13 @@ Engineers and teams who need enterprise-grade infrastructure without enterprise-
 
 ## Product Purpose
 
-RezusCloud is the Personal Cloud: a fully open source, free platform that delivers enterprise-grade infrastructure to anyone who needs it. Multi-site edge computing, distributed workloads, GPU scheduling, access controls, audit trails, and more, all included. The platform takes away Kubernetes complexity and provides a tested, fully featured golden path covering 90% of real-world use cases with full scalability out of the box. Start with a Raspberry Pi, scale to a rack of GPUs running distributed training. Same platform, same git push, same operational simplicity. Your own machine room: you own the hardware, the data, and the computation. No landlord, no lease, no eviction. The website exists to communicate this vision, build conviction, and capture early interest before public launch.
+RezusCloud is the Personal Cloud: a fully open source, free platform that delivers enterprise-grade infrastructure to anyone who needs it. Multi-site edge computing, distributed workloads, GPU scheduling, AI guardrailing and orchestration, access controls, audit trails, and more, all included. The platform takes away Kubernetes complexity and provides a tested, fully featured golden path covering 90% of real-world use cases with full scalability out of the box. Start with a Raspberry Pi, scale to a rack of GPUs running distributed training. Same platform, same git push, same operational simplicity. Your own machine room: you control the hardware, the data, and the computation. A Raspberry Pi at home, a free OCI VM, a Hetzner dedicated server, or a rack in a closet. No traffic costs, no egress fees, no API burst surprises, no pricing policy changes, no idle resource waste, no lock-in. The website exists to communicate this vision, build conviction, and capture early interest before public launch.
 
 ## Brand Personality
 
 **Defiant, precise, nostalgic.**
 
-Defiant: challenges the status quo that cloud must be rented, complex, and expensive. Positions cloud providers as the new mainframes. The tone is confident and direct, never pleading or salesy.
+Defiant: challenges the status quo that cloud infrastructure must be rented as a managed service, complex, and expensive. Positions cloud providers as the new mainframes. The tone is confident and direct, never pleading or salesy.
 
 Precise: every claim is a fact, not hype. Numbers are specific (200MB, 30s boot, 2-4h setup). The platform works because the engineering is sound, not because the marketing says so.
 

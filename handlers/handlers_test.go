@@ -46,14 +46,13 @@ func TestHomeHandlerContainsExpectedContent(t *testing.T) {
 	assert.Contains(t, html, ">YOUR</span>")
 	assert.Contains(t, html, ">PERSONAL</span>")
 	assert.Contains(t, html, ">CLOUD</span>")
-	assert.Contains(t, html, "personal computer changed everything")
+	assert.Contains(t, html, "Personal Cloud")
 }
 
 func TestSectionHandler(t *testing.T) {
 	sections := []string{
-		"hero", "challenge", "architecture", "features",
-		"networking", "comparison",
-		"usecases", "getstarted",
+		"hero", "architecture", "features",
+		"getstarted",
 	}
 
 	app := setupApp()
@@ -75,7 +74,7 @@ func TestSectionHandlerContainsContent(t *testing.T) {
 	app := setupApp()
 
 	expectedContent := map[string]string{
-		"hero":         "personal computer changed everything",
+		"hero":         "Personal Cloud",
 		"features":     "What You Get",
 		"architecture": "How It Works",
 		"getstarted":   "Start Your Cloud",
@@ -131,9 +130,8 @@ func TestHomePageContainsAllSections(t *testing.T) {
 	app := setupApp()
 
 	sections := []string{
-		"hero", "challenge", "architecture", "features",
-		"networking", "comparison",
-		"usecases", "getstarted",
+		"hero", "architecture", "live", "features",
+		"getstarted",
 	}
 
 	req := httptest.NewRequest("GET", "/", nil)
@@ -239,11 +237,10 @@ func TestHomePageNoBorder2(t *testing.T) {
 
 	html := string(body)
 
-	// border-2 only allowed on comparison table (signature moment)
-	// All other elements use border (1px) or border-none
+	// border-2 should not appear (comparison table removed)
 	borderCount := strings.Count(html, "border-2")
-	assert.LessOrEqual(t, borderCount, 2,
-		"border-2 should only appear on the comparison table wrapper")
+	assert.Equal(t, 0, borderCount,
+		"border-2 should not appear anywhere")
 }
 
 func TestHomePageFontFamilies(t *testing.T) {

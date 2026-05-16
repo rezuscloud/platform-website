@@ -122,9 +122,8 @@ func TestHomePageSections(t *testing.T) {
 	doc := getHTMLDoc(t, app, "/")
 
 	sections := []string{
-		"hero", "challenge", "architecture", "features",
-		"networking", "comparison",
-		"usecases", "getstarted",
+		"hero", "architecture", "live", "features",
+		"getstarted",
 	}
 
 	for _, section := range sections {
@@ -158,7 +157,6 @@ func TestNavigationHTML(t *testing.T) {
 		{"/#hero", "Home"},
 		{"/#architecture", "Architecture"},
 		{"/#features", "Features"},
-		{"/#comparison", "Compare"},
 		{"/#getstarted", "Get Started"},
 	}
 
@@ -311,7 +309,7 @@ func TestHTMXAttributes(t *testing.T) {
 	})
 
 	t.Run("section endpoints could be used with hx-get", func(t *testing.T) {
-		sections := []string{"hero", "features", "architecture", "networking", "comparison", "usecases", "getstarted"}
+		sections := []string{"hero", "features", "architecture", "getstarted"}
 
 		for _, section := range sections {
 			doc := getHTMLDoc(t, app, "/sections/"+section)
@@ -532,7 +530,7 @@ func TestDesignSystemZeroRoundedCorners(t *testing.T) {
 	})
 
 	t.Run("no rounded corners on section endpoints", func(t *testing.T) {
-		sections := []string{"hero", "features", "architecture", "networking", "comparison", "usecases", "getstarted"}
+		sections := []string{"hero", "features", "architecture", "getstarted"}
 
 		for _, section := range sections {
 			req := httptest.NewRequest("GET", "/sections/"+section, nil)
@@ -584,10 +582,10 @@ func TestDesignSystemOnePxBorders(t *testing.T) {
 	body, _ := io.ReadAll(resp.Body)
 	html := string(body)
 
-	// border-2 only allowed on comparison table (signature moment)
+	// border-2 should not appear (comparison table removed)
 	borderCount := strings.Count(html, "border-2")
-	assert.LessOrEqual(t, borderCount, 2,
-		"border-2 should only appear on comparison table")
+	assert.Equal(t, 0, borderCount,
+		"border-2 should not appear anywhere")
 	assert.NotContains(t, html, "border-3",
 		"Only 1px borders allowed, not border-3")
 }
@@ -623,30 +621,11 @@ func TestDesignSystemDualModeToggle(t *testing.T) {
 func TestDesignSystemTables(t *testing.T) {
 	app := setupIntegrationApp()
 
-	t.Run("comparison table uses new tokens", func(t *testing.T) {
-		doc := getHTMLDoc(t, app, "/sections/comparison")
-
-		// Table should exist
-		table := doc.Find("table")
-		assert.Equal(t, 1, table.Length(), "Comparison section should have a table")
-
-		// Table rows should exist
-		rows := doc.Find("table tbody tr")
-		assert.GreaterOrEqual(t, rows.Length(), 5, "Table should have comparison rows")
-	})
-
-	t.Run("edge table uses new tokens", func(t *testing.T) {
-		doc := getHTMLDoc(t, app, "/sections/architecture")
+	t.Run("no tables remain (comparison, challenge, edge efficiency removed)", func(t *testing.T) {
+		doc := getHTMLDoc(t, app, "/")
 
 		table := doc.Find("table")
-		assert.Equal(t, 1, table.Length(), "Architecture section should have a table")
-	})
-
-	t.Run("challenge table uses new tokens", func(t *testing.T) {
-		doc := getHTMLDoc(t, app, "/sections/challenge")
-
-		table := doc.Find("table")
-		assert.Equal(t, 1, table.Length(), "Challenge section should have a table")
+		assert.Equal(t, 0, table.Length(), "No tables should remain on the page")
 	})
 }
 
@@ -665,7 +644,7 @@ func TestProgressiveEnhancement(t *testing.T) {
 	doc := getHTMLDoc(t, app, "/")
 
 	t.Run("page works without JavaScript - all content present", func(t *testing.T) {
-		sections := []string{"hero", "challenge", "architecture", "features", "networking", "comparison", "usecases", "getstarted"}
+		sections := []string{"hero", "architecture", "live", "features", "getstarted"}
 		for _, section := range sections {
 			assert.Equal(t, 1, doc.Find("#"+section).Length(), "Section %s should exist server-side", section)
 		}

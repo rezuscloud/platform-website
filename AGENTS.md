@@ -208,7 +208,7 @@ Theme is managed client-side via localStorage and the `dark` class on `<html>`. 
 - Dual-era identity: Mac System 1 (light) / NeXTSTEP (dark). Fonts consistent, only colors change.
 - Amber gold accent (light) / teal accent (dark). Never mix between modes.
 - Flat text layout: no boxes, no bordered cards. Icon squares and accent dots punctuate.
-- 8 sections with alternating background rhythm in both modes.
+- 5 sections with alternating background rhythm in both modes (hero, architecture, live, features, getstarted).
 - No em dashes in copy. Use colons, periods, middots.
 - All animations respect `prefers-reduced-motion`.
 

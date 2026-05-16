@@ -158,10 +158,11 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	hosts := buildHosts(results)
 
 	c.cached = LiveData{
-		Hosts:      hosts,
-		Services:   services,
-		HasMetrics: true,
-		Timestamp:  now.Unix(),
+		Hosts:         hosts,
+		Services:      services,
+		HasMetrics:    true,
+		Timestamp:     now.Unix(),
+		SelfNamespace: c.namespace,
 	}
 	c.cachedAt = now
 	return c.cached, nil
@@ -261,8 +262,17 @@ func buildServices(cpuSeries []v3Series, allResults map[string][]v3Series, now t
 		services = append(services, svc)
 	}
 
-	sortServices(services)
-	return services
+	// Filter out stale services: pods from deleted namespaces still have
+	// residual SigNoz data in the query window but no active metrics.
+	active := make([]Service, 0, len(services))
+	for _, svc := range services {
+		if svc.CPU > 0 || svc.RAM > 0 || svc.NetKB > 0 || svc.DiskMB > 0 {
+			active = append(active, svc)
+		}
+	}
+
+	sortServices(active)
+	return active
 }
 
 // latestByDeployment returns map[ns/deploy]latestValue using k8s.deployment.name label.
