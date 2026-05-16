@@ -40,11 +40,7 @@ func newChromedpContext(t *testing.T) (context.Context, context.CancelFunc) {
 		opts = append(opts, chromedp.ExecPath(chromePath))
 	}
 	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
-
-	// Use a shorter timeout to fail fast on CI
-	ctx, ctxCancel := chromedp.NewContext(allocCtx, chromedp.WithBrowserOption(
-		chromedp.WithBrowserTimeout(30*time.Second),
-	))
+	ctx, ctxCancel := chromedp.NewContext(allocCtx)
 
 	return ctx, func() {
 		ctxCancel()
