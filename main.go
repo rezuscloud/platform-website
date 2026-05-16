@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -101,7 +102,17 @@ func main() {
 	obs.LoadSecretsFromDapr()
 	if signoz := obs.NewSigNozClientFromEnv(); signoz != nil {
 		handlers.SetLiveClient(signoz)
-		log.Printf("Live section using SigNoz metrics from %s", os.Getenv("SIGNOZ_URL"))
+		signozURL := os.Getenv("SIGNOZ_URL")
+		log.Printf("Live section using SigNoz metrics from %s", signozURL)
+
+		// Startup health check: warn early if SigNoz is unreachable
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		if _, err := signoz.Fetch(ctx); err != nil {
+			log.Printf("WARNING: SigNoz health check failed (%s): %v", signozURL, err)
+		} else {
+			log.Printf("SigNoz health check OK (%s)", signozURL)
+		}
+		cancel()
 	} else {
 		log.Println("SIGNOZ_URL/SIGNOZ_API_KEY not set, live section using mock data")
 	}
