@@ -19,6 +19,7 @@ func (m *MockClient) Fetch(_ context.Context) (LiveData, error) {
 func DefaultMockData() LiveData {
 	now := time.Now().Unix()
 	return LiveData{
+		SelfNamespace: "platform-website",
 		Hosts: []Host{
 			{Name: "talosoci-control-plane-legal-poodle", Label: "OCI Cloud", Detail: "ARM64 \u00b7 Ampere A1", CPU: 0.58, RAM: 5519.9, LoadAvg: 1.17, IOWait: 3.4, Uptime: "5d", SvcCount: 9},
 			{Name: "talosedge-genmachiche-flowing-bluejay", Label: "Edge Node", Detail: "AMD64 \u00b7 Intel NUC", CPU: 4.77, RAM: 14589.8, LoadAvg: 7.29, IOWait: 2.2, Uptime: "5d", SvcCount: 21},

@@ -2,6 +2,7 @@ package sections
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/rezuscloud/platform-website/obs"
 )
@@ -67,7 +68,7 @@ templ Live(data obs.LiveData) {
 					<!-- Rows 2+: one row per category -->
 					for _, cat := range obs.CategoryOrder {
 						for _, host := range data.Hosts {
-							@categoryCell(cat, host, data.Services)
+							@categoryCell(cat, host, data.Services, data.SelfNamespace)
 						}
 					}
 				</div>
@@ -425,7 +426,7 @@ templ hostHeaderCell(host obs.Host) {
 	</div>
 }
 
-templ categoryCell(cat string, host obs.Host, services []obs.Service) {
+templ categoryCell(cat string, host obs.Host, services []obs.Service, selfNS string) {
 	{{ var hostSvcs []obs.Service }}
 	for _, svc := range services {
 		if svc.Host == host.Name && obs.CategoryForNamespace(svc.Namespace) == cat {
@@ -442,7 +443,7 @@ templ categoryCell(cat string, host obs.Host, services []obs.Service) {
 				<!-- Grid of boxes -->
 				<div class="grid gap-1.5" style="grid-template-columns: repeat(auto-fill, minmax(90px, 1fr))">
 					for _, svc := range hostSvcs {
-						@serviceBox(svc)
+						@serviceBox(svc, svc.Name == "platform-website" && !strings.Contains(svc.Namespace, "-pr"))
 					}
 				</div>
 				<!-- Detail panels (full-width, one visible at a time) -->
@@ -457,10 +458,14 @@ templ categoryCell(cat string, host obs.Host, services []obs.Service) {
 	</div>
 }
 
-templ serviceBox(svc obs.Service) {
+templ serviceBox(svc obs.Service, selfNS bool) {
 	{{ key := svc.Namespace + "/" + svc.Name + "@" + svc.Host }}
 	<button
-		class="w-full text-left px-1.5 py-1 border border-ink/25 dark:border-next-mid/70 bg-paper dark:bg-next-dark hover:border-accent-gold/60 dark:hover:border-next-teal/60 focus-visible:outline-2 focus-visible:outline-accent-gold dark:focus-visible:outline-next-teal focus-visible:outline-offset-1 transition-colors cursor-pointer"
+		if selfNS {
+			class="w-full text-left px-1.5 py-1 border border-accent-gold/40 dark:border-next-teal/40 bg-accent-gold/10 dark:bg-next-teal/10 hover:border-accent-gold/60 dark:hover:border-next-teal/60 focus-visible:outline-2 focus-visible:outline-accent-gold dark:focus-visible:outline-next-teal focus-visible:outline-offset-1 transition-colors cursor-pointer"
+		} else {
+			class="w-full text-left px-1.5 py-1 border border-ink/25 dark:border-next-mid/70 bg-paper dark:bg-next-dark hover:border-accent-gold/60 dark:hover:border-next-teal/60 focus-visible:outline-2 focus-visible:outline-accent-gold dark:focus-visible:outline-next-teal focus-visible:outline-offset-1 transition-colors cursor-pointer"
+		}
 		data-svc-row={ key }
 		data-svc-key={ key }
 		aria-expanded="false"
