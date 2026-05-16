@@ -5,11 +5,11 @@ The domain language for the RezusCloud platform, its website, and its positionin
 ## Language
 
 **Personal Cloud**:
-A cloud you own instead of rent. Enterprise-grade infrastructure running on personal devices. Not a scale descriptor, a paradigm shift: the same way personal computers made mainframe power accessible to individuals, the Personal Cloud makes cloud infrastructure accessible to anyone with hardware. Ownership of infrastructure, data, and computation as an extension of the self-hosted manifesto.
+A cloud you control instead of rent as a managed service. Enterprise-grade infrastructure running on personal devices, free cloud VMs, or dedicated servers. Not a scale descriptor, a paradigm shift: the same way personal computers made mainframe power accessible to individuals, the Personal Cloud makes cloud infrastructure accessible to anyone with hardware. Ownership of the platform, data, and computation as an extension of the self-hosted manifesto.
 _Avoid_: private cloud (implies isolation, not ownership), home cloud (implies scale limit), self-hosted cloud (describes method, not paradigm)
 
 **Machine Room**:
-The physical infrastructure a user owns and operates. A rack in an office, a cluster of Pis at home, a GPU server in a data center. The modern equivalent of the personal computer on your desk. You own the hardware, the data, and the computation. No landlord, no lease, no eviction.
+The physical infrastructure a user controls and operates. A rack in an office, a cluster of Pis at home, a free cloud VM, a dedicated server in a data center. The modern equivalent of the personal computer on your desk. You control the hardware, the data, and the computation. No landlord, no lease, no eviction.
 _Avoid_: server room (implies dedicated facility), data center (implies enterprise facility), homelab (implies hobby)
 
 **Golden Path**:
@@ -29,12 +29,12 @@ _Avoid_: user (too generic), developer (excludes ops), customer (implies transac
 
 ## Cloud pain points addressed
 
-The Personal Cloud eliminates six structural problems with rented cloud infrastructure:
+The Personal Cloud eliminates six structural problems with renting cloud infrastructure as a managed service:
 
 1. **Traffic costs**: Data moves between owned nodes through encrypted tunnels. No per-byte egress tolls.
 2. **Denial of wallet attacks**: No per-request billing. Attackers cannot inflate a bill that doesn't exist.
 3. **Egress fees**: Data stays on owned disks. No provider charges for accessing your own files.
-4. **Pricing policy changes**: No vendor can change costs. Hardware depreciation and electricity are predictable years ahead.
+4. **Pricing policy changes**: No vendor can change costs on you. Hardware depreciation, electricity, or a flat server lease are predictable years ahead.
 5. **Idle resource waste**: 30% of cloud spend is pure waste. Owned hardware at any utilization is free headroom, not money burned.
 6. **Vendor lock-in**: Every component is open source and replaceable. Standard container protocols, standard orchestration.
 
@@ -45,5 +45,5 @@ The Personal Cloud eliminates six structural problems with rented cloud infrastr
 
 ## Flagged ambiguities
 
-- "Personal" was initially read as "single-user." Resolved: personal means owned (vs. rented), not individual. The parallel is the Personal Computer: you owned the machine instead of renting mainframe time.
+- "Personal" was initially read as "single-user." Resolved: personal means self-managed (vs. managed by a cloud provider), not individual. The parallel is the Personal Computer: you controlled the machine instead of renting mainframe time.
 - "Enterprise" was initially excluded from the audience. Resolved: enterprises are a target. The anti-reference is enterprise *marketing* (procurement committees, sales calls), not enterprise *users*.
