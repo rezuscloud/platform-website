@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"math"
 	"net/http"
 	"os"
 	"strings"
@@ -229,58 +228,6 @@ func staticHosts() []Host {
 	return []Host{}
 }
 
-// latestByPod is kept for backward compatibility with tests.
-func latestByPod(series []v3Series) map[string]float64 {
-	m := map[string]float64{}
-	for _, s := range series {
-		ns := LabelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
-		pod := LabelStr(s.Labels, "k8s.pod.name")
-		if ns == "" || pod == "" || len(s.Values) == 0 {
-			continue
-		}
-		last := s.Values[len(s.Values)-1].Value
-		if v, err := parseFloat(last); err == nil {
-			m[ns+"/"+pod] = v
-		}
-	}
-	return m
-}
-
-// Deprecated: Use DiscoverNodeNames instead.
-func discoverNodeNames(sources ...any) []string {
-	return DiscoverNodeNames(sources...)
-}
-
-// Deprecated: Use LabelStr instead.
-func labelStr(labels map[string]string, keys ...string) string {
-	return LabelStr(labels, keys...)
-}
-
-// Deprecated: Use SortServices instead.
-func sortServices(services []Service) {
-	SortServices(services)
-}
-
-// ServicesByCategory filters services by category.
-func ServicesByCategory(services []Service, cat string) []Service {
-	var result []Service
-	for _, s := range services {
-		if s.Category == cat {
-			result = append(result, s)
-		}
-	}
-	return result
-}
-
-// HostNames returns an ordered list of host names.
-func HostNames(hosts []Host) []string {
-	names := make([]string, len(hosts))
-	for i, h := range hosts {
-		names[i] = h.Name
-	}
-	return names
-}
-
 // FormatUptime returns a human-readable duration.
 func FormatUptime(d time.Duration) string {
 	h := int(d.Hours())
@@ -292,6 +239,3 @@ func FormatUptime(d time.Duration) string {
 	}
 	return fmt.Sprintf("%dm", int(d.Minutes()))
 }
-
-// Ensure unused imports are referenced
-var _ = math.Round
