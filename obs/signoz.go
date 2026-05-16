@@ -10,7 +10,6 @@ import (
 	"math"
 	"net/http"
 	"os"
-	"sort"
 	"strings"
 	"time"
 )
@@ -58,6 +57,64 @@ func getNamespace() string {
 	return "platform-website"
 }
 
+// Fetch returns live platform data, using a 30s cache to avoid
+// hitting SigNoz on every SSE tick.
+func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
+	if time.Since(c.cachedAt) < c.cacheTTL && len(c.cached.Services) > 0 {
+		return c.cached, nil
+	}
+
+	fctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	now := time.Now()
+	startMs := now.Add(-6 * time.Hour).UnixMilli()
+	endMs := now.UnixMilli()
+
+	resp, err := c.queryV3(fctx, v3Request{
+		Start: startMs,
+		End:   endMs,
+		Step:  300,
+		CompositeQuery: v3Composite{
+			PanelType: "graph",
+			QueryType: "promql",
+			PromQueries: map[string]v3PromQuery{
+				"cpu":     {Query: `{__name__="k8s.pod.cpu.usage"}`, Disabled: false},
+				"ram":     {Query: `{__name__="k8s.pod.memory.working_set"}`, Disabled: false},
+				"disk":    {Query: `{__name__="k8s.pod.filesystem.usage"}`, Disabled: false},
+				"net":     {Query: `rate({__name__="k8s.pod.network.io",direction="receive"}[5m])`, Disabled: false},
+				"nodeCpu": {Query: `{__name__="k8s.node.cpu.usage"}`, Disabled: false},
+				"nodeRam": {Query: `{__name__="k8s.node.memory.working_set"}`, Disabled: false},
+				"nodeUp":  {Query: `{__name__="k8s.node.uptime"}`, Disabled: false},
+			},
+		},
+	})
+	if err != nil {
+		return LiveData{
+			Hosts:     staticHosts(),
+			Timestamp: now.Unix(),
+		}, nil
+	}
+
+	results := map[string][]v3Series{}
+	for _, r := range resp.Data.Result {
+		results[r.QueryName] = r.Series
+	}
+
+	services := BuildServices(results["cpu"], results, now)
+	hosts := BuildHosts(results)
+
+	c.cached = LiveData{
+		Hosts:         hosts,
+		Services:      services,
+		HasMetrics:    true,
+		Timestamp:     now.Unix(),
+		SelfNamespace: c.namespace,
+	}
+	c.cachedAt = now
+	return c.cached, nil
+}
+
 // ── v3 API types ──
 
 type v3Request struct {
@@ -101,376 +158,6 @@ type v3Series struct {
 type v3Point struct {
 	Timestamp int64  `json:"timestamp"`
 	Value     string `json:"value"`
-}
-
-// ── Fetch ──
-
-func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
-	if time.Since(c.cachedAt) < c.cacheTTL && len(c.cached.Services) > 0 {
-		return c.cached, nil
-	}
-
-	fctx, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
-
-	now := time.Now()
-	startMs := now.Add(-6 * time.Hour).UnixMilli()
-	endMs := now.UnixMilli()
-
-	// Single v3 query_range call for all metrics.
-	// Uses 6h window for resilience against SigNoz collection gaps.
-	// step=300 over 6h gives ~72 data points per series (good sparklines).
-	// No `up` query: service discovery uses the CPU metric directly,
-	// which has k8s.deployment.name, k8s.node.name, k8s.pod.start_time labels.
-	resp, err := c.queryV3(fctx, v3Request{
-		Start: startMs,
-		End:   endMs,
-		Step:  300,
-		CompositeQuery: v3Composite{
-			PanelType: "graph",
-			QueryType: "promql",
-			PromQueries: map[string]v3PromQuery{
-				"cpu":     {Query: `{__name__="k8s.pod.cpu.usage"}`, Disabled: false},
-				"ram":     {Query: `{__name__="k8s.pod.memory.working_set"}`, Disabled: false},
-				"disk":    {Query: `{__name__="k8s.pod.filesystem.usage"}`, Disabled: false},
-				"net":     {Query: `rate({__name__="k8s.pod.network.io",direction="receive"}[5m])`, Disabled: false},
-				"nodeCpu": {Query: `{__name__="k8s.node.cpu.usage"}`, Disabled: false},
-				"nodeRam": {Query: `{__name__="k8s.node.memory.working_set"}`, Disabled: false},
-				"nodeUp":  {Query: `{__name__="k8s.node.uptime"}`, Disabled: false},
-			},
-		},
-	})
-	if err != nil {
-		// Return static hosts on failure
-		return LiveData{
-			Hosts:     staticHosts(),
-			Timestamp: now.Unix(),
-		}, nil
-	}
-
-	// Parse results by query name
-	results := map[string][]v3Series{}
-	for _, r := range resp.Data.Result {
-		results[r.QueryName] = r.Series
-	}
-
-	services := buildServices(results["cpu"], results, now)
-	hosts := buildHosts(results)
-
-	c.cached = LiveData{
-		Hosts:         hosts,
-		Services:      services,
-		HasMetrics:    true,
-		Timestamp:     now.Unix(),
-		SelfNamespace: c.namespace,
-	}
-	c.cachedAt = now
-	return c.cached, nil
-}
-
-// ── Service builder ──
-
-func buildServices(cpuSeries []v3Series, allResults map[string][]v3Series, now time.Time) []Service {
-	type svcInfo struct {
-		ns, deploy, host, uptime string
-	}
-	svcMap := map[string]*svcInfo{}
-
-	// Discover services from CPU metric labels.
-	// k8s.pod.cpu.usage has: k8s.deployment.name, k8s.statefulset.name,
-	// k8s.daemonset.name, k8s.node.name, k8s.pod.start_time.
-	for _, s := range cpuSeries {
-		ns := labelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
-		deploy := labelStr(s.Labels, "k8s.deployment.name")
-		if deploy == "" {
-			deploy = labelStr(s.Labels, "k8s.statefulset.name")
-		}
-		if deploy == "" {
-			deploy = labelStr(s.Labels, "k8s.daemonset.name")
-		}
-		if ns == "" || deploy == "" {
-			continue
-		}
-		key := ns + "/" + deploy
-		if _, exists := svcMap[key]; exists {
-			continue
-		}
-		info := &svcInfo{ns: ns, deploy: deploy}
-		svcMap[key] = info
-		if t := labelStr(s.Labels, "k8s.pod.start_time"); t != "" {
-			info.uptime = t
-		}
-		if node := labelStr(s.Labels, "k8s_node_name", "k8s.node.name"); node != "" {
-			info.host = node
-		}
-	}
-
-	// Build deployment metric lookups using k8s.deployment.name label
-	deployCPU := latestByDeployment(allResults["cpu"])
-	deployRAM := latestByDeployment(allResults["ram"])
-	deployDisk := latestByDeployment(allResults["disk"])
-	deployNet := latestByDeployment(allResults["net"])
-
-	sparkCPU := sparkByDeployment(allResults["cpu"])
-	sparkRAM := sparkByDeployment(allResults["ram"])
-	sparkDisk := sparkByDeployment(allResults["disk"])
-	sparkNet := sparkByDeployment(allResults["net"])
-
-	services := make([]Service, 0, len(svcMap))
-	for _, info := range svcMap {
-		key := info.ns + "/" + info.deploy
-		svc := Service{
-			Name:      info.deploy,
-			Namespace: info.ns,
-			Category:  CategoryForNamespace(info.ns),
-			Host:      info.host,
-		}
-		// All discovered services are running (they have metric data)
-		svc.Status = "running"
-		if info.uptime != "" {
-			if parsed, err := time.Parse(time.RFC3339, info.uptime); err == nil {
-				svc.Uptime = FormatUptime(now.Sub(parsed))
-			}
-		}
-
-		if v, ok := deployCPU[key]; ok && v <= 100 {
-			svc.CPU = math.Round(v*1000) / 1000
-		}
-		if v, ok := deployRAM[key]; ok {
-			svc.RAM = math.Round(v/1024/1024*10) / 10
-		}
-		if v, ok := deployNet[key]; ok {
-			svc.NetKB = math.Round(v/1024*10) / 10
-		}
-		if v, ok := deployDisk[key]; ok {
-			svc.DiskMB = math.Round(v/1024/1024*10) / 10
-		}
-
-		if pts, ok := sparkCPU[key]; ok {
-			svc.CPUHist = pts
-		}
-		if pts, ok := sparkRAM[key]; ok {
-			svc.RAMHist = pts
-		}
-		if pts, ok := sparkNet[key]; ok {
-			svc.NetHist = pts
-		}
-		if pts, ok := sparkDisk[key]; ok {
-			svc.DiskHist = pts
-		}
-
-		services = append(services, svc)
-	}
-
-	// Filter out stale services: pods from deleted namespaces still have
-	// residual SigNoz data in the query window but no active metrics.
-	active := make([]Service, 0, len(services))
-	for _, svc := range services {
-		if svc.CPU > 0 || svc.RAM > 0 || svc.NetKB > 0 || svc.DiskMB > 0 {
-			active = append(active, svc)
-		}
-	}
-
-	sortServices(active)
-	return active
-}
-
-// latestByDeployment returns map[ns/deploy]latestValue using k8s.deployment.name label.
-// Takes max across pods of the same deployment. Clamps corrupted values (>100 cores).
-func latestByDeployment(series []v3Series) map[string]float64 {
-	m := map[string]float64{}
-	for _, s := range series {
-		ns := labelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
-		deploy := labelStr(s.Labels, "k8s.deployment.name")
-		if deploy == "" {
-			deploy = labelStr(s.Labels, "k8s.statefulset.name")
-		}
-		if deploy == "" {
-			deploy = labelStr(s.Labels, "k8s.daemonset.name")
-		}
-		if ns == "" || deploy == "" || len(s.Values) == 0 {
-			continue
-		}
-		key := ns + "/" + deploy
-		last := s.Values[len(s.Values)-1].Value
-		v, err := parseFloat(last)
-		if err != nil {
-			continue
-		}
-
-		if existing, ok := m[key]; ok {
-			if v > existing {
-				m[key] = v
-			}
-		} else {
-			m[key] = v
-		}
-	}
-	return m
-}
-
-// sparkByDeployment returns map[ns/deploy]svgPolyline using k8s.deployment.name label.
-// Picks the first pod's series for each deployment.
-func sparkByDeployment(series []v3Series) map[string]string {
-	m := map[string]string{}
-	for _, s := range series {
-		ns := labelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
-		deploy := labelStr(s.Labels, "k8s.deployment.name")
-		if deploy == "" {
-			deploy = labelStr(s.Labels, "k8s.statefulset.name")
-		}
-		if deploy == "" {
-			deploy = labelStr(s.Labels, "k8s.daemonset.name")
-		}
-		if ns == "" || deploy == "" || len(s.Values) < 1 {
-			continue
-		}
-		key := ns + "/" + deploy
-		if _, exists := m[key]; exists {
-			continue // first pod wins
-		}
-		vals := make([]float64, len(s.Values))
-		for i, p := range s.Values {
-			vals[i], _ = parseFloat(p.Value)
-		}
-		// Filter corrupted spikes: clamp to 100 max (CPU cores)
-		for i, v := range vals {
-			if v > 100 {
-				vals[i] = 0
-				vals[i] = 0
-			}
-		}
-		if len(vals) == 1 {
-			vals = []float64{vals[0], vals[0]}
-		}
-		m[key] = sparklinePoints(vals, 48, 16)
-	}
-	return m
-}
-
-func latestByPod(series []v3Series) map[string]float64 {
-	m := map[string]float64{}
-	for _, s := range series {
-		ns := labelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
-		pod := labelStr(s.Labels, "k8s.pod.name")
-		if ns == "" || pod == "" || len(s.Values) == 0 {
-			continue
-		}
-		last := s.Values[len(s.Values)-1].Value
-		if v, err := parseFloat(last); err == nil {
-			m[ns+"/"+pod] = v
-		}
-	}
-	return m
-}
-
-// ── Host builder ──
-
-func buildHosts(results map[string][]v3Series) []Host {
-	nodeCPU := latestByNode(results["nodeCpu"])
-	nodeRAM := latestByNode(results["nodeRam"])
-
-	nodeUp := latestByNode(results["nodeUp"])
-
-	// Count services per node from CPU results
-	nodeCount := map[string]int{}
-	for _, s := range results["cpu"] {
-		if node := labelStr(s.Labels, "k8s_node_name", "k8s.node.name"); node != "" {
-			nodeCount[node]++
-		}
-	}
-
-	// Discover node names dynamically from all available sources
-	nodeNames := discoverNodeNames(nodeCPU, nodeRAM, nodeUp, nodeCount)
-
-	hosts := make([]Host, 0, len(nodeNames))
-	for _, name := range nodeNames {
-		h := Host{Name: name}
-		if strings.Contains(name, "control-plane") {
-			h.Label = "Cloud"
-			h.Detail = "Control plane"
-		} else {
-			h.Label = "Edge"
-			h.Detail = "Worker node"
-		}
-		if v, ok := nodeCPU[name]; ok {
-			h.CPU = math.Round(v*100) / 100
-		}
-		if v, ok := nodeRAM[name]; ok {
-			h.RAM = math.Round(v/1024/1024*10) / 10
-		}
-		if v, ok := nodeUp[name]; ok {
-			h.Uptime = FormatUptime(time.Duration(v) * time.Second)
-		}
-		if n, ok := nodeCount[name]; ok {
-			h.SvcCount = n
-		}
-		hosts = append(hosts, h)
-	}
-	return hosts
-}
-
-// discoverNodeNames returns sorted unique node names from multiple maps.
-// Control-plane nodes come first.
-func discoverNodeNames(sources ...any) []string {
-	seen := map[string]bool{}
-	var names []string
-	for _, src := range sources {
-		switch m := src.(type) {
-		case map[string]float64:
-			for k := range m {
-				if !seen[k] {
-					seen[k] = true
-					names = append(names, k)
-				}
-			}
-		case map[string]int:
-			for k := range m {
-				if !seen[k] {
-					seen[k] = true
-					names = append(names, k)
-				}
-			}
-		}
-	}
-	sort.Slice(names, func(i, j int) bool {
-		ci := strings.Contains(names[i], "control-plane")
-		cj := strings.Contains(names[j], "control-plane")
-		if ci != cj {
-			return ci
-		}
-		return names[i] < names[j]
-	})
-	return names
-}
-
-func latestByNode(series []v3Series) map[string]float64 {
-	m := map[string]float64{}
-	for _, s := range series {
-		node := s.Labels["k8s.node.name"]
-		if node == "" || len(s.Values) == 0 {
-			continue
-		}
-		last := s.Values[len(s.Values)-1].Value
-		if v, err := parseFloat(last); err == nil {
-			m[node] = v
-		}
-	}
-	return m
-}
-
-func staticHosts() []Host {
-	return []Host{}
-}
-
-// labelStr returns the first non-empty value from the given label keys.
-func labelStr(labels map[string]string, keys ...string) string {
-	for _, k := range keys {
-		if v, ok := labels[k]; ok && v != "" {
-			return v
-		}
-	}
-	return ""
 }
 
 // ── SigNoz v3 API call ──
@@ -538,26 +225,73 @@ func sparklinePoints(values []float64, w, h int) string {
 	return strings.Join(pts, " ")
 }
 
-// ── Sorting ──
+func staticHosts() []Host {
+	return []Host{}
+}
 
-func sortServices(services []Service) {
-	catOrder := map[string]int{}
-	for i, c := range CategoryOrder {
-		catOrder[c] = i
-	}
-	for i := 0; i < len(services); i++ {
-		for j := i + 1; j < len(services); j++ {
-			ci := catOrder[services[i].Category]
-			cj := catOrder[services[j].Category]
-			if ci > cj || (ci == cj && services[i].Name > services[j].Name) {
-				services[i], services[j] = services[j], services[i]
-			}
+// latestByPod is kept for backward compatibility with tests.
+func latestByPod(series []v3Series) map[string]float64 {
+	m := map[string]float64{}
+	for _, s := range series {
+		ns := LabelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
+		pod := LabelStr(s.Labels, "k8s.pod.name")
+		if ns == "" || pod == "" || len(s.Values) == 0 {
+			continue
+		}
+		last := s.Values[len(s.Values)-1].Value
+		if v, err := parseFloat(last); err == nil {
+			m[ns+"/"+pod] = v
 		}
 	}
+	return m
 }
 
-func parseFloat(s string) (float64, error) {
-	var f float64
-	_, err := fmt.Sscanf(s, "%f", &f)
-	return f, err
+// Deprecated: Use DiscoverNodeNames instead.
+func discoverNodeNames(sources ...any) []string {
+	return DiscoverNodeNames(sources...)
 }
+
+// Deprecated: Use LabelStr instead.
+func labelStr(labels map[string]string, keys ...string) string {
+	return LabelStr(labels, keys...)
+}
+
+// Deprecated: Use SortServices instead.
+func sortServices(services []Service) {
+	SortServices(services)
+}
+
+// ServicesByCategory filters services by category.
+func ServicesByCategory(services []Service, cat string) []Service {
+	var result []Service
+	for _, s := range services {
+		if s.Category == cat {
+			result = append(result, s)
+		}
+	}
+	return result
+}
+
+// HostNames returns an ordered list of host names.
+func HostNames(hosts []Host) []string {
+	names := make([]string, len(hosts))
+	for i, h := range hosts {
+		names[i] = h.Name
+	}
+	return names
+}
+
+// FormatUptime returns a human-readable duration.
+func FormatUptime(d time.Duration) string {
+	h := int(d.Hours())
+	if h >= 24 {
+		return fmt.Sprintf("%dd", h/24)
+	}
+	if h >= 1 {
+		return fmt.Sprintf("%dh", h)
+	}
+	return fmt.Sprintf("%dm", int(d.Minutes()))
+}
+
+// Ensure unused imports are referenced
+var _ = math.Round
