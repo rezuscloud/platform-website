@@ -22,14 +22,12 @@ func LiveSSE(c *fiber.Ctx) error {
 		ticker := time.NewTicker(5 * time.Second)
 		defer ticker.Stop()
 
-		if !sendSnapshot(w) {
-			return
-		}
+		sendSnapshot(w)
 
 		for range ticker.C {
-			if !sendSnapshot(w) {
-				return
-			}
+			// Keep ticking even on error. Log and continue so the
+			// stream stays alive for when SigNoz recovers.
+			sendSnapshot(w)
 		}
 	})
 
@@ -40,12 +38,17 @@ func sendSnapshot(w *bufio.Writer) bool {
 	data, err := liveClient.Fetch(context.Background())
 	if err != nil {
 		log.Printf("SSE fetch error: %v", err)
+		// Send keep-alive comment to prevent client timeout
+		fmt.Fprint(w, ": keepalive\n\n")
+		w.Flush()
 		return false
 	}
 
 	payload, err := json.Marshal(data)
 	if err != nil {
 		log.Printf("SSE marshal error: %v", err)
+		fmt.Fprint(w, ": keepalive\n\n")
+		w.Flush()
 		return false
 	}
 

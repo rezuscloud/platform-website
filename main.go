@@ -16,16 +16,44 @@ import (
 	"github.com/rezuscloud/platform-website/obs"
 )
 
+// securityHeaders adds production security headers to every response.
+func securityHeaders(c *fiber.Ctx) error {
+	err := c.Next()
+
+	c.Set("X-Content-Type-Options", "nosniff")
+	c.Set("X-Frame-Options", "DENY")
+	c.Set("Referrer-Policy", "strict-origin-when-cross-origin")
+	c.Set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+	c.Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+
+	// CSP allows self + inline scripts/styles (needed for Alpine.js + Tailwind).
+	// connect-src self is needed for SSE /api/live/stream.
+	c.Set("Content-Security-Policy",
+		"default-src 'self'; "+
+			"script-src 'self' 'unsafe-inline'; "+
+			"style-src 'self' 'unsafe-inline'; "+
+			"font-src 'self'; "+
+			"img-src 'self' data: https:; "+
+			"connect-src 'self'; "+
+			"frame-ancestors 'none'; "+
+			"base-uri 'self'; "+
+			"form-action 'self'")
+
+	return err
+}
+
 func main() {
 	meterProvider := obs.InitTelemetry()
 
 	app := fiber.New(fiber.Config{
 		AppName:      "platform-website",
-		ServerHeader: "Fiber",
+		ServerHeader: "",
+		ErrorHandler: handlers.ErrorHandler,
 	})
 
 	app.Use(recover.New())
 	app.Use(obs.OTelFiberMiddleware(meterProvider))
+	app.Use(securityHeaders)
 	app.Use(logger.New())
 	app.Use(compress.New())
 
@@ -34,11 +62,34 @@ func main() {
 	}
 
 	app.Static("/assets", "./assets", fiber.Static{
-		CacheDuration: -1,
+		MaxAge: 86400, // 24h for CSS/JS/SVG
+	})
+
+	// Long-lived cache for fonts (content-addressed, rarely change)
+	app.Static("/assets/fonts", "./assets/fonts", fiber.Static{
+		MaxAge: 31536000, // 1 year
 	})
 
 	app.Get("/manifest.webmanifest", func(c *fiber.Ctx) error {
+		c.Set("Content-Type", "application/manifest+json")
 		return c.SendFile("./assets/manifest.webmanifest")
+	})
+
+	app.Get("/robots.txt", func(c *fiber.Ctx) error {
+		c.Set("Content-Type", "text/plain; charset=utf-8")
+		return c.SendString("User-agent: *\nAllow: /\n\nSitemap: https://rezus.cloud/sitemap.xml\n")
+	})
+
+	app.Get("/sitemap.xml", func(c *fiber.Ctx) error {
+		c.Set("Content-Type", "application/xml")
+		return c.SendString(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://rezus.cloud/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+</urlset>`)
+	})
+
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.SendStatus(fiber.StatusNoContent)
 	})
 
 	app.Get("/", handlers.Home)

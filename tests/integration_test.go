@@ -707,3 +707,59 @@ func TestAlpineHTMXSeparation(t *testing.T) {
 		assert.Contains(t, html, "x-cloak", "x-cloak attribute present")
 	})
 }
+
+func TestSEOElements(t *testing.T) {
+	app := setupIntegrationApp()
+	doc := getHTMLDoc(t, app, "/")
+
+	t.Run("canonical URL", func(t *testing.T) {
+		canonical, exists := doc.Find("link[rel='canonical']").Attr("href")
+		assert.True(t, exists, "canonical link exists")
+		assert.Equal(t, "https://rezus.cloud/", canonical)
+	})
+
+	t.Run("Open Graph meta tags", func(t *testing.T) {
+		ogTitle, exists := doc.Find("meta[property='og:title']").Attr("content")
+		assert.True(t, exists)
+		assert.Contains(t, ogTitle, "RezusCloud")
+
+		ogDesc, exists := doc.Find("meta[property='og:description']").Attr("content")
+		assert.True(t, exists)
+		assert.NotEmpty(t, ogDesc)
+
+		ogImage, exists := doc.Find("meta[property='og:image']").Attr("content")
+		assert.True(t, exists)
+		assert.Contains(t, ogImage, "rezus.cloud")
+
+		ogURL, exists := doc.Find("meta[property='og:url']").Attr("content")
+		assert.True(t, exists)
+		assert.Equal(t, "https://rezus.cloud", ogURL)
+	})
+
+	t.Run("Twitter card meta tags", func(t *testing.T) {
+		card, exists := doc.Find("meta[name='twitter:card']").Attr("content")
+		assert.True(t, exists)
+		assert.Equal(t, "summary_large_image", card)
+
+		title, exists := doc.Find("meta[name='twitter:title']").Attr("content")
+		assert.True(t, exists)
+		assert.Contains(t, title, "RezusCloud")
+	})
+
+	t.Run("structured data", func(t *testing.T) {
+		ldJSON := doc.Find("script[type='application/ld+json']").Text()
+		assert.Contains(t, ldJSON, "schema.org")
+		assert.Contains(t, ldJSON, "RezusCloud")
+	})
+
+	t.Run("font preloads", func(t *testing.T) {
+		preloads := doc.Find("link[rel='preload']")
+		fontPreloads := 0
+		preloads.Each(func(i int, s *goquery.Selection) {
+			if v, _ := s.Attr("as"); v == "font" {
+				fontPreloads++
+			}
+		})
+		assert.GreaterOrEqual(t, fontPreloads, 2, "Silkscreen and VT323 should be preloaded")
+	})
+}

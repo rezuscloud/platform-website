@@ -81,7 +81,7 @@ func Live(data obs.LiveData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><script>\n\t\t\tfunction liveMatrix() {\n\t\t\t\treturn {\n\t\t\t\t\tconnected: false,\n\t\t\t\t\tlastUpdate: 0,\n\t\t\t\t\tlastUpdateAgo: \"\",\n\t\t\t\t\thostCount: 0,\n\t\t\t\t\tserviceCount: 0,\n\t\t\t\t\tselected: null,\n\t\t\t\t\texpandedHost: null,\n\t\t\t\t\tinitial: { hasMetrics: false },\n\n\t\t\t\t\tinit() {\n\t\t\t\t\t\tvar self = this;\n\t\t\t\t\t\tvar es = new EventSource(\"/api/live/stream\");\n\t\t\t\t\t\tes.addEventListener(\"update\", function (e) {\n\t\t\t\t\t\t\tvar data = JSON.parse(e.data);\n\t\t\t\t\t\t\tself.connected = true;\n\t\t\t\t\t\t\tself.lastUpdate = Date.now();\n\t\t\t\t\t\t\tself.hostCount = data.hosts ? data.hosts.length : 0;\n\t\t\t\t\t\t\tself.serviceCount = data.services ? data.services.length : 0;\n\t\t\t\t\t\t\tself.initial.hasMetrics = data.hasMetrics || false;\n\n\t\t\t\t\t\t\tvar idx = {};\n\t\t\t\t\t\t\tif (data.services) {\n\t\t\t\t\t\t\t\tdata.services.forEach(function (svc) {\n\t\t\t\t\t\t\t\t\tvar k = svc.namespace + \"/\" + svc.name + \"@\" + svc.host;\n\t\t\t\t\t\t\t\t\tidx[k] = svc;\n\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tdocument\n\t\t\t\t\t\t\t\t.querySelectorAll(\"[data-svc-key]\")\n\t\t\t\t\t\t\t\t.forEach(function (el) {\n\t\t\t\t\t\t\t\t\tvar svc = idx[el.getAttribute(\"data-svc-key\")];\n\t\t\t\t\t\t\t\t\tif (svc) self.updateBox(el, svc);\n\t\t\t\t\t\t\t\t});\n\n\t\t\t\t\t\t\tif (data.hosts) {\n\t\t\t\t\t\t\t\tdata.hosts.forEach(function (host) {\n\t\t\t\t\t\t\t\t\tvar hdr = document.querySelector(\n\t\t\t\t\t\t\t\t\t\t'[data-host-name=\"' + host.name + '\"]',\n\t\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\t\tif (!hdr) return;\n\t\t\t\t\t\t\t\t\tvar met = hdr.querySelector(\"[data-host-metric]\");\n\t\t\t\t\t\t\t\t\tif (met) {\n\t\t\t\t\t\t\t\t\t\tvar parts = [];\n\t\t\t\t\t\t\t\t\t\tif (host.cpu > 0) parts.push(\"CPU \" + host.cpu.toFixed(1));\n\t\t\t\t\t\t\t\t\t\tif (host.ram > 0) parts.push(host.ram.toFixed(0) + \" MB\");\n\t\t\t\t\t\t\t\t\t\tmet.textContent = parts.join(\" \\u00b7 \");\n\t\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t\tif (self.expandedHost === host.name) {\n\t\t\t\t\t\t\t\t\t\tself.updateHostDetail(host);\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tif (self.selected) {\n\t\t\t\t\t\t\t\tvar svc = idx[self.selected.key];\n\t\t\t\t\t\t\t\tif (svc) {\n\t\t\t\t\t\t\t\t\tself.selected = {\n\t\t\t\t\t\t\t\t\t\tkey: self.selected.key,\n\t\t\t\t\t\t\t\t\t\tname: svc.name,\n\t\t\t\t\t\t\t\t\t\thost: svc.host,\n\t\t\t\t\t\t\t\t\t\tdetail: svc.namespace || \"\",\n\t\t\t\t\t\t\t\t\t\tcpu: svc.cpu,\n\t\t\t\t\t\t\t\t\t\tram: svc.ram,\n\t\t\t\t\t\t\t\t\t\tnetKB: svc.netKB || 0,\n\t\t\t\t\t\t\t\t\t\tdiskMB: svc.diskMB || 0,\n\t\t\t\t\t\t\t\t\t\tcpuHist: svc.cpuHist,\n\t\t\t\t\t\t\t\t\t\tramHist: svc.ramHist,\n\t\t\t\t\t\t\t\t\t\tnetHist: svc.netHist,\n\t\t\t\t\t\t\t\t\t\tdiskHist: svc.diskHist,\n\t\t\t\t\t\t\t\t\t};\n\t\t\t\t\t\t\t\t\tself.updateCharts(svc);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t\tes.onerror = function () {\n\t\t\t\t\t\t\tself.connected = false;\n\t\t\t\t\t\t};\n\t\t\t\t\t\tsetInterval(function () {\n\t\t\t\t\t\t\tif (self.lastUpdate > 0)\n\t\t\t\t\t\t\t\tself.lastUpdateAgo = Math.floor(\n\t\t\t\t\t\t\t\t\t(Date.now() - self.lastUpdate) / 1000,\n\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t}, 1000);\n\t\t\t\t\t},\n\n\t\t\t\t\ttoggleHost(name) {\n\t\t\t\t\t\tif (this.expandedHost === name) {\n\t\t\t\t\t\t\tthis.expandedHost = null;\n\t\t\t\t\t\t\tvar el = document.querySelector(\n\t\t\t\t\t\t\t\t'[data-host-detail=\"' + name + '\"]',\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tif (el) el.style.display = \"none\";\n\t\t\t\t\t\t\tvar btn = document.querySelector(\n\t\t\t\t\t\t\t\t'[data-host-btn=\"' + name + '\"]',\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tif (btn) btn.setAttribute(\"aria-expanded\", \"false\");\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tif (this.expandedHost) {\n\t\t\t\t\t\t\t\tvar prev = document.querySelector(\n\t\t\t\t\t\t\t\t\t'[data-host-detail=\"' + this.expandedHost + '\"]',\n\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\tif (prev) prev.style.display = \"none\";\n\t\t\t\t\t\t\t\tvar prevBtn = document.querySelector(\n\t\t\t\t\t\t\t\t\t'[data-host-btn=\"' + this.expandedHost + '\"]',\n\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\tif (prevBtn) prevBtn.setAttribute(\"aria-expanded\", \"false\");\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tthis.expandedHost = name;\n\t\t\t\t\t\t\tvar el = document.querySelector(\n\t\t\t\t\t\t\t\t'[data-host-detail=\"' + name + '\"]',\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tif (el) el.style.display = \"\";\n\t\t\t\t\t\t\tvar btn = document.querySelector(\n\t\t\t\t\t\t\t\t'[data-host-btn=\"' + name + '\"]',\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tif (btn) btn.setAttribute(\"aria-expanded\", \"true\");\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\n\t\t\t\t\tupdateHostDetail(host) {\n\t\t\t\t\t\tvar el = document.querySelector(\n\t\t\t\t\t\t\t'[data-host-detail=\"' + host.name + '\"]',\n\t\t\t\t\t\t);\n\t\t\t\t\t\tif (!el) return;\n\t\t\t\t\t\tvar d = el.querySelector(\"[data-hd-cpu]\");\n\t\t\t\t\t\tif (d)\n\t\t\t\t\t\t\td.textContent = host.cpu\n\t\t\t\t\t\t\t\t? host.cpu.toFixed(1) + \" CPU cores\"\n\t\t\t\t\t\t\t\t: \"-\";\n\t\t\t\t\t\tvar r = el.querySelector(\"[data-hd-ram]\");\n\t\t\t\t\t\tif (r)\n\t\t\t\t\t\t\tr.textContent = host.ram ? host.ram.toFixed(0) + \" MB RAM\" : \"-\";\n\t\t\t\t\t\tvar u = el.querySelector(\"[data-hd-uptime]\");\n\t\t\t\t\t\tif (u) u.textContent = host.uptime || \"-\";\n\t\t\t\t\t\tvar s = el.querySelector(\"[data-hd-svcs]\");\n\t\t\t\t\t\tif (s) s.textContent = host.svcCount + \" services\";\n\t\t\t\t\t},\n\n\t\t\t\t\tselectService(\n\t\t\t\t\t\tkey,\n\t\t\t\t\t\tname,\n\t\t\t\t\t\thost,\n\t\t\t\t\t\tns,\n\t\t\t\t\t\tcpu,\n\t\t\t\t\t\tram,\n\t\t\t\t\t\tnetKB,\n\t\t\t\t\t\tdiskMB,\n\t\t\t\t\t\tcpuHist,\n\t\t\t\t\t\tramHist,\n\t\t\t\t\t\tnetHist,\n\t\t\t\t\t\tdiskHist,\n\t\t\t\t\t) {\n\t\t\t\t\t\tif (this.selected && this.selected.key === key) {\n\t\t\t\t\t\t\tthis.deselectAll();\n\t\t\t\t\t\t\tthis.selected = null;\n\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tthis.deselectAll();\n\t\t\t\t\t\tthis.selected = {\n\t\t\t\t\t\t\tkey: key,\n\t\t\t\t\t\t\tname: name,\n\t\t\t\t\t\t\thost: host,\n\t\t\t\t\t\t\tdetail: ns,\n\t\t\t\t\t\t\tcpu: cpu,\n\t\t\t\t\t\t\tram: ram,\n\t\t\t\t\t\t\tnetKB: netKB,\n\t\t\t\t\t\t\tdiskMB: diskMB,\n\t\t\t\t\t\t\tcpuHist: cpuHist,\n\t\t\t\t\t\t\tramHist: ramHist,\n\t\t\t\t\t\t\tnetHist: netHist,\n\t\t\t\t\t\t\tdiskHist: diskHist,\n\t\t\t\t\t\t};\n\t\t\t\t\t\tvar detailEl = document.querySelector(\n\t\t\t\t\t\t\t'[data-detail-key=\"' + key + '\"]',\n\t\t\t\t\t\t);\n\t\t\t\t\t\tif (detailEl) {\n\t\t\t\t\t\t\tdetailEl.style.display = \"\";\n\t\t\t\t\t\t\tdetailEl.setAttribute(\"aria-hidden\", \"false\");\n\t\t\t\t\t\t}\n\t\t\t\t\t\tvar svcEl = document.querySelector('[data-svc-row=\"' + key + '\"]');\n\t\t\t\t\t\tif (svcEl) {\n\t\t\t\t\t\t\tsvcEl.classList.add(\n\t\t\t\t\t\t\t\t\"border-accent-gold/60\",\n\t\t\t\t\t\t\t\t\"dark:border-next-teal/60\",\n\t\t\t\t\t\t\t\t\"bg-accent-gold/10\",\n\t\t\t\t\t\t\t\t\"dark:bg-next-teal/10\",\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tsvcEl.setAttribute(\"aria-expanded\", \"true\");\n\t\t\t\t\t\t}\n\t\t\t\t\t\tthis.updateCharts(this.selected);\n\t\t\t\t\t},\n\n\t\t\t\t\tdeselectAll() {\n\t\t\t\t\t\tdocument\n\t\t\t\t\t\t\t.querySelectorAll(\"[data-detail-key]\")\n\t\t\t\t\t\t\t.forEach(function (el) {\n\t\t\t\t\t\t\t\tel.style.display = \"none\";\n\t\t\t\t\t\t\t\tel.setAttribute(\"aria-hidden\", \"true\");\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\tdocument.querySelectorAll(\"[data-svc-row]\").forEach(function (el) {\n\t\t\t\t\t\t\tel.classList.remove(\n\t\t\t\t\t\t\t\t\"border-accent-gold/60\",\n\t\t\t\t\t\t\t\t\"dark:border-next-teal/60\",\n\t\t\t\t\t\t\t\t\"bg-accent-gold/10\",\n\t\t\t\t\t\t\t\t\"dark:bg-next-teal/10\",\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tel.setAttribute(\"aria-expanded\", \"false\");\n\t\t\t\t\t\t});\n\t\t\t\t\t},\n\n\t\t\t\t\tupdateCharts(svc) {\n\t\t\t\t\t\tvar row = document.querySelector(\n\t\t\t\t\t\t\t'[data-detail-key=\"' + svc.key + '\"]',\n\t\t\t\t\t\t);\n\t\t\t\t\t\tif (!row) return;\n\t\t\t\t\t\tvar cpuLine = row.querySelector(\"[x-data-hist-cpu]\");\n\t\t\t\t\t\tvar ramLine = row.querySelector(\"[x-data-hist-ram]\");\n\t\t\t\t\t\tvar netLine = row.querySelector(\"[x-data-hist-net]\");\n\t\t\t\t\t\tvar diskLine = row.querySelector(\"[x-data-hist-disk]\");\n\t\t\t\t\t\tif (cpuLine && svc.cpuHist)\n\t\t\t\t\t\t\tcpuLine.setAttribute(\"points\", svc.cpuHist);\n\t\t\t\t\t\tif (ramLine && svc.ramHist)\n\t\t\t\t\t\t\tramLine.setAttribute(\"points\", svc.ramHist);\n\t\t\t\t\t\tif (netLine && svc.netHist)\n\t\t\t\t\t\t\tnetLine.setAttribute(\"points\", svc.netHist);\n\t\t\t\t\t\tif (diskLine && svc.diskHist)\n\t\t\t\t\t\t\tdiskLine.setAttribute(\"points\", svc.diskHist);\n\t\t\t\t\t},\n\n\t\t\t\t\tupdateBox(el, svc) {\n\t\t\t\t\t\tvar dot = el.querySelector(\"[data-dot]\");\n\t\t\t\t\t\tif (dot) dot.className = this.dotClass(svc.status);\n\t\t\t\t\t\tvar met = el.querySelector(\"[data-metric]\");\n\t\t\t\t\t\tif (met) {\n\t\t\t\t\t\t\tvar parts = [];\n\t\t\t\t\t\t\tif (svc.cpu > 0) parts.push(svc.cpu.toFixed(3));\n\t\t\t\t\t\t\tif (svc.ram > 0) parts.push(svc.ram.toFixed(0) + \"M\");\n\t\t\t\t\t\t\tif (parts.length > 0) {\n\t\t\t\t\t\t\t\tmet.textContent = parts.join(\" \\u00b7 \");\n\t\t\t\t\t\t\t\tmet.className =\n\t\t\t\t\t\t\t\t\t\"font-terminal text-[10px] text-ink dark:text-next-white tabular-nums leading-none\";\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\tmet.innerHTML =\n\t\t\t\t\t\t\t\t\t'<span class=\"text-ink-muted/50 dark:text-next-subtle/50\">' +\n\t\t\t\t\t\t\t\t\t(svc.name || \"\") +\n\t\t\t\t\t\t\t\t\t\"</span>\";\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\n\t\t\t\t\tdotClass(status) {\n\t\t\t\t\t\tvar b = \"inline-block w-1.5 h-1.5 shrink-0\";\n\t\t\t\t\t\tif (status === \"healthy\" || status === \"running\")\n\t\t\t\t\t\t\treturn b + \" bg-green-600 dark:bg-green-500\";\n\t\t\t\t\t\treturn b + \" bg-rule dark:bg-next-mid\";\n\t\t\t\t\t},\n\t\t\t\t};\n\t\t\t}\n\t\t</script></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><script>\n\t\t\tfunction liveMatrix() {\n\t\t\t\treturn {\n\t\t\t\t\tconnected: false,\n\t\t\t\t\tlastUpdate: 0,\n\t\t\t\t\tlastUpdateAgo: \"\",\n\t\t\t\t\thostCount: 0,\n\t\t\t\t\tserviceCount: 0,\n\t\t\t\t\tselected: null,\n\t\t\t\t\texpandedHost: null,\n\t\t\t\t\tinitial: { hasMetrics: false },\n\n\t\t\t\t\tinit() {\n\t\t\t\t\t\tvar self = this;\n\t\t\t\t\t\tvar es = new EventSource(\"/api/live/stream\");\n\t\t\t\t\t\tes.addEventListener(\"update\", function (e) {\n\t\t\t\t\t\t\tvar data;\n\t\t\t\t\t\t\ttry { data = JSON.parse(e.data); } catch (ex) { return; }\n\t\t\t\t\t\t\tself.connected = true;\n\t\t\t\t\t\t\tself.lastUpdate = Date.now();\n\t\t\t\t\t\t\tself.hostCount = data.hosts ? data.hosts.length : 0;\n\t\t\t\t\t\t\tself.serviceCount = data.services ? data.services.length : 0;\n\t\t\t\t\t\t\tself.initial.hasMetrics = data.hasMetrics || false;\n\n\t\t\t\t\t\t\tvar idx = {};\n\t\t\t\t\t\t\tif (data.services) {\n\t\t\t\t\t\t\t\tdata.services.forEach(function (svc) {\n\t\t\t\t\t\t\t\t\tvar k = svc.namespace + \"/\" + svc.name + \"@\" + svc.host;\n\t\t\t\t\t\t\t\t\tidx[k] = svc;\n\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tdocument\n\t\t\t\t\t\t\t\t.querySelectorAll(\"[data-svc-key]\")\n\t\t\t\t\t\t\t\t.forEach(function (el) {\n\t\t\t\t\t\t\t\t\tvar svc = idx[el.getAttribute(\"data-svc-key\")];\n\t\t\t\t\t\t\t\t\tif (svc) self.updateBox(el, svc);\n\t\t\t\t\t\t\t\t});\n\n\t\t\t\t\t\t\tif (data.hosts) {\n\t\t\t\t\t\t\t\tdata.hosts.forEach(function (host) {\n\t\t\t\t\t\t\t\t\tvar hdr = document.querySelector(\n\t\t\t\t\t\t\t\t\t\t'[data-host-name=\"' + host.name + '\"]',\n\t\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\t\tif (!hdr) return;\n\t\t\t\t\t\t\t\t\tvar met = hdr.querySelector(\"[data-host-metric]\");\n\t\t\t\t\t\t\t\t\tif (met) {\n\t\t\t\t\t\t\t\t\t\tvar parts = [];\n\t\t\t\t\t\t\t\t\t\tif (host.cpu > 0) parts.push(\"CPU \" + host.cpu.toFixed(1));\n\t\t\t\t\t\t\t\t\t\tif (host.ram > 0) parts.push(host.ram.toFixed(0) + \" MB\");\n\t\t\t\t\t\t\t\t\t\tmet.textContent = parts.join(\" \\u00b7 \");\n\t\t\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\t\t\tif (self.expandedHost === host.name) {\n\t\t\t\t\t\t\t\t\t\tself.updateHostDetail(host);\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tif (self.selected) {\n\t\t\t\t\t\t\t\tvar svc = idx[self.selected.key];\n\t\t\t\t\t\t\t\tif (svc) {\n\t\t\t\t\t\t\t\t\tself.selected = {\n\t\t\t\t\t\t\t\t\t\tkey: self.selected.key,\n\t\t\t\t\t\t\t\t\t\tname: svc.name,\n\t\t\t\t\t\t\t\t\t\thost: svc.host,\n\t\t\t\t\t\t\t\t\t\tdetail: svc.namespace || \"\",\n\t\t\t\t\t\t\t\t\t\tcpu: svc.cpu,\n\t\t\t\t\t\t\t\t\t\tram: svc.ram,\n\t\t\t\t\t\t\t\t\t\tnetKB: svc.netKB || 0,\n\t\t\t\t\t\t\t\t\t\tdiskMB: svc.diskMB || 0,\n\t\t\t\t\t\t\t\t\t\tcpuHist: svc.cpuHist,\n\t\t\t\t\t\t\t\t\t\tramHist: svc.ramHist,\n\t\t\t\t\t\t\t\t\t\tnetHist: svc.netHist,\n\t\t\t\t\t\t\t\t\t\tdiskHist: svc.diskHist,\n\t\t\t\t\t\t\t\t\t};\n\t\t\t\t\t\t\t\t\tself.updateCharts(svc);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t\tes.onerror = function () {\n\t\t\t\t\t\t\tself.connected = false;\n\t\t\t\t\t\t};\n\t\t\t\t\t\tsetInterval(function () {\n\t\t\t\t\t\t\tif (self.lastUpdate > 0)\n\t\t\t\t\t\t\t\tself.lastUpdateAgo = Math.floor(\n\t\t\t\t\t\t\t\t\t(Date.now() - self.lastUpdate) / 1000,\n\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t}, 1000);\n\t\t\t\t\t},\n\n\t\t\t\t\ttoggleHost(name) {\n\t\t\t\t\t\tif (this.expandedHost === name) {\n\t\t\t\t\t\t\tthis.expandedHost = null;\n\t\t\t\t\t\t\tvar el = document.querySelector(\n\t\t\t\t\t\t\t\t'[data-host-detail=\"' + name + '\"]',\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tif (el) el.style.display = \"none\";\n\t\t\t\t\t\t\tvar btn = document.querySelector(\n\t\t\t\t\t\t\t\t'[data-host-btn=\"' + name + '\"]',\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tif (btn) btn.setAttribute(\"aria-expanded\", \"false\");\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tif (this.expandedHost) {\n\t\t\t\t\t\t\t\tvar prev = document.querySelector(\n\t\t\t\t\t\t\t\t\t'[data-host-detail=\"' + this.expandedHost + '\"]',\n\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\tif (prev) prev.style.display = \"none\";\n\t\t\t\t\t\t\t\tvar prevBtn = document.querySelector(\n\t\t\t\t\t\t\t\t\t'[data-host-btn=\"' + this.expandedHost + '\"]',\n\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\tif (prevBtn) prevBtn.setAttribute(\"aria-expanded\", \"false\");\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tthis.expandedHost = name;\n\t\t\t\t\t\t\tvar el = document.querySelector(\n\t\t\t\t\t\t\t\t'[data-host-detail=\"' + name + '\"]',\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tif (el) el.style.display = \"\";\n\t\t\t\t\t\t\tvar btn = document.querySelector(\n\t\t\t\t\t\t\t\t'[data-host-btn=\"' + name + '\"]',\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tif (btn) btn.setAttribute(\"aria-expanded\", \"true\");\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\n\t\t\t\t\tupdateHostDetail(host) {\n\t\t\t\t\t\tvar el = document.querySelector(\n\t\t\t\t\t\t\t'[data-host-detail=\"' + host.name + '\"]',\n\t\t\t\t\t\t);\n\t\t\t\t\t\tif (!el) return;\n\t\t\t\t\t\tvar d = el.querySelector(\"[data-hd-cpu]\");\n\t\t\t\t\t\tif (d)\n\t\t\t\t\t\t\td.textContent = host.cpu\n\t\t\t\t\t\t\t\t? host.cpu.toFixed(1) + \" CPU cores\"\n\t\t\t\t\t\t\t\t: \"-\";\n\t\t\t\t\t\tvar r = el.querySelector(\"[data-hd-ram]\");\n\t\t\t\t\t\tif (r)\n\t\t\t\t\t\t\tr.textContent = host.ram ? host.ram.toFixed(0) + \" MB RAM\" : \"-\";\n\t\t\t\t\t\tvar u = el.querySelector(\"[data-hd-uptime]\");\n\t\t\t\t\t\tif (u) u.textContent = host.uptime || \"-\";\n\t\t\t\t\t\tvar s = el.querySelector(\"[data-hd-svcs]\");\n\t\t\t\t\t\tif (s) s.textContent = host.svcCount + \" services\";\n\t\t\t\t\t},\n\n\t\t\t\t\tselectService(\n\t\t\t\t\t\tkey,\n\t\t\t\t\t\tname,\n\t\t\t\t\t\thost,\n\t\t\t\t\t\tns,\n\t\t\t\t\t\tcpu,\n\t\t\t\t\t\tram,\n\t\t\t\t\t\tnetKB,\n\t\t\t\t\t\tdiskMB,\n\t\t\t\t\t\tcpuHist,\n\t\t\t\t\t\tramHist,\n\t\t\t\t\t\tnetHist,\n\t\t\t\t\t\tdiskHist,\n\t\t\t\t\t) {\n\t\t\t\t\t\tif (this.selected && this.selected.key === key) {\n\t\t\t\t\t\t\tthis.deselectAll();\n\t\t\t\t\t\t\tthis.selected = null;\n\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tthis.deselectAll();\n\t\t\t\t\t\tthis.selected = {\n\t\t\t\t\t\t\tkey: key,\n\t\t\t\t\t\t\tname: name,\n\t\t\t\t\t\t\thost: host,\n\t\t\t\t\t\t\tdetail: ns,\n\t\t\t\t\t\t\tcpu: cpu,\n\t\t\t\t\t\t\tram: ram,\n\t\t\t\t\t\t\tnetKB: netKB,\n\t\t\t\t\t\t\tdiskMB: diskMB,\n\t\t\t\t\t\t\tcpuHist: cpuHist,\n\t\t\t\t\t\t\tramHist: ramHist,\n\t\t\t\t\t\t\tnetHist: netHist,\n\t\t\t\t\t\t\tdiskHist: diskHist,\n\t\t\t\t\t\t};\n\t\t\t\t\t\tvar detailEl = document.querySelector(\n\t\t\t\t\t\t\t'[data-detail-key=\"' + key + '\"]',\n\t\t\t\t\t\t);\n\t\t\t\t\t\tif (detailEl) {\n\t\t\t\t\t\t\tdetailEl.style.display = \"\";\n\t\t\t\t\t\t\tdetailEl.setAttribute(\"aria-hidden\", \"false\");\n\t\t\t\t\t\t}\n\t\t\t\t\t\tvar svcEl = document.querySelector('[data-svc-row=\"' + key + '\"]');\n\t\t\t\t\t\tif (svcEl) {\n\t\t\t\t\t\t\tsvcEl.classList.add(\n\t\t\t\t\t\t\t\t\"border-accent-gold/60\",\n\t\t\t\t\t\t\t\t\"dark:border-next-teal/60\",\n\t\t\t\t\t\t\t\t\"bg-accent-gold/10\",\n\t\t\t\t\t\t\t\t\"dark:bg-next-teal/10\",\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tsvcEl.setAttribute(\"aria-expanded\", \"true\");\n\t\t\t\t\t\t}\n\t\t\t\t\t\tthis.updateCharts(this.selected);\n\t\t\t\t\t},\n\n\t\t\t\t\tdeselectAll() {\n\t\t\t\t\t\tdocument\n\t\t\t\t\t\t\t.querySelectorAll(\"[data-detail-key]\")\n\t\t\t\t\t\t\t.forEach(function (el) {\n\t\t\t\t\t\t\t\tel.style.display = \"none\";\n\t\t\t\t\t\t\t\tel.setAttribute(\"aria-hidden\", \"true\");\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\tdocument.querySelectorAll(\"[data-svc-row]\").forEach(function (el) {\n\t\t\t\t\t\t\tel.classList.remove(\n\t\t\t\t\t\t\t\t\"border-accent-gold/60\",\n\t\t\t\t\t\t\t\t\"dark:border-next-teal/60\",\n\t\t\t\t\t\t\t\t\"bg-accent-gold/10\",\n\t\t\t\t\t\t\t\t\"dark:bg-next-teal/10\",\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tel.setAttribute(\"aria-expanded\", \"false\");\n\t\t\t\t\t\t});\n\t\t\t\t\t},\n\n\t\t\t\t\tupdateCharts(svc) {\n\t\t\t\t\t\tvar row = document.querySelector(\n\t\t\t\t\t\t\t'[data-detail-key=\"' + svc.key + '\"]',\n\t\t\t\t\t\t);\n\t\t\t\t\t\tif (!row) return;\n\t\t\t\t\t\tvar cpuLine = row.querySelector(\"[x-data-hist-cpu]\");\n\t\t\t\t\t\tvar ramLine = row.querySelector(\"[x-data-hist-ram]\");\n\t\t\t\t\t\tvar netLine = row.querySelector(\"[x-data-hist-net]\");\n\t\t\t\t\t\tvar diskLine = row.querySelector(\"[x-data-hist-disk]\");\n\t\t\t\t\t\tif (cpuLine && svc.cpuHist)\n\t\t\t\t\t\t\tcpuLine.setAttribute(\"points\", svc.cpuHist);\n\t\t\t\t\t\tif (ramLine && svc.ramHist)\n\t\t\t\t\t\t\tramLine.setAttribute(\"points\", svc.ramHist);\n\t\t\t\t\t\tif (netLine && svc.netHist)\n\t\t\t\t\t\t\tnetLine.setAttribute(\"points\", svc.netHist);\n\t\t\t\t\t\tif (diskLine && svc.diskHist)\n\t\t\t\t\t\t\tdiskLine.setAttribute(\"points\", svc.diskHist);\n\t\t\t\t\t},\n\n\t\t\t\t\tupdateBox(el, svc) {\n\t\t\t\t\t\tvar dot = el.querySelector(\"[data-dot]\");\n\t\t\t\t\t\tif (dot) dot.className = this.dotClass(svc.status);\n\t\t\t\t\t\tvar met = el.querySelector(\"[data-metric]\");\n\t\t\t\t\t\tif (met) {\n\t\t\t\t\t\t\tvar parts = [];\n\t\t\t\t\t\t\tif (svc.cpu > 0) parts.push(svc.cpu.toFixed(3));\n\t\t\t\t\t\t\tif (svc.ram > 0) parts.push(svc.ram.toFixed(0) + \"M\");\n\t\t\t\t\t\t\tif (parts.length > 0) {\n\t\t\t\t\t\t\t\tmet.textContent = parts.join(\" \\u00b7 \");\n\t\t\t\t\t\t\t\tmet.className =\n\t\t\t\t\t\t\t\t\t\"font-terminal text-[10px] text-ink dark:text-next-white tabular-nums leading-none\";\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\tmet.innerHTML =\n\t\t\t\t\t\t\t\t\t'<span class=\"text-ink-muted/50 dark:text-next-subtle/50\">' +\n\t\t\t\t\t\t\t\t\t(svc.name || \"\") +\n\t\t\t\t\t\t\t\t\t\"</span>\";\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\n\t\t\t\t\tdotClass(status) {\n\t\t\t\t\t\tvar b = \"inline-block w-1.5 h-1.5 shrink-0\";\n\t\t\t\t\t\tif (status === \"healthy\" || status === \"running\")\n\t\t\t\t\t\t\treturn b + \" bg-green-600 dark:bg-green-500\";\n\t\t\t\t\t\treturn b + \" bg-rule dark:bg-next-mid\";\n\t\t\t\t\t},\n\t\t\t\t};\n\t\t\t}\n\t\t</script></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -117,7 +117,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(host.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 348, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 349, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {
@@ -130,7 +130,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(host.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 349, Col: 29}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 350, Col: 29}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {
@@ -143,7 +143,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("Click to inspect %s node", host.Label))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 351, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 352, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 		if templ_7745c5c3_Err != nil {
@@ -156,7 +156,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("toggleHost('%s')", host.Name))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 352, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 353, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 		if templ_7745c5c3_Err != nil {
@@ -169,7 +169,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(host.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 355, Col: 87}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 356, Col: 87}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -184,7 +184,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("CPU %.1f", host.CPU))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 361, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 362, Col: 41}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -200,7 +200,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 					var templ_7745c5c3_Var10 string
 					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(" · ")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 365, Col: 15}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 366, Col: 15}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
@@ -214,7 +214,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.0f MB", host.RAM))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 367, Col: 40}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 368, Col: 40}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -229,7 +229,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(host.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 373, Col: 35}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 374, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 		if templ_7745c5c3_Err != nil {
@@ -243,7 +243,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(host.Detail)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 380, Col: 20}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 381, Col: 20}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -269,7 +269,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.ResolveAttributeValue(host.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 390, Col: 100}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 391, Col: 100}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
 		if templ_7745c5c3_Err != nil {
@@ -282,7 +282,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(host.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 390, Col: 114}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 391, Col: 114}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -296,7 +296,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.1f cores", host.CPU))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 394, Col: 44}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 395, Col: 44}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -316,7 +316,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.0f MB", host.RAM))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 402, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 403, Col: 41}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -336,7 +336,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(host.Uptime)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 410, Col: 20}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 411, Col: 20}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -356,7 +356,7 @@ func hostHeaderCell(host obs.Host) templ.Component {
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d monitored", host.SvcCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 418, Col: 51}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 419, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -410,7 +410,7 @@ func categoryCell(cat string, host obs.Host, services []obs.Service, selfNS stri
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(obs.CategoryLabel(cat))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 440, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 441, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -499,7 +499,7 @@ func serviceBox(svc obs.Service, selfNS bool) templ.Component {
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.ResolveAttributeValue(key)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 469, Col: 20}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 470, Col: 20}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
 		if templ_7745c5c3_Err != nil {
@@ -512,7 +512,7 @@ func serviceBox(svc obs.Service, selfNS bool) templ.Component {
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.ResolveAttributeValue(key)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 470, Col: 20}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 471, Col: 20}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var24)
 		if templ_7745c5c3_Err != nil {
@@ -525,7 +525,7 @@ func serviceBox(svc obs.Service, selfNS bool) templ.Component {
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%s/%s on %s", svc.Namespace, svc.Name, svc.Host))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 472, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 473, Col: 71}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
 		if templ_7745c5c3_Err != nil {
@@ -542,7 +542,7 @@ func serviceBox(svc obs.Service, selfNS bool) templ.Component {
 			svc.CPU, svc.RAM, svc.NetKB, svc.DiskMB,
 			svc.CPUHist, svc.RAMHist, svc.NetHist, svc.DiskHist))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 477, Col: 55}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 478, Col: 55}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var26)
 		if templ_7745c5c3_Err != nil {
@@ -572,7 +572,7 @@ func serviceBox(svc obs.Service, selfNS bool) templ.Component {
 				var templ_7745c5c3_Var27 string
 				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.3f", svc.CPU))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 488, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 489, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 				if templ_7745c5c3_Err != nil {
@@ -588,7 +588,7 @@ func serviceBox(svc obs.Service, selfNS bool) templ.Component {
 					var templ_7745c5c3_Var28 string
 					templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(" · ")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 492, Col: 15}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 493, Col: 15}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 					if templ_7745c5c3_Err != nil {
@@ -602,7 +602,7 @@ func serviceBox(svc obs.Service, selfNS bool) templ.Component {
 				var templ_7745c5c3_Var29 string
 				templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.0fM", svc.RAM))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 494, Col: 37}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 495, Col: 37}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 				if templ_7745c5c3_Err != nil {
@@ -617,7 +617,7 @@ func serviceBox(svc obs.Service, selfNS bool) templ.Component {
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 497, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 498, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
@@ -665,7 +665,7 @@ func detailPanel(svc obs.Service) templ.Component {
 		var templ_7745c5c3_Var32 string
 		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.ResolveAttributeValue(key)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 506, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 507, Col: 27}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var32)
 		if templ_7745c5c3_Err != nil {

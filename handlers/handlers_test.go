@@ -337,3 +337,21 @@ func TestHomePageContainsFooter(t *testing.T) {
 	assert.Contains(t, html, "<footer")
 	assert.Contains(t, html, "</footer>")
 }
+
+func TestNotFoundPage(t *testing.T) {
+	app := fiber.New(fiber.Config{ErrorHandler: ErrorHandler})
+	app.Get("/", Home)
+
+	req := httptest.NewRequest("GET", "/nonexistent", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	assert.Equal(t, 404, resp.StatusCode)
+	assert.Equal(t, "text/html; charset=utf-8", resp.Header.Get("Content-Type"))
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+	assert.Contains(t, string(body), "404")
+	assert.Contains(t, string(body), "Return to rezus.cloud")
+}
