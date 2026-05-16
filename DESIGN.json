@@ -1,98 +1,292 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-05-03T19:30:00Z",
+  "generatedAt": "2026-05-17T00:00:00Z",
   "title": "Design System: RezusCloud",
   "extensions": {
     "colorMeta": {
-      "paper": { "role": "neutral-bg", "displayName": "Paper", "canonical": "oklch(99.5% 0.004 85)", "tonalRamp": ["oklch(14% 0.004 85)", "oklch(28% 0.004 85)", "oklch(42% 0.004 85)", "oklch(56% 0.004 85)", "oklch(70% 0.004 85)", "oklch(80% 0.004 85)", "oklch(90% 0.004 85)", "oklch(99.5% 0.004 85)"] },
-      "surface": { "role": "neutral-bg-alt", "displayName": "Surface", "canonical": "oklch(95.5% 0.004 85)", "tonalRamp": ["oklch(14% 0.004 85)", "oklch(28% 0.004 85)", "oklch(42% 0.004 85)", "oklch(56% 0.004 85)", "oklch(70% 0.004 85)", "oklch(80% 0.004 85)", "oklch(95.5% 0.004 85)", "oklch(99.5% 0.004 85)"] },
-      "surface-strong": { "role": "neutral-chrome", "displayName": "Surface Strong", "canonical": "oklch(88.5% 0.006 85)" },
-      "ink": { "role": "neutral-text", "displayName": "Ink", "canonical": "oklch(14% 0.008 65)" },
-      "ink-muted": { "role": "neutral-text-muted", "displayName": "Ink Muted", "canonical": "oklch(30% 0.008 65)" },
-      "rule": { "role": "neutral-border", "displayName": "Rule", "canonical": "oklch(72% 0.005 85)" },
-      "accent-gold": { "role": "primary", "displayName": "Amber Gold", "canonical": "oklch(78% 0.16 75)", "tonalRamp": ["oklch(28% 0.12 75)", "oklch(38% 0.14 75)", "oklch(48% 0.15 75)", "oklch(58% 0.16 75)", "oklch(68% 0.16 75)", "oklch(78% 0.16 75)", "oklch(88% 0.12 75)", "oklch(95% 0.06 75)"] },
-      "next-black": { "role": "neutral-bg", "displayName": "NeXT Black", "canonical": "oklch(6% 0.005 270)", "tonalRamp": ["oklch(6% 0.005 270)", "oklch(20% 0.006 270)", "oklch(34% 0.006 270)", "oklch(48% 0.006 270)", "oklch(58% 0.006 270)", "oklch(68% 0.005 270)", "oklch(78% 0.004 270)", "oklch(88% 0.004 270)"] },
-      "next-dark": { "role": "neutral-bg-alt", "displayName": "NeXT Dark", "canonical": "oklch(20% 0.006 270)" },
-      "next-mid": { "role": "neutral-hover", "displayName": "NeXT Mid", "canonical": "oklch(34% 0.006 270)" },
-      "next-light": { "role": "neutral-chrome", "displayName": "NeXT Light", "canonical": "oklch(58% 0.006 270)" },
-      "next-white": { "role": "neutral-text", "displayName": "NeXT White", "canonical": "oklch(88% 0.004 270)" },
-      "next-subtle": { "role": "neutral-text-muted", "displayName": "NeXT Subtle", "canonical": "oklch(72% 0.012 85)" },
-      "next-teal": { "role": "primary", "displayName": "NeXT Teal", "canonical": "oklch(60% 0.08 170)", "tonalRamp": ["oklch(20% 0.06 170)", "oklch(30% 0.07 170)", "oklch(40% 0.08 170)", "oklch(50% 0.08 170)", "oklch(60% 0.08 170)", "oklch(70% 0.07 170)", "oklch(80% 0.05 170)", "oklch(90% 0.03 170)"] },
-      "next-teal-hi": { "role": "primary-bg", "displayName": "NeXT Teal Hi", "canonical": "oklch(70% 0.07 170)" },
-      "positive": { "role": "semantic-positive", "displayName": "Positive", "canonical": "oklch(55% 0.12 150)" },
-      "negative": { "role": "semantic-negative", "displayName": "Negative", "canonical": "oklch(50% 0.12 25)" }
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "oklch(99.5% 0.004 85)",
+        "tonalRamp": [
+          "oklch(20% 0.004 85)",
+          "oklch(30% 0.004 85)",
+          "oklch(40% 0.004 85)",
+          "oklch(55% 0.004 85)",
+          "oklch(70% 0.004 85)",
+          "oklch(82% 0.004 85)",
+          "oklch(92% 0.004 85)",
+          "oklch(99.5% 0.004 85)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "oklch(95.5% 0.004 85)",
+        "tonalRamp": [
+          "oklch(20% 0.004 85)",
+          "oklch(35% 0.004 85)",
+          "oklch(50% 0.004 85)",
+          "oklch(65% 0.004 85)",
+          "oklch(78% 0.004 85)",
+          "oklch(88% 0.004 85)",
+          "oklch(95.5% 0.004 85)",
+          "oklch(99% 0.004 85)"
+        ]
+      },
+      "surface-strong": {
+        "role": "neutral",
+        "displayName": "Surface Strong",
+        "canonical": "oklch(88.5% 0.006 85)",
+        "tonalRamp": [
+          "oklch(15% 0.006 85)",
+          "oklch(28% 0.006 85)",
+          "oklch(42% 0.006 85)",
+          "oklch(56% 0.006 85)",
+          "oklch(70% 0.006 85)",
+          "oklch(80% 0.006 85)",
+          "oklch(88.5% 0.006 85)",
+          "oklch(95% 0.006 85)"
+        ]
+      },
+      "ink": {
+        "role": "primary",
+        "displayName": "Ink",
+        "canonical": "oklch(14% 0.008 65)",
+        "tonalRamp": [
+          "oklch(14% 0.008 65)",
+          "oklch(22% 0.008 65)",
+          "oklch(30% 0.008 65)",
+          "oklch(42% 0.008 65)",
+          "oklch(55% 0.008 65)",
+          "oklch(70% 0.008 65)",
+          "oklch(85% 0.008 65)",
+          "oklch(95% 0.008 65)"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Ink Muted",
+        "canonical": "oklch(30% 0.008 65)"
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Rule",
+        "canonical": "oklch(72% 0.005 85)"
+      },
+      "accent-gold": {
+        "role": "primary",
+        "displayName": "Amber Gold",
+        "canonical": "oklch(78% 0.16 75)",
+        "tonalRamp": [
+          "oklch(20% 0.16 75)",
+          "oklch(30% 0.16 75)",
+          "oklch(40% 0.16 75)",
+          "oklch(52% 0.16 75)",
+          "oklch(64% 0.16 75)",
+          "oklch(78% 0.16 75)",
+          "oklch(88% 0.12 75)",
+          "oklch(95% 0.08 75)"
+        ]
+      },
+      "next-black": {
+        "role": "neutral",
+        "displayName": "NeXT Black",
+        "canonical": "oklch(6% 0.005 270)",
+        "tonalRamp": [
+          "oklch(6% 0.005 270)",
+          "oklch(12% 0.005 270)",
+          "oklch(20% 0.005 270)",
+          "oklch(34% 0.005 270)",
+          "oklch(50% 0.005 270)",
+          "oklch(68% 0.005 270)",
+          "oklch(82% 0.005 270)",
+          "oklch(95% 0.005 270)"
+        ]
+      },
+      "next-dark": {
+        "role": "neutral",
+        "displayName": "NeXT Dark",
+        "canonical": "oklch(20% 0.006 270)"
+      },
+      "next-mid": {
+        "role": "neutral",
+        "displayName": "NeXT Mid",
+        "canonical": "oklch(34% 0.006 270)"
+      },
+      "next-light": {
+        "role": "neutral",
+        "displayName": "NeXT Light",
+        "canonical": "oklch(58% 0.006 270)"
+      },
+      "next-white": {
+        "role": "neutral",
+        "displayName": "NeXT White",
+        "canonical": "oklch(88% 0.004 270)"
+      },
+      "next-subtle": {
+        "role": "neutral",
+        "displayName": "NeXT Subtle",
+        "canonical": "oklch(72% 0.012 85)"
+      },
+      "next-teal": {
+        "role": "primary",
+        "displayName": "NeXT Teal",
+        "canonical": "oklch(60% 0.08 170)",
+        "tonalRamp": [
+          "oklch(15% 0.08 170)",
+          "oklch(25% 0.08 170)",
+          "oklch(35% 0.08 170)",
+          "oklch(45% 0.08 170)",
+          "oklch(60% 0.08 170)",
+          "oklch(70% 0.07 170)",
+          "oklch(82% 0.05 170)",
+          "oklch(92% 0.03 170)"
+        ]
+      },
+      "next-teal-hi": {
+        "role": "primary",
+        "displayName": "NeXT Teal Highlight",
+        "canonical": "oklch(70% 0.07 170)"
+      },
+      "positive": {
+        "role": "semantic",
+        "displayName": "Positive",
+        "canonical": "oklch(55% 0.12 150)"
+      },
+      "negative": {
+        "role": "semantic",
+        "displayName": "Negative",
+        "canonical": "oklch(50% 0.12 25)"
+      }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Hero headline 'YOUR' only. text-8xl Silkscreen 700." },
-      "headline": { "displayName": "Headline", "purpose": "Section headings. text-2xl to text-3xl Silkscreen 700." },
-      "title": { "displayName": "Title", "purpose": "Sub-section headings and card titles. text-lg to text-xl Silkscreen 700." },
-      "body": { "displayName": "Body", "purpose": "Paragraph copy. system-ui 400. Max 65-75ch." },
-      "label": { "displayName": "Label", "purpose": "Nav links, badges, tech tags. text-xs uppercase tracking-widest Silkscreen 700." },
-      "mono": { "displayName": "Mono", "purpose": "Terminal output and prompts. VT323 400. ASCII subset only." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline only. The single largest element on the page."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings. Centered in all sections except hero."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Feature names, sub-section headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Paragraph copy, descriptions. Max 65-75ch line length."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Nav links, category counts, uppercase tracking items."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Terminal output, service metrics, legend text, category headers."
+      }
     },
     "shadows": [
-      { "name": "mac-window-shadow", "value": "1px 1px 0 var(--color-ink)", "purpose": "Mac mode terminal container drop shadow. Period-authentic 1px offset." }
+      {
+        "name": "mac-window-shadow",
+        "value": "1px 1px 0 oklch(14% 0.008 65)",
+        "purpose": "Subtle drop shadow on terminal windows in Mac mode only."
+      },
+      {
+        "name": "host-detail-panel",
+        "value": "0 10px 15px -3px oklch(0% 0 0 / 0.1), 0 4px 6px -4px oklch(0% 0 0 / 0.1)",
+        "purpose": "Drop shadow on expanded host detail panels in live section."
+      }
     ],
     "motion": [
-      { "name": "ease-standard", "value": "cubic-bezier(0.25, 1, 0.5, 1)", "purpose": "Default easing for bevel hover transitions and background-position shifts." },
-      { "name": "ease-color", "value": "150ms", "purpose": "Duration for color transitions on hover states." },
-      { "name": "crt-flicker", "value": "step-end 60ms", "purpose": "CRT flicker on theme toggle: white overlay flash at 0ms, 40ms, 80ms, 120ms, 200ms." },
-      { "name": "blink-cursor", "value": "1s step-end infinite", "purpose": "Terminal cursor blink animation." },
-      { "name": "crt-scroll", "value": "8s linear infinite", "purpose": "Scanline vertical scroll animation." },
-      { "name": "typewriter", "value": "220ms per line", "purpose": "Terminal line reveal delay between each typed line." }
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.25, 1, 0.5, 1)",
+        "purpose": "Default easing for scroll reveals and entrance animations (300ms)."
+      },
+      {
+        "name": "ease-color-transition",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Color and background transitions on buttons and nav links (150ms)."
+      },
+      {
+        "name": "ease-crt-flicker",
+        "value": "step-end",
+        "purpose": "Theme toggle CRT flash. Intentionally jarring to simulate power cycle."
+      },
+      {
+        "name": "ease-mobile-nav",
+        "value": "cubic-bezier(0, 0, 0.2, 1)",
+        "purpose": "Mobile nav slide-down enter (200ms ease-out)."
+      }
     ],
     "breakpoints": [
-      { "name": "sm", "value": "640px" },
-      { "name": "md", "value": "768px" },
-      { "name": "lg", "value": "1024px" }
+      { "name": "sm", "value": "640px", "purpose": "Mobile landscape" },
+      { "name": "md", "value": "768px", "purpose": "Tablet" },
+      { "name": "lg", "value": "1024px", "purpose": "Desktop (hero 2-column layout activates)" }
     ]
   },
   "components": [
     {
-      "name": "CTA Button",
+      "name": "CTA Button (Primary)",
       "kind": "button",
       "refersTo": "cta-button",
-      "description": "Primary call-to-action. Inky black in Mac mode, teal in NeXT mode.",
-      "html": "<a href=\"#challenge\" class=\"ds-cta\"><span>See Why It Matters</span><svg class=\"ds-cta-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13 7l5 5m0 0l-5 5m5-5H6\"></path></svg></a>",
-      "css": ".ds-cta { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: oklch(14% 0.008 65); color: oklch(99.5% 0.004 85); font-weight: 700; font-family: Silkscreen, system-ui, sans-serif; border: 1px solid oklch(14% 0.008 65); transition: background 0.15s, color 0.15s; cursor: pointer; border-radius: 0; text-decoration: none; } .ds-cta:hover { background: oklch(78% 0.16 75); color: oklch(14% 0.008 65); } .ds-cta-icon { width: 1rem; height: 1rem; } .dark .ds-cta { background: oklch(70% 0.07 170); color: oklch(6% 0.005 270); border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); } .dark .ds-cta:hover { background: oklch(34% 0.006 270); color: oklch(6% 0.005 270); }"
+      "description": "Primary call-to-action. Used for hero Get Started and GitHub Star buttons.",
+      "html": "<a href=\"#\" class=\"ds-cta-btn\">Get Started <svg class=\"ds-cta-arrow\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13 7l5 5m0 0l-5 5m5-5H6\"/></svg></a>",
+      "css": ".ds-cta-btn { display: inline-flex; align-items: center; padding: 0.75rem 1.5rem; background: oklch(14% 0.008 65); color: oklch(99.5% 0.004 85); font-family: 'Silkscreen', system-ui, sans-serif; font-weight: 700; font-size: 0.875rem; border: 1px solid oklch(14% 0.008 65); text-decoration: none; transition: background 0.15s, color 0.15s; cursor: pointer; } .ds-cta-btn:hover { background: oklch(78% 0.16 75); color: oklch(14% 0.008 65); } .ds-cta-arrow { width: 1rem; height: 1rem; margin-left: 0.5rem; } @media (prefers-color-scheme: dark) { .ds-cta-btn { background: oklch(70% 0.07 170); color: oklch(6% 0.005 270); border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); } .ds-cta-btn:hover { background: oklch(34% 0.006 270); color: oklch(6% 0.005 270); } }"
     },
     {
-      "name": "Icon Square",
+      "name": "Secondary Button",
+      "kind": "button",
+      "description": "Ghost/outline button for secondary actions like Watch It Live.",
+      "html": "<a href=\"#\" class=\"ds-sec-btn\">Watch It Live <svg class=\"ds-cta-arrow\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13 7l5 5m0 0l-5 5m5-5H6\"/></svg></a>",
+      "css": ".ds-sec-btn { display: inline-flex; align-items: center; padding: 0.75rem 1.5rem; background: transparent; color: oklch(14% 0.008 65); font-family: 'Silkscreen', system-ui, sans-serif; font-weight: 700; font-size: 0.875rem; border: 1px solid oklch(14% 0.008 65); text-decoration: none; transition: background 0.15s; } .ds-sec-btn:hover { background: oklch(95.5% 0.004 85); } @media (prefers-color-scheme: dark) { .ds-sec-btn { color: oklch(88% 0.004 270); border-color: oklch(34% 0.006 270); } .ds-sec-btn:hover { background: oklch(34% 0.006 270); } }"
+    },
+    {
+      "name": "Icon Square (Medium)",
       "kind": "custom",
-      "refersTo": "icon-square",
-      "description": "48x48px accent-filled square containing an SVG icon. Used for feature items, architecture layers, use case cards.",
-      "html": "<div class=\"ds-icon-square\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z\"></path></svg></div>",
-      "css": ".ds-icon-square { width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: oklch(78% 0.16 75); border: 1px solid oklch(14% 0.008 65); border-radius: 0; } .ds-icon-square svg { width: 1.25rem; height: 1.25rem; color: oklch(14% 0.008 65); } .dark .ds-icon-square { background: oklch(70% 0.07 170); border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); } .dark .ds-icon-square svg { color: oklch(6% 0.005 270); }"
+      "refersTo": "icon-square-md",
+      "description": "40px icon container used in feature items and nav logo.",
+      "html": "<div class=\"ds-icon-sq-md\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5\"/></svg></div>",
+      "css": ".ds-icon-sq-md { width: 2.5rem; height: 2.5rem; background: oklch(78% 0.16 75); display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid oklch(14% 0.008 65); } .ds-icon-sq-md svg { width: 1.25rem; height: 1.25rem; color: oklch(14% 0.008 65); } @media (prefers-color-scheme: dark) { .ds-icon-sq-md { background: oklch(70% 0.07 170); border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); } .ds-icon-sq-md svg { color: oklch(6% 0.005 270); } }"
     },
     {
-      "name": "Nav Link Active",
-      "kind": "nav",
-      "refersTo": "nav-link-active",
-      "description": "Active navigation pill. Paper background in Mac, next-light background in NeXT.",
-      "html": "<a href=\"#features\" class=\"ds-nav-active\">Features</a>",
-      "css": ".ds-nav-active { padding: 0.5rem 0.75rem; background: oklch(99.5% 0.004 85); color: oklch(14% 0.008 65); font-family: Silkscreen, system-ui, sans-serif; font-weight: 700; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 0; text-decoration: none; } .dark .ds-nav-active { background: oklch(58% 0.006 270); color: oklch(6% 0.005 270); }"
-    },
-    {
-      "name": "Nav Link Inactive",
-      "kind": "nav",
-      "refersTo": "nav-link-inactive",
-      "description": "Inactive navigation link. Muted text with hover background.",
-      "html": "<a href=\"#architecture\" class=\"ds-nav\">Architecture</a>",
-      "css": ".ds-nav { padding: 0.5rem 0.75rem; color: oklch(30% 0.008 65); font-family: Silkscreen, system-ui, sans-serif; font-weight: 700; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; border-radius: 0; text-decoration: none; transition: background 0.15s, color 0.15s; } .ds-nav:hover { background: oklch(95.5% 0.004 85); } .dark .ds-nav { color: oklch(72% 0.012 85); } .dark .ds-nav:hover { background: oklch(34% 0.006 270); }"
-    },
-    {
-      "name": "Tech Badge",
-      "kind": "chip",
-      "description": "Technology tag in the Built With strip. Bevel-raised border in NeXT mode with hover highlight.",
-      "html": "<span class=\"ds-badge\"><span class=\"ds-badge-dot\"></span>Kubernetes</span>",
-      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.5rem 0.75rem; background: oklch(88.5% 0.006 85); border: 1px solid oklch(72% 0.005 85); font-family: Silkscreen, system-ui, sans-serif; font-size: 0.75rem; color: oklch(14% 0.008 65); border-radius: 0; transition: border-color 0.15s; } .ds-badge:hover { border-color: oklch(78% 0.16 75); } .ds-badge-dot { width: 0.25rem; height: 0.25rem; background: oklch(78% 0.16 75); border-radius: 0; } .dark .ds-badge { background: oklch(6% 0.005 270); border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); color: oklch(88% 0.004 270); } .dark .ds-badge:hover { border-color: oklch(72% 0.012 85) oklch(6% 0.005 270) oklch(6% 0.005 270) oklch(72% 0.012 85); } .dark .ds-badge-dot { background: oklch(70% 0.07 170); }"
+      "name": "Accent Bar",
+      "kind": "custom",
+      "refersTo": "accent-bar",
+      "description": "Horizontal accent bar used as section heading underline.",
+      "html": "<div class=\"ds-accent-bar\"></div>",
+      "css": ".ds-accent-bar { width: 3rem; height: 0.25rem; background: oklch(78% 0.16 75); margin: 0 auto 2rem; } @media (prefers-color-scheme: dark) { .ds-accent-bar { background: oklch(70% 0.07 170); } }"
     },
     {
       "name": "Terminal Window",
       "kind": "custom",
-      "description": "Mac/NeXT terminal container with title bar, typewriter text, and blinking cursor.",
-      "html": "<div class=\"ds-terminal\"><div class=\"ds-terminal-bar\"><span class=\"ds-terminal-dot\" style=\"background:oklch(55% 0.15 25)\"></span><span class=\"ds-terminal-dot\" style=\"background:oklch(75% 0.15 90)\"></span><span class=\"ds-terminal-dot\" style=\"background:oklch(55% 0.15 150)\"></span><span class=\"ds-terminal-title\">rezusctl</span></div><div class=\"ds-terminal-body\"><p class=\"ds-terminal-line\"><span class=\"ds-terminal-prompt\">$</span> rezusctl init</p><p class=\"ds-terminal-line\">Cluster ready. 2 nodes. 30s.</p><p class=\"ds-terminal-line\"><span class=\"ds-terminal-prompt\">$</span> <span class=\"ds-terminal-cursor\">_</span></p></div></div>",
-      "css": ".ds-terminal { background: oklch(6% 0.005 270); border: 1px solid oklch(14% 0.008 65); border-radius: 0; overflow: hidden; box-shadow: 1px 1px 0 oklch(14% 0.008 65); } .dark .ds-terminal { border: 2px solid; border-color: oklch(2% 0.004 270) oklch(55% 0.006 270) oklch(55% 0.006 270) oklch(2% 0.004 270); box-shadow: none; } .ds-terminal-bar { display: flex; align-items: center; gap: 0.375rem; padding: 0.5rem 0.75rem; border-bottom: 1px solid oklch(14% 0.008 65); background: repeating-linear-gradient(to bottom, oklch(0% 0 0) 0px, oklch(0% 0 0) 1px, oklch(100% 0 0) 1px, oklch(100% 0 0) 2px); } .dark .ds-terminal-bar { border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); background: oklch(34% 0.006 270); } .ds-terminal-dot { width: 0.625rem; height: 0.625rem; border: 1px solid oklch(30% 0.008 65); border-radius: 0; } .ds-terminal-title { margin-left: 0.5rem; font-family: Silkscreen, system-ui, sans-serif; font-size: 10px; color: oklch(30% 0.008 65); text-transform: uppercase; letter-spacing: 0.1em; } .dark .ds-terminal-title { color: oklch(72% 0.012 85); } .dark .ds-terminal-dot { display: none; } .ds-terminal-body { padding: 1rem; } .ds-terminal-line { font-family: VT323, Courier New, monospace; font-size: 0.75rem; color: oklch(30% 0.008 65); margin: 0.25rem 0; } .dark .ds-terminal-line { color: oklch(72% 0.012 85); } .ds-terminal-prompt { color: oklch(78% 0.16 75); } .dark .ds-terminal-prompt { color: oklch(60% 0.08 170); } .ds-terminal-cursor { color: oklch(14% 0.008 65); animation: ds-blink 1s step-end infinite; } .dark .ds-terminal-cursor { color: oklch(88% 0.004 270); } @keyframes ds-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }"
+      "description": "Signature terminal component with title bar, typewriter text, and blinking cursor.",
+      "html": "<div class=\"ds-terminal\"><div class=\"ds-terminal-titlebar\"><span class=\"ds-terminal-dot\" style=\"background:oklch(55% 0.15 25)\"></span><span class=\"ds-terminal-dot\" style=\"background:oklch(75% 0.15 90)\"></span><span class=\"ds-terminal-dot\" style=\"background:oklch(55% 0.15 150)\"></span><span class=\"ds-terminal-title\">terminal</span></div><div class=\"ds-terminal-body\"><p class=\"ds-terminal-line\"><span class=\"ds-terminal-prompt\">$</span> rezusctl init</p><p class=\"ds-terminal-line\">Cluster ready.</p><p class=\"ds-terminal-line\"><span class=\"ds-terminal-prompt\">$</span> <span class=\"ds-terminal-cursor\">_</span></p></div></div>",
+      "css": ".ds-terminal { background: oklch(6% 0.005 270); overflow: hidden; border: 1px solid oklch(14% 0.008 65); box-shadow: 1px 1px 0 oklch(14% 0.008 65); } .ds-terminal-titlebar { background: repeating-linear-gradient(-45deg, oklch(82% 0.004 85) 0 2px, oklch(92% 0.004 85) 2px 4px); display: flex; align-items: center; gap: 0.375rem; padding: 0.5rem 0.75rem; border-bottom: 1px solid oklch(14% 0.008 65); } .ds-terminal-dot { width: 0.625rem; height: 0.625rem; border: 1px solid oklch(30% 0.008 65); } .ds-terminal-title { margin-left: 0.5rem; font-size: 0.75rem; color: oklch(88% 0.004 270); font-family: 'Silkscreen', system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.05em; } .ds-terminal-body { padding: 1rem; font-family: 'VT323', 'Courier New', monospace; font-size: 0.75rem; color: oklch(88% 0.004 270); line-height: 1.5; } .ds-terminal-prompt { color: oklch(78% 0.16 75); } .ds-terminal-cursor { animation: blink 1s step-end infinite; } .ds-terminal-line { margin: 0.25rem 0; } @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } } @media (prefers-color-scheme: dark) { .ds-terminal { border: 2px solid; border-color: oklch(2% 0.004 270) oklch(55% 0.006 270) oklch(55% 0.006 270) oklch(2% 0.004 270); box-shadow: none; } .ds-terminal-titlebar { background: oklch(34% 0.006 270); border-bottom: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); } .ds-terminal-dot { display: none; } .ds-terminal-prompt { color: oklch(60% 0.08 170); } }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "refersTo": "nav-link-inactive",
+      "description": "Desktop navigation link with active pill state.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\" class=\"ds-nav-link ds-nav-active\">Home</a><a href=\"#\" class=\"ds-nav-link\">Features</a></nav>",
+      "css": ".ds-nav { display: flex; gap: 0.25rem; font-family: 'Silkscreen', system-ui, sans-serif; font-size: 0.875rem; } .ds-nav-link { padding: 0.5rem 0.75rem; color: oklch(30% 0.008 65); text-decoration: none; transition: background 0.12s; } .ds-nav-link:hover { background: oklch(95.5% 0.004 85); } .ds-nav-active { background: oklch(99.5% 0.004 85); color: oklch(14% 0.008 65); } @media (prefers-color-scheme: dark) { .ds-nav-link { color: oklch(72% 0.012 85); } .ds-nav-link:hover { background: oklch(34% 0.006 270); } .ds-nav-active { background: oklch(58% 0.006 270); color: oklch(6% 0.005 270); } }"
+    },
+    {
+      "name": "Theme Toggle",
+      "kind": "button",
+      "description": "40x40px theme switcher with moon/sun icons and CRT flash on toggle.",
+      "html": "<button class=\"ds-theme-toggle\" aria-label=\"Toggle theme\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z\"/></svg></button>",
+      "css": ".ds-theme-toggle { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; border: 1px solid oklch(14% 0.008 65); background: oklch(99.5% 0.004 85); cursor: pointer; transition: background 0.15s; padding: 0; } .ds-theme-toggle svg { width: 1.25rem; height: 1.25rem; color: oklch(30% 0.008 65); } .ds-theme-toggle:hover { background: oklch(95.5% 0.004 85); } @media (prefers-color-scheme: dark) { .ds-theme-toggle { border: 2px solid; border-color: oklch(55% 0.006 270) oklch(2% 0.004 270) oklch(2% 0.004 270) oklch(55% 0.006 270); background: oklch(20% 0.006 270); } .ds-theme-toggle svg { color: oklch(88% 0.004 270); } .ds-theme-toggle:hover { background: oklch(34% 0.006 270); } }"
+    },
+    {
+      "name": "Service Box",
+      "kind": "custom",
+      "refersTo": "service-box",
+      "description": "Compact metric box in live section. Shows status dot + CPU cores + RAM.",
+      "html": "<button class=\"ds-svc-box\" title=\"signoz/signoz-frontend on talosoci-control-plane-legal-poodle\"><span class=\"ds-svc-dot ds-svc-healthy\"></span><span class=\"ds-svc-metric\">0.003c · 128M</span></button>",
+      "css": ".ds-svc-box { width: 100%; text-align: left; padding: 0.25rem 0.375rem; border: 1px solid oklch(14% 0.008 65 / 0.25); background: oklch(99.5% 0.004 85); cursor: pointer; transition: border-color 0.15s; display: flex; align-items: center; gap: 0.25rem; font-family: 'VT323', 'Courier New', monospace; font-size: 10px; color: oklch(14% 0.008 65); line-height: 1; min-width: 5.625rem; } .ds-svc-box:hover { border-color: oklch(78% 0.16 75 / 0.6); } .ds-svc-dot { width: 0.375rem; height: 0.375rem; flex-shrink: 0; } .ds-svc-healthy { background: oklch(62.7% 0.194 149.214); } .ds-svc-metric { font-variant-numeric: tabular-nums; } @media (prefers-color-scheme: dark) { .ds-svc-box { border-color: oklch(34% 0.006 270 / 0.7); background: oklch(20% 0.006 270); color: oklch(88% 0.004 270); } .ds-svc-box:hover { border-color: oklch(60% 0.08 170 / 0.6); } .ds-svc-healthy { background: oklch(72.3% 0.219 149.579); } }"
     }
   ],
   "narrative": {
@@ -101,42 +295,45 @@
     "keyCharacteristics": [
       "Zero border-radius everywhere. Every corner is a right angle.",
       "Dual-era identity: Mac System 1 in light, NeXTSTEP in dark. Fonts stay the same, only colors change.",
-      "Committed color strategy: amber gold (light) / teal (dark) carry the accent load.",
-      "Flat text layout: no boxes wrapping content. Icon squares, dots, and accent bars punctuate.",
-      "3D bevel system for NeXT mode: 2px raised/sunken borders.",
-      "CRT overlay: scanline pattern with slow vertical scroll animation.",
-      "Bitmap typography: Silkscreen headings, system-ui body, VT323 terminals.",
-      "All animations respect prefers-reduced-motion.",
-      "8 sections, 5 use cases, 7 built-in capabilities."
+      "Committed color strategy: amber gold (light) / teal (dark) carry the accent load across 30-40% of visible surface.",
+      "Flat text layout: no boxes wrapping content, no bordered cards. Icon squares, dots, and accent bars punctuate.",
+      "3D bevel system for NeXT mode: 2px raised/sunken borders on interactive elements.",
+      "5 sections: Hero, Architecture, Live Platform, Features, Get Started.",
+      "Progressive disclosure: Live section categories collapsed by default, expand on click."
     ],
     "rules": [
       { "name": "The Dual-Accent Rule", "body": "Light mode uses amber gold. Dark mode uses teal. Never mix: amber never appears in dark mode, teal never appears in light mode. Each accent occupies the same structural positions in both modes.", "section": "colors" },
-      { "name": "The Alternating Rhythm Rule", "body": "Sections alternate between two background levels. Light: paper and surface. Dark: next-black and next-dark. The challenge section inverts: ink (light) and next-dark (dark). This rhythm never breaks.", "section": "colors" },
+      { "name": "The Alternating Rhythm Rule", "body": "Sections alternate between two background levels. Light: paper/surface/surface-strong. Dark: next-black/next-dark. This rhythm never breaks.", "section": "colors" },
       { "name": "The No-Gray-Accent Rule", "body": "In NeXT mode, next-light is a bright neutral for UI chrome (active nav pills only). It is never used for accent purposes. That role belongs exclusively to next-teal.", "section": "colors" },
       { "name": "The No-Serif Rule", "body": "Serif fonts never appear. The system is entirely sans-serif + bitmap + mono.", "section": "typography" },
-      { "name": "The Font-Consistency Rule", "body": "Font families are identical between light and dark modes. Only colors change.", "section": "typography" },
+      { "name": "The Font-Consistency Rule", "body": "Font families are identical between light and dark modes. Only colors change. Silkscreen always for display/labels, system-ui always for body, VT323 always for terminals.", "section": "typography" },
       { "name": "The Flat-By-Mode Rule", "body": "Mac mode is always flat: borders are always 1px solid ink. NeXT mode uses bevels: borders are always 2px with directional shading. Never mix bevel styles within a mode.", "section": "elevation" }
     ],
     "dos": [
-      "Do use zero border-radius on every element.",
-      "Do use Silkscreen for headings/labels/nav, system-ui for body, VT323 for terminals.",
-      "Do alternate section backgrounds every section.",
-      "Do use amber gold (light) / teal (dark) as the exclusive accent.",
-      "Do use 2px bevels in NeXT mode for interactive elements.",
-      "Do respect prefers-reduced-motion.",
-      "Do use warm-tinted neutrals (hue 85 for Mac, hue 270 for NeXT).",
-      "Do vary section padding for rhythm."
+      "Do use zero border-radius on every element. Every corner is a right angle. This is non-negotiable.",
+      "Do use Silkscreen for all headings, labels, and nav. system-ui for body. VT323 for terminals only.",
+      "Do alternate section backgrounds. The pattern is: hero (paper/next-black), architecture (surface/next-dark), live (surface-strong/next-black), features (paper/next-black), getstarted (paper/next-black).",
+      "Do use amber gold (light) / teal (dark) as the exclusive accent. One accent per mode, same structural positions.",
+      "Do use 2px bevels in NeXT mode for interactive elements. They are the elevation system.",
+      "Do respect prefers-reduced-motion. All animations must have a static fallback.",
+      "Do vary section padding for rhythm. pt-20/py-16 (hero), py-16 (architecture, live), py-20 (features), py-12 (getstarted).",
+      "Do collapse live section categories by default. Progressive disclosure reduces cognitive load.",
+      "Do add THIS SITE label to the self-referencing service box. It proves the dogfooding story.",
+      "Do provide actionable CTAs. GitHub star button and Watch It Live link, not Coming soon placeholders."
     ],
     "donts": [
-      "Don't use rounded corners anywhere.",
-      "Don't use gradient text (background-clip: text).",
-      "Don't use glassmorphism.",
-      "Don't wrap text in bordered container boxes.",
-      "Don't mix accent colors between modes.",
-      "Don't use #000 or #fff.",
-      "Don't use next-light as an accent color.",
-      "Don't animate CSS layout properties.",
-      "Don't use bounce, elastic, or spring easings."
+      "Don't use rounded corners anywhere. No rounded-* classes. No border-radius in CSS.",
+      "Don't use gradient text (background-clip: text). Solid colors only.",
+      "Don't use glassmorphism. No blur overlays, no frosted glass cards.",
+      "Don't wrap text in bordered container boxes. Layout is flat.",
+      "Don't mix accent colors between modes. Amber never in dark, teal never in light.",
+      "Don't use #000 or #fff. All neutrals are tinted with brand hue. Minimum chroma 0.004.",
+      "Don't use next-light as an accent color. It is a bright neutral for active nav pills only.",
+      "Don't animate CSS layout properties. Animate opacity and transform only.",
+      "Don't use bounce, elastic, or spring easings. Use ease-out-quart or exponential curves.",
+      "Don't use em dashes in copy. Use commas, colons, semicolons, periods, or parentheses.",
+      "Don't show all 65 service boxes at once. Use progressive disclosure with collapsible categories.",
+      "Don't use Coming soon as the only CTA. Always provide at least one actionable next step."
     ]
   }
 }
