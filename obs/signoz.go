@@ -130,14 +130,13 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 			PanelType: "graph",
 			QueryType: "promql",
 			PromQueries: map[string]v3PromQuery{
-				"cpu":      {Query: `{__name__="k8s.pod.cpu.usage"}`, Disabled: false},
-				"ram":      {Query: `{__name__="k8s.pod.memory.working_set"}`, Disabled: false},
-				"disk":     {Query: `{__name__="k8s.pod.filesystem.usage"}`, Disabled: false},
-				"net":      {Query: `rate({__name__="k8s.pod.network.io",direction="receive"}[5m])`, Disabled: false},
-				"nodeCpu":  {Query: `{__name__="k8s.node.cpu.usage"}`, Disabled: false},
-				"nodeRam":  {Query: `{__name__="k8s.node.memory.working_set"}`, Disabled: false},
-				"nodeLoad": {Query: `{__name__="system.cpu.load_average.5m"}`, Disabled: false},
-				"nodeUp":   {Query: `{__name__="k8s.node.uptime"}`, Disabled: false},
+				"cpu":     {Query: `{__name__="k8s.pod.cpu.usage"}`, Disabled: false},
+				"ram":     {Query: `{__name__="k8s.pod.memory.working_set"}`, Disabled: false},
+				"disk":    {Query: `{__name__="k8s.pod.filesystem.usage"}`, Disabled: false},
+				"net":     {Query: `rate({__name__="k8s.pod.network.io",direction="receive"}[5m])`, Disabled: false},
+				"nodeCpu": {Query: `{__name__="k8s.node.cpu.usage"}`, Disabled: false},
+				"nodeRam": {Query: `{__name__="k8s.node.memory.working_set"}`, Disabled: false},
+				"nodeUp":  {Query: `{__name__="k8s.node.uptime"}`, Disabled: false},
 			},
 		},
 	})
@@ -360,7 +359,7 @@ func latestByPod(series []v3Series) map[string]float64 {
 func buildHosts(results map[string][]v3Series) []Host {
 	nodeCPU := latestByNode(results["nodeCpu"])
 	nodeRAM := latestByNode(results["nodeRam"])
-	nodeLoad := latestByNode(results["nodeLoad"])
+
 	nodeUp := latestByNode(results["nodeUp"])
 
 	// Count services per node from CPU results
@@ -372,26 +371,23 @@ func buildHosts(results map[string][]v3Series) []Host {
 	}
 
 	// Discover node names dynamically from all available sources
-	nodeNames := discoverNodeNames(nodeCPU, nodeRAM, nodeLoad, nodeUp, nodeCount)
+	nodeNames := discoverNodeNames(nodeCPU, nodeRAM, nodeUp, nodeCount)
 
 	hosts := make([]Host, 0, len(nodeNames))
 	for _, name := range nodeNames {
 		h := Host{Name: name}
 		if strings.Contains(name, "control-plane") {
 			h.Label = "Cloud"
-			h.Detail = "Control Plane"
+			h.Detail = "Control plane"
 		} else {
 			h.Label = "Edge"
-			h.Detail = "Worker Node"
+			h.Detail = "Worker node"
 		}
 		if v, ok := nodeCPU[name]; ok {
 			h.CPU = math.Round(v*100) / 100
 		}
 		if v, ok := nodeRAM[name]; ok {
 			h.RAM = math.Round(v/1024/1024*10) / 10
-		}
-		if v, ok := nodeLoad[name]; ok {
-			h.LoadAvg = math.Round(v*100) / 100
 		}
 		if v, ok := nodeUp[name]; ok {
 			h.Uptime = FormatUptime(time.Duration(v) * time.Second)

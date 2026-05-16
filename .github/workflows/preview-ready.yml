@@ -76,11 +76,8 @@ jobs:
             exit 0
           fi
 
-          IMAGE_TAG="ghcr.io/${{ github.repository }}:pr-${pr_number}-${head_sha}"
-          if ! docker buildx imagetools inspect "$IMAGE_TAG" 2>/dev/null; then
-            echo "Image $IMAGE_TAG not found in registry. docker-pr may have skipped this build."
-            echo "Clearing label and exiting."
-            gh api --silent --method DELETE repos/${{ github.repository }}/issues/${pr_number}/labels/preview-ready || true
+          if ! docker buildx imagetools inspect "ghcr.io/${{ github.repository }}:pr-${pr_number}-${head_sha}" 2>/dev/null; then
+            echo "Image pr-${pr_number}-${head_sha} not found in registry, skipping"
             exit 0
           fi
           gh api --silent --method POST repos/${{ github.repository }}/issues/${pr_number}/labels -f labels[]=preview-ready
