@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [master]
   workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number (for manual dispatch)'
+        required: false
+        type: number
 
 jobs:
   build:
@@ -152,9 +157,11 @@ jobs:
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "number=${{ github.event.pull_request.number }}" >> "$GITHUB_OUTPUT"
             echo "sha=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
+          elif [ -n "${{ inputs.pr_number }}" ]; then
+            echo "number=${{ inputs.pr_number }}" >> "$GITHUB_OUTPUT"
+            echo "sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
           else
-            PR_DATA=$(gh api "repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:${{ github.ref_name }}&state=open" --jq '.[0] | {number}' 2>/dev/null || echo '{}')
-            PR_NUMBER=$(echo "$PR_DATA" | jq -r '.number // empty' 2>/dev/null || echo "")
+            PR_NUMBER=$(gh pr list --repo ${{ github.repository }} --head "${{ github.ref_name }}" --state open --json number --jq '.[0].number // empty' 2>/dev/null || echo "")
             if [ -z "$PR_NUMBER" ]; then
               echo "No open PR for branch ${{ github.ref_name }}, skipping docker-pr"
               echo "skip=true" >> "$GITHUB_OUTPUT"
