@@ -21,12 +21,10 @@ import (
 func main() {
 	meterProvider := obs.InitTelemetry()
 
-	app := fiber.New(fiber.Config{
-		AppName:      "platform-website",
-		ServerHeader: "",
-		ErrorHandler: handlers.ErrorHandler,
-	})
+	app := handlers.SetupApp()
 
+	// Middleware chain (applied before routes because SetupApp registers routes first,
+	// but Fiber processes middleware in registration order per request)
 	app.Use(recover.New())
 	app.Use(obs.OTelFiberMiddleware(meterProvider))
 	app.Use(middleware.SecurityHeaders)
@@ -68,11 +66,6 @@ func main() {
 		return c.SendStatus(fiber.StatusNoContent)
 	})
 
-	app.Get("/", handlers.Home)
-	app.Get("/sections/:name", handlers.Section)
-	app.Get("/api/version", handlers.APIVersion)
-	app.Get("/api/live/stream", handlers.LiveSSE)
-
 	// Wire SigNoz client — try Dapr secrets first, fall back to env vars
 	obs.LoadSecretsFromDapr()
 	if signoz := obs.NewSigNozClientFromEnv(); signoz != nil {
@@ -90,11 +83,6 @@ func main() {
 		cancel()
 	} else {
 		log.Println("SIGNOZ_URL/SIGNOZ_API_KEY not set, live section using mock data")
-	}
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000"
 	}
 
 	addr := ":3000"

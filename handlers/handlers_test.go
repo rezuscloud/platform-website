@@ -12,10 +12,7 @@ import (
 )
 
 func setupApp() *fiber.App {
-	app := fiber.New(fiber.Config{ErrorHandler: ErrorHandler})
-	app.Get("/", Home)
-	app.Get("/sections/:name", Section)
-	return app
+	return SetupApp()
 }
 
 func TestHomeHandler(t *testing.T) {
