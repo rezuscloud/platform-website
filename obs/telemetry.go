@@ -3,21 +3,20 @@ package obs
 import (
 	"context"
 	"log"
-	"net/http"
 	"os"
+	"time"
 
 	"github.com/gofiber/contrib/otelfiber/v2"
 	"github.com/gofiber/fiber/v2"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
-	"go.opentelemetry.io/otel/exporters/prometheus"
+	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
-var promHandler http.Handler
+var meterProvider *sdkmetric.MeterProvider
 
 func InitTelemetry() metric.MeterProvider {
 	res, err := resource.New(
@@ -33,27 +32,34 @@ func InitTelemetry() metric.MeterProvider {
 		log.Fatalf("Failed to create OTel resource: %v", err)
 	}
 
-	promExporter, err := prometheus.New()
-	if err != nil {
-		log.Fatalf("Failed to create Prometheus exporter: %v", err)
+	endpoint := os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+	if endpoint == "" {
+		endpoint = "signoz-otel-collector.signoz.svc.cluster.local:4317"
 	}
 
-	meterProvider := sdkmetric.NewMeterProvider(
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	exporter, err := otlpmetricgrpc.New(ctx,
+		otlpmetricgrpc.WithEndpoint(endpoint),
+		otlpmetricgrpc.WithInsecure(),
+	)
+	if err != nil {
+		log.Fatalf("Failed to create OTLP metric exporter: %v", err)
+	}
+
+	meterProvider = sdkmetric.NewMeterProvider(
 		sdkmetric.WithResource(res),
-		sdkmetric.WithReader(promExporter),
+		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(exporter,
+			sdkmetric.WithInterval(15*time.Second),
+		)),
 	)
 
 	if err := runtime.Start(runtime.WithMeterProvider(meterProvider)); err != nil {
 		log.Fatalf("Failed to start OTel runtime instrumentation: %v", err)
 	}
 
-	promHandler = promhttp.Handler()
-
 	return meterProvider
-}
-
-func MetricsHandler() http.Handler {
-	return promHandler
 }
 
 func OTelFiberMiddleware(provider metric.MeterProvider) fiber.Handler {
@@ -62,4 +68,8 @@ func OTelFiberMiddleware(provider metric.MeterProvider) fiber.Handler {
 	)
 }
 
-func ShutdownTelemetry(_ context.Context) {}
+func ShutdownTelemetry(ctx context.Context) {
+	if meterProvider != nil {
+		_ = meterProvider.Shutdown(ctx)
+	}
+}

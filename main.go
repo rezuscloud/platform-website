@@ -1,9 +1,9 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net"
-	"net/http"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -31,20 +31,7 @@ func main() {
 
 	if os.Getenv("PPROF_ENABLED") == "true" {
 		app.Use(pprof.New())
-		go func() {
-			log.Println("Starting pprof server on :6060")
-			log.Fatal(http.ListenAndServe(":6060", nil))
-		}()
 	}
-
-	go func() {
-		mux := http.NewServeMux()
-		mux.Handle("/metrics", obs.MetricsHandler())
-		log.Println("Starting metrics server on :9091")
-		if err := http.ListenAndServe(":9091", mux); err != nil {
-			log.Printf("Metrics server failed: %v", err)
-		}
-	}()
 
 	app.Static("/assets", "./assets", fiber.Static{
 		CacheDuration: -1,
@@ -77,6 +64,7 @@ func main() {
 	log.Printf("Starting server on %s", addr)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
+		obs.ShutdownTelemetry(context.Background())
 		log.Fatalf("Failed to create listener: %v", err)
 	}
 	log.Fatal(app.Listener(ln))
