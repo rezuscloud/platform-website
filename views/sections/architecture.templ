@@ -27,7 +27,7 @@ templ Architecture() {
 							</svg>
 						</div>
 						<h3 class="text-xl font-bold font-mac text-ink dark:text-next-white mb-3">Your Machines</h3>
-						<p class="text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed">Whatever hardware you have, wherever it is. Old laptops, Raspberry Pis, cloud VMs, dedicated servers. They join the cluster and get to work.</p>
+						<p class="text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed">Any x86 or ARM machine with 200MB of RAM. They call home over an encrypted tunnel and get to work. Location, vendor, architecture: none of it matters to the orchestrator.</p>
 					</div>
 				</div>
 				<div class="flex items-center justify-center gap-2 mt-10 pt-6 border-t border-rule dark:border-next-mid">
@@ -47,12 +47,12 @@ templ Architecture() {
 			<div class="max-w-5xl mx-auto text-center">
 				<h3 class="text-2xl sm:text-3xl font-bold mb-3 font-mac text-ink dark:text-next-white">Runs on Anything</h3>
 				<p class="text-ink dark:text-next-white max-w-2xl mx-auto font-mac-body mb-8">
-					Old laptop, Raspberry Pi, surplus desktop, mini PC, cloud VM. The orchestration layer abstracts the hardware beneath it. Your cluster doesn't care what a node is.
+					The orchestrator abstracts the hardware beneath it. Your cluster doesn't care what a node is. Use what you own, rent what you need for availability.
 				</p>
 				<div class="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10">
 					@edgeNode("Old Laptop", "That one collecting dust")
 					@edgeNode("Raspberry Pi", "A full node for under $50")
-					@edgeNode("Surplus Desktop", "Your previous main machine")
+					@edgeNode("Cloud Instance", "Any arch, for availability")
 					@edgeNode("Mini PC", "Small, silent, always on")
 				</div>
 			</div>
