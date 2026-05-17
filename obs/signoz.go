@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -20,6 +21,7 @@ type SigNozClient struct {
 	apiKey    string
 	namespace string
 	http      *http.Client
+	mu        sync.Mutex
 	cached    LiveData
 	cachedAt  time.Time
 	cacheTTL  time.Duration
@@ -59,6 +61,9 @@ func getNamespace() string {
 // Fetch returns live platform data, using a 30s cache to avoid
 // hitting SigNoz on every SSE tick.
 func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	if time.Since(c.cachedAt) < c.cacheTTL && len(c.cached.Services) > 0 {
 		return c.cached, nil
 	}
