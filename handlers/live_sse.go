@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+
+	"github.com/rezuscloud/platform-website/obs"
 )
 
 // LiveSSE streams live infrastructure data via Server-Sent Events.
@@ -63,6 +65,10 @@ func sendSnapshot(w *bufio.Writer) bool {
 		fmt.Fprint(w, ": keepalive\n\n")
 		w.Flush()
 		return false
+	}
+
+	if len(data.Hosts) == 0 && len(data.Services) == 0 {
+		data = obs.DefaultMockData()
 	}
 
 	payload, err := json.Marshal(data)
