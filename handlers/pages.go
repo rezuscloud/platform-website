@@ -27,6 +27,8 @@ func render(c *fiber.Ctx, component templ.Component) error {
 }
 
 // Home renders the full landing page.
+// Home renders the full landing page.
+// Uses cached live data to avoid blocking on SigNoz.
 func Home(c *fiber.Ctx) error {
 	data, _ := liveClient.Fetch(c.Context())
 	return render(c, pages.Home(data))
