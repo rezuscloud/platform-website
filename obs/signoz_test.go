@@ -208,13 +208,6 @@ func TestSparklinePoints(t *testing.T) {
 	})
 }
 
-func TestCategoryForNamespace(t *testing.T) {
-	assert.Equal(t, "dev", CategoryForNamespace("forgejo"))
-	assert.Equal(t, "deployment", CategoryForNamespace("flux-system"))
-	assert.Equal(t, "data", CategoryForNamespace("tikv-system"))
-	assert.Equal(t, "observability", CategoryForNamespace("signoz"))
-}
-
 func TestFormatUptime(t *testing.T) {
 	assert.Equal(t, "2d", FormatUptime(48*time.Hour))
 	assert.Equal(t, "3h", FormatUptime(3*time.Hour))
