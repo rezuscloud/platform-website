@@ -12,6 +12,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"golang.org/x/sync/singleflight"
 )
 
 // SigNozClient fetches live platform data from SigNoz.
@@ -25,6 +27,7 @@ type SigNozClient struct {
 	cached    LiveData
 	cachedAt  time.Time
 	cacheTTL  time.Duration
+	flight    singleflight.Group
 }
 
 func NewSigNozClient(baseURL, apiKey string) *SigNozClient {
@@ -59,7 +62,8 @@ func getNamespace() string {
 }
 
 // Fetch returns live platform data, using a 30s cache to avoid
-// hitting SigNoz on every SSE tick.
+// hitting SigNoz on every SSE tick. Uses singleflight to coalesce
+// concurrent calls so only one HTTP request is in-flight at a time.
 func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	c.mu.Lock()
 	if time.Since(c.cachedAt) < c.cacheTTL && len(c.cached.Services) > 0 {
@@ -69,6 +73,25 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	}
 	c.mu.Unlock()
 
+	v, err, _ := c.flight.Do("fetch", func() (interface{}, error) {
+		// Re-check cache after winning the race
+		c.mu.Lock()
+		if time.Since(c.cachedAt) < c.cacheTTL && len(c.cached.Services) > 0 {
+			cached := c.cached
+			c.mu.Unlock()
+			return cached, nil
+		}
+		c.mu.Unlock()
+
+		return c.fetchFromSigNoz(ctx)
+	})
+	if err != nil {
+		return LiveData{Hosts: staticHosts()}, nil
+	}
+	return v.(LiveData), nil
+}
+
+func (c *SigNozClient) fetchFromSigNoz(ctx context.Context) (LiveData, error) {
 	fctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
