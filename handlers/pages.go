@@ -27,8 +27,12 @@ func render(c *fiber.Ctx, component templ.Component) error {
 }
 
 // Home renders the full landing page.
+// Falls back to mock data when SigNoz returns empty results.
 func Home(c *fiber.Ctx) error {
 	data, _ := liveClient.Fetch(c.Context())
+	if len(data.Hosts) == 0 && len(data.Services) == 0 {
+		data = obs.DefaultMockData()
+	}
 	return render(c, pages.Home(data))
 }
 
@@ -45,12 +49,15 @@ func Section(c *fiber.Ctx) error {
 
 	if name == "live" {
 		data, _ := liveClient.Fetch(c.Context())
+		if len(data.Hosts) == 0 && len(data.Services) == 0 {
+			data = obs.DefaultMockData()
+		}
 		return render(c, sections.Live(data))
 	}
 
 	component, ok := sectionMap[name]
 	if !ok {
-		return c.SendStatus(fiber.StatusNotFound)
+		return fiber.NewError(fiber.StatusNotFound)
 	}
 
 	return render(c, component)

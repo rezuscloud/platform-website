@@ -15,10 +15,7 @@ import (
 )
 
 func setupIntegrationApp() *fiber.App {
-	app := fiber.New(fiber.Config{})
-	app.Get("/", handlers.Home)
-	app.Get("/sections/:name", handlers.Section)
-	return app
+	return handlers.SetupApp()
 }
 
 func getHTMLDoc(t *testing.T, app *fiber.App, path string) *goquery.Document {

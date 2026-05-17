@@ -12,10 +12,7 @@ import (
 )
 
 func setupApp() *fiber.App {
-	app := fiber.New(fiber.Config{})
-	app.Get("/", Home)
-	app.Get("/sections/:name", Section)
-	return app
+	return SetupApp()
 }
 
 func TestHomeHandler(t *testing.T) {
@@ -104,6 +101,31 @@ func TestSectionHandlerNotFound(t *testing.T) {
 	defer resp.Body.Close()
 
 	assert.Equal(t, 404, resp.StatusCode)
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+	assert.Contains(t, string(body), "Return to rezus.cloud")
+}
+
+func TestErrorHandler500(t *testing.T) {
+	app := fiber.New(fiber.Config{ErrorHandler: ErrorHandler})
+	app.Get("/", func(c *fiber.Ctx) error {
+		return fiber.NewError(500, "internal error")
+	})
+
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	assert.Equal(t, 500, resp.StatusCode)
+	assert.Equal(t, "text/html; charset=utf-8", resp.Header.Get("Content-Type"))
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+	assert.Contains(t, string(body), "500")
+	assert.Contains(t, string(body), "Server Error")
+	assert.Contains(t, string(body), "Return to rezus.cloud")
 }
 
 func TestSectionHandlerReturnsSectionID(t *testing.T) {
@@ -124,6 +146,27 @@ func TestSectionHandlerReturnsSectionID(t *testing.T) {
 			assert.Contains(t, string(body), `id="`+section+`"`)
 		})
 	}
+}
+
+func TestSectionHandlerLive(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/sections/live", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	assert.Equal(t, 200, resp.StatusCode)
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+	html := string(body)
+
+	assert.Contains(t, html, `id="live"`)
+	assert.Contains(t, html, "Live Platform")
+	assert.Contains(t, html, "EventSource")
+	assert.Contains(t, html, "/api/live/stream")
+	assert.Contains(t, html, "data-svc-key")
 }
 
 func TestHomePageContainsAllSections(t *testing.T) {
