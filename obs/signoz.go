@@ -62,11 +62,12 @@ func getNamespace() string {
 // hitting SigNoz on every SSE tick.
 func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	c.mu.Lock()
-	defer c.mu.Unlock()
-
 	if time.Since(c.cachedAt) < c.cacheTTL && len(c.cached.Services) > 0 {
-		return c.cached, nil
+		cached := c.cached
+		c.mu.Unlock()
+		return cached, nil
 	}
+	c.mu.Unlock()
 
 	fctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
@@ -108,15 +109,20 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	services := BuildServices(results["cpu"], results, now)
 	hosts := BuildHosts(results)
 
-	c.cached = LiveData{
+	result := LiveData{
 		Hosts:         hosts,
 		Services:      services,
 		HasMetrics:    true,
 		Timestamp:     now.Unix(),
 		SelfNamespace: c.namespace,
 	}
+
+	c.mu.Lock()
+	c.cached = result
 	c.cachedAt = now
-	return c.cached, nil
+	c.mu.Unlock()
+
+	return result, nil
 }
 
 // ── v3 API types ──
