@@ -6,7 +6,7 @@ templ Architecture() {
 			<div class="mb-14 max-w-2xl mx-auto text-center">
 				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white">How It Works</h2>
 				<p class="text-lg text-ink dark:text-next-white font-mac-body leading-relaxed">
-					Your personal cloud is simpler than you think. A brain, your machines, and a secure line between them.
+					A control plane, your machines, and a secure line between them.
 				</p>
 			</div>
 			<div class="max-w-5xl mx-auto mb-16">
@@ -17,8 +17,8 @@ templ Architecture() {
 								<path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
 							</svg>
 						</div>
-						<h3 class="text-xl font-bold font-mac text-ink dark:text-next-white mb-3">Your Cloud Brain</h3>
-						<p class="text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed">The control plane that keeps everything running. A cheap VPS, a hosted instance, whatever works. It thinks so your machines don't have to.</p>
+						<h3 class="text-xl font-bold font-mac text-ink dark:text-next-white mb-3">Control Plane</h3>
+						<p class="text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed">Scheduling, service discovery, secrets, and orchestration. Runs on any VPS with 200MB of RAM. One instance manages your entire cluster.</p>
 					</div>
 					<div class="text-center">
 						<div class="w-12 h-12 bg-accent-gold dark:bg-next-teal-hi flex items-center justify-center border border-ink dark:next-raised mx-auto mb-4">
@@ -27,7 +27,7 @@ templ Architecture() {
 							</svg>
 						</div>
 						<h3 class="text-xl font-bold font-mac text-ink dark:text-next-white mb-3">Your Machines</h3>
-						<p class="text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed">Any x86 or ARM machine with 200MB of RAM. They call home over an encrypted tunnel and get to work. Location, vendor, architecture: none of it matters to the orchestrator.</p>
+						<p class="text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed">Any x86 or ARM machine with 200MB of RAM. Location, vendor, architecture: none of it matters to the orchestrator. One command to join.</p>
 					</div>
 				</div>
 				<div class="flex items-center justify-center gap-2 mt-10 pt-6 border-t border-rule dark:border-next-mid">
@@ -35,13 +35,6 @@ templ Architecture() {
 						<path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
 					</svg>
 					<span class="text-sm text-ink dark:text-next-white font-mac">Encrypted Tunnel: any ISP, no special deals</span>
-				</div>
-			</div>
-			<div class="max-w-5xl mx-auto mb-16">
-				<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-					@archLayer("1", "Connect Your Hardware", "Any machine, any location, joins the cluster. No special network config, no VPN wizardry. It calls home and gets to work.")
-					@archLayer("2", "Push to Git", "Your infrastructure is code. Edit a file, push the change, and watch it go live. No dashboards, no click-ops.")
-					@archLayer("3", "It Just Runs", "Deployments, certificates, DNS: all automatic. You push code. The platform handles the rest.")
 				</div>
 			</div>
 			<div class="max-w-5xl mx-auto text-center">
@@ -58,18 +51,6 @@ templ Architecture() {
 			</div>
 		</div>
 	</section>
-}
-
-templ archLayer(num string, title string, description string) {
-	<div>
-		<div class="flex items-center gap-4 mb-3">
-			<div class="w-12 h-12 bg-accent-gold dark:bg-next-teal-hi flex items-center justify-center text-ink dark:text-next-black font-bold text-lg font-mac-body">
-				{ num }
-			</div>
-			<h3 class="text-lg font-bold font-mac text-ink dark:text-next-white">{ title }</h3>
-		</div>
-		<p class="text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed">{ description }</p>
-	</div>
 }
 
 templ edgeNode(name string, tagline string) {
