@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"context"
+
 	"github.com/a-h/templ"
 	"github.com/gofiber/fiber/v2"
 
@@ -9,8 +11,43 @@ import (
 	"github.com/rezuscloud/platform-website/views/sections"
 )
 
-// liveClient is the data source for the live section.
-// Defaults to a mock client. Set at startup from main.go.
+// SectionHandler renders a named section. Dynamic sections capture
+// their own data source at wiring time; static sections ignore ctx.
+type SectionHandler func(ctx context.Context) templ.Component
+
+// sectionRegistry maps section names to their handlers.
+// Built once at startup — dynamic sections close over their data source.
+var sectionRegistry map[string]SectionHandler
+
+func init() {
+	InitSections()
+}
+
+// InitSections builds the section registry. Call after SetLiveClient.
+// Dynamic sections close over the current liveClient; static sections ignore it.
+func InitSections() {
+	sectionRegistry = map[string]SectionHandler{
+		"hero":         func(_ context.Context) templ.Component { return sections.Hero() },
+		"challenge":    func(_ context.Context) templ.Component { return sections.Challenge() },
+		"architecture": func(_ context.Context) templ.Component { return sections.Architecture() },
+		"features":     func(_ context.Context) templ.Component { return sections.Features() },
+		"networking":   func(_ context.Context) templ.Component { return sections.Networking() },
+		"comparison":   func(_ context.Context) templ.Component { return sections.Comparison() },
+		"usecases":     func(_ context.Context) templ.Component { return sections.UseCases() },
+		"getstarted":   func(_ context.Context) templ.Component { return sections.GetStarted() },
+		"live": func(ctx context.Context) templ.Component {
+			data, _ := liveClient.Fetch(ctx)
+			if len(data.Hosts) == 0 && len(data.Services) == 0 {
+				data = obs.DefaultMockData()
+			}
+			return sections.Live(data)
+		},
+	}
+}
+
+// liveClient returns the data source for the live section.
+// Used by Home (full page) and SSE stream.
+// Defaults to mock if InitSections hasn't been called.
 var liveClient obs.Client = &obs.MockClient{Data: obs.DefaultMockData()}
 
 // SetLiveClient configures the data source for the live section.
@@ -37,28 +74,14 @@ func Home(c *fiber.Ctx) error {
 }
 
 // Section renders an individual section for HTMX partial swaps.
+// All sections — static and dynamic — go through the same code path.
 func Section(c *fiber.Ctx) error {
 	name := c.Params("name")
 
-	sectionMap := map[string]templ.Component{
-		"hero":         sections.Hero(),
-		"architecture": sections.Architecture(),
-		"features":     sections.Features(),
-		"getstarted":   sections.GetStarted(),
-	}
-
-	if name == "live" {
-		data, _ := liveClient.Fetch(c.Context())
-		if len(data.Hosts) == 0 && len(data.Services) == 0 {
-			data = obs.DefaultMockData()
-		}
-		return render(c, sections.Live(data))
-	}
-
-	component, ok := sectionMap[name]
+	handler, ok := sectionRegistry[name]
 	if !ok {
 		return fiber.NewError(fiber.StatusNotFound)
 	}
 
-	return render(c, component)
+	return render(c, handler(c.Context()))
 }
