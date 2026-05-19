@@ -7,10 +7,8 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"math"
 	"net/http"
 	"os"
-	"sort"
 	"strings"
 	"time"
 )
@@ -120,8 +118,6 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	// Single v3 query_range call for all metrics.
 	// Uses 6h window for resilience against SigNoz collection gaps.
 	// step=300 over 6h gives ~72 data points per series (good sparklines).
-	// No `up` query: service discovery uses the CPU metric directly,
-	// which has k8s.deployment.name, k8s.node.name, k8s.pod.start_time labels.
 	resp, err := c.queryV3(fctx, v3Request{
 		Start: startMs,
 		End:   endMs,
@@ -141,9 +137,8 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 		},
 	})
 	if err != nil {
-		// Return static hosts on failure
 		return LiveData{
-			Hosts:     staticHosts(),
+			Hosts:     []Host{},
 			Timestamp: now.Unix(),
 		}, nil
 	}
@@ -154,8 +149,8 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 		results[r.QueryName] = r.Series
 	}
 
-	services := buildServices(results["cpu"], results, now)
-	hosts := buildHosts(results)
+	services := BuildServices(results["cpu"], results, now)
+	hosts := BuildHosts(results)
 
 	c.cached = LiveData{
 		Hosts:      hosts,
@@ -165,288 +160,6 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 	}
 	c.cachedAt = now
 	return c.cached, nil
-}
-
-// ── Service builder ──
-
-func buildServices(cpuSeries []v3Series, allResults map[string][]v3Series, now time.Time) []Service {
-	type svcInfo struct {
-		ns, deploy, host, uptime string
-	}
-	svcMap := map[string]*svcInfo{}
-
-	// Discover services from CPU metric labels.
-	for _, s := range cpuSeries {
-		key := workloadKey(s.Labels)
-		if key == "" || svcMap[key] != nil {
-			continue
-		}
-		ns, deploy := key[:strings.Index(key, "/")], key[strings.Index(key, "/")+1:]
-		info := &svcInfo{ns: ns, deploy: deploy}
-		svcMap[key] = info
-		if t := labelStr(s.Labels, "k8s.pod.start_time"); t != "" {
-			info.uptime = t
-		}
-		if node := labelStr(s.Labels, "k8s_node_name", "k8s.node.name"); node != "" {
-			info.host = node
-		}
-	}
-
-	// Build deployment metric lookups using k8s.deployment.name label
-	deployCPU := latestByDeployment(allResults["cpu"])
-	deployRAM := latestByDeployment(allResults["ram"])
-	deployDisk := latestByDeployment(allResults["disk"])
-	deployNet := latestByDeployment(allResults["net"])
-
-	sparkCPU := sparkByDeployment(allResults["cpu"])
-	sparkRAM := sparkByDeployment(allResults["ram"])
-	sparkDisk := sparkByDeployment(allResults["disk"])
-	sparkNet := sparkByDeployment(allResults["net"])
-
-	services := make([]Service, 0, len(svcMap))
-	for _, info := range svcMap {
-		key := info.ns + "/" + info.deploy
-		svc := Service{
-			Name:      info.deploy,
-			Namespace: info.ns,
-			Category:  CategoryForNamespace(info.ns),
-			Host:      info.host,
-		}
-		// All discovered services are running (they have metric data)
-		svc.Status = "running"
-		if info.uptime != "" {
-			if parsed, err := time.Parse(time.RFC3339, info.uptime); err == nil {
-				svc.Uptime = FormatUptime(now.Sub(parsed))
-			}
-		}
-
-		if v, ok := deployCPU[key]; ok && v <= 100 {
-			svc.CPU = math.Round(v*1000) / 1000
-		}
-		if v, ok := deployRAM[key]; ok {
-			svc.RAM = math.Round(v/1024/1024*10) / 10
-		}
-		if v, ok := deployNet[key]; ok {
-			svc.NetKB = math.Round(v/1024*10) / 10
-		}
-		if v, ok := deployDisk[key]; ok {
-			svc.DiskMB = math.Round(v/1024/1024*10) / 10
-		}
-
-		if pts, ok := sparkCPU[key]; ok {
-			svc.CPUHist = pts
-		}
-		if pts, ok := sparkRAM[key]; ok {
-			svc.RAMHist = pts
-		}
-		if pts, ok := sparkNet[key]; ok {
-			svc.NetHist = pts
-		}
-		if pts, ok := sparkDisk[key]; ok {
-			svc.DiskHist = pts
-		}
-
-		services = append(services, svc)
-	}
-
-	sortServices(services)
-	return services
-}
-
-// latestByDeployment returns map[ns/deploy]latestValue using workload labels.
-// Takes max across pods of the same deployment.
-func latestByDeployment(series []v3Series) map[string]float64 {
-	m := map[string]float64{}
-	for _, s := range series {
-		key := workloadKey(s.Labels)
-		if key == "" || len(s.Values) == 0 {
-			continue
-		}
-		last := s.Values[len(s.Values)-1].Value
-		v, err := parseFloat(last)
-		if err != nil {
-			continue
-		}
-		if existing, ok := m[key]; ok && v <= existing {
-			continue
-		}
-		m[key] = v
-	}
-	return m
-}
-
-// sparkByDeployment returns map[ns/deploy]svgPolyline using workload labels.
-// Picks the first pod's series for each deployment.
-func sparkByDeployment(series []v3Series) map[string]string {
-	m := map[string]string{}
-	for _, s := range series {
-		key := workloadKey(s.Labels)
-		if key == "" || len(s.Values) < 1 {
-			continue
-		}
-		if _, exists := m[key]; exists {
-			continue // first pod wins
-		}
-		vals := make([]float64, len(s.Values))
-		for i, p := range s.Values {
-			vals[i], _ = parseFloat(p.Value)
-		}
-		// Filter corrupted spikes: clamp to 100 max (CPU cores)
-		for i, v := range vals {
-			if v > 100 {
-				vals[i] = 0
-			}
-		}
-		if len(vals) == 1 {
-			vals = []float64{vals[0], vals[0]}
-		}
-		m[key] = sparklinePoints(vals, 48, 16)
-	}
-	return m
-}
-
-func latestByPod(series []v3Series) map[string]float64 {
-	m := map[string]float64{}
-	for _, s := range series {
-		ns := labelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
-		pod := labelStr(s.Labels, "k8s.pod.name")
-		if ns == "" || pod == "" || len(s.Values) == 0 {
-			continue
-		}
-		last := s.Values[len(s.Values)-1].Value
-		if v, err := parseFloat(last); err == nil {
-			m[ns+"/"+pod] = v
-		}
-	}
-	return m
-}
-
-// ── Host builder ──
-
-func buildHosts(results map[string][]v3Series) []Host {
-	nodeCPU := latestByNode(results["nodeCpu"])
-	nodeRAM := latestByNode(results["nodeRam"])
-
-	nodeUp := latestByNode(results["nodeUp"])
-
-	// Count services per node from CPU results
-	nodeCount := map[string]int{}
-	for _, s := range results["cpu"] {
-		if node := labelStr(s.Labels, "k8s_node_name", "k8s.node.name"); node != "" {
-			nodeCount[node]++
-		}
-	}
-
-	// Discover node names dynamically from all available sources
-	nodeNames := discoverNodeNames(nodeCPU, nodeRAM, nodeUp, nodeCount)
-
-	hosts := make([]Host, 0, len(nodeNames))
-	for _, name := range nodeNames {
-		h := Host{Name: name}
-		if strings.Contains(name, "control-plane") {
-			h.Label = "Cloud"
-			h.Detail = "Control plane"
-		} else {
-			h.Label = "Edge"
-			h.Detail = "Worker node"
-		}
-		if v, ok := nodeCPU[name]; ok {
-			h.CPU = math.Round(v*100) / 100
-		}
-		if v, ok := nodeRAM[name]; ok {
-			h.RAM = math.Round(v/1024/1024*10) / 10
-		}
-		if v, ok := nodeUp[name]; ok {
-			h.Uptime = FormatUptime(time.Duration(v) * time.Second)
-		}
-		if n, ok := nodeCount[name]; ok {
-			h.SvcCount = n
-		}
-		hosts = append(hosts, h)
-	}
-	return hosts
-}
-
-// discoverNodeNames returns sorted unique node names from multiple maps.
-// Control-plane nodes come first.
-func discoverNodeNames(sources ...any) []string {
-	seen := map[string]bool{}
-	var names []string
-	for _, src := range sources {
-		switch m := src.(type) {
-		case map[string]float64:
-			for k := range m {
-				if !seen[k] {
-					seen[k] = true
-					names = append(names, k)
-				}
-			}
-		case map[string]int:
-			for k := range m {
-				if !seen[k] {
-					seen[k] = true
-					names = append(names, k)
-				}
-			}
-		}
-	}
-	sort.Slice(names, func(i, j int) bool {
-		ci := strings.Contains(names[i], "control-plane")
-		cj := strings.Contains(names[j], "control-plane")
-		if ci != cj {
-			return ci
-		}
-		return names[i] < names[j]
-	})
-	return names
-}
-
-func latestByNode(series []v3Series) map[string]float64 {
-	m := map[string]float64{}
-	for _, s := range series {
-		node := s.Labels["k8s.node.name"]
-		if node == "" || len(s.Values) == 0 {
-			continue
-		}
-		last := s.Values[len(s.Values)-1].Value
-		if v, err := parseFloat(last); err == nil {
-			m[node] = v
-		}
-	}
-	return m
-}
-
-func staticHosts() []Host {
-	return []Host{}
-}
-
-// labelStr returns the first non-empty value from the given label keys.
-func labelStr(labels map[string]string, keys ...string) string {
-	for _, k := range keys {
-		if v, ok := labels[k]; ok && v != "" {
-			return v
-		}
-	}
-	return ""
-}
-
-// workloadKey extracts a unique "namespace/workload-name" key from SigNoz
-// metric labels. Tries deployment, statefulset, and daemonset labels in
-// order. Returns empty string if no workload or namespace is found.
-// Single place to fix if SigNoz label keys change.
-func workloadKey(labels map[string]string) string {
-	ns := labelStr(labels, "k8s_namespace_name", "k8s.namespace.name")
-	deploy := labelStr(labels, "k8s.deployment.name")
-	if deploy == "" {
-		deploy = labelStr(labels, "k8s.statefulset.name")
-	}
-	if deploy == "" {
-		deploy = labelStr(labels, "k8s.daemonset.name")
-	}
-	if ns == "" || deploy == "" {
-		return ""
-	}
-	return ns + "/" + deploy
 }
 
 // ── SigNoz v3 API call ──
@@ -484,56 +197,4 @@ func (c *SigNozClient) queryV3(ctx context.Context, req v3Request) (*v3Response,
 		return nil, fmt.Errorf("signoz: %s", v3Resp.Error)
 	}
 	return &v3Resp, nil
-}
-
-// ── Sparkline ──
-
-func sparklinePoints(values []float64, w, h int) string {
-	if len(values) < 2 {
-		return ""
-	}
-	min, max := values[0], values[0]
-	for _, v := range values[1:] {
-		if v < min {
-			min = v
-		}
-		if v > max {
-			max = v
-		}
-	}
-	r := max - min
-	if r == 0 {
-		r = 1
-	}
-	pts := make([]string, len(values))
-	for i, v := range values {
-		x := float64(i) * float64(w) / float64(len(values)-1)
-		y := float64(h) - ((v - min) / r * float64(h))
-		pts[i] = fmt.Sprintf("%.1f,%.1f", x, y)
-	}
-	return strings.Join(pts, " ")
-}
-
-// ── Sorting ──
-
-func sortServices(services []Service) {
-	catOrder := map[string]int{}
-	for i, c := range CategoryOrder {
-		catOrder[c] = i
-	}
-	for i := 0; i < len(services); i++ {
-		for j := i + 1; j < len(services); j++ {
-			ci := catOrder[services[i].Category]
-			cj := catOrder[services[j].Category]
-			if ci > cj || (ci == cj && services[i].Name > services[j].Name) {
-				services[i], services[j] = services[j], services[i]
-			}
-		}
-	}
-}
-
-func parseFloat(s string) (float64, error) {
-	var f float64
-	_, err := fmt.Sscanf(s, "%f", &f)
-	return f, err
 }
