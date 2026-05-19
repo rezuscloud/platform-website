@@ -43,7 +43,7 @@ func TestHomeHandlerContainsExpectedContent(t *testing.T) {
 	assert.Contains(t, html, ">YOUR</span>")
 	assert.Contains(t, html, ">PERSONAL</span>")
 	assert.Contains(t, html, ">CLOUD</span>")
-	assert.Contains(t, html, "Personal Cloud")
+	assert.Contains(t, html, "You bring the machines")
 }
 
 func TestSectionHandler(t *testing.T) {
@@ -71,7 +71,7 @@ func TestSectionHandlerContainsContent(t *testing.T) {
 	app := setupApp()
 
 	expectedContent := map[string]string{
-		"hero":         "Personal Cloud",
+		"hero":         "You bring the machines",
 		"features":     "What You Get",
 		"architecture": "How It Works",
 		"getstarted":   "Start Your Cloud",
