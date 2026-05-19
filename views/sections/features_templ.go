@@ -29,7 +29,7 @@ func Features() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"features\" data-reveal class=\"py-20 sm:py-28 bg-paper dark:bg-next-black\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><!-- Header --><div class=\"mb-12 max-w-2xl mx-auto text-center\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white\">Four Promises</h2><p class=\"text-lg text-ink dark:text-next-white font-mac-body leading-relaxed\">Four things the platform guarantees.</p></div><!-- Value propositions: 2x2 grid --><div class=\"grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-8 max-w-4xl mx-auto\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"features\" data-reveal class=\"py-20 sm:py-28 bg-paper dark:bg-next-black\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><!-- Header --><div class=\"mb-12 max-w-2xl mx-auto text-center\"><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white\">Four Promises</h2><p class=\"text-lg text-ink dark:text-next-white font-mac-body leading-relaxed\">What the platform guarantees.</p></div><!-- Value propositions: 2x2 grid --><div class=\"grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-8 max-w-4xl mx-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
