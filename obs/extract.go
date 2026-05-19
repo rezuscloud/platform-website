@@ -7,6 +7,37 @@ import (
 	"time"
 )
 
+// FormatUptime returns a human-readable duration.
+func FormatUptime(d time.Duration) string {
+	h := int(d.Hours())
+	if h >= 24 {
+		return fmt.Sprintf("%dd", h/24)
+	}
+	if h >= 1 {
+		return fmt.Sprintf("%dh", h)
+	}
+	return fmt.Sprintf("%dm", int(d.Minutes()))
+}
+
+// WorkloadKey extracts a unique "namespace/workload-name" key from SigNoz
+// metric labels. Tries deployment, statefulset, and daemonset labels in
+// order. Returns empty string if no workload or namespace is found.
+// Single place to fix if SigNoz label keys change.
+func WorkloadKey(labels map[string]string) string {
+	ns := LabelStr(labels, "k8s_namespace_name", "k8s.namespace.name")
+	deploy := LabelStr(labels, "k8s.deployment.name")
+	if deploy == "" {
+		deploy = LabelStr(labels, "k8s.statefulset.name")
+	}
+	if deploy == "" {
+		deploy = LabelStr(labels, "k8s.daemonset.name")
+	}
+	if ns == "" || deploy == "" {
+		return ""
+	}
+	return ns + "/" + deploy
+}
+
 // BuildServices discovers services from CPU metric series and enriches
 // them with RAM, disk, network, and sparkline data from all results.
 func BuildServices(cpuSeries []v3Series, allResults map[string][]v3Series, now time.Time) []Service {
@@ -16,28 +47,19 @@ func BuildServices(cpuSeries []v3Series, allResults map[string][]v3Series, now t
 	svcMap := map[string]*svcInfo{}
 
 	for _, s := range cpuSeries {
-		ns := LabelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
-		deploy := LabelStr(s.Labels, "k8s.deployment.name")
-		if deploy == "" {
-			deploy = LabelStr(s.Labels, "k8s.statefulset.name")
-		}
-		if deploy == "" {
-			deploy = LabelStr(s.Labels, "k8s.daemonset.name")
-		}
-		if ns == "" || deploy == "" {
+		key := WorkloadKey(s.Labels)
+		if key == "" || svcMap[key] != nil {
 			continue
 		}
-		key := ns + "/" + deploy
+		ns := key[:strings.Index(key, "/")]
+		deploy := key[strings.Index(key, "/")+1:]
 		if _, exists := svcMap[key]; exists {
 			continue
 		}
-		info := &svcInfo{ns: ns, deploy: deploy}
+		info := &svcInfo{ns: ns, deploy: deploy, host: LabelStr(s.Labels, "k8s_node_name", "k8s.node.name")}
 		svcMap[key] = info
 		if t := LabelStr(s.Labels, "k8s.pod.start_time"); t != "" {
 			info.uptime = t
-		}
-		if node := LabelStr(s.Labels, "k8s_node_name", "k8s.node.name"); node != "" {
-			info.host = node
 		}
 	}
 
@@ -150,55 +172,36 @@ func BuildHosts(results map[string][]v3Series) []Host {
 	return hosts
 }
 
-// LatestByDeployment returns map[ns/deploy]latestValue using k8s.deployment.name label.
+// LatestByDeployment returns map[ns/deploy]latestValue using WorkloadKey.
 // Takes max across pods of the same deployment.
 func LatestByDeployment(series []v3Series) map[string]float64 {
 	m := map[string]float64{}
 	for _, s := range series {
-		ns := LabelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
-		deploy := LabelStr(s.Labels, "k8s.deployment.name")
-		if deploy == "" {
-			deploy = LabelStr(s.Labels, "k8s.statefulset.name")
-		}
-		if deploy == "" {
-			deploy = LabelStr(s.Labels, "k8s.daemonset.name")
-		}
-		if ns == "" || deploy == "" || len(s.Values) == 0 {
+		key := WorkloadKey(s.Labels)
+		if key == "" || len(s.Values) == 0 {
 			continue
 		}
-		key := ns + "/" + deploy
 		last := s.Values[len(s.Values)-1].Value
 		v, err := parseFloat(last)
 		if err != nil {
 			continue
 		}
-		if existing, ok := m[key]; ok {
-			if v > existing {
-				m[key] = v
-			}
-		} else {
-			m[key] = v
+		if existing, ok := m[key]; ok && v <= existing {
+			continue
 		}
+		m[key] = v
 	}
 	return m
 }
 
-// SparkByDeployment returns map[ns/deploy]svgPolyline using k8s.deployment.name label.
+// SparkByDeployment returns map[ns/deploy]svgPolyline using WorkloadKey.
 func SparkByDeployment(series []v3Series) map[string]string {
 	m := map[string]string{}
 	for _, s := range series {
-		ns := LabelStr(s.Labels, "k8s_namespace_name", "k8s.namespace.name")
-		deploy := LabelStr(s.Labels, "k8s.deployment.name")
-		if deploy == "" {
-			deploy = LabelStr(s.Labels, "k8s.statefulset.name")
-		}
-		if deploy == "" {
-			deploy = LabelStr(s.Labels, "k8s.daemonset.name")
-		}
-		if ns == "" || deploy == "" || len(s.Values) < 1 {
+		key := WorkloadKey(s.Labels)
+		if key == "" || len(s.Values) < 1 {
 			continue
 		}
-		key := ns + "/" + deploy
 		if _, exists := m[key]; exists {
 			continue
 		}
@@ -214,7 +217,7 @@ func SparkByDeployment(series []v3Series) map[string]string {
 		if len(vals) == 1 {
 			vals = []float64{vals[0], vals[0]}
 		}
-		m[key] = sparklinePoints(vals, 48, 16)
+		m[key] = SparklinePoints(vals, 48, 16)
 	}
 	return m
 }
@@ -232,6 +235,12 @@ func LatestByNode(series []v3Series) map[string]float64 {
 		}
 	}
 	return m
+}
+
+// SparklinePoints returns just the polyline points (no area) from Sparkline.
+func SparklinePoints(values []float64, w, h int) string {
+	pts, _ := Sparkline(values, w, h)
+	return pts
 }
 
 func parseFloat(s string) (float64, error) {

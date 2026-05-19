@@ -191,19 +191,19 @@ func TestSigNozClientSingleCall(t *testing.T) {
 }
 
 func TestSparklinePoints(t *testing.T) {
-	t.Run("single value returns empty", func(t *testing.T) {
-		result := sparklinePoints([]float64{5.0}, 48, 16)
-		assert.Empty(t, result, "single point has no line")
+	t.Run("single value returns flat line", func(t *testing.T) {
+		result := SparklinePoints([]float64{5.0}, 48, 16)
+		assert.NotEmpty(t, result, "single point should produce a flat line")
 	})
 
 	t.Run("two values", func(t *testing.T) {
-		result := sparklinePoints([]float64{1.0, 2.0}, 48, 16)
+		result := SparklinePoints([]float64{1.0, 2.0}, 48, 16)
 		assert.Contains(t, result, "0.0,")
 		assert.Contains(t, result, "48.0,")
 	})
 
 	t.Run("constant values", func(t *testing.T) {
-		result := sparklinePoints([]float64{5.0, 5.0, 5.0}, 48, 16)
+		result := SparklinePoints([]float64{5.0, 5.0, 5.0}, 48, 16)
 		assert.NotEmpty(t, result)
 	})
 }
@@ -217,37 +217,37 @@ func TestFormatUptime(t *testing.T) {
 func TestWorkloadKey(t *testing.T) {
 	t.Run("deployment label", func(t *testing.T) {
 		labels := map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller"}
-		assert.Equal(t, "flux-system/source-controller", workloadKey(labels))
+		assert.Equal(t, "flux-system/source-controller", WorkloadKey(labels))
 	})
 
 	t.Run("statefulset fallback", func(t *testing.T) {
 		labels := map[string]string{"k8s.namespace.name": "tikv-system", "k8s.statefulset.name": "tikv"}
-		assert.Equal(t, "tikv-system/tikv", workloadKey(labels))
+		assert.Equal(t, "tikv-system/tikv", WorkloadKey(labels))
 	})
 
 	t.Run("daemonset fallback", func(t *testing.T) {
 		labels := map[string]string{"k8s_namespace_name": "kube-system", "k8s.daemonset.name": "cilium"}
-		assert.Equal(t, "kube-system/cilium", workloadKey(labels))
+		assert.Equal(t, "kube-system/cilium", WorkloadKey(labels))
 	})
 
 	t.Run("missing namespace", func(t *testing.T) {
 		labels := map[string]string{"k8s.deployment.name": "something"}
-		assert.Equal(t, "", workloadKey(labels))
+		assert.Equal(t, "", WorkloadKey(labels))
 	})
 
 	t.Run("missing workload", func(t *testing.T) {
 		labels := map[string]string{"k8s_namespace_name": "flux-system"}
-		assert.Equal(t, "", workloadKey(labels))
+		assert.Equal(t, "", WorkloadKey(labels))
 	})
 
 	t.Run("deployment preferred over statefulset", func(t *testing.T) {
 		labels := map[string]string{"k8s_namespace_name": "ns", "k8s.deployment.name": "deploy", "k8s.statefulset.name": "sts"}
-		assert.Equal(t, "ns/deploy", workloadKey(labels))
+		assert.Equal(t, "ns/deploy", WorkloadKey(labels))
 	})
 
 	t.Run("new label key format", func(t *testing.T) {
 		labels := map[string]string{"k8s.namespace.name": "ns", "k8s.deployment.name": "deploy"}
-		assert.Equal(t, "ns/deploy", workloadKey(labels))
+		assert.Equal(t, "ns/deploy", WorkloadKey(labels))
 	})
 }
 
