@@ -84,6 +84,7 @@ func main() {
 	} else {
 		log.Println("SIGNOZ_URL/SIGNOZ_API_KEY not set, live section using mock data")
 	}
+	handlers.InitSections()
 
 	addr := ":3000"
 	log.Printf("Starting server on %s", addr)

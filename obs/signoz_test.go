@@ -214,6 +214,43 @@ func TestFormatUptime(t *testing.T) {
 	assert.Equal(t, "45m", FormatUptime(45*time.Minute))
 }
 
+func TestWorkloadKey(t *testing.T) {
+	t.Run("deployment label", func(t *testing.T) {
+		labels := map[string]string{"k8s_namespace_name": "flux-system", "k8s.deployment.name": "source-controller"}
+		assert.Equal(t, "flux-system/source-controller", workloadKey(labels))
+	})
+
+	t.Run("statefulset fallback", func(t *testing.T) {
+		labels := map[string]string{"k8s.namespace.name": "tikv-system", "k8s.statefulset.name": "tikv"}
+		assert.Equal(t, "tikv-system/tikv", workloadKey(labels))
+	})
+
+	t.Run("daemonset fallback", func(t *testing.T) {
+		labels := map[string]string{"k8s_namespace_name": "kube-system", "k8s.daemonset.name": "cilium"}
+		assert.Equal(t, "kube-system/cilium", workloadKey(labels))
+	})
+
+	t.Run("missing namespace", func(t *testing.T) {
+		labels := map[string]string{"k8s.deployment.name": "something"}
+		assert.Equal(t, "", workloadKey(labels))
+	})
+
+	t.Run("missing workload", func(t *testing.T) {
+		labels := map[string]string{"k8s_namespace_name": "flux-system"}
+		assert.Equal(t, "", workloadKey(labels))
+	})
+
+	t.Run("deployment preferred over statefulset", func(t *testing.T) {
+		labels := map[string]string{"k8s_namespace_name": "ns", "k8s.deployment.name": "deploy", "k8s.statefulset.name": "sts"}
+		assert.Equal(t, "ns/deploy", workloadKey(labels))
+	})
+
+	t.Run("new label key format", func(t *testing.T) {
+		labels := map[string]string{"k8s.namespace.name": "ns", "k8s.deployment.name": "deploy"}
+		assert.Equal(t, "ns/deploy", workloadKey(labels))
+	})
+}
+
 // Helper used by tests
 func jsonNumberOf(f float64) string {
 	return strings.TrimRight(strings.TrimRight(fmt.Sprintf("%f", f), "0"), ".")
