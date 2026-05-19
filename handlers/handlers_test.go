@@ -72,7 +72,7 @@ func TestSectionHandlerContainsContent(t *testing.T) {
 
 	expectedContent := map[string]string{
 		"hero":         "You bring the machines",
-		"features":     "What You Get",
+		"features":     "Four Promises",
 		"architecture": "How It Works",
 		"getstarted":   "Start Your Cloud",
 	}
