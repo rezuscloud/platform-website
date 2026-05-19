@@ -51,9 +51,9 @@ type LiveData struct {
 // SigNozClient builds this once from the v3 API response; BuildServices and
 // BuildHosts consume it. All v3 wire-format types stay private to signoz.go.
 type MetricsSnapshot struct {
-	Workloads map[string]WorkloadMetrics // key = "namespace/deployment"
-	Nodes     map[string]NodeMetrics     // key = node name
-	NodeSvcCounts map[string]int         // key = node name
+	Workloads     map[string]WorkloadMetrics // key = "namespace/deployment"
+	Nodes         map[string]NodeMetrics     // key = node name
+	NodeSvcCounts map[string]int             // key = node name
 }
 
 // WorkloadMetrics holds the latest values and sparkline history for one workload.

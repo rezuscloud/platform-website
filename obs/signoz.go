@@ -107,10 +107,10 @@ type v3Point struct {
 // queryName constants tie the PromQL queries to snapshot builder logic.
 // Changing these requires updating groupPodSeries / groupNodeSeries.
 const (
-	queryCPU    = "cpu"
-	queryRAM    = "ram"
-	queryDisk   = "disk"
-	queryNet    = "net"
+	queryCPU     = "cpu"
+	queryRAM     = "ram"
+	queryDisk    = "disk"
+	queryNet     = "net"
 	queryNodeCPU = "nodeCpu"
 	queryNodeRAM = "nodeRam"
 	queryNodeUp  = "nodeUp"
@@ -118,10 +118,10 @@ const (
 
 // podQueries are the PromQL queries that produce per-pod metrics.
 var podQueries = map[string]string{
-	queryCPU: `{__name__="k8s.pod.cpu.usage"}`,
-	queryRAM: `{__name__="k8s.pod.memory.working_set"}`,
+	queryCPU:  `{__name__="k8s.pod.cpu.usage"}`,
+	queryRAM:  `{__name__="k8s.pod.memory.working_set"}`,
 	queryDisk: `{__name__="k8s.pod.filesystem.usage"}`,
-	queryNet: `rate({__name__="k8s.pod.network.io",direction="receive"}[5m])`,
+	queryNet:  `rate({__name__="k8s.pod.network.io",direction="receive"}[5m])`,
 }
 
 // nodeQueries are the PromQL queries that produce per-node metrics.
