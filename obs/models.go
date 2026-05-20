@@ -47,6 +47,40 @@ type LiveData struct {
 	SelfNamespace string    `json:"selfNamespace"`
 }
 
+// MetricsSnapshot is the platform-native shape of a SigNoz metrics query.
+// SigNozClient builds this once from the v3 API response; BuildServices and
+// BuildHosts consume it. All v3 wire-format types stay private to signoz.go.
+type MetricsSnapshot struct {
+	Workloads     map[string]WorkloadMetrics // key = "namespace/deployment"
+	Nodes         map[string]NodeMetrics     // key = node name
+	NodeSvcCounts map[string]int             // key = node name
+}
+
+// WorkloadMetrics holds the latest values and sparkline history for one workload.
+type WorkloadMetrics struct {
+	Namespace string
+	Name      string
+	Host      string
+	Uptime    string // RFC3339 start time
+
+	CPU  float64
+	RAM  float64 // bytes
+	Net  float64 // bytes/sec
+	Disk float64 // bytes
+
+	CPUHist  []float64
+	RAMHist  []float64
+	NetHist  []float64
+	DiskHist []float64
+}
+
+// NodeMetrics holds the latest values for one cluster node.
+type NodeMetrics struct {
+	CPU    float64
+	RAM    float64 // bytes
+	Uptime float64 // seconds
+}
+
 // Client fetches live service data from SigNoz metrics.
 type Client interface {
 	Fetch(ctx context.Context) (LiveData, error)

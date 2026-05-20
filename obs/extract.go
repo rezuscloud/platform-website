@@ -3,6 +3,7 @@ package obs
 import (
 	"fmt"
 	"math"
+	"sort"
 	"strings"
 	"time"
 )
@@ -38,81 +39,48 @@ func WorkloadKey(labels map[string]string) string {
 	return ns + "/" + deploy
 }
 
-// BuildServices discovers services from CPU metric series and enriches
-// them with RAM, disk, network, and sparkline data from all results.
-func BuildServices(cpuSeries []v3Series, allResults map[string][]v3Series, now time.Time) []Service {
-	type svcInfo struct {
-		ns, deploy, host, uptime string
-	}
-	svcMap := map[string]*svcInfo{}
-
-	for _, s := range cpuSeries {
-		key := WorkloadKey(s.Labels)
-		if key == "" || svcMap[key] != nil {
-			continue
-		}
-		ns := key[:strings.Index(key, "/")]
-		deploy := key[strings.Index(key, "/")+1:]
-		if _, exists := svcMap[key]; exists {
-			continue
-		}
-		info := &svcInfo{ns: ns, deploy: deploy, host: LabelStr(s.Labels, "k8s_node_name", "k8s.node.name")}
-		svcMap[key] = info
-		if t := LabelStr(s.Labels, "k8s.pod.start_time"); t != "" {
-			info.uptime = t
-		}
-	}
-
-	deployCPU := LatestByDeployment(allResults["cpu"])
-	deployRAM := LatestByDeployment(allResults["ram"])
-	deployDisk := LatestByDeployment(allResults["disk"])
-	deployNet := LatestByDeployment(allResults["net"])
-
-	sparkCPU := SparkByDeployment(allResults["cpu"])
-	sparkRAM := SparkByDeployment(allResults["ram"])
-	sparkDisk := SparkByDeployment(allResults["disk"])
-	sparkNet := SparkByDeployment(allResults["net"])
-
-	services := make([]Service, 0, len(svcMap))
-	for _, info := range svcMap {
-		key := info.ns + "/" + info.deploy
+// BuildServices converts a MetricsSnapshot into a sorted, filtered Service list.
+func BuildServices(snap MetricsSnapshot, now time.Time) []Service {
+	services := make([]Service, 0, len(snap.Workloads))
+	for key, wm := range snap.Workloads {
+		_ = key
 		svc := Service{
-			Name:      info.deploy,
-			Namespace: info.ns,
-			Category:  CategoryForNamespace(info.ns),
-			Host:      info.host,
+			Name:      wm.Name,
+			Namespace: wm.Namespace,
+			Category:  CategoryForNamespace(wm.Namespace),
+			Host:      wm.Host,
 			Status:    "running",
 		}
-		if info.uptime != "" {
-			if parsed, err := time.Parse(time.RFC3339, info.uptime); err == nil {
+		if wm.Uptime != "" {
+			if parsed, err := time.Parse(time.RFC3339, wm.Uptime); err == nil {
 				svc.Uptime = FormatUptime(now.Sub(parsed))
 			}
 		}
 
-		if v, ok := deployCPU[key]; ok && v <= 100 {
-			svc.CPU = math.Round(v*1000) / 1000
+		if wm.CPU > 0 {
+			svc.CPU = wm.CPU
 		}
-		if v, ok := deployRAM[key]; ok {
-			svc.RAM = math.Round(v/1024/1024*10) / 10
+		if wm.RAM > 0 {
+			svc.RAM = math.Round(wm.RAM/1024/1024*10) / 10
 		}
-		if v, ok := deployNet[key]; ok {
-			svc.NetKB = math.Round(v/1024*10) / 10
+		if wm.Net > 0 {
+			svc.NetKB = math.Round(wm.Net/1024*10) / 10
 		}
-		if v, ok := deployDisk[key]; ok {
-			svc.DiskMB = math.Round(v/1024/1024*10) / 10
+		if wm.Disk > 0 {
+			svc.DiskMB = math.Round(wm.Disk/1024/1024*10) / 10
 		}
 
-		if pts, ok := sparkCPU[key]; ok {
-			svc.CPUHist = pts
+		if len(wm.CPUHist) > 0 {
+			svc.CPUHist = SparklinePoints(wm.CPUHist, 48, 16)
 		}
-		if pts, ok := sparkRAM[key]; ok {
-			svc.RAMHist = pts
+		if len(wm.RAMHist) > 0 {
+			svc.RAMHist = SparklinePoints(wm.RAMHist, 48, 16)
 		}
-		if pts, ok := sparkNet[key]; ok {
-			svc.NetHist = pts
+		if len(wm.NetHist) > 0 {
+			svc.NetHist = SparklinePoints(wm.NetHist, 48, 16)
 		}
-		if pts, ok := sparkDisk[key]; ok {
-			svc.DiskHist = pts
+		if len(wm.DiskHist) > 0 {
+			svc.DiskHist = SparklinePoints(wm.DiskHist, 48, 16)
 		}
 
 		services = append(services, svc)
@@ -130,23 +98,24 @@ func BuildServices(cpuSeries []v3Series, allResults map[string][]v3Series, now t
 	return active
 }
 
-// BuildHosts extracts host data from node-level metric results.
-func BuildHosts(results map[string][]v3Series) []Host {
-	nodeCPU := LatestByNode(results["nodeCpu"])
-	nodeRAM := LatestByNode(results["nodeRam"])
-	nodeUp := LatestByNode(results["nodeUp"])
-
-	nodeCount := map[string]int{}
-	for _, s := range results["cpu"] {
-		if node := LabelStr(s.Labels, "k8s_node_name", "k8s.node.name"); node != "" {
-			nodeCount[node]++
-		}
+// BuildHosts converts a MetricsSnapshot into a sorted Host list.
+func BuildHosts(snap MetricsSnapshot) []Host {
+	nodeNames := make([]string, 0, len(snap.Nodes))
+	for name := range snap.Nodes {
+		nodeNames = append(nodeNames, name)
 	}
-
-	nodeNames := DiscoverNodeNames(nodeCPU, nodeRAM, nodeUp, nodeCount)
+	sort.Slice(nodeNames, func(i, j int) bool {
+		ci := strings.Contains(nodeNames[i], "control-plane")
+		cj := strings.Contains(nodeNames[j], "control-plane")
+		if ci != cj {
+			return ci
+		}
+		return nodeNames[i] < nodeNames[j]
+	})
 
 	hosts := make([]Host, 0, len(nodeNames))
 	for _, name := range nodeNames {
+		nm := snap.Nodes[name]
 		h := Host{Name: name}
 		if strings.Contains(name, "control-plane") {
 			h.Label = "Cloud"
@@ -155,16 +124,16 @@ func BuildHosts(results map[string][]v3Series) []Host {
 			h.Label = "Edge"
 			h.Detail = "Worker node"
 		}
-		if v, ok := nodeCPU[name]; ok {
-			h.CPU = math.Round(v*100) / 100
+		if nm.CPU > 0 {
+			h.CPU = math.Round(nm.CPU*100) / 100
 		}
-		if v, ok := nodeRAM[name]; ok {
-			h.RAM = math.Round(v/1024/1024*10) / 10
+		if nm.RAM > 0 {
+			h.RAM = math.Round(nm.RAM/1024/1024*10) / 10
 		}
-		if v, ok := nodeUp[name]; ok {
-			h.Uptime = FormatUptime(time.Duration(v) * time.Second)
+		if nm.Uptime > 0 {
+			h.Uptime = FormatUptime(time.Duration(nm.Uptime) * time.Second)
 		}
-		if n, ok := nodeCount[name]; ok {
+		if n, ok := snap.NodeSvcCounts[name]; ok {
 			h.SvcCount = n
 		}
 		hosts = append(hosts, h)
@@ -172,79 +141,8 @@ func BuildHosts(results map[string][]v3Series) []Host {
 	return hosts
 }
 
-// LatestByDeployment returns map[ns/deploy]latestValue using WorkloadKey.
-// Takes max across pods of the same deployment.
-func LatestByDeployment(series []v3Series) map[string]float64 {
-	m := map[string]float64{}
-	for _, s := range series {
-		key := WorkloadKey(s.Labels)
-		if key == "" || len(s.Values) == 0 {
-			continue
-		}
-		last := s.Values[len(s.Values)-1].Value
-		v, err := parseFloat(last)
-		if err != nil {
-			continue
-		}
-		if existing, ok := m[key]; ok && v <= existing {
-			continue
-		}
-		m[key] = v
-	}
-	return m
-}
-
-// SparkByDeployment returns map[ns/deploy]svgPolyline using WorkloadKey.
-func SparkByDeployment(series []v3Series) map[string]string {
-	m := map[string]string{}
-	for _, s := range series {
-		key := WorkloadKey(s.Labels)
-		if key == "" || len(s.Values) < 1 {
-			continue
-		}
-		if _, exists := m[key]; exists {
-			continue
-		}
-		vals := make([]float64, len(s.Values))
-		for i, p := range s.Values {
-			vals[i], _ = parseFloat(p.Value)
-		}
-		for i, v := range vals {
-			if v > 100 {
-				vals[i] = 0
-			}
-		}
-		if len(vals) == 1 {
-			vals = []float64{vals[0], vals[0]}
-		}
-		m[key] = SparklinePoints(vals, 48, 16)
-	}
-	return m
-}
-
-func LatestByNode(series []v3Series) map[string]float64 {
-	m := map[string]float64{}
-	for _, s := range series {
-		node := s.Labels["k8s.node.name"]
-		if node == "" || len(s.Values) == 0 {
-			continue
-		}
-		last := s.Values[len(s.Values)-1].Value
-		if v, err := parseFloat(last); err == nil {
-			m[node] = v
-		}
-	}
-	return m
-}
-
 // SparklinePoints returns just the polyline points (no area) from Sparkline.
 func SparklinePoints(values []float64, w, h int) string {
 	pts, _ := Sparkline(values, w, h)
 	return pts
-}
-
-func parseFloat(s string) (float64, error) {
-	var f float64
-	_, err := fmt.Sscanf(s, "%f", &f)
-	return f, err
 }
