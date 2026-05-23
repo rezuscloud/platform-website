@@ -24,7 +24,7 @@ func LiveSSE(c *fiber.Ctx) error {
 	log.Printf("SSE client connected: %s", clientIP)
 
 	c.Context().SetBodyStreamWriter(func(w *bufio.Writer) {
-		ticker := time.NewTicker(5 * time.Second)
+		ticker := time.NewTicker(30 * time.Second)
 		defer ticker.Stop()
 
 		log.Printf("SSE stream started for %s", clientIP)
