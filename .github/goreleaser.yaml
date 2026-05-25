@@ -17,8 +17,8 @@ builds:
     ldflags:
       - -s -w
       - -X github.com/rezuscloud/platform-website/version.Version={{.Version}}
-      - -X github.com/rezuscloud/platform-website/version.GitCommit={{.Commit}}
-      - -X github.com/rezuscloud/platform-website/version.BuildTime={{.Date}}
+      - -X github.com/rezuscloud/platform-website/version.GitCommit={{.ShortCommit}}
+      - -X github.com/rezuscloud/platform-website/version.BuildTime={{.CommitDate}}
 
 archives:
   - formats: [tar.gz]
@@ -39,6 +39,7 @@ dockers_v2:
       - v{{ .Major }}
       - v{{ .Major }}.{{ .Minor }}
       - latest
+    provenance: false
     extra_files:
       - assets
     labels:
@@ -53,8 +54,6 @@ dockers_v2:
       - linux/amd64
       - linux/arm64
     sbom: true
-    flags:
-      - --provenance=false
 
 docker_digest:
   name_template: digests.txt
