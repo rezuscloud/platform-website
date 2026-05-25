@@ -18,19 +18,11 @@ func SetupDocs(externalPath string) {
 	var store *docs.Store
 	var err error
 
-	if externalPath != "" {
-		store, err = docs.NewStore(externalPath)
+	fs := docs.GetDocFS()
+	if fs != nil {
+		store, err = docs.NewEmbeddedStore(fs)
 		if err != nil {
-			log.Printf("docs: failed to load from %s: %v", externalPath, err)
-		}
-	}
-
-	if store == nil {
-		// Try embedded docs
-		embedded := docs.EmbeddedDocs()
-		store, err = docs.NewEmbeddedStore(embedded)
-		if err != nil {
-			log.Printf("docs: failed to load embedded docs: %v", err)
+			log.Printf("docs: failed to load docs: %v", err)
 		}
 	}
 
