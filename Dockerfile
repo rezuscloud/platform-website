@@ -11,7 +11,7 @@ RUN npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
 
 # Stage 2: Generate templ + Build Go binary with cross-compilation
 FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS builder
-RUN apk add --no-cache git
+RUN apk add --no-cache git bash
 RUN go install github.com/a-h/templ/cmd/templ@latest
 WORKDIR /app
 
@@ -24,6 +24,7 @@ ARG BUILD_TIME=unknown
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
+RUN bash scripts/fetch-docs.sh
 RUN templ generate
 COPY --from=tailwind /app/assets/styles.css ./assets/styles.css
 RUN test -n "${TARGETARCH}" && CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \

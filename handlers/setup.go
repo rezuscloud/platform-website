@@ -15,6 +15,9 @@ func SetupApp() *fiber.App {
 
 	app.Get("/", Home)
 	app.Get("/sections/:name", Section)
+	app.Get("/docs", DocsIndex)
+	app.Get("/docs/:repo", DocsRepoIndex)
+	app.Get("/docs/:repo/*", DocsPage)
 	app.Get("/api/version", APIVersion)
 	app.Get("/api/live/stream", LiveSSE)
 

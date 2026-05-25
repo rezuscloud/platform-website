@@ -54,6 +54,9 @@ jobs:
         with:
           configFilePath: .github/GitVersion.yml
 
+      - name: Fetch external docs
+        run: bash scripts/fetch-docs.sh
+
       - name: Build binary
         run: >
           CGO_ENABLED=0 go build

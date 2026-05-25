@@ -23,6 +23,12 @@ func main() {
 
 	app := handlers.SetupApp()
 
+	// Initialize documentation store from DOCS_PATH or embedded
+	docsPath := os.Getenv("DOCS_PATH")
+	handlers.SetupDocs(docsPath)
+
+	// Middleware chain (applied before routes because SetupApp registers routes first,
+	// but Fiber processes middleware in registration order per request)
 	app.Use(recover.New())
 	app.Use(obs.OTelFiberMiddleware(meterProvider, tracerProvider))
 	app.Use(middleware.SecurityHeaders)
