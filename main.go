@@ -19,14 +19,12 @@ import (
 )
 
 func main() {
-	meterProvider := obs.InitTelemetry()
+	meterProvider, tracerProvider := obs.InitTelemetry()
 
 	app := handlers.SetupApp()
 
-	// Middleware chain (applied before routes because SetupApp registers routes first,
-	// but Fiber processes middleware in registration order per request)
 	app.Use(recover.New())
-	app.Use(obs.OTelFiberMiddleware(meterProvider))
+	app.Use(obs.OTelFiberMiddleware(meterProvider, tracerProvider))
 	app.Use(middleware.SecurityHeaders)
 	app.Use(logger.New())
 	app.Use(compress.New())
