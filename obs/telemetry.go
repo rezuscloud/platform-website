@@ -75,7 +75,7 @@ func InitTelemetry() (metric.MeterProvider, trace.TracerProvider) {
 			sdktrace.WithBatchTimeout(5*time.Second),
 		),
 		sdktrace.WithSampler(sdktrace.ParentBased(
-			sdktrace.TraceIDRatioBased(0.1),
+			sdktrace.TraceIDRatioBased(1.0),
 		)),
 	)
 
