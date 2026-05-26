@@ -108,7 +108,7 @@ func DocsPage(c *fiber.Ctx) error {
 		}
 	}
 
-	return render(c, pages.DocsDetailPage(doc, repo, docsByCategory))
+	return render(c, pages.DocsDetailPage(doc, repo, docsByCategory, DocsStore))
 }
 
 func hasSuffix(s, suffix string) bool {
