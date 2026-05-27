@@ -35,9 +35,10 @@ RUN test -n "${TARGETARCH}" && CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARC
 
 # Stage 3: Production image (target platform)
 FROM gcr.io/distroless/static-debian12:nonroot
-WORKDIR /
-COPY --from=builder /bin/server /server
-COPY --from=builder /app/assets/ /assets/
+WORKDIR /app
+COPY --from=builder /bin/server /app/server
+COPY --from=builder /app/assets/ /app/assets/
+COPY --from=builder /app/docs/external/ /app/docs/external/
 EXPOSE 3000
 USER nonroot:nonroot
-ENTRYPOINT ["/server"]
+ENTRYPOINT ["/app/server"]
