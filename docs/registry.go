@@ -31,7 +31,7 @@ var Registry = []RepoConfig{
 	{
 		Name:        "rezusctl",
 		DisplayName: "RezusCloud CLI",
-		Description: "Single tool for managing the full lifecycle of a RezusCloud Personal Cloud",
+		Description: "Provision, bootstrap, and manage RezusCloud Personal Clouds. Architecture, ADRs, CLI reference, multi-cluster, getting started.",
 		DocsPath:    "docs",
 	},
 }
