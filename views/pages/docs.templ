@@ -101,7 +101,7 @@ templ DocsIndexPage(repos []docs.RepoConfig, store *docs.Store) {
 
 // DocsRepoPage shows all docs for a single repo with full sidebar navigation.
 templ DocsRepoPage(repo docs.RepoConfig, docsByCategory map[string][]docs.Doc, store *docs.Store) {
-	@views.Layout(repo.DisplayName + " Documentation | RezusCloud", "docs") {
+	@views.Layout(repo.DisplayName+" Documentation | RezusCloud", "docs") {
 		<section class="min-h-screen bg-paper dark:bg-next-black pt-14">
 			<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
 				<!-- Breadcrumb -->
@@ -163,7 +163,7 @@ templ DocsRepoPage(repo docs.RepoConfig, docsByCategory map[string][]docs.Doc, s
 
 // DocsDetailPage renders a single documentation page with sidebar navigation.
 templ DocsDetailPage(doc docs.Doc, repo docs.RepoConfig, docsByCategory map[string][]docs.Doc, store *docs.Store) {
-	@views.Layout(doc.Title + " | " + repo.DisplayName + " | RezusCloud", "docs") {
+	@views.Layout(doc.Title+" | "+repo.DisplayName+" | RezusCloud", "docs") {
 		<section class="min-h-screen bg-paper dark:bg-next-black pt-14">
 			<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
 				<!-- Breadcrumb -->
