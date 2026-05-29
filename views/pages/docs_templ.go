@@ -189,7 +189,7 @@ func docsSidebar(activeKey string, store *docs.Store) templ.Component {
 }
 
 // DocsIndexPage is the documentation landing page.
-// Shows a hero section with project cards linking to each repo's docs.
+// Kept as fallback but DocsIndex handler redirects to first repo.
 func DocsIndexPage(repos []docs.RepoConfig, store *docs.Store) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -291,7 +291,7 @@ func DocsIndexPage(repos []docs.RepoConfig, store *docs.Store) templ.Component {
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = views.Layout("Documentation | RezusCloud").Render(templ.WithChildren(ctx, templ_7745c5c3_Var10), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = views.Layout("Documentation | RezusCloud", "docs").Render(templ.WithChildren(ctx, templ_7745c5c3_Var10), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -481,7 +481,7 @@ func DocsRepoPage(repo docs.RepoConfig, docsByCategory map[string][]docs.Doc, st
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = views.Layout(repo.DisplayName+" Documentation | RezusCloud").Render(templ.WithChildren(ctx, templ_7745c5c3_Var16), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = views.Layout(repo.DisplayName+" Documentation | RezusCloud", "docs").Render(templ.WithChildren(ctx, templ_7745c5c3_Var16), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -649,7 +649,7 @@ func DocsDetailPage(doc docs.Doc, repo docs.RepoConfig, docsByCategory map[strin
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = views.Layout(doc.Title+" | "+repo.DisplayName+" | RezusCloud").Render(templ.WithChildren(ctx, templ_7745c5c3_Var26), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = views.Layout(doc.Title+" | "+repo.DisplayName+" | RezusCloud", "docs").Render(templ.WithChildren(ctx, templ_7745c5c3_Var26), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

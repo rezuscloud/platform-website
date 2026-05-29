@@ -42,14 +42,20 @@ func SetupDocs(externalPath string) {
 	DocsStore = store
 }
 
-// DocsIndex renders the documentation landing page with repo listing.
+// DocsIndex redirects to the first available repo's documentation.
+// This avoids an intermediate project picker and lands the user
+// directly in a unified docs experience with a full sidebar.
 func DocsIndex(c *fiber.Ctx) error {
 	if DocsStore == nil {
 		return c.Status(http.StatusNotFound).SendString("Documentation not available")
 	}
 
 	repos := DocsStore.Repos()
-	return render(c, pages.DocsIndexPage(repos, DocsStore))
+	if len(repos) == 0 {
+		return c.Status(http.StatusNotFound).SendString("No documentation available")
+	}
+
+	return c.Redirect("/docs/"+repos[0].Name, http.StatusMovedPermanently)
 }
 
 // DocsRepoIndex renders the doc index for a specific repo.

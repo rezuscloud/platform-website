@@ -55,9 +55,9 @@ templ docsSidebar(activeKey string, store *docs.Store) {
 }
 
 // DocsIndexPage is the documentation landing page.
-// Shows a hero section with project cards linking to each repo's docs.
+// Kept as fallback but DocsIndex handler redirects to first repo.
 templ DocsIndexPage(repos []docs.RepoConfig, store *docs.Store) {
-	@views.Layout("Documentation | RezusCloud") {
+	@views.Layout("Documentation | RezusCloud", "docs") {
 		<section class="min-h-screen bg-paper dark:bg-next-black pt-14">
 			<div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16">
 				<h1 class="font-silkscreen text-3xl sm:text-4xl text-ink dark:text-next-white tracking-tight">
@@ -101,7 +101,7 @@ templ DocsIndexPage(repos []docs.RepoConfig, store *docs.Store) {
 
 // DocsRepoPage shows all docs for a single repo with full sidebar navigation.
 templ DocsRepoPage(repo docs.RepoConfig, docsByCategory map[string][]docs.Doc, store *docs.Store) {
-	@views.Layout(repo.DisplayName + " Documentation | RezusCloud") {
+	@views.Layout(repo.DisplayName + " Documentation | RezusCloud", "docs") {
 		<section class="min-h-screen bg-paper dark:bg-next-black pt-14">
 			<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
 				<!-- Breadcrumb -->
@@ -163,7 +163,7 @@ templ DocsRepoPage(repo docs.RepoConfig, docsByCategory map[string][]docs.Doc, s
 
 // DocsDetailPage renders a single documentation page with sidebar navigation.
 templ DocsDetailPage(doc docs.Doc, repo docs.RepoConfig, docsByCategory map[string][]docs.Doc, store *docs.Store) {
-	@views.Layout(doc.Title + " | " + repo.DisplayName + " | RezusCloud") {
+	@views.Layout(doc.Title + " | " + repo.DisplayName + " | RezusCloud", "docs") {
 		<section class="min-h-screen bg-paper dark:bg-next-black pt-14">
 			<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
 				<!-- Breadcrumb -->
