@@ -250,6 +250,25 @@ func (s *Store) CategoriesForRepo(repoName string) []string {
 	return result
 }
 
+// AllDocs returns all docs across all repos, ordered by repo name then path.
+func (s *Store) AllDocs() []Doc {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	var result []Doc
+	for _, repo := range Registry {
+		paths, ok := s.repoIndex[repo.Name]
+		if !ok {
+			continue
+		}
+		for _, p := range paths {
+			if d, ok := s.docs[repo.Name+"/"+p]; ok {
+				result = append(result, d)
+			}
+		}
+	}
+	return result
+}
+
 // DocsByCategory returns docs grouped by category for a repo.
 func (s *Store) DocsByCategory(repoName string) map[string][]Doc {
 	s.mu.RLock()

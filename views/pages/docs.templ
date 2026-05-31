@@ -19,7 +19,6 @@ templ docsSearch() {
 			type="search"
 			placeholder="Search docs..."
 			class="w-full pl-10 pr-3 py-2 text-sm bg-paper dark:bg-next-dark border border-rule dark:border-next-mid text-ink dark:text-next-white placeholder:text-ink-muted dark:placeholder:text-next-subtle focus:outline-none focus:border-accent-gold dark:focus:border-next-teal"
-			x-ref="searchInput"
 			@input="
 				const q = $event.target.value.toLowerCase();
 				$el.closest('nav').querySelectorAll('[data-doc-link]').forEach(el => {
@@ -32,52 +31,51 @@ templ docsSearch() {
 	</div>
 }
 
-// docsSidebar renders the documentation sidebar navigation tree.
-// Shows all repos as top-level groups with a search bar at the top.
+// docsSidebar renders a unified sidebar with all docs from all repos.
+// Each repo is a top-level group with categories nested below.
 templ docsSidebar(activeKey string, store *docs.Store) {
-	<aside class="hidden lg:block lg:w-72 lg:flex-shrink-0">
-		<nav class="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pb-8" aria-label="Documentation navigation">
+	<aside class="hidden lg:block w-[18rem] flex-shrink-0" aria-label="Documentation navigation">
+		<nav class="sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto px-4 py-6">
 			@docsSearch()
-			<div class="mt-4">
+			<div class="mt-4 space-y-6">
 				for _, repo := range store.Repos() {
-					<div class="mb-6" data-doc-group>
-						<a
-							href={ "/docs/" + repo.Name }
-							class="block font-silkscreen text-xs uppercase tracking-wider text-ink dark:text-next-white mb-3 hover:text-accent-gold dark:hover:text-next-teal transition-colors"
-						>
+					<div data-doc-group>
+						<p class="font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-2 px-2">
 							{ repo.DisplayName }
-						</a>
-						for cat, catDocs := range store.DocsByCategory(repo.Name) {
-							if cat != "" {
-								<p class="font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-1 px-2">
-									{ cat }
-								</p>
-							}
-							<ul class="mb-3">
-								for _, d := range catDocs {
-									<li>
-										if d.RepoName+"/"+d.Path == activeKey {
-											<a
-												href={ docPathToURL(d.RepoName, d.Path) }
-												data-doc-link
-												data-title={ d.Title }
-												class="block py-1.5 px-3 text-sm font-semibold text-accent-gold dark:text-next-teal bg-surface-strong dark:bg-next-dark"
-											>
-												{ d.Title }
-											</a>
-										} else {
-											<a
-												href={ docPathToURL(d.RepoName, d.Path) }
-												data-doc-link
-												data-title={ d.Title }
-												class="block py-1.5 px-3 text-sm text-ink-muted dark:text-next-subtle hover:text-ink dark:hover:text-next-white hover:bg-surface dark:hover:bg-next-dark transition-colors"
-											>
-												{ d.Title }
-											</a>
-										}
-									</li>
+						</p>
+						for _, cat := range store.CategoriesForRepo(repo.Name) {
+							<div class="mb-4">
+								if cat != "" {
+									<p class="font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-1 px-3 text-ink/50 dark:text-next-subtle/50">
+										{ strings.Title(cat) }
+									</p>
 								}
-							</ul>
+								<ul>
+									for _, d := range store.DocsByCategory(repo.Name)[cat] {
+										<li>
+											if d.RepoName+"/"+d.Path == activeKey {
+												<a
+													href={ docPathToURL(d.RepoName, d.Path) }
+													data-doc-link
+													data-title={ d.Title }
+													class="block py-1.5 px-3 text-sm font-semibold text-accent-gold dark:text-next-teal bg-surface-strong dark:bg-next-dark"
+												>
+													{ d.Title }
+												</a>
+											} else {
+												<a
+													href={ docPathToURL(d.RepoName, d.Path) }
+													data-doc-link
+													data-title={ d.Title }
+													class="block py-1.5 px-3 text-sm text-ink-muted dark:text-next-subtle hover:text-ink dark:hover:text-next-white hover:bg-surface dark:hover:bg-next-dark transition-colors"
+												>
+													{ d.Title }
+												</a>
+											}
+										</li>
+									}
+								</ul>
+							</div>
 						}
 					</div>
 				}
@@ -86,7 +84,7 @@ templ docsSidebar(activeKey string, store *docs.Store) {
 	</aside>
 }
 
-// docsMobileNav renders a mobile-friendly version of the sidebar as a collapsible drawer.
+// docsMobileNav renders a collapsible mobile navigation drawer.
 templ docsMobileNav(activeKey string, store *docs.Store) {
 	<div class="lg:hidden" x-data="{ open: false }">
 		<button
@@ -108,225 +106,168 @@ templ docsMobileNav(activeKey string, store *docs.Store) {
 			x-transition:leave="transition ease-in duration-150"
 			x-transition:leave-start="opacity-100 translate-y-0"
 			x-transition:leave-end="opacity-0 -translate-y-2"
-			class="mt-4 border border-rule dark:border-next-mid p-4"
+			class="mt-4 border border-rule dark:border-next-mid p-4 max-h-[60vh] overflow-y-auto"
 			aria-label="Documentation navigation"
 		>
 			for _, repo := range store.Repos() {
-				<div class="mb-4">
-					<a
-						href={ "/docs/" + repo.Name }
-						class="block font-silkscreen text-xs uppercase tracking-wider text-ink dark:text-next-white mb-2 hover:text-accent-gold dark:hover:text-next-teal transition-colors"
-					>
-						{ repo.DisplayName }
-					</a>
-					for cat, catDocs := range store.DocsByCategory(repo.Name) {
-						if cat != "" {
-							<p class="font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-1 px-2">
-								{ cat }
-							</p>
-						}
-						<ul class="mb-2">
-							for _, d := range catDocs {
-								<li>
-									if d.RepoName+"/"+d.Path == activeKey {
-										<a href={ docPathToURL(d.RepoName, d.Path) } class="block py-1 px-2 text-sm font-semibold text-accent-gold dark:text-next-teal">
-											{ d.Title }
-										</a>
-									} else {
-										<a href={ docPathToURL(d.RepoName, d.Path) } class="block py-1 px-2 text-sm text-ink-muted dark:text-next-subtle hover:text-ink dark:hover:text-next-white">
-											{ d.Title }
-										</a>
-									}
-								</li>
-							}
-						</ul>
+				for _, cat := range store.CategoriesForRepo(repo.Name) {
+					if cat != "" {
+						<p class="font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-1 px-2">
+							{ repo.DisplayName }: { strings.Title(cat) }
+						</p>
 					}
-				</div>
+					<ul class="mb-3">
+						for _, d := range store.DocsByCategory(repo.Name)[cat] {
+							<li>
+								if d.RepoName+"/"+d.Path == activeKey {
+									<a href={ docPathToURL(d.RepoName, d.Path) } class="block py-1 px-2 text-sm font-semibold text-accent-gold dark:text-next-teal">
+										{ d.Title }
+									</a>
+								} else {
+									<a href={ docPathToURL(d.RepoName, d.Path) } class="block py-1 px-2 text-sm text-ink-muted dark:text-next-subtle hover:text-ink dark:hover:text-next-white">
+										{ d.Title }
+									</a>
+								}
+							</li>
+						}
+					</ul>
+				}
 			}
 		</nav>
 	</div>
 }
 
-// DocsIndexPage is the documentation landing page.
-// Kept as fallback but DocsIndex handler redirects to first repo.
-templ DocsIndexPage(repos []docs.RepoConfig, store *docs.Store) {
-	@views.Layout("Documentation | RezusCloud", "docs") {
-		<section class="min-h-screen bg-paper dark:bg-next-black pt-14">
-			<div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16">
-				<h1 class="font-silkscreen text-3xl sm:text-4xl text-ink dark:text-next-white tracking-tight">
-					Documentation
-				</h1>
-				<p class="mt-4 text-lg text-ink-muted dark:text-next-subtle max-w-2xl">
-					Technical documentation for RezusCloud projects.
-					Each page links to its source on GitHub.
-				</p>
-				<div class="mt-12 space-y-4">
-					for _, repo := range repos {
-						<a
-							href={ "/docs/" + repo.Name }
-							class="block p-6 border border-rule dark:border-next-mid hover:border-accent-gold dark:hover:border-next-teal transition-colors group"
-						>
-							<div class="flex items-center justify-between">
-								<div>
-									<h2 class="font-silkscreen text-lg text-ink dark:text-next-white group-hover:text-accent-gold dark:group-hover:text-next-teal transition-colors">
-										{ repo.DisplayName }
-									</h2>
-									<p class="mt-1 text-sm text-ink-muted dark:text-next-subtle">
-										{ repo.Description }
-									</p>
-								</div>
-								<div class="ml-4 flex-shrink-0 flex items-center gap-2">
-									<span class="font-silkscreen text-xs text-ink-muted dark:text-next-subtle">
-										{ store.RepoDocCount(repo.Name) } pages
-									</span>
-									<svg class="w-4 h-4 text-ink-muted dark:text-next-subtle group-hover:text-accent-gold dark:group-hover:text-next-teal transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
-									</svg>
-								</div>
-							</div>
-						</a>
-					}
-				</div>
-			</div>
-		</section>
-	}
-}
-
-// DocsRepoPage shows all docs for a single repo with full sidebar navigation.
-templ DocsRepoPage(repo docs.RepoConfig, docsByCategory map[string][]docs.Doc, store *docs.Store) {
-	@views.Layout(repo.DisplayName+" Documentation | RezusCloud", "docs") {
-		<section class="min-h-screen bg-paper dark:bg-next-black pt-14">
-			<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-				<nav class="mb-6 text-sm font-silkscreen text-ink-muted dark:text-next-subtle" aria-label="Breadcrumb">
-					<a href="/docs" class="hover:text-accent-gold dark:hover:text-next-teal transition-colors">Documentation</a>
-					<span class="mx-2">/</span>
-					<span class="text-ink dark:text-next-white">{ repo.DisplayName }</span>
-				</nav>
-				@docsMobileNav(repo.Name+"/", store)
-				<div class="lg:grid lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-8">
-					@docsSidebar(repo.Name+"/", store)
-					<main class="min-w-0 mt-6 lg:mt-0">
-						<div class="mb-8">
-							<h1 class="font-silkscreen text-2xl sm:text-3xl text-ink dark:text-next-white tracking-tight">
-								{ repo.DisplayName }
-							</h1>
-							<p class="mt-2 text-ink-muted dark:text-next-subtle">
-								{ repo.Description }
-							</p>
-							<a
-								href={ "https://github.com/rezuscloud/" + repo.Name }
-								class="inline-flex items-center gap-2 mt-4 font-silkscreen text-xs text-accent-gold dark:text-next-teal hover:underline"
-								target="_blank"
-								rel="noopener noreferrer"
-							>
-								<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-									<path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path>
-								</svg>
-								View on GitHub
-							</a>
-						</div>
-						<div class="space-y-6">
-							for cat, catDocs := range docsByCategory {
-								<div>
-									if cat != "" {
-										<h2 class="font-silkscreen text-lg text-ink dark:text-next-white mb-3">
-											{ strings.Title(cat) }
-										</h2>
-									}
-									<div class="space-y-2">
-										for _, d := range catDocs {
-											<a
-												href={ docPathToURL(d.RepoName, d.Path) }
-												class="block p-4 border border-rule dark:border-next-mid hover:border-accent-gold dark:hover:border-next-teal transition-colors group"
-											>
-												<span class="text-ink dark:text-next-white group-hover:text-accent-gold dark:group-hover:text-next-teal transition-colors">{ d.Title }</span>
-												<span class="ml-2 text-xs text-ink-muted dark:text-next-subtle">{ d.Path }</span>
-											</a>
-										}
-									</div>
-								</div>
-							}
-						</div>
-					</main>
-				</div>
-			</div>
-		</section>
-	}
-}
-
-// DocsDetailPage renders a single documentation page with sidebar navigation.
-templ DocsDetailPage(doc docs.Doc, repo docs.RepoConfig, docsByCategory map[string][]docs.Doc, store *docs.Store) {
-	@views.Layout(doc.Title+" | "+repo.DisplayName+" | RezusCloud", "docs") {
-		<section class="min-h-screen bg-paper dark:bg-next-black pt-14">
-			<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-				<!-- Breadcrumb -->
-				<nav class="mb-6 text-sm font-silkscreen text-ink-muted dark:text-next-subtle" aria-label="Breadcrumb">
-					<a href="/docs" class="hover:text-accent-gold dark:hover:text-next-teal transition-colors">Documentation</a>
-					<span class="mx-2">/</span>
-					<a href={ "/docs/" + repo.Name } class="hover:text-accent-gold dark:hover:text-next-teal transition-colors">{ repo.DisplayName }</a>
-					<span class="mx-2">/</span>
-					<span class="text-ink dark:text-next-white">{ doc.Title }</span>
-				</nav>
-				@docsMobileNav(doc.RepoName+"/"+doc.Path, store)
-				<!-- Three-column docs layout: sidebar + content -->
-				<div class="lg:grid lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-8">
-					@docsSidebar(doc.RepoName+"/"+doc.Path, store)
-					<main class="min-w-0 mt-6 lg:mt-0">
-						<!-- Page header -->
-						<div class="mb-8 pb-6 border-b border-rule dark:border-next-mid">
-							<h1 class="font-silkscreen text-2xl sm:text-3xl text-ink dark:text-next-white tracking-tight">
-								{ doc.Title }
-							</h1>
-							<div class="mt-3 flex items-center gap-4">
-								<span class="font-silkscreen text-xs text-ink-muted dark:text-next-subtle">
-									{ doc.RepoDisplayName } / { doc.Path }
-								</span>
+// docsRightTOC renders the right-side table of contents extracted from page headings.
+templ docsRightTOC(headings []docs.Heading) {
+	if len(headings) > 0 {
+		<aside class="hidden xl:block w-[14rem] flex-shrink-0" aria-label="On this page">
+			<nav class="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto py-6 pl-4">
+				<p class="font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-3">On this page</p>
+				<ul class="space-y-1 text-sm">
+					for _, h := range headings {
+						if h.ID != "" {
+							<li class={ templ.KV("pl-3", h.Level == 3) }>
 								<a
-									href={ doc.GitHubURL }
-									class="inline-flex items-center gap-1.5 font-silkscreen text-xs text-accent-gold dark:text-next-teal hover:underline"
-									target="_blank"
-									rel="noopener noreferrer"
+									href={ "#" + h.ID }
+									class="block py-0.5 text-ink-muted dark:text-next-subtle hover:text-ink dark:hover:text-next-white transition-colors break-words"
 								>
-									<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-										<path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path>
-									</svg>
-									View source
+									{ h.Text }
 								</a>
-							</div>
-						</div>
-						<!-- Rendered markdown content -->
-						<article
-							class="prose prose-neutral dark:prose-invert max-w-none
-							prose-headings:font-silkscreen prose-headings:tracking-tight
-							prose-h1:text-2xl prose-h1:mt-0
-							prose-h2:text-xl
-							prose-h3:text-lg
-							prose-a:text-accent-gold dark:prose-a:text-next-teal
-							prose-code:font-terminal prose-code:text-sm
-							prose-code:before:content-none prose-code:after:content-none
-							prose-pre:bg-next-black dark:prose-pre:bg-next-dark prose-pre:border prose-pre:border-rule dark:prose-pre:border-next-mid prose-pre:p-4
-							prose-th:text-left prose-th:font-silkscreen prose-th:text-xs
-							prose-img:border prose-img:border-rule dark:prose-img:border-next-mid
-						"
-						>
-							@templ.Raw(doc.HTML)
-						</article>
-						<!-- Footer link -->
-						<div class="mt-12 pt-6 border-t border-rule dark:border-next-mid">
-							<a
-								href={ doc.GitHubURL }
-								class="inline-flex items-center gap-2 font-silkscreen text-xs text-ink-muted dark:text-next-subtle hover:text-accent-gold dark:hover:text-next-teal transition-colors"
-								target="_blank"
-								rel="noopener noreferrer"
-							>
-								<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-									<path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path>
-								</svg>
-								View this page on GitHub
-							</a>
-						</div>
-					</main>
+							</li>
+						}
+					}
+				</ul>
+			</nav>
+		</aside>
+	}
+}
+
+// docsEditLink renders the "Edit this page" link pointing to GitHub.
+templ docsEditLink(githubURL string) {
+	<a
+		href={ githubURL }
+		class="inline-flex items-center gap-1.5 text-xs font-silkscreen text-ink-muted dark:text-next-subtle hover:text-accent-gold dark:hover:text-next-teal transition-colors"
+		target="_blank"
+		rel="noopener noreferrer"
+	>
+		<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+			<path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"></path>
+		</svg>
+		Edit this page
+	</a>
+}
+
+// docsPrevNext renders prev/next page navigation at the bottom of content.
+templ docsPrevNext(prev *docs.Doc, next *docs.Doc) {
+	if prev != nil || next != nil {
+		<nav class="flex items-center justify-between mt-12 pt-6 border-t border-rule dark:border-next-mid" aria-label="Pagination">
+			if prev != nil {
+				<a
+					href={ docPathToURL(prev.RepoName, prev.Path) }
+					class="group flex flex-col items-start max-w-[45%]"
+				>
+					<span class="text-[10px] font-silkscreen uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-1">Previous</span>
+					<span class="text-sm text-ink dark:text-next-white group-hover:text-accent-gold dark:group-hover:text-next-teal transition-colors">
+						{ prev.Title }
+					</span>
+				</a>
+			} else {
+				<div></div>
+			}
+			if next != nil {
+				<a
+					href={ docPathToURL(next.RepoName, next.Path) }
+					class="group flex flex-col items-end text-right max-w-[45%]"
+				>
+					<span class="text-[10px] font-silkscreen uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-1">Next</span>
+					<span class="text-sm text-ink dark:text-next-white group-hover:text-accent-gold dark:group-hover:text-next-teal transition-colors">
+						{ next.Title }
+					</span>
+				</a>
+			}
+		</nav>
+	}
+}
+
+// DocsDetailPage renders a single documentation page with the standard three-column layout.
+templ DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next *docs.Doc, store *docs.Store) {
+	@views.Layout(doc.Title+" | RezusCloud Documentation", "docs") {
+		<section class="min-h-screen bg-paper dark:bg-next-black pt-14">
+			<!-- Breadcrumb -->
+			<div class="border-b border-rule dark:border-next-mid bg-surface-strong dark:bg-next-dark">
+				<div class="mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-8 py-2">
+					<nav class="text-xs font-silkscreen text-ink-muted dark:text-next-subtle" aria-label="Breadcrumb">
+						<a href="/docs" class="hover:text-accent-gold dark:hover:text-next-teal transition-colors">Documentation</a>
+						<span class="mx-2 text-rule dark:text-next-mid">/</span>
+						<span class="text-ink dark:text-next-white">{ doc.RepoDisplayName }</span>
+						if doc.Category != "" {
+							<span class="mx-2 text-rule dark:text-next-mid">/</span>
+							<span>{ strings.Title(doc.Category) }</span>
+						}
+						<span class="mx-2 text-rule dark:text-next-mid">/</span>
+						<span class="text-ink dark:text-next-white">{ doc.Title }</span>
+					</nav>
 				</div>
+			</div>
+			<!-- Three-column layout -->
+			<div class="mx-auto max-w-[90rem] px-0 lg:grid lg:grid-cols-[18rem_minmax(0,1fr)_14rem] xl:grid-cols-[18rem_minmax(0,1fr)_14rem]">
+				<!-- Left sidebar (desktop) -->
+				@docsSidebar(doc.RepoName+"/"+doc.Path, store)
+				<!-- Content -->
+				<main class="min-w-0 px-4 sm:px-6 lg:px-8 py-8">
+					<!-- Mobile nav toggle -->
+					@docsMobileNav(doc.RepoName+"/"+doc.Path, store)
+					<!-- Page title -->
+					<h1 class="font-silkscreen text-2xl sm:text-3xl text-ink dark:text-next-white tracking-tight mb-6">
+						{ doc.Title }
+					</h1>
+					<!-- Rendered markdown content -->
+					<article
+						class="prose prose-neutral dark:prose-invert max-w-none
+						prose-headings:font-silkscreen prose-headings:tracking-tight
+						prose-headings:scroll-mt-20
+						prose-h1:text-2xl prose-h1:mt-0
+						prose-h2:text-xl
+						prose-h3:text-lg
+						prose-a:text-accent-gold dark:prose-a:text-next-teal
+						prose-code:font-terminal prose-code:text-sm
+						prose-code:before:content-none prose-code:after:content-none
+						prose-pre:bg-next-black dark:prose-pre:bg-next-dark prose-pre:border prose-pre:border-rule dark:prose-pre:border-next-mid prose-pre:p-4
+						prose-th:text-left prose-th:font-silkscreen prose-th:text-xs
+						prose-img:border prose-img:border-rule dark:prose-img:border-next-mid
+					"
+					>
+						@templ.Raw(doc.HTML)
+					</article>
+					<!-- Edit this page -->
+					<div class="mt-8">
+						@docsEditLink(doc.GitHubURL)
+					</div>
+					<!-- Prev/Next -->
+					@docsPrevNext(prev, next)
+				</main>
+				<!-- Right TOC (desktop) -->
+				@docsRightTOC(headings)
 			</div>
 		</section>
 	}

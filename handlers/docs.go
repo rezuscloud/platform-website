@@ -42,23 +42,23 @@ func SetupDocs(externalPath string) {
 	DocsStore = store
 }
 
-// DocsIndex redirects to the first available repo's documentation.
-// This avoids an intermediate project picker and lands the user
-// directly in a unified docs experience with a full sidebar.
+// DocsIndex redirects to the first available doc page.
+// Standard docs sites never show a project picker.
 func DocsIndex(c *fiber.Ctx) error {
 	if DocsStore == nil {
 		return c.Status(http.StatusNotFound).SendString("Documentation not available")
 	}
 
-	repos := DocsStore.Repos()
-	if len(repos) == 0 {
+	allDocs := DocsStore.AllDocs()
+	if len(allDocs) == 0 {
 		return c.Status(http.StatusNotFound).SendString("No documentation available")
 	}
 
-	return c.Redirect("/docs/"+repos[0].Name, http.StatusMovedPermanently)
+	first := allDocs[0]
+	return c.Redirect("/docs/"+first.RepoName+"/"+trimExt(first.Path), http.StatusMovedPermanently)
 }
 
-// DocsRepoIndex renders the doc index for a specific repo.
+// DocsRepoIndex redirects to the first doc in a specific repo.
 func DocsRepoIndex(c *fiber.Ctx) error {
 	if DocsStore == nil {
 		return c.Status(http.StatusNotFound).SendString("Documentation not available")
@@ -70,26 +70,25 @@ func DocsRepoIndex(c *fiber.Ctx) error {
 		return c.Status(http.StatusNotFound).SendString("Repository not found")
 	}
 
-	// Find the repo config for display name
-	var repo docs.RepoConfig
-	for _, r := range docs.Registry {
-		if r.Name == repoName {
-			repo = r
-			break
+	// Find first doc
+	for _, catDocs := range docsByCategory {
+		if len(catDocs) > 0 {
+			first := catDocs[0]
+			return c.Redirect("/docs/"+first.RepoName+"/"+trimExt(first.Path), http.StatusMovedPermanently)
 		}
 	}
 
-	return render(c, pages.DocsRepoPage(repo, docsByCategory, DocsStore))
+	return c.Status(http.StatusNotFound).SendString("No documents found")
 }
 
-// DocsPage renders a single documentation page.
+// DocsPage renders a single documentation page with the standard layout:
+// unified sidebar, content, right TOC, edit link, prev/next.
 func DocsPage(c *fiber.Ctx) error {
 	if DocsStore == nil {
 		return c.Status(http.StatusNotFound).SendString("Documentation not available")
 	}
 
 	repoName := c.Params("repo")
-	// Accept path with or without .md extension
 	docPath := c.Params("*")
 	if docPath == "" {
 		return DocsRepoIndex(c)
@@ -103,20 +102,34 @@ func DocsPage(c *fiber.Ctx) error {
 		return c.Status(http.StatusNotFound).SendString("Document not found")
 	}
 
-	// Get sibling docs for sidebar
-	docsByCategory := DocsStore.DocsByCategory(repoName)
+	// Extract headings for right TOC
+	headings := docs.ExtractHeadings(doc.HTML)
 
-	var repo docs.RepoConfig
-	for _, r := range docs.Registry {
-		if r.Name == repoName {
-			repo = r
+	// Build flat ordered list for prev/next
+	allDocs := DocsStore.AllDocs()
+	var prev, next *docs.Doc
+	for i, d := range allDocs {
+		if d.RepoName == doc.RepoName && d.Path == doc.Path {
+			if i > 0 {
+				prev = &allDocs[i-1]
+			}
+			if i < len(allDocs)-1 {
+				next = &allDocs[i+1]
+			}
 			break
 		}
 	}
 
-	return render(c, pages.DocsDetailPage(doc, repo, docsByCategory, DocsStore))
+	return render(c, pages.DocsDetailPage(doc, headings, prev, next, DocsStore))
 }
 
 func hasSuffix(s, suffix string) bool {
 	return len(s) >= len(suffix) && s[len(s)-len(suffix):] == suffix
+}
+
+func trimExt(path string) string {
+	if len(path) > 3 && path[len(path)-3:] == ".md" {
+		return path[:len(path)-3]
+	}
+	return path
 }
