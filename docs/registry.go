@@ -45,3 +45,12 @@ func (r RepoConfig) GitHubBaseURL() string {
 	}
 	return "https://github.com/rezuscloud/" + r.Name + "/blob/" + branch + "/" + r.DocsPath
 }
+
+// GitHubEditURL returns the base GitHub URL for editing docs.
+func (r RepoConfig) GitHubEditURL() string {
+	branch := r.VersionTag
+	if branch == "" {
+		branch = "main"
+	}
+	return "https://github.com/rezuscloud/" + r.Name + "/edit/" + branch + "/" + r.DocsPath
+}

@@ -28,8 +28,11 @@ type Doc struct {
 	// HTML is the rendered markdown content.
 	HTML string
 
-	// GitHubURL links to the source file on GitHub.
+	// GitHubURL links to the source file on GitHub (view).
 	GitHubURL string
+
+	// GitHubEditURL links to edit the file on GitHub.
+	GitHubEditURL string
 
 	// Category groups docs (e.g. "adr", "" for root docs).
 	Category string
@@ -180,6 +183,7 @@ func (s *Store) addDoc(repo RepoConfig, relPath string, data []byte) {
 		Title:           title,
 		HTML:            htmlContent,
 		GitHubURL:       repo.GitHubBaseURL() + "/" + relPath,
+		GitHubEditURL:   repo.GitHubEditURL() + "/" + relPath,
 		Category:        category,
 	}
 

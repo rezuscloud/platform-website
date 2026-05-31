@@ -261,7 +261,7 @@ templ DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next
 					</article>
 					<!-- Edit this page -->
 					<div class="mt-8">
-						@docsEditLink(doc.GitHubURL)
+						@docsEditLink(doc.GitHubEditURL)
 					</div>
 					<!-- Prev/Next -->
 					@docsPrevNext(prev, next)
