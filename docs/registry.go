@@ -27,6 +27,7 @@ var Registry = []RepoConfig{
 		DisplayName: "Platform Website",
 		Description: "Marketing website for RezusCloud Enterprise Kubernetes Platform",
 		DocsPath:    "docs",
+		VersionTag:  "master",
 	},
 	{
 		Name:        "rezusctl",
