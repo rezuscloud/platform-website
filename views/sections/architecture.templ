@@ -9,7 +9,7 @@ templ Architecture() {
 					A management cluster on your desk, hosted control planes for each tenant, and workers joining from anywhere.
 				</p>
 			</div>
-			<div class="max-w-5xl mx-auto mb-16">
+			<div class="max-w-5xl mx-auto mb-12">
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-10">
 					<div class="text-center">
 						<div class="w-12 h-12 bg-accent-gold dark:bg-next-teal-hi flex items-center justify-center border border-ink dark:next-raised mx-auto mb-4">
@@ -36,7 +36,7 @@ templ Architecture() {
 							</svg>
 						</div>
 						<h3 class="text-xl font-bold font-mac text-ink dark:text-next-white mb-3">Your Machines</h3>
-						<p class="text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed">Any x86 or ARM machine. Location, vendor, architecture: none of it matters. Cloud VMs, bare metal, Raspberry Pis — one command to join.</p>
+						<p class="text-sm text-ink-muted dark:text-next-subtle font-mac-body leading-relaxed">Any x86 or ARM machine joins with one command. Cloud VMs, bare metal, or that old laptop collecting dust.</p>
 					</div>
 				</div>
 				<div class="flex items-center justify-center gap-2 mt-10 pt-6 border-t border-rule dark:border-next-mid">
@@ -44,18 +44,6 @@ templ Architecture() {
 						<path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
 					</svg>
 					<span class="text-sm text-ink dark:text-next-white font-mac">Encrypted tunnels: any ISP, no special deals</span>
-				</div>
-			</div>
-			<div class="max-w-5xl mx-auto text-center">
-				<h3 class="text-2xl sm:text-3xl font-bold mb-3 font-mac text-ink dark:text-next-white">Runs on Anything</h3>
-				<p class="text-ink dark:text-next-white max-w-2xl mx-auto font-mac-body mb-8">
-					The orchestrator abstracts the hardware beneath it. Your cluster doesn't care what a node is. Use what you own, rent what you need for availability.
-				</p>
-				<div class="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10">
-					@edgeNode("Old Laptop", "That one collecting dust")
-					@edgeNode("Raspberry Pi", "A full node for under $50")
-					@edgeNode("Cloud Instance", "Any arch, for availability")
-					@edgeNode("Mini PC", "Small, silent, always on")
 				</div>
 			</div>
 		</div>
