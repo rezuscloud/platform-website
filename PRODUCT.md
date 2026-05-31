@@ -18,7 +18,7 @@ RezusCloud is the Personal Cloud: a fully open source, free platform that delive
 
 Defiant: challenges the status quo that cloud infrastructure must be rented as a managed service, complex, and expensive. Positions cloud providers as the new mainframes. The tone is confident and direct, never pleading or salesy.
 
-Precise: every claim is a fact, not hype. Numbers are specific (200MB, 30s boot, 2-4h setup). The platform works because the engineering is sound, not because the marketing says so.
+Precise: every claim is a fact, not hype. Numbers are specific and grounded in tangible hardware people already own (a mini PC, a Raspberry Pi). The platform works because the engineering is sound, not because the marketing says so.
 
 Nostalgic: the visual language is drawn from two eras of computing revolution led by the same visionary. Mac System 1 (1984) represents the moment computing became personal: one person, one machine, no intermediaries. NeXTSTEP (1988) represents the dark, powerful workstation that built the modern web: serious tools for people who build things. The theme toggle is not a light/dark preference; it is a shift between two chapters of the same story. The retro aesthetic is not decoration; it is the argument made visual: computing was simpler, and it can be again.
 
