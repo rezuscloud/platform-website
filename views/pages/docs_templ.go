@@ -685,7 +685,7 @@ func DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "</article><!-- Edit this page --><div class=\"mt-8\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "</article><!-- Mermaid.js diagram rendering --><script src=\"https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js\"></script><script>\n\t\t\t\t\t\tmermaid.initialize({\n\t\t\t\t\t\t\tstartOnLoad: true,\n\t\t\t\t\t\t\ttheme: document.documentElement.classList.contains(\"dark\")\n\t\t\t\t\t\t\t\t? \"dark\"\n\t\t\t\t\t\t\t\t: \"default\",\n\t\t\t\t\t\t\tthemeVariables: {\n\t\t\t\t\t\t\t\tfontSize: \"14px\",\n\t\t\t\t\t\t\t},\n\t\t\t\t\t\t});\n\t\t\t\t\t</script><!-- Edit this page --><div class=\"mt-8\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

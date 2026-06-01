@@ -243,6 +243,19 @@ templ DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next
 					>
 						@templ.Raw(doc.HTML)
 					</article>
+					<!-- Mermaid.js diagram rendering -->
+					<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+					<script>
+						mermaid.initialize({
+							startOnLoad: true,
+							theme: document.documentElement.classList.contains("dark")
+								? "dark"
+								: "default",
+							themeVariables: {
+								fontSize: "14px",
+							},
+						});
+					</script>
 					<!-- Edit this page -->
 					<div class="mt-8">
 						@docsEditLink(doc.GitHubEditURL)

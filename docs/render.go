@@ -12,6 +12,7 @@ import (
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/text"
+	"go.abhg.dev/goldmark/mermaid"
 )
 
 // md is the shared goldmark instance with syntax highlighting and extras.
@@ -24,6 +25,9 @@ func init() {
 			extension.NewTable(),
 			extension.Strikethrough,
 			extension.TaskList,
+			&mermaid.Extender{
+				RenderMode: mermaid.RenderModeClient,
+			},
 			highlighting.NewHighlighting(
 				highlighting.WithStyle("monokai"),
 				highlighting.WithFormatOptions(
