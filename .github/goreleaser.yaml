@@ -39,7 +39,6 @@ dockers_v2:
       - v{{ .Major }}
       - v{{ .Major }}.{{ .Minor }}
       - latest
-    provenance: false
     extra_files:
       - assets
     labels:
