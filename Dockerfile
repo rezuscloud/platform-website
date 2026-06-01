@@ -24,7 +24,7 @@ ARG BUILD_TIME=unknown
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN if [ ! -d "docs/external/rezusctl" ]; then bash scripts/fetch-docs.sh; fi
+RUN if [ ! -f "docs/getting-started/what-is-rezuscloud.md" ]; then bash scripts/fetch-docs.sh; fi
 RUN templ generate
 COPY --from=tailwind /app/assets/styles.css ./assets/styles.css
 RUN test -n "${TARGETARCH}" && CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
@@ -38,7 +38,7 @@ FROM gcr.io/distroless/static-debian12:nonroot
 WORKDIR /app
 COPY --from=builder /bin/server /app/server
 COPY --from=builder /app/assets/ /app/assets/
-COPY --from=builder /app/docs/external/ /app/docs/external/
+COPY --from=builder /app/docs/ /app/docs/
 EXPOSE 3000
 USER nonroot:nonroot
 ENTRYPOINT ["/app/server"]

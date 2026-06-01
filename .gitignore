@@ -30,5 +30,5 @@ Thumbs.db
 # Air live reload
 tmp/
 
-# Fetched documentation (rebuilt by scripts/fetch-docs.sh)
+# Fetched documentation (legacy, no longer used)
 docs/external/

@@ -1,38 +1,36 @@
 package docs
 
-// RepoConfig defines a source repository whose docs/ folder is indexed.
+// RepoConfig defines a source repository for GitHub links.
+// The actual documentation content lives in the website's /docs folder,
+// organized by topic (getting-started, concepts, reference, adr).
 type RepoConfig struct {
 	// Name is the GitHub repository name under rezuscloud.
-	Name string `json:"name"`
+	Name string
 
-	// DisplayName is the human-readable project name shown in navigation.
-	DisplayName string `json:"displayName"`
+	// DisplayName is the human-readable project name.
+	DisplayName string
 
-	// Description is a one-line summary for the repo index.
-	Description string `json:"description"`
+	// DocsPath is the subdirectory within the repo containing source docs.
+	// Used for constructing GitHub edit/view URLs.
+	DocsPath string
 
-	// DocsPath is the subdirectory within the repo containing docs.
-	// Defaults to "docs" if empty.
-	DocsPath string `json:"docsPath,omitempty"`
-
-	// VersionTag is the git tag used for GitHub "View source" links.
+	// VersionTag is the git branch used for GitHub links.
 	// If empty, defaults to "main".
-	VersionTag string `json:"versionTag,omitempty"`
+	VersionTag string
 }
 
-// Registry lists all documentation sources.
+// Registry lists source repositories for attribution and GitHub links.
+// The sidebar shows categories (from directory structure), not repo names.
 var Registry = []RepoConfig{
 	{
 		Name:        "platform-website",
 		DisplayName: "Platform Website",
-		Description: "Marketing website for RezusCloud Enterprise Kubernetes Platform",
 		DocsPath:    "docs",
 		VersionTag:  "master",
 	},
 	{
 		Name:        "rezusctl",
 		DisplayName: "RezusCloud CLI",
-		Description: "Provision, bootstrap, and manage RezusCloud Personal Clouds. Architecture, ADRs, CLI reference, multi-cluster, getting started.",
 		DocsPath:    "docs",
 	},
 }

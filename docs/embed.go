@@ -9,7 +9,7 @@ import (
 // GetDocFS returns the filesystem for reading docs.
 // Priority:
 //  1. DOCS_PATH env var (explicit path)
-//  2. docs/external/ relative to working directory (build-time fetch)
+//  2. docs/ relative to working directory (website-authored docs)
 //  3. nil (no docs available)
 func GetDocFS() fs.FS {
 	// Explicit override
@@ -19,10 +19,9 @@ func GetDocFS() fs.FS {
 		}
 	}
 
-	// Default: docs/external/ relative to working directory.
-	// This is populated by scripts/fetch-docs.sh at build time
-	// and available in both CI-built binaries and Docker containers.
-	defaultPath := filepath.Join("docs", "external")
+	// Default: docs/ directory containing website-authored documentation.
+	// Organized by topic: getting-started/, concepts/, reference/, adr/
+	defaultPath := filepath.Join("docs")
 	if info, err := os.Stat(defaultPath); err == nil && info.IsDir() {
 		return os.DirFS(defaultPath)
 	}

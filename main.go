@@ -23,9 +23,8 @@ func main() {
 
 	app := handlers.SetupApp()
 
-	// Initialize documentation store from DOCS_PATH or embedded
-	docsPath := os.Getenv("DOCS_PATH")
-	handlers.SetupDocs(docsPath)
+	// Initialize documentation store
+	handlers.SetupDocs()
 
 	// Middleware chain (applied before routes because SetupApp registers routes first,
 	// but Fiber processes middleware in registration order per request)

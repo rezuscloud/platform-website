@@ -3,6 +3,7 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -14,7 +15,7 @@ import (
 var DocsStore *docs.Store
 
 // SetupDocs initializes the documentation store.
-func SetupDocs(externalPath string) {
+func SetupDocs() {
 	var store *docs.Store
 	var err error
 
@@ -27,14 +28,8 @@ func SetupDocs(externalPath string) {
 	}
 
 	if store != nil {
-		repos := store.Repos()
-		total := 0
-		for _, r := range repos {
-			count := store.RepoDocCount(r.Name)
-			total += count
-			log.Printf("docs: indexed %d pages from %s", count, r.DisplayName)
-		}
-		log.Printf("docs: %d pages across %d repos", total, len(repos))
+		allDocs := store.AllDocs()
+		log.Printf("docs: indexed %d pages across %d categories", len(allDocs), len(store.Categories()))
 	} else {
 		log.Printf("docs: no documentation available")
 	}
@@ -43,7 +38,6 @@ func SetupDocs(externalPath string) {
 }
 
 // DocsIndex redirects to the first available doc page.
-// Standard docs sites never show a project picker.
 func DocsIndex(c *fiber.Ctx) error {
 	if DocsStore == nil {
 		return c.Status(http.StatusNotFound).SendString("Documentation not available")
@@ -54,50 +48,26 @@ func DocsIndex(c *fiber.Ctx) error {
 		return c.Status(http.StatusNotFound).SendString("No documentation available")
 	}
 
-	first := allDocs[0]
-	return c.Redirect("/docs/"+first.RepoName+"/"+trimExt(first.Path), http.StatusMovedPermanently)
+	return c.Redirect("/docs/"+trimExt(allDocs[0].Path), http.StatusMovedPermanently)
 }
 
-// DocsRepoIndex redirects to the first doc in a specific repo.
-func DocsRepoIndex(c *fiber.Ctx) error {
-	if DocsStore == nil {
-		return c.Status(http.StatusNotFound).SendString("Documentation not available")
-	}
-
-	repoName := c.Params("repo")
-	docsByCategory := DocsStore.DocsByCategory(repoName)
-	if len(docsByCategory) == 0 {
-		return c.Status(http.StatusNotFound).SendString("Repository not found")
-	}
-
-	// Find first doc
-	for _, catDocs := range docsByCategory {
-		if len(catDocs) > 0 {
-			first := catDocs[0]
-			return c.Redirect("/docs/"+first.RepoName+"/"+trimExt(first.Path), http.StatusMovedPermanently)
-		}
-	}
-
-	return c.Status(http.StatusNotFound).SendString("No documents found")
-}
-
-// DocsPage renders a single documentation page with the standard layout:
-// unified sidebar, content, right TOC, edit link, prev/next.
+// DocsPage renders a single documentation page.
+// Accepts paths like /docs/getting-started/install or /docs/concepts/architecture.
 func DocsPage(c *fiber.Ctx) error {
 	if DocsStore == nil {
 		return c.Status(http.StatusNotFound).SendString("Documentation not available")
 	}
 
-	repoName := c.Params("repo")
+	// Build the path from the wildcard parameter
 	docPath := c.Params("*")
 	if docPath == "" {
-		return DocsRepoIndex(c)
+		return DocsIndex(c)
 	}
-	if !hasSuffix(docPath, ".md") {
+	if !strings.HasSuffix(docPath, ".md") {
 		docPath += ".md"
 	}
 
-	doc, found := DocsStore.Get(repoName, docPath)
+	doc, found := DocsStore.Get(docPath)
 	if !found {
 		return c.Status(http.StatusNotFound).SendString("Document not found")
 	}
@@ -109,7 +79,7 @@ func DocsPage(c *fiber.Ctx) error {
 	allDocs := DocsStore.AllDocs()
 	var prev, next *docs.Doc
 	for i, d := range allDocs {
-		if d.RepoName == doc.RepoName && d.Path == doc.Path {
+		if d.Path == doc.Path {
 			if i > 0 {
 				prev = &allDocs[i-1]
 			}
@@ -121,10 +91,6 @@ func DocsPage(c *fiber.Ctx) error {
 	}
 
 	return render(c, pages.DocsDetailPage(doc, headings, prev, next, DocsStore))
-}
-
-func hasSuffix(s, suffix string) bool {
-	return len(s) >= len(suffix) && s[len(s)-len(suffix):] == suffix
 }
 
 func trimExt(path string) string {

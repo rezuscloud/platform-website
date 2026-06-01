@@ -1,8 +1,6 @@
 package pages
 
 import (
-	"strings"
-
 	"github.com/rezuscloud/platform-website/docs"
 	"github.com/rezuscloud/platform-website/views"
 )
@@ -31,52 +29,42 @@ templ docsSearch() {
 	</div>
 }
 
-// docsSidebar renders a unified sidebar with all docs from all repos.
-// Each repo is a top-level group with categories nested below.
+// docsSidebar renders a unified sidebar organized by topic category.
 templ docsSidebar(activeKey string, store *docs.Store) {
 	<aside class="hidden lg:block w-[18rem] flex-shrink-0" aria-label="Documentation navigation">
 		<nav class="sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto px-4 py-6">
 			@docsSearch()
 			<div class="mt-4 space-y-6">
-				for _, repo := range store.Repos() {
+				for _, cat := range store.Categories() {
 					<div data-doc-group>
 						<p class="font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-2 px-2">
-							{ repo.DisplayName }
+							{ docs.CategoryDisplayName(cat) }
 						</p>
-						for _, cat := range store.CategoriesForRepo(repo.Name) {
-							<div class="mb-4">
-								if cat != "" {
-									<p class="font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-1 px-3 text-ink/50 dark:text-next-subtle/50">
-										{ strings.Title(cat) }
-									</p>
-								}
-								<ul>
-									for _, d := range store.DocsByCategory(repo.Name)[cat] {
-										<li>
-											if d.RepoName+"/"+d.Path == activeKey {
-												<a
-													href={ docPathToURL(d.RepoName, d.Path) }
-													data-doc-link
-													data-title={ d.Title }
-													class="block py-1.5 px-3 text-sm font-semibold text-accent-gold dark:text-next-teal bg-surface-strong dark:bg-next-dark"
-												>
-													{ d.Title }
-												</a>
-											} else {
-												<a
-													href={ docPathToURL(d.RepoName, d.Path) }
-													data-doc-link
-													data-title={ d.Title }
-													class="block py-1.5 px-3 text-sm text-ink-muted dark:text-next-subtle hover:text-ink dark:hover:text-next-white hover:bg-surface dark:hover:bg-next-dark transition-colors"
-												>
-													{ d.Title }
-												</a>
-											}
-										</li>
+						<ul>
+							for _, d := range store.DocsByCategory()[cat] {
+								<li>
+									if d.Path == activeKey {
+										<a
+											href={ "/docs/" + trimExt(d.Path) }
+											data-doc-link
+											data-title={ d.Title }
+											class="block py-1.5 px-3 text-sm font-semibold text-accent-gold dark:text-next-teal bg-surface-strong dark:bg-next-dark"
+										>
+											{ d.Title }
+										</a>
+									} else {
+										<a
+											href={ "/docs/" + trimExt(d.Path) }
+											data-doc-link
+											data-title={ d.Title }
+											class="block py-1.5 px-3 text-sm text-ink-muted dark:text-next-subtle hover:text-ink dark:hover:text-next-white hover:bg-surface dark:hover:bg-next-dark transition-colors"
+										>
+											{ d.Title }
+										</a>
 									}
-								</ul>
-							</div>
-						}
+								</li>
+							}
+						</ul>
 					</div>
 				}
 			</div>
@@ -109,29 +97,25 @@ templ docsMobileNav(activeKey string, store *docs.Store) {
 			class="mt-4 border border-rule dark:border-next-mid p-4 max-h-[60vh] overflow-y-auto"
 			aria-label="Documentation navigation"
 		>
-			for _, repo := range store.Repos() {
-				for _, cat := range store.CategoriesForRepo(repo.Name) {
-					if cat != "" {
-						<p class="font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-1 px-2">
-							{ repo.DisplayName }: { strings.Title(cat) }
-						</p>
+			for _, cat := range store.Categories() {
+				<p class="font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-1 px-2">
+					{ docs.CategoryDisplayName(cat) }
+				</p>
+				<ul class="mb-3">
+					for _, d := range store.DocsByCategory()[cat] {
+						<li>
+							if d.Path == activeKey {
+								<a href={ "/docs/" + trimExt(d.Path) } class="block py-1 px-2 text-sm font-semibold text-accent-gold dark:text-next-teal">
+									{ d.Title }
+								</a>
+							} else {
+								<a href={ "/docs/" + trimExt(d.Path) } class="block py-1 px-2 text-sm text-ink-muted dark:text-next-subtle hover:text-ink dark:hover:text-next-white">
+									{ d.Title }
+								</a>
+							}
+						</li>
 					}
-					<ul class="mb-3">
-						for _, d := range store.DocsByCategory(repo.Name)[cat] {
-							<li>
-								if d.RepoName+"/"+d.Path == activeKey {
-									<a href={ docPathToURL(d.RepoName, d.Path) } class="block py-1 px-2 text-sm font-semibold text-accent-gold dark:text-next-teal">
-										{ d.Title }
-									</a>
-								} else {
-									<a href={ docPathToURL(d.RepoName, d.Path) } class="block py-1 px-2 text-sm text-ink-muted dark:text-next-subtle hover:text-ink dark:hover:text-next-white">
-										{ d.Title }
-									</a>
-								}
-							</li>
-						}
-					</ul>
-				}
+				</ul>
 			}
 		</nav>
 	</div>
@@ -164,17 +148,19 @@ templ docsRightTOC(headings []docs.Heading) {
 
 // docsEditLink renders the "Edit this page" link pointing to GitHub.
 templ docsEditLink(githubURL string) {
-	<a
-		href={ githubURL }
-		class="inline-flex items-center gap-1.5 text-xs font-silkscreen text-ink-muted dark:text-next-subtle hover:text-accent-gold dark:hover:text-next-teal transition-colors"
-		target="_blank"
-		rel="noopener noreferrer"
-	>
-		<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-			<path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"></path>
-		</svg>
-		Edit this page
-	</a>
+	if githubURL != "" {
+		<a
+			href={ githubURL }
+			class="inline-flex items-center gap-1.5 text-xs font-silkscreen text-ink-muted dark:text-next-subtle hover:text-accent-gold dark:hover:text-next-teal transition-colors"
+			target="_blank"
+			rel="noopener noreferrer"
+		>
+			<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"></path>
+			</svg>
+			Edit this page
+		</a>
+	}
 }
 
 // docsPrevNext renders prev/next page navigation at the bottom of content.
@@ -183,7 +169,7 @@ templ docsPrevNext(prev *docs.Doc, next *docs.Doc) {
 		<nav class="flex items-center justify-between mt-12 pt-6 border-t border-rule dark:border-next-mid" aria-label="Pagination">
 			if prev != nil {
 				<a
-					href={ docPathToURL(prev.RepoName, prev.Path) }
+					href={ "/docs/" + trimExt(prev.Path) }
 					class="group flex flex-col items-start max-w-[45%]"
 				>
 					<span class="text-[10px] font-silkscreen uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-1">Previous</span>
@@ -196,7 +182,7 @@ templ docsPrevNext(prev *docs.Doc, next *docs.Doc) {
 			}
 			if next != nil {
 				<a
-					href={ docPathToURL(next.RepoName, next.Path) }
+					href={ "/docs/" + trimExt(next.Path) }
 					class="group flex flex-col items-end text-right max-w-[45%]"
 				>
 					<span class="text-[10px] font-silkscreen uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-1">Next</span>
@@ -219,11 +205,9 @@ templ DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next
 					<nav class="text-xs font-silkscreen text-ink-muted dark:text-next-subtle" aria-label="Breadcrumb">
 						<a href="/docs" class="hover:text-accent-gold dark:hover:text-next-teal transition-colors">Documentation</a>
 						<span class="mx-2 text-rule dark:text-next-mid">/</span>
-						<span class="text-ink dark:text-next-white">{ doc.RepoDisplayName }</span>
-						if doc.Category != "" {
-							<span class="mx-2 text-rule dark:text-next-mid">/</span>
-							<span>{ strings.Title(doc.Category) }</span>
-						}
+						<a href={ "/docs/" + doc.Category } class="hover:text-accent-gold dark:hover:text-next-teal transition-colors">
+							{ docs.CategoryDisplayName(doc.Category) }
+						</a>
 						<span class="mx-2 text-rule dark:text-next-mid">/</span>
 						<span class="text-ink dark:text-next-white">{ doc.Title }</span>
 					</nav>
@@ -232,11 +216,11 @@ templ DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next
 			<!-- Three-column layout -->
 			<div class="mx-auto max-w-[90rem] px-0 lg:grid lg:grid-cols-[18rem_minmax(0,1fr)_14rem] xl:grid-cols-[18rem_minmax(0,1fr)_14rem]">
 				<!-- Left sidebar (desktop) -->
-				@docsSidebar(doc.RepoName+"/"+doc.Path, store)
+				@docsSidebar(doc.Path, store)
 				<!-- Content -->
 				<main class="min-w-0 px-4 sm:px-6 lg:px-8 py-8">
 					<!-- Mobile nav toggle -->
-					@docsMobileNav(doc.RepoName+"/"+doc.Path, store)
+					@docsMobileNav(doc.Path, store)
 					<!-- Page title -->
 					<h1 class="font-silkscreen text-2xl sm:text-3xl text-ink dark:text-next-white tracking-tight mb-6">
 						{ doc.Title }
