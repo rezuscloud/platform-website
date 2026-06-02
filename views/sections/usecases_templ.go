@@ -29,7 +29,7 @@ func UseCases() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"usecases\" data-reveal class=\"py-16 sm:py-24 bg-paper dark:bg-next-black\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-10\"><div class=\"w-12 h-1 bg-accent-gold dark:bg-next-teal-hi mx-auto mb-4\"></div><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white\">What Will You Build?</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body\">From a home server to a distributed training cluster. Same platform, same git push.</p></div><!-- Tech strip (merged from TechStack) --><div class=\"max-w-4xl mx-auto mb-12\"><div class=\"flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5\"><span class=\"text-xs font-bold font-mac uppercase tracking-widest text-ink-muted dark:text-next-subtle whitespace-nowrap\">Built with</span><div class=\"w-8 h-px bg-rule dark:bg-next-mid shrink-0 hidden sm:block\"></div><div class=\"flex flex-wrap gap-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"usecases\" data-reveal class=\"py-16 sm:py-24 bg-paper dark:bg-next-black\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center mb-10\"><div class=\"ds-accent-bar ds-accent-bar-md mx-auto mb-4\"></div><h2 class=\"text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white\">What Will You Build?</h2><p class=\"text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body\">From a home server to a distributed training cluster. Same platform, same git push.</p></div><!-- Tech strip (merged from TechStack) --><div class=\"max-w-4xl mx-auto mb-12\"><div class=\"flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5\"><span class=\"text-xs font-bold font-mac uppercase tracking-widest text-ink-muted dark:text-next-subtle whitespace-nowrap\">Built with</span><div class=\"w-8 h-px bg-rule dark:bg-next-mid shrink-0 hidden sm:block\"></div><div class=\"flex flex-wrap gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -203,7 +203,7 @@ func useCaseCard(title string, description string, items []UseCaseItem, icon tem
 			return templ_7745c5c3_Err
 		}
 		for _, item := range items {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<li class=\"flex items-start gap-2 text-sm\"><span class=\"mt-1.5 w-1.5 h-1.5 bg-accent-gold dark:bg-next-teal-hi shrink-0\"></span> <span class=\"font-mac-body\"><span class=\"font-medium text-ink dark:text-next-white\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<li class=\"flex items-start gap-2 text-sm\"><span class=\"mt-1.5 ds-accent-dot ds-accent-dot-sm shrink-0\"></span> <span class=\"font-mac-body\"><span class=\"font-medium text-ink dark:text-next-white\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -263,7 +263,7 @@ func techBadge(name string) templ.Component {
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span class=\"inline-flex items-center px-3 py-2 bg-surface-strong dark:bg-next-black border border-rule dark:next-raised text-xs font-mac text-ink dark:text-next-white hover:border-accent-gold dark:hover:border-next-teal next-bevel-hover transition-colors duration-120\"><span class=\"w-1 h-1 bg-accent-gold dark:bg-next-teal-hi mr-1.5 shrink-0\"></span> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span class=\"inline-flex items-center px-3 py-2 bg-surface-strong dark:bg-next-black border border-rule dark:next-raised text-xs font-mac text-ink dark:text-next-white hover:border-accent-gold dark:hover:border-next-teal next-bevel-hover transition-colors duration-120\"><span class=\"ds-accent-dot ds-accent-dot-sm mr-1.5\"></span> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

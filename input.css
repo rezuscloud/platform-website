@@ -280,6 +280,188 @@
 	box-shadow: inset 0 0 0 0;
 }
 
+/* ===== Design System Components ===== */
+
+/* Accent Bar — section heading underline (3 sizes) */
+@utility ds-accent-bar {
+	height: 0.25rem;
+	background: var(--color-accent-gold);
+	border-radius: 0;
+}
+.dark .ds-accent-bar {
+	background: var(--color-next-teal-hi);
+}
+@utility ds-accent-bar-sm {
+	width: 2rem;
+	height: 0.125rem;
+}
+@utility ds-accent-bar-md {
+	width: 3rem;
+	height: 0.25rem;
+}
+@utility ds-accent-bar-lg {
+	width: 4rem;
+	height: 0.25rem;
+}
+
+/* Accent Dot — list bullet / status marker (2 sizes + active pulse) */
+@utility ds-accent-dot {
+	width: 0.5rem;
+	height: 0.5rem;
+	background: var(--color-accent-gold);
+	border-radius: 0;
+	flex-shrink: 0;
+}
+.dark .ds-accent-dot {
+	background: var(--color-next-teal-hi);
+}
+@utility ds-accent-dot-sm {
+	width: 0.375rem;
+	height: 0.375rem;
+}
+@utility ds-accent-dot-active {
+	background: var(--color-positive);
+	animation: ds-dot-pulse 2s ease-out infinite;
+}
+.dark .ds-accent-dot-active {
+	background: var(--color-positive-next);
+}
+@keyframes ds-dot-pulse {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.5; }
+}
+
+/* Status Dot — resource health indicator */
+@utility ds-status-positive {
+	width: 0.375rem;
+	height: 0.375rem;
+	background: var(--color-positive);
+	border-radius: 0;
+	flex-shrink: 0;
+}
+.dark .ds-status-positive {
+	background: var(--color-positive-next);
+}
+@utility ds-status-negative {
+	width: 0.375rem;
+	height: 0.375rem;
+	background: var(--color-negative);
+	border-radius: 0;
+	flex-shrink: 0;
+	animation: ds-status-blink 2s step-end infinite;
+}
+.dark .ds-status-negative {
+	background: var(--color-negative-next);
+}
+@utility ds-status-neutral {
+	width: 0.375rem;
+	height: 0.375rem;
+	background: var(--color-rule);
+	border-radius: 0;
+	flex-shrink: 0;
+}
+.dark .ds-status-neutral {
+	background: var(--color-next-mid);
+}
+@keyframes ds-status-blink {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0; }
+}
+
+/* Section Badge — label with // separator */
+@utility ds-section-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-family: var(--font-mac);
+	font-size: 0.6875rem;
+	font-weight: 700;
+	color: var(--color-ink);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+.dark .ds-section-badge {
+	color: var(--color-next-white);
+}
+@utility ds-section-badge-sep {
+	color: var(--color-accent-gold);
+	margin: 0 0.125rem;
+}
+.dark .ds-section-badge-sep {
+	color: var(--color-next-teal);
+}
+
+/* Alert Banner — semantic system alerts */
+@utility ds-alert {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+	width: 100%;
+	padding: 0.75rem 1rem;
+	border: 1px solid var(--color-rule);
+	background: var(--color-surface);
+	font-size: 0.8125rem;
+	line-height: 1.5;
+}
+.dark .ds-alert {
+	border: 2px solid;
+	border-color: var(--color-next-bevel-hi) var(--color-next-bevel-lo) var(--color-next-bevel-lo) var(--color-next-bevel-hi);
+	background: var(--color-next-dark);
+}
+@utility ds-alert-info {
+	border-color: var(--color-accent-gold);
+	background: color-mix(in oklch, var(--color-accent-gold) 5%, var(--color-surface));
+}
+.dark .ds-alert-info {
+	border-color: var(--color-next-teal);
+	background: color-mix(in oklch, var(--color-next-teal) 5%, var(--color-next-dark));
+}
+@utility ds-alert-positive {
+	border-color: var(--color-positive);
+	background: color-mix(in oklch, var(--color-positive) 5%, var(--color-surface));
+}
+.dark .ds-alert-positive {
+	border-color: var(--color-positive-next);
+	background: color-mix(in oklch, var(--color-positive-next) 5%, var(--color-next-dark));
+}
+@utility ds-alert-negative {
+	border-color: var(--color-negative);
+	background: color-mix(in oklch, var(--color-negative) 5%, var(--color-surface));
+}
+.dark .ds-alert-negative {
+	border-color: var(--color-negative-next);
+	background: color-mix(in oklch, var(--color-negative-next) 5%, var(--color-next-dark));
+}
+@utility ds-alert-icon {
+	flex-shrink: 0;
+	margin-top: 0.125rem;
+}
+
+/* Skeleton — loading placeholder */
+@utility ds-skeleton {
+	background: var(--color-surface);
+	border: 1px solid var(--color-rule);
+	animation: ds-skeleton-pulse 1.5s ease-in-out infinite;
+}
+.dark .ds-skeleton {
+	background: var(--color-next-mid);
+	border: 1px solid var(--color-next-dark);
+}
+@utility ds-skeleton-heading {
+	height: 1.5rem;
+	background: var(--color-surface-strong);
+	border: 1px solid var(--color-rule);
+	animation: ds-skeleton-pulse 1.5s ease-in-out infinite;
+}
+.dark .ds-skeleton-heading {
+	background: var(--color-next-dark);
+	border: 1px solid var(--color-next-mid);
+}
+@keyframes ds-skeleton-pulse {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.5; }
+}
+
 /* ===== Scroll reveal ===== */
 
 [data-reveal] {
@@ -327,6 +509,16 @@
 	}
 	.mac-dots {
 		transition: none !important;
+	}
+	.ds-accent-dot-active {
+		animation: none !important;
+	}
+	.ds-status-negative {
+		animation: none !important;
+	}
+	.ds-skeleton,
+	.ds-skeleton-heading {
+		animation: none !important;
 	}
 }
 
