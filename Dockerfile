@@ -1,8 +1,9 @@
 # Stage 1: Build Tailwind CSS (runs natively, output is arch-independent)
 FROM --platform=$BUILDPLATFORM node:22-alpine AS tailwind
 WORKDIR /app
-COPY package.json ./
-RUN npm install
+ARG NODE_AUTH_TOKEN=""
+COPY package.json package-lock.json .npmrc ./
+RUN NODE_AUTH_TOKEN=${NODE_AUTH_TOKEN} npm ci
 COPY input.css ./
 COPY views/ ./views/
 RUN npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
