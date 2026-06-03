@@ -42,6 +42,10 @@
 	--color-negative: oklch(50% 0.12 25);
 	--color-negative-next: oklch(65% 0.14 25);
 
+	/* Terminal text: warm cream for Mac (on dark bg), cool phosphor for NeXT */
+	--color-terminal-text: oklch(82% 0.006 85);
+	--color-terminal-text-next: oklch(72% 0.012 85);
+
 	/* Font families — same in both modes, only colors change */
 	--font-mac: "Silkscreen", system-ui, sans-serif;
 	--font-mac-body: system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -456,6 +460,13 @@
 .dark .ds-skeleton-heading {
 	background: var(--color-next-dark);
 	border: 1px solid var(--color-next-mid);
+}
+
+@utility ds-terminal-text {
+	color: var(--color-terminal-text);
+}
+.dark .ds-terminal-text {
+	color: var(--color-terminal-text-next);
 }
 @keyframes ds-skeleton-pulse {
 	0%, 100% { opacity: 1; }
