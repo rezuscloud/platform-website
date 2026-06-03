@@ -39,7 +39,7 @@ runs:
     - name: Install npm dependencies
       shell: bash
       env:
-        NODE_AUTH_TOKEN: "${{ github.token }}"
+        NPM_TOKEN: "${{ github.token }}"
       run: npm ci
 
     - name: Get templ hash
