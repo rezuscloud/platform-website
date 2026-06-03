@@ -2,7 +2,7 @@
 FROM --platform=$BUILDPLATFORM node:22-alpine AS tailwind
 WORKDIR /app
 COPY package.json package-lock.json .npmrc ./
-RUN --mount=type=secret,id=npm_token,env=NPM_TOKEN npm ci
+RUN --mount=type=secret,id=npm_token,env=NODE_AUTH_TOKEN npm ci
 COPY input.css ./
 COPY views/ ./views/
 RUN npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
