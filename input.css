@@ -1,59 +1,8 @@
 @import "tailwindcss";
 
+@import "@rezuscloud/design-system/css/theme.css";
+
 @source "../views/**/*.templ";
-
-@custom-variant dark (&:where(.dark, .dark *));
-
-@theme {
-	/*
-	 * Color strategy: Committed (brand register).
-	 * Mac mode: warm-tinted neutrals (amber hue 85°) + amber gold accent.
-	 * Reads as B&W, feels like Mac CRT phosphor and paper.
-	 * NeXT mode: cool-tinted neutrals (slate hue 270°), pure grayscale accent.
-	 * Reads as grayscale, feels like NeXT workstation display.
-	 * Chroma is 0.003–0.008: imperceptible per-element, warm/cool in aggregate.
-	 */
-
-	/* Mac mode: Warm-tinted B&W (amber hue ~85°) */
-	--color-paper: oklch(99.5% 0.004 85);
-	--color-surface: oklch(95.5% 0.004 85);
-	--color-surface-strong: oklch(88.5% 0.006 85);
-	--color-ink: oklch(14% 0.008 65);
-	--color-ink-muted: oklch(30% 0.008 65);
-	--color-rule: oklch(72% 0.005 85);
-	--color-accent-gold: oklch(78% 0.16 75);
-	--color-accent-gold-dark: oklch(65% 0.14 75);
-
-	/* NeXT mode: NeXT Inc. palette — cool grayscale + dark teal accent */
-	--color-next-black: oklch(6% 0.005 270);
-	--color-next-dark: oklch(20% 0.006 270);
-	--color-next-mid: oklch(34% 0.006 270);
-	--color-next-light: oklch(58% 0.006 270);
-	--color-next-white: oklch(88% 0.004 270);
-	--color-next-subtle: oklch(72% 0.012 85);
-	--color-next-bevel-hi: oklch(55% 0.006 270);
-	--color-next-bevel-lo: oklch(2% 0.004 270);
-	--color-next-teal: oklch(60% 0.08 170);
-	--color-next-teal-hi: oklch(70% 0.07 170);
-
-	/* Semantic colors: warm-tinted for Mac, cool-tinted for NeXT */
-	--color-positive: oklch(55% 0.12 150);
-	--color-positive-next: oklch(75% 0.14 150);
-	--color-negative: oklch(50% 0.12 25);
-	--color-negative-next: oklch(65% 0.14 25);
-
-	/* Terminal text: warm cream for Mac (on dark bg), cool phosphor for NeXT */
-	--color-terminal-text: oklch(82% 0.006 85);
-	--color-terminal-text-next: oklch(72% 0.012 85);
-
-	/* Font families — same in both modes, only colors change */
-	--font-mac: "Silkscreen", system-ui, sans-serif;
-	--font-mac-body: system-ui, -apple-system, "Segoe UI", sans-serif;
-	--font-mac-mono: "VT323", "Courier New", monospace;
-	--font-next: "Silkscreen", system-ui, sans-serif;
-	--font-next-body: system-ui, -apple-system, "Segoe UI", sans-serif;
-	--font-next-mono: "VT323", "Courier New", monospace;
-}
 
 /* Font face declarations */
 @font-face {

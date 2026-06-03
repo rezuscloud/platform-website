@@ -17,6 +17,7 @@ jobs:
     runs-on: [self-hosted, Linux, X64]
     permissions:
       contents: read
+      packages: read
     steps:
       - uses: actions/checkout@v6
         with:
@@ -73,6 +74,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
+      packages: read
     steps:
       - uses: actions/checkout@v6
 
@@ -105,6 +107,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
+      packages: read
     steps:
       - uses: actions/checkout@v6
 

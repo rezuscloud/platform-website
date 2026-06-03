@@ -30,6 +30,7 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
         cache: ${{ inputs.enable-cache == 'true' && 'npm' || '' }}
+        registry-url: 'https://npm.pkg.github.com'
 
     - name: Install templ
       shell: bash
@@ -37,6 +38,8 @@ runs:
 
     - name: Install npm dependencies
       shell: bash
+      env:
+        NODE_AUTH_TOKEN: ${{ env.GITHUB_TOKEN }}
       run: npm ci
 
     - name: Get templ hash
