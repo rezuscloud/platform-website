@@ -84,6 +84,7 @@ runs:
           VERSION=${{ inputs.version }}
           GIT_COMMIT=${{ inputs.git_commit }}
           BUILD_TIME=${{ steps.meta.outputs.build_time }}
+          NODE_AUTH_TOKEN=${{ github.token }}
 
     - name: Verify manifest platforms
       if: ${{ inputs.push_image == 'true' }}
