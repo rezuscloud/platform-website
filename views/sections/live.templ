@@ -21,26 +21,25 @@ templ Live(data obs.LiveData) {
 			<div class="flex items-center gap-3 mb-4">
 				<h2 class="font-mac text-2xl sm:text-3xl font-bold text-ink dark:text-next-white tracking-tight">Live Platform</h2>
 				<div class="flex items-center gap-1.5">
-					<span class="inline-block w-2.5 h-2.5 bg-green-600 dark:bg-green-500 animate-pulse" aria-hidden="true"></span>
+					<span class="inline-block ds-accent-dot ds-status-positive animate-pulse" aria-hidden="true"></span>
 					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle uppercase tracking-wider">Live</span>
 				</div>
 			</div>
 			<p class="font-mac-body text-sm text-ink-muted dark:text-next-subtle mb-6">This website, its CI pipeline, observability stack, and all development tools run on the platform you see below. Self-hosted, self-monitored.</p>
-			<!-- Static banner (no SigNoz) -->
 			<div
-				class="border border-accent-gold/40 dark:border-next-teal/40 bg-accent-gold/5 dark:bg-next-teal/5 px-4 py-2 mb-6"
+				class="ds-alert ds-alert-info mb-6"
 				x-show="!connected && !initial.hasMetrics"
 			>
-				<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle">Showing platform topology. Live metrics require SigNoz.</span>
+				<span class="font-mac-mono text-xs text-ink-muted dark:text-next-subtle">Showing platform topology. Metrics are live when SigNoz is connected.</span>
 			</div>
 			<!-- Connection lost banner -->
 			<div
-				class="border border-negative/40 dark:border-negative-next/40 bg-negative/5 dark:bg-negative-next/5 px-4 py-2 mb-6"
+				class="ds-alert ds-alert-negative mb-6"
 				x-show="(!connected || stale) && initial.hasMetrics"
 				x-cloak
 				role="alert"
 			>
-				<span class="font-terminal text-xs text-negative dark:text-negative-next">Connection lost or data stale. Showing last known state.</span>
+				<span class="font-mac-mono text-xs text-negative dark:text-negative-next">Connection lost or data stale. Showing last known state.</span>
 			</div>
 			<!-- SSE freshness -->
 			<div class="font-terminal text-xs text-ink-muted dark:text-next-subtle mb-6" x-show="connected" x-cloak aria-live="polite">
@@ -51,7 +50,7 @@ templ Live(data obs.LiveData) {
 			<!-- Legend -->
 			<div class="flex items-center gap-4 mb-6">
 				<div class="flex items-center gap-1">
-					<span class="inline-block w-1.5 h-1.5 bg-green-600 dark:bg-green-500" aria-hidden="true"></span>
+					<span class="inline-block ds-status-positive" aria-hidden="true"></span>
 					<span class="font-terminal text-[10px] text-ink-muted/70 dark:text-next-subtle/70">Running</span>
 				</div>
 				<div class="flex items-center gap-1">
@@ -338,10 +337,10 @@ templ Live(data obs.LiveData) {
 					},
 
 					dotClass(status) {
-						var b = "inline-block w-1.5 h-1.5 shrink-0";
+						var b = "inline-block ds-accent-dot ds-accent-dot-sm shrink-0";
 						if (status === "healthy" || status === "running")
-							return b + " bg-green-600 dark:bg-green-500";
-						return b + " bg-rule dark:bg-next-mid";
+							return b + " ds-status-positive";
+						return b + " ds-status-neutral";
 					},
 				};
 			}
@@ -486,9 +485,9 @@ templ serviceBox(svc obs.Service, selfNS bool) {
 	>
 		<div class="flex items-center gap-1">
 			if svc.Status == "healthy" || svc.Status == "running" {
-				<span data-dot class="inline-block w-1.5 h-1.5 shrink-0 bg-green-600 dark:bg-green-500" aria-label="Running"></span>
+				<span data-dot class="inline-block ds-accent-dot ds-accent-dot-sm shrink-0 ds-status-positive" aria-label="Running"></span>
 			} else {
-				<span data-dot class="inline-block w-1.5 h-1.5 shrink-0 bg-rule dark:bg-next-mid" aria-label="Unknown"></span>
+				<span data-dot class="inline-block ds-accent-dot ds-accent-dot-sm shrink-0 ds-status-neutral" aria-label="Unknown"></span>
 			}
 			<span data-metric class="font-terminal text-[10px] text-ink dark:text-next-white tabular-nums leading-none">
 				if svc.CPU > 0 || svc.RAM > 0 {

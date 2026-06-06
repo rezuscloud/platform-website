@@ -8,5 +8,8 @@
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.0",
     "tailwindcss": "^4.1.0"
+  },
+  "dependencies": {
+    "@rezuscloud/design-system": "^1.0.0"
   }
 }
