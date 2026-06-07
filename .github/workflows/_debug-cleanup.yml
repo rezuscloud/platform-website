@@ -1,0 +1,43 @@
+name: Debug Cleanup
+
+on:
+  workflow_dispatch:
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  debug:
+    runs-on: [self-hosted, Linux, X64]
+    steps:
+      - name: Probe GITHUB_TOKEN access to package versions
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          echo "=== whoami ==="
+          gh api /user --jq '{login: .login, type: .type}' 2>&1
+          echo
+          echo "=== installation check (workflow GITHUB_TOKEN is an app installation) ==="
+          gh api /installation --jq '{id: .id, account: .account.login}' 2>&1 | head -5
+          echo
+          echo "=== raw API call WITHOUT 2>/dev/null ==="
+          gh api "/orgs/rezuscloud/packages/container/platform-website/versions?per_page=5" 2>&1 | head -5
+          echo
+          echo "=== exit code of api call ==="
+          gh api "/orgs/rezuscloud/packages/container/platform-website/versions?per_page=5" -o /tmp/v1.json
+          echo "exit=$?  bytes=$(wc -c < /tmp/v1.json)"
+          echo
+          echo "=== with --paginate ==="
+          gh api "/orgs/rezuscloud/packages/container/platform-website/versions?per_page=100" --paginate -o /tmp/v2.json
+          echo "exit=$?  bytes=$(wc -c < /tmp/v2.json)"
+          echo
+          echo "=== count items ==="
+          jq 'length' /tmp/v1.json 2>&1
+          jq 'length' /tmp/v2.json 2>&1
+          echo
+          echo "=== what the actual cleanup pattern produces ==="
+          VERSIONS=$(gh api "/orgs/rezuscloud/packages/container/platform-website/versions?per_page=100" --paginate 2>/dev/null || echo '[]')
+          echo "VERSIONS bytes: $(echo "$VERSIONS" | wc -c)"
+          echo "VERSIONS count: $(echo "$VERSIONS" | jq 'length' 2>&1)"
