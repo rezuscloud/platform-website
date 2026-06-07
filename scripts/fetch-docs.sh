@@ -14,8 +14,9 @@ mkdir -p "$TARGET_DIR"
 
 # List of repos to fetch docs from (name:docs_path:branch)
 # Source-of-truth: product docs live in rezuscloud/rezuscloud.
+# In-tree platform-website/docs/ pages are served directly and are not
+# re-fetched from this repo.
 REPOS=(
-    "platform-website:docs:master"
     "rezuscloud:docs:main"
 )
 

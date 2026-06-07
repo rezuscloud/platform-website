@@ -35,18 +35,18 @@ type Doc struct {
 
 // categoryOrder defines the sidebar display order for categories.
 var categoryOrder = map[string]int{
-	"getting-started": 1,
-	"concepts":        2,
-	"reference":       3,
-	"adr":             4,
+	"":               1,
+	"getting-started": 2,
+	"concepts":        3,
+	"reference":       4,
 }
 
 // categoryDisplayNames maps directory names to sidebar headings.
 var categoryDisplayNames = map[string]string{
+	"":               "Overview",
 	"getting-started": "Getting Started",
 	"concepts":        "Concepts",
 	"reference":       "Reference",
-	"adr":             "Architecture Decisions",
 }
 
 // CategoryDisplayName returns the display name for a category directory.
@@ -154,6 +154,16 @@ func shouldIndex(relPath string) bool {
 }
 
 // addDoc indexes a single markdown file.
+//
+// Path conventions:
+//   - in-tree files (e.g. "getting-started/what-is-rezuscloud.md") are served
+//     at their natural path with no source attribution unless the file
+//     carries an explicit <!-- source: repo:path --> comment.
+//   - files under external/<repo>/... are fetched from the named repo by
+//     scripts/fetch-docs.sh. The external/<repo>/ prefix is stripped from
+//     the served URL, and the repo is recorded as the source for GitHub
+//     view/edit links. The website is about rezuscloud; calling product
+//     docs "external" in the URL would be misleading.
 func (s *Store) addDoc(relPath string, data []byte) {
 	title := ExtractTitle(data)
 	if title == "" {
@@ -167,13 +177,17 @@ func (s *Store) addDoc(relPath string, data []byte) {
 		return
 	}
 
-	category := ""
-	if idx := strings.Index(relPath, "/"); idx >= 0 {
-		category = relPath[:idx]
+	// Default: source comes from an explicit comment in the file.
+	repoName, sourcePath := parseSource(data)
+
+	// Override: if the file lives under external/<repo>/..., the filesystem
+	// path is authoritative. Strip the prefix from the served URL.
+	if parts := strings.SplitN(relPath, "/", 3); len(parts) == 3 && parts[0] == "external" {
+		repoName = parts[1]
+		sourcePath = parts[2]
+		relPath = parts[2]
 	}
 
-	// Parse source repo from the last line comment: <!-- source: repo:path -->
-	repoName, sourcePath := parseSource(data)
 	githubURL := ""
 	githubEditURL := ""
 	if repoName != "" {
@@ -182,6 +196,11 @@ func (s *Store) addDoc(relPath string, data []byte) {
 			githubURL = repo.GitHubBaseURL() + "/" + sourcePath
 			githubEditURL = repo.GitHubEditURL() + "/" + sourcePath
 		}
+	}
+
+	category := ""
+	if idx := strings.Index(relPath, "/"); idx >= 0 {
+		category = relPath[:idx]
 	}
 
 	catOrder := 999
