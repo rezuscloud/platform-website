@@ -39,6 +39,7 @@ var categoryOrder = map[string]int{
 	"getting-started": 2,
 	"concepts":        3,
 	"reference":       4,
+	"integrations":    5,
 }
 
 // categoryDisplayNames maps directory names to sidebar headings.
@@ -47,6 +48,7 @@ var categoryDisplayNames = map[string]string{
 	"getting-started": "Getting Started",
 	"concepts":        "Concepts",
 	"reference":       "Reference",
+	"integrations":    "Integrations",
 }
 
 // CategoryDisplayName returns the display name for a category directory.
