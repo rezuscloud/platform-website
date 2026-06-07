@@ -77,16 +77,53 @@ jobs:
 
           VERSIONS=$(gh api "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}/versions?per_page=100" --paginate 2>/dev/null || echo '[]')
 
+          # Build the set of digests referenced by any tagged multi-arch index.
+          # Multi-arch (buildx) pushes upload per-architecture manifests and
+          # attestation manifests as UNTAGGED versions, referenced by digest
+          # from the tagged index. Deleting them turns the index into a dead
+          # pointer and breaks image pulls with "manifest unknown".
+          REFERENCED_FILE=$(mktemp)
+          trap 'rm -f "$REFERENCED_FILE"' EXIT
+
+          REGISTRY_TOKEN=$(curl -sS \
+            -u "${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" \
+            "https://ghcr.io/token?scope=repository:${{ github.repository }}:pull&service=ghcr.io" \
+            | jq -r .token)
+
+          for TAG in $(echo "$VERSIONS" | jq -r '.[]? | select((.metadata.container.tags // []) | length > 0) | .metadata.container.tags[]'); do
+            curl -sS \
+              -H "Authorization: Bearer $REGISTRY_TOKEN" \
+              -H "Accept: application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.list.v2+json,application/vnd.oci.image.manifest.v1+json,application/vnd.docker.distribution.manifest.v2+json" \
+              "https://ghcr.io/v2/${{ github.repository }}/manifests/$TAG" \
+              | jq -r 'if has("manifests") then .manifests[].digest else empty end' \
+              >> "$REFERENCED_FILE"
+          done
+
+          sort -u "$REFERENCED_FILE" -o "$REFERENCED_FILE"
+          REFERENCED_COUNT=$(wc -l < "$REFERENCED_FILE")
+          echo "Found ${REFERENCED_COUNT} digests referenced by tagged images"
+
           UNTAGGED=$(echo "$VERSIONS" | jq -c "[.[]? | select((.metadata.container.tags // []) | length == 0)]")
           TOTAL=$(echo "$UNTAGGED" | jq 'length')
 
           echo "Found ${TOTAL} untagged versions"
 
           DELETED=0
+          SKIPPED=0
           FAILED=0
 
-          for VID in $(echo "$UNTAGGED" | jq -r '.[].id'); do
+          for VID_NAME in $(echo "$UNTAGGED" | jq -r '.[] | "\(.id)|\(.name)"'); do
+            VID=$(echo "$VID_NAME" | cut -d'|' -f1)
+            VNAME=$(echo "$VID_NAME" | cut -d'|' -f2)
+
+            if [ -n "$VNAME" ] && grep -qx "$VNAME" "$REFERENCED_FILE" 2>/dev/null; then
+              echo "  Keeping version ${VID} (${VNAME}) — referenced by tagged index"
+              SKIPPED=$((SKIPPED + 1))
+              continue
+            fi
+
             if gh api -X DELETE "/orgs/${{ github.repository_owner }}/packages/container/${{ github.event.repository.name }}/versions/${VID}" 2>/dev/null; then
+              echo "  Deleted orphaned version ${VID} (${VNAME})"
               DELETED=$((DELETED + 1))
             else
               echo "  Failed to delete untagged version ${VID}"
@@ -94,7 +131,7 @@ jobs:
             fi
           done
 
-          echo "Untagged cleanup: ${DELETED} deleted, ${FAILED} failed out of ${TOTAL}"
+          echo "Untagged cleanup: ${DELETED} deleted, ${SKIPPED} kept (referenced), ${FAILED} failed out of ${TOTAL}"
 
   cleanup-manual:
     if: github.event_name == 'workflow_dispatch'
@@ -113,9 +150,33 @@ jobs:
 
           TO_DELETE="[]"
 
+          REFERENCED_FILE=$(mktemp)
+          trap 'rm -f "$REFERENCED_FILE"' EXIT
+
+          REGISTRY_TOKEN=$(curl -sS \
+            -u "${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}" \
+            "https://ghcr.io/token?scope=repository:${{ github.repository }}:pull&service=ghcr.io" \
+            | jq -r .token)
+
+          for TAG in $(echo "$VERSIONS" | jq -r '.[]? | select((.metadata.container.tags // []) | length > 0) | .metadata.container.tags[]'); do
+            curl -sS \
+              -H "Authorization: Bearer $REGISTRY_TOKEN" \
+              -H "Accept: application/vnd.oci.image.index.v1+json,application/vnd.docker.distribution.manifest.list.v2+json,application/vnd.oci.image.manifest.v1+json,application/vnd.docker.distribution.manifest.v2+json" \
+              "https://ghcr.io/v2/${{ github.repository }}/manifests/$TAG" \
+              | jq -r 'if has("manifests") then .manifests[].digest else empty end' \
+              >> "$REFERENCED_FILE"
+          done
+          sort -u "$REFERENCED_FILE" -o "$REFERENCED_FILE"
+
           if [ "$PRUNE_UNTAGGED" = "true" ]; then
-            echo "Collecting untagged versions..."
-            UNTAGGED=$(echo "$VERSIONS" | jq -c "[.[]? | select((.metadata.container.tags // []) | length == 0)]")
+            echo "Collecting untagged orphaned versions (excluding those referenced by tagged indexes)..."
+            REFERENCED_JSON=$(jq -R -s 'split("\n") | map(select(length > 0))' "$REFERENCED_FILE")
+            UNTAGGED=$(echo "$VERSIONS" | jq --argjson ref "$REFERENCED_JSON" '
+              [.[]? |
+                select((.metadata.container.tags // []) | length == 0) |
+                select(.name as $n | $ref | index($n) | not)
+              ]
+            ')
             TO_DELETE=$(echo "$TO_DELETE" | jq --argjson add "$UNTAGGED" '. + $add')
           fi
 
