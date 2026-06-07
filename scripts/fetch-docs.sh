@@ -13,9 +13,10 @@ rm -rf "$TARGET_DIR"
 mkdir -p "$TARGET_DIR"
 
 # List of repos to fetch docs from (name:docs_path:branch)
+# Source-of-truth: product docs live in rezuscloud/rezuscloud.
 REPOS=(
     "platform-website:docs:master"
-    "rezusctl:docs:main"
+    "rezuscloud:docs:main"
 )
 
 # Download docs via GitHub tarball API (authenticated via gh CLI)

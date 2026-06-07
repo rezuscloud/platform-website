@@ -21,6 +21,11 @@ type RepoConfig struct {
 
 // Registry lists source repositories for attribution and GitHub links.
 // The sidebar shows categories (from directory structure), not repo names.
+//
+// Source-of-truth policy: product documentation lives in the rezuscloud
+// repository and the llm-wiki. The platform-website repo carries only a
+// minimal set of high-level concept pages and ADRs that define the
+// website's own voice. Everything else is fetched at build time.
 var Registry = []RepoConfig{
 	{
 		Name:        "platform-website",
@@ -29,8 +34,8 @@ var Registry = []RepoConfig{
 		VersionTag:  "master",
 	},
 	{
-		Name:        "rezusctl",
-		DisplayName: "RezusCloud CLI",
+		Name:        "rezuscloud",
+		DisplayName: "RezusCloud",
 		DocsPath:    "docs",
 	},
 }
