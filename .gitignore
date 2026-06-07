@@ -29,3 +29,6 @@ Thumbs.db
 
 # Air live reload
 tmp/
+
+# Fetched documentation (legacy, no longer used)
+docs/external/

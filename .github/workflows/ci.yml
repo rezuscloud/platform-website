@@ -54,6 +54,9 @@ jobs:
         with:
           configFilePath: .github/GitVersion.yml
 
+      - name: Fetch external docs
+        run: bash scripts/fetch-docs.sh
+
       - name: Build binary
         run: >
           CGO_ENABLED=0 go build
@@ -177,6 +180,8 @@ jobs:
       pull-requests: read
     steps:
       - uses: actions/checkout@v6
+      - name: Fetch external docs
+        run: bash scripts/fetch-docs.sh
       - name: Resolve PR context
         id: pr
         run: |

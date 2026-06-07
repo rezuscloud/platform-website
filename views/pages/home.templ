@@ -7,7 +7,7 @@ import (
 )
 
 templ Home(liveData obs.LiveData) {
-	@views.Layout("Your Personal Cloud | RezusCloud") {
+	@views.Layout("Your Personal Cloud | RezusCloud", "") {
 		@sections.Hero()
 		@sections.Architecture()
 		@sections.Live(liveData)
