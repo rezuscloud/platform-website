@@ -112,6 +112,9 @@ func (s *Store) loadFromDisk() error {
 			return nil
 		}
 		relPath := strings.TrimPrefix(path, s.basePath+"/")
+		if !shouldIndex(relPath) {
+			return nil
+		}
 		data, err := os.ReadFile(path)
 		if err != nil {
 			return nil
@@ -126,6 +129,9 @@ func (s *Store) loadFromFS(fsys fs.FS) error {
 		if err != nil || d.IsDir() || !strings.HasSuffix(path, ".md") {
 			return nil
 		}
+		if !shouldIndex(path) {
+			return nil
+		}
 		data, err := fs.ReadFile(fsys, path)
 		if err != nil {
 			return nil
@@ -133,6 +139,18 @@ func (s *Store) loadFromFS(fsys fs.FS) error {
 		s.addDoc(path, data)
 		return nil
 	})
+}
+
+// shouldIndex reports whether a markdown file should be exposed in the docs UI.
+// ADRs are kept in the repos as decision records but are not surfaced as
+// end-user documentation.
+func shouldIndex(relPath string) bool {
+	for _, seg := range strings.Split(relPath, "/") {
+		if seg == "adr" {
+			return false
+		}
+	}
+	return true
 }
 
 // addDoc indexes a single markdown file.
