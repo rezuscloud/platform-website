@@ -1,8 +1,9 @@
 FROM gcr.io/distroless/static-debian12:nonroot
-WORKDIR /
+WORKDIR /app
 ARG TARGETPLATFORM
-COPY $TARGETPLATFORM/platform-website /server
-COPY assets/ /assets/
+COPY $TARGETPLATFORM/platform-website /app/server
+COPY assets/ /app/assets/
+COPY docs/external/ /app/docs/external/
 EXPOSE 3000
 USER nonroot:nonroot
-ENTRYPOINT ["/server"]
+ENTRYPOINT ["/app/server"]

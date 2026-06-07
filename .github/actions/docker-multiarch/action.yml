@@ -127,7 +127,7 @@ runs:
           docker pull --platform "$platform" "$PRIMARY_TAG"
           docker rm -f "$name" >/dev/null 2>&1 || true
           docker create --name "$name" --platform "$platform" "$PRIMARY_TAG" >/dev/null
-          docker cp "$name:/server" "$out"
+          docker cp "$name:/app/server" "$out"
           docker rm "$name" >/dev/null
 
           result="$(file "$out")"

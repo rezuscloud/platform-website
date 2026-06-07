@@ -2,7 +2,9 @@ bin/
 tmp/
 node_modules/
 .git/
-*.md
+.github/
 Makefile
 .gitignore
-.github/
+# Markdown files (but allow docs/external/ which is fetched at CI time)
+*.md
+!docs/external/**

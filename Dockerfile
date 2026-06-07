@@ -11,7 +11,7 @@ RUN npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
 
 # Stage 2: Generate templ + Build Go binary with cross-compilation
 FROM --platform=$BUILDPLATFORM golang:1.26-alpine AS builder
-RUN apk add --no-cache git
+RUN apk add --no-cache git bash
 RUN go install github.com/a-h/templ/cmd/templ@latest
 WORKDIR /app
 
@@ -24,6 +24,7 @@ ARG BUILD_TIME=unknown
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
+RUN if [ ! -f "docs/getting-started/what-is-rezuscloud.md" ]; then bash scripts/fetch-docs.sh; fi
 RUN templ generate
 COPY --from=tailwind /app/assets/styles.css ./assets/styles.css
 RUN test -n "${TARGETARCH}" && CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
@@ -34,9 +35,10 @@ RUN test -n "${TARGETARCH}" && CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARC
 
 # Stage 3: Production image (target platform)
 FROM gcr.io/distroless/static-debian12:nonroot
-WORKDIR /
-COPY --from=builder /bin/server /server
-COPY --from=builder /app/assets/ /assets/
+WORKDIR /app
+COPY --from=builder /bin/server /app/server
+COPY --from=builder /app/assets/ /app/assets/
+COPY --from=builder /app/docs/ /app/docs/
 EXPOSE 3000
 USER nonroot:nonroot
-ENTRYPOINT ["/server"]
+ENTRYPOINT ["/app/server"]

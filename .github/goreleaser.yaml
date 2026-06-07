@@ -41,6 +41,7 @@ dockers_v2:
       - latest
     extra_files:
       - assets
+      - docs/external
     labels:
       org.opencontainers.image.title: RezusCloud Platform Website
       org.opencontainers.image.description: RezusCloud Personal Cloud website

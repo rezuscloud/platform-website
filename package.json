@@ -10,6 +10,7 @@
     "tailwindcss": "^4.1.0"
   },
   "dependencies": {
-    "@rezuscloud/design-system": "^1.0.0"
+    "@rezuscloud/design-system": "^1.0.0",
+    "@tailwindcss/typography": "^0.5.19"
   }
 }
