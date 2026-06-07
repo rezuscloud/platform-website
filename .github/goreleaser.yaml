@@ -8,6 +8,7 @@ before:
     - templ generate
     - npm ci
     - npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
+    - bash scripts/fetch-docs.sh
 
 builds:
   - env: [CGO_ENABLED=0]
