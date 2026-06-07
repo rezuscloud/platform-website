@@ -35,7 +35,7 @@ type Doc struct {
 
 // categoryOrder defines the sidebar display order for categories.
 var categoryOrder = map[string]int{
-	"":               1,
+	"":                1,
 	"getting-started": 2,
 	"concepts":        3,
 	"reference":       4,
@@ -43,7 +43,7 @@ var categoryOrder = map[string]int{
 
 // categoryDisplayNames maps directory names to sidebar headings.
 var categoryDisplayNames = map[string]string{
-	"":               "Overview",
+	"":                "Overview",
 	"getting-started": "Getting Started",
 	"concepts":        "Concepts",
 	"reference":       "Reference",
