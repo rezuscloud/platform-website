@@ -139,6 +139,7 @@ jobs:
           args: release --clean --config .github/goreleaser.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   snapshot:
     name: Snapshot Build
@@ -209,4 +210,5 @@ jobs:
           args: release --snapshot --clean --config .github/goreleaser.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GORELEASER_CURRENT_TAG: v${{ steps.gitversion.outputs.semVer }}
