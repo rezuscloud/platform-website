@@ -110,6 +110,9 @@ func (ki *k8sNodeInfo) refresh(ctx context.Context) error {
 				Name   string            `json:"name"`
 				Labels map[string]string `json:"labels"`
 			} `json:"metadata"`
+			Spec struct {
+				ProviderID string `json:"providerID"`
+			} `json:"spec"`
 			Status struct {
 				NodeInfo struct {
 					Architecture string `json:"architecture"`
@@ -134,8 +137,10 @@ func (ki *k8sNodeInfo) refresh(ctx context.Context) error {
 			arch = "ARM64"
 		}
 
-		// Derive provider from node name prefix or labels
-		provider := providerFromName(item.Metadata.Name)
+		provider := providerFromID(item.Spec.ProviderID)
+		if provider == "" {
+			provider = providerFromName(item.Metadata.Name)
+		}
 
 		nodes[item.Metadata.Name] = NodeInfo{
 			IsControlPlane: isCP,
@@ -153,10 +158,29 @@ func (ki *k8sNodeInfo) refresh(ctx context.Context) error {
 	return nil
 }
 
+// providerFromID extracts the hosting provider from the Kubernetes
+// spec.providerID field. Examples:
+//   - "ocid1.instance.oc1..." -> "OCI Cloud"
+//   - "metal://edge"         -> "Edge"
+//   - "proxmox://..."        -> "Proxmox"
+func providerFromID(id string) string {
+	switch {
+	case strings.HasPrefix(id, "ocid1."):
+		return "OCI Cloud"
+	case strings.HasPrefix(id, "metal://"):
+		return "Edge"
+	case strings.Contains(id, "proxmox"):
+		return "Proxmox"
+	default:
+		return ""
+	}
+}
+
 // providerFromName guesses the hosting provider from the Talos machine name.
-// Talos OCI machines have names like "talos-oci-c-*" or "talos-oci-*".
+// Talos OCI machines have names like "talos-oci-c-*" or "talosoci-*".
 // Talos edge machines have names like "talosedge-*".
-// Proxmox VMs have names like "talos-os-w-*".
+// Proxmox VMs have names like "talos-os-w-*" or "talos-amd64-*".
+// This is a fallback when providerID is not available.
 func providerFromName(name string) string {
 	switch {
 	case strings.HasPrefix(name, "talos-oci") || strings.HasPrefix(name, "talosoci"):
@@ -166,10 +190,6 @@ func providerFromName(name string) string {
 	case strings.HasPrefix(name, "talos-os-") || strings.HasPrefix(name, "talos-amd64"):
 		return "Cloud"
 	default:
-		// Try to detect from old convention
-		if strings.Contains(name, "control-plane") {
-			return "Cloud"
-		}
 		return "Node"
 	}
 }
