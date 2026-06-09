@@ -99,16 +99,30 @@ func BuildServices(snap MetricsSnapshot, now time.Time) []Service {
 }
 
 // BuildHosts converts a MetricsSnapshot into a sorted Host list.
-func BuildHosts(snap MetricsSnapshot) []Host {
+// nodeInfo may be nil; when provided it is used to look up the real node role
+// from the Kubernetes API instead of guessing from the hostname.
+func BuildHosts(snap MetricsSnapshot, nodeInfo NodeInfoFunc) []Host {
 	nodeNames := make([]string, 0, len(snap.Nodes))
 	for name := range snap.Nodes {
 		nodeNames = append(nodeNames, name)
 	}
+
+	// Resolve node roles upfront so sorting and labeling are consistent.
+	roles := make(map[string]bool, len(nodeNames)) // true = control-plane
+	for _, name := range nodeNames {
+		if nodeInfo != nil {
+			if info, ok := nodeInfo(name); ok {
+				roles[name] = info.IsControlPlane
+				continue
+			}
+		}
+		// Fallback: guess from hostname convention.
+		roles[name] = strings.Contains(name, "control-plane")
+	}
+
 	sort.Slice(nodeNames, func(i, j int) bool {
-		ci := strings.Contains(nodeNames[i], "control-plane")
-		cj := strings.Contains(nodeNames[j], "control-plane")
-		if ci != cj {
-			return ci
+		if roles[nodeNames[i]] != roles[nodeNames[j]] {
+			return roles[nodeNames[i]]
 		}
 		return nodeNames[i] < nodeNames[j]
 	})
@@ -117,13 +131,32 @@ func BuildHosts(snap MetricsSnapshot) []Host {
 	for _, name := range nodeNames {
 		nm := snap.Nodes[name]
 		h := Host{Name: name}
-		if strings.Contains(name, "control-plane") {
-			h.Label = "Cloud"
-			h.Detail = "Control plane"
+
+		if info, ok := nodeInfoLookup(nodeInfo, name); ok {
+			if info.IsControlPlane {
+				h.Label = info.Provider
+				h.Detail = "Control plane"
+			} else {
+				h.Label = info.Provider
+				if h.Label == "" {
+					h.Label = "Node"
+				}
+				h.Detail = "Worker node"
+			}
+			if info.Arch != "" {
+				h.Detail = info.Arch + " \u00b7 " + h.Detail
+			}
 		} else {
-			h.Label = "Edge"
-			h.Detail = "Worker node"
+			// Legacy fallback
+			if strings.Contains(name, "control-plane") {
+				h.Label = "Cloud"
+				h.Detail = "Control plane"
+			} else {
+				h.Label = "Edge"
+				h.Detail = "Worker node"
+			}
 		}
+
 		if nm.CPU > 0 {
 			h.CPU = math.Round(nm.CPU*100) / 100
 		}
@@ -139,6 +172,13 @@ func BuildHosts(snap MetricsSnapshot) []Host {
 		hosts = append(hosts, h)
 	}
 	return hosts
+}
+
+func nodeInfoLookup(fn NodeInfoFunc, name string) (NodeInfo, bool) {
+	if fn == nil {
+		return NodeInfo{}, false
+	}
+	return fn(name)
 }
 
 // SparklinePoints returns just the polyline points (no area) from Sparkline.

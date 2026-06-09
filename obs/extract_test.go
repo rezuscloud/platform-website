@@ -381,7 +381,7 @@ func TestBuildHosts(t *testing.T) {
 				"talosoci-control-plane-abc": {CPU: 0.5, RAM: 4294967296},
 			},
 		}
-		hosts := BuildHosts(snap)
+		hosts := BuildHosts(snap, nil)
 		require.Len(t, hosts, 1)
 		assert.Equal(t, "Cloud", hosts[0].Label)
 		assert.Equal(t, "Control plane", hosts[0].Detail)
@@ -393,7 +393,7 @@ func TestBuildHosts(t *testing.T) {
 				"talosedge-xyz": {CPU: 1.2, RAM: 8589934592},
 			},
 		}
-		hosts := BuildHosts(snap)
+		hosts := BuildHosts(snap, nil)
 		require.Len(t, hosts, 1)
 		assert.Equal(t, "Edge", hosts[0].Label)
 		assert.Equal(t, "Worker node", hosts[0].Detail)
@@ -405,7 +405,7 @@ func TestBuildHosts(t *testing.T) {
 				"node-a": {Uptime: 536077}, // ~6.2 days
 			},
 		}
-		hosts := BuildHosts(snap)
+		hosts := BuildHosts(snap, nil)
 		require.Len(t, hosts, 1)
 		assert.Equal(t, "6d", hosts[0].Uptime)
 	})
@@ -418,12 +418,43 @@ func TestBuildHosts(t *testing.T) {
 			},
 			NodeSvcCounts: map[string]int{"node-a": 3, "node-b": 1},
 		}
-		hosts := BuildHosts(snap)
+		hosts := BuildHosts(snap, nil)
 		hostMap := make(map[string]Host)
 		for _, h := range hosts {
 			hostMap[h.Name] = h
 		}
 		assert.Equal(t, 3, hostMap["node-a"].SvcCount)
 		assert.Equal(t, 1, hostMap["node-b"].SvcCount)
+	})
+}
+
+func TestBuildHosts_WithNodeInfo(t *testing.T) {
+	info := func(name string) (NodeInfo, bool) {
+		return NodeInfo{
+			IsControlPlane: name == "talos-oci-c-ultimate-parakeet",
+			Provider:       "OCI Cloud",
+			Arch:           "ARM64",
+		}, true
+	}
+
+	t.Run("uses k8s node info for labeling", func(t *testing.T) {
+		snap := MetricsSnapshot{
+			Nodes: map[string]NodeMetrics{
+				"talos-oci-c-ultimate-parakeet": {CPU: 0.5},
+				"talos-os-w-logical-mule":       {CPU: 1.2},
+			},
+		}
+		hosts := BuildHosts(snap, info)
+		require.Len(t, hosts, 2)
+
+		// Control plane sorts first
+		assert.Equal(t, "talos-oci-c-ultimate-parakeet", hosts[0].Name)
+		assert.Equal(t, "OCI Cloud", hosts[0].Label)
+		assert.Contains(t, hosts[0].Detail, "Control plane")
+		assert.Contains(t, hosts[0].Detail, "ARM64")
+
+		assert.Equal(t, "talos-os-w-logical-mule", hosts[1].Name)
+		assert.Equal(t, "OCI Cloud", hosts[1].Label)
+		assert.Contains(t, hosts[1].Detail, "Worker node")
 	})
 }
