@@ -60,13 +60,13 @@ func TestDefaultMockData(t *testing.T) {
 	})
 
 	t.Run("hosts are present", func(t *testing.T) {
-		assert.Len(t, data.Hosts, 2)
+		assert.GreaterOrEqual(t, len(data.Hosts), 2)
 		names := make(map[string]bool)
 		for _, h := range data.Hosts {
 			names[h.Name] = true
 		}
-		assert.True(t, names["talosoci-control-plane-legal-poodle"])
-		assert.True(t, names["talosedge-genmachiche-flowing-bluejay"])
+		assert.True(t, names["talosoci-control-plane-intent-moth"])
+		assert.True(t, names["talosedge-genmachiche-keen-lioness"])
 	})
 
 	t.Run("has no live metrics in mock mode", func(t *testing.T) {

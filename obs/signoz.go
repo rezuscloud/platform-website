@@ -20,6 +20,7 @@ type SigNozClient struct {
 	baseURL   string
 	apiKey    string
 	namespace string
+	nodeInfo  NodeInfoFunc
 	http      *http.Client
 	cached    LiveData
 	cachedAt  time.Time
@@ -33,6 +34,7 @@ func NewSigNozClient(baseURL, apiKey string) *SigNozClient {
 		baseURL:   strings.TrimRight(baseURL, "/"),
 		apiKey:    apiKey,
 		namespace: ns,
+		nodeInfo:  NewK8sNodeInfo(),
 		http:      &http.Client{Timeout: 10 * time.Second},
 		cacheTTL:  30 * time.Second,
 	}
@@ -371,7 +373,7 @@ func (c *SigNozClient) Fetch(ctx context.Context) (LiveData, error) {
 
 	snap := newSnapshot(resp, now)
 	services := BuildServices(snap, now)
-	hosts := BuildHosts(snap)
+	hosts := BuildHosts(snap, c.nodeInfo)
 
 	c.cached = LiveData{
 		Hosts:      hosts,

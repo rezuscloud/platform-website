@@ -81,6 +81,17 @@ type NodeMetrics struct {
 	Uptime float64 // seconds
 }
 
+// NodeInfo describes what we know about a cluster node from the K8s API.
+type NodeInfo struct {
+	IsControlPlane bool
+	Provider       string // e.g. "OCI", "Proxmox", empty if unknown
+	Arch           string // e.g. "ARM64", "AMD64", empty if unknown
+}
+
+// NodeInfoFunc looks up node metadata from the Kubernetes API.
+// Returns (NodeInfo, true) if found, or (NodeInfo{}, false) if unknown.
+type NodeInfoFunc func(nodeName string) (NodeInfo, bool)
+
 // Client fetches live service data from SigNoz metrics.
 type Client interface {
 	Fetch(ctx context.Context) (LiveData, error)
