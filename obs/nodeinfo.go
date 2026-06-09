@@ -41,6 +41,12 @@ func NewK8sNodeInfo() NodeInfoFunc {
 		return nil
 	}
 
+	tlsCfg, err := tlsConfigFromCA()
+	if err != nil {
+		log.Printf("nodeinfo: cannot build TLS config: %v", err)
+		return nil
+	}
+
 	ki := &k8sNodeInfo{
 		nodes:   make(map[string]NodeInfo),
 		ttl:     5 * time.Minute,
@@ -49,7 +55,7 @@ func NewK8sNodeInfo() NodeInfoFunc {
 		client: &http.Client{
 			Timeout: 5 * time.Second,
 			Transport: &http.Transport{
-				TLSClientConfig: tlConfig(),
+				TLSClientConfig: tlsCfg,
 			},
 		},
 	}
@@ -168,13 +174,17 @@ func providerFromName(name string) string {
 	}
 }
 
-func tlConfig() *tls.Config {
+// tlsConfigFromCA builds a TLS config that trusts the in-cluster CA.
+// Returns an error (instead of falling back to InsecureSkipVerify) if
+// the CA cert cannot be read.
+func tlsConfigFromCA() (*tls.Config, error) {
 	caBytes, err := os.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/ca.crt")
 	if err != nil {
-		log.Printf("nodeinfo: cannot read CA cert, skipping TLS verify: %v", err)
-		return &tls.Config{InsecureSkipVerify: true}
+		return nil, fmt.Errorf("read CA cert: %w", err)
 	}
 	cp := x509.NewCertPool()
-	cp.AppendCertsFromPEM(caBytes)
-	return &tls.Config{RootCAs: cp}
+	if !cp.AppendCertsFromPEM(caBytes) {
+		return nil, fmt.Errorf("no certificates found in CA bundle")
+	}
+	return &tls.Config{RootCAs: cp}, nil
 }
