@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestCategoryForNamespace(t *testing.T) {
@@ -67,42 +66,6 @@ func TestCategoryOrder(t *testing.T) {
 	assert.Len(t, CategoryOrder, 5)
 }
 
-func TestDiscoverNodeNames(t *testing.T) {
-	t.Run("merges from multiple sources", func(t *testing.T) {
-		floatMap := map[string]float64{"node-a": 0.5, "node-b": 1.2}
-		intMap := map[string]int{"node-c": 3}
-		names := DiscoverNodeNames(floatMap, intMap)
-		assert.ElementsMatch(t, []string{"node-a", "node-b", "node-c"}, names)
-	})
-
-	t.Run("deduplicates", func(t *testing.T) {
-		floatMap := map[string]float64{"node-a": 0.5}
-		intMap := map[string]int{"node-a": 5}
-		names := DiscoverNodeNames(floatMap, intMap)
-		assert.Equal(t, []string{"node-a"}, names)
-	})
-
-	t.Run("control-plane nodes sort first", func(t *testing.T) {
-		m := map[string]float64{
-			"talosedge-worker-xyz":             1.2,
-			"talosoci-control-plane-abc":       0.5,
-			"talosedge-another-node":           0.8,
-			"talosoci-control-plane-secondary": 0.3,
-		}
-		names := DiscoverNodeNames(m)
-		require.Len(t, names, 4)
-		assert.Contains(t, names[0], "control-plane")
-		assert.Contains(t, names[1], "control-plane")
-		assert.Contains(t, names[2], "edge")
-		assert.Contains(t, names[3], "edge")
-	})
-
-	t.Run("empty sources", func(t *testing.T) {
-		names := DiscoverNodeNames()
-		assert.Empty(t, names)
-	})
-}
-
 func TestSortServices(t *testing.T) {
 	t.Run("sorts by category order", func(t *testing.T) {
 		services := []Service{
@@ -124,36 +87,5 @@ func TestSortServices(t *testing.T) {
 		SortServices(services)
 		assert.Equal(t, "juicefs", services[0].Name)
 		assert.Equal(t, "velero", services[1].Name)
-	})
-}
-
-func TestLabelStr(t *testing.T) {
-	t.Run("returns first matching key", func(t *testing.T) {
-		labels := map[string]string{
-			"k8s_namespace_name": "flux-system",
-			"k8s.namespace.name": "wrong",
-		}
-		assert.Equal(t, "flux-system", LabelStr(labels, "k8s_namespace_name", "k8s.namespace.name"))
-	})
-
-	t.Run("falls back to second key", func(t *testing.T) {
-		labels := map[string]string{
-			"k8s.namespace.name": "flux-system",
-		}
-		assert.Equal(t, "flux-system", LabelStr(labels, "k8s_namespace_name", "k8s.namespace.name"))
-	})
-
-	t.Run("returns empty for no matches", func(t *testing.T) {
-		labels := map[string]string{"other": "value"}
-		assert.Equal(t, "", LabelStr(labels, "k8s_namespace_name", "k8s.namespace.name"))
-	})
-
-	t.Run("returns empty for empty label value", func(t *testing.T) {
-		labels := map[string]string{"k8s_namespace_name": ""}
-		assert.Equal(t, "", LabelStr(labels, "k8s_namespace_name"))
-	})
-
-	t.Run("returns empty for nil labels", func(t *testing.T) {
-		assert.Equal(t, "", LabelStr(nil, "k8s_namespace_name"))
 	})
 }

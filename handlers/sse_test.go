@@ -40,7 +40,7 @@ func TestSendSnapshotError(t *testing.T) {
 	defer func() { liveClient = origClient }()
 
 	liveClient = &obs.MockClient{
-		Err: fmt.Errorf("signoz connection refused"),
+		Err: fmt.Errorf("prometheus connection refused"),
 	}
 
 	var buf bytes.Buffer
@@ -67,7 +67,7 @@ func TestSendSnapshotRecovery(t *testing.T) {
 	assert.False(t, sendSnapshot(w))
 	buf.Reset()
 
-	// Second call succeeds (simulates SigNoz recovery)
+	// Second call succeeds (simulates Prometheus recovery)
 	liveClient = &obs.MockClient{Data: obs.DefaultMockData()}
 	assert.True(t, sendSnapshot(w))
 	assert.Contains(t, buf.String(), "event: update")

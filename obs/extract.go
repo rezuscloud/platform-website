@@ -20,25 +20,6 @@ func FormatUptime(d time.Duration) string {
 	return fmt.Sprintf("%dm", int(d.Minutes()))
 }
 
-// WorkloadKey extracts a unique "namespace/workload-name" key from SigNoz
-// metric labels. Tries deployment, statefulset, and daemonset labels in
-// order. Returns empty string if no workload or namespace is found.
-// Single place to fix if SigNoz label keys change.
-func WorkloadKey(labels map[string]string) string {
-	ns := LabelStr(labels, "k8s_namespace_name", "k8s.namespace.name")
-	deploy := LabelStr(labels, "k8s.deployment.name")
-	if deploy == "" {
-		deploy = LabelStr(labels, "k8s.statefulset.name")
-	}
-	if deploy == "" {
-		deploy = LabelStr(labels, "k8s.daemonset.name")
-	}
-	if ns == "" || deploy == "" {
-		return ""
-	}
-	return ns + "/" + deploy
-}
-
 // BuildServices converts a MetricsSnapshot into a sorted, filtered Service list.
 func BuildServices(snap MetricsSnapshot, now time.Time) []Service {
 	services := make([]Service, 0, len(snap.Workloads))
@@ -100,7 +81,7 @@ func BuildServices(snap MetricsSnapshot, now time.Time) []Service {
 
 // BuildHosts converts a MetricsSnapshot into a sorted Host list.
 // nodeInfo may be nil; when provided it is used to look up the real node role
-// from the Kubernetes API instead of guessing from the hostname.
+// and provider from the Kubernetes API instead of guessing from the hostname.
 func BuildHosts(snap MetricsSnapshot, nodeInfo NodeInfoFunc) []Host {
 	nodeNames := make([]string, 0, len(snap.Nodes))
 	for name := range snap.Nodes {
@@ -116,7 +97,6 @@ func BuildHosts(snap MetricsSnapshot, nodeInfo NodeInfoFunc) []Host {
 				continue
 			}
 		}
-		// Fallback: guess from hostname convention.
 		roles[name] = strings.Contains(name, "control-plane")
 	}
 
@@ -133,28 +113,17 @@ func BuildHosts(snap MetricsSnapshot, nodeInfo NodeInfoFunc) []Host {
 		h := Host{Name: name}
 
 		if info, ok := nodeInfoLookup(nodeInfo, name); ok {
+			h.Label = "Worker"
 			if info.IsControlPlane {
-				h.Label = info.Provider
-				h.Detail = "Control plane"
-			} else {
-				h.Label = info.Provider
-				if h.Label == "" {
-					h.Label = "Node"
-				}
-				h.Detail = "Worker node"
+				h.Label = "Control plane"
 			}
-			if info.Arch != "" {
-				h.Detail = info.Arch + " \u00b7 " + h.Detail
-			}
+			h.Detail = joinDetail(info.Provider, info.Arch)
+			h.CPUCores = info.CPUCores
+			h.RAMTotal = math.Round(info.RAMBytes / 1024 / 1024)
+		} else if strings.Contains(name, "control-plane") {
+			h.Label = "Control plane"
 		} else {
-			// Legacy fallback
-			if strings.Contains(name, "control-plane") {
-				h.Label = "Cloud"
-				h.Detail = "Control plane"
-			} else {
-				h.Label = "Edge"
-				h.Detail = "Worker node"
-			}
+			h.Label = "Worker"
 		}
 
 		if nm.CPU > 0 {
@@ -162,6 +131,13 @@ func BuildHosts(snap MetricsSnapshot, nodeInfo NodeInfoFunc) []Host {
 		}
 		if nm.RAM > 0 {
 			h.RAM = math.Round(nm.RAM/1024/1024*10) / 10
+		}
+		// Capacity may also come from the snapshot when built without topology.
+		if h.CPUCores == 0 && nm.CPUCores > 0 {
+			h.CPUCores = nm.CPUCores
+		}
+		if h.RAMTotal == 0 && nm.RAMTotal > 0 {
+			h.RAMTotal = math.Round(nm.RAMTotal / 1024 / 1024)
 		}
 		if nm.Uptime > 0 {
 			h.Uptime = FormatUptime(time.Duration(nm.Uptime) * time.Second)
@@ -172,6 +148,17 @@ func BuildHosts(snap MetricsSnapshot, nodeInfo NodeInfoFunc) []Host {
 		hosts = append(hosts, h)
 	}
 	return hosts
+}
+
+// joinDetail builds the secondary line for a node card from provider + arch.
+func joinDetail(parts ...string) string {
+	var out []string
+	for _, p := range parts {
+		if p != "" {
+			out = append(out, p)
+		}
+	}
+	return strings.Join(out, " \u00b7 ")
 }
 
 func nodeInfoLookup(fn NodeInfoFunc, name string) (NodeInfo, bool) {

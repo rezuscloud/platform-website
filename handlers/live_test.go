@@ -34,7 +34,7 @@ func TestDefaultMockData(t *testing.T) {
 		assert.NotEmpty(t, data.Services)
 	})
 
-	t.Run("services have names from SigNoz", func(t *testing.T) {
+	t.Run("services have names from the cluster", func(t *testing.T) {
 		names := make(map[string]bool)
 		for _, svc := range data.Services {
 			names[svc.Name] = true
@@ -65,8 +65,8 @@ func TestDefaultMockData(t *testing.T) {
 		for _, h := range data.Hosts {
 			names[h.Name] = true
 		}
-		assert.True(t, names["talosoci-control-plane-intent-moth"])
-		assert.True(t, names["talosedge-genmachiche-keen-lioness"])
+		assert.True(t, names["talos-oci-c-rapid-gator"])
+		assert.True(t, names["talos-edge-w-known-foal"])
 	})
 
 	t.Run("has no live metrics in mock mode", func(t *testing.T) {

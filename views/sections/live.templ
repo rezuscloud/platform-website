@@ -29,7 +29,7 @@ templ Live(data obs.LiveData) {
 				class="ds-alert ds-alert-info mb-6"
 				x-show="!connected && !initial.hasMetrics"
 			>
-				<span class="font-mac-mono text-xs text-ink-muted dark:text-next-subtle">Showing platform topology. Metrics are live when SigNoz is connected.</span>
+				<span class="font-mac-mono text-xs text-ink-muted dark:text-next-subtle">Showing platform topology. Metrics are live when Prometheus is connected.</span>
 			</div>
 			<!-- Connection lost banner -->
 			<div
@@ -138,15 +138,15 @@ templ Live(data obs.LiveData) {
 										}
 										var cpuBar = card.querySelector("[data-cpu-bar]");
 										if (cpuBar && host.cpu > 0) {
-											// Assume 4 cores max for bar width
-											var pct = Math.min((host.cpu / 4) * 100, 100);
-											cpuBar.style.width = pct + "%";
+											var cap = host.cpuCores > 0 ? host.cpuCores : 4;
+											cpuBar.style.width =
+												Math.min((host.cpu / cap) * 100, 100) + "%";
 										}
 										var ramBar = card.querySelector("[data-ram-bar]");
 										if (ramBar && host.ram > 0) {
-											// Normalize to 32GB for bar width
-											var pct = Math.min((host.ram / 32768) * 100, 100);
-											ramBar.style.width = pct + "%";
+											var cap = host.ramTotal > 0 ? host.ramTotal : 32768;
+											ramBar.style.width =
+												Math.min((host.ram / cap) * 100, 100) + "%";
 										}
 										var svcEl = card.querySelector("[data-node-svcs]");
 										if (svcEl && host.svcCount > 0) {
@@ -370,15 +370,21 @@ templ nodeCard(host obs.Host, selfNS string) {
 		class="text-left border border-ink/15 dark:border-next-mid/50 bg-paper dark:bg-next-dark p-3 hover:border-accent-gold/60 dark:hover:border-next-teal/60 focus-visible:outline-2 focus-visible:outline-accent-gold dark:focus-visible:outline-next-teal focus-visible:outline-offset-1 transition-colors cursor-pointer"
 		data-node-card={ host.Name }
 		aria-pressed="false"
-		title={ fmt.Sprintf("Filter services on %s (%s)", host.Label, host.Detail) }
+		title={ fmt.Sprintf("Filter services on %s", host.Name) }
 		@click={ fmt.Sprintf("toggleHostFilter('%s')", host.Name) }
 	>
-		<!-- Role badge + label -->
-		<div class="flex items-center gap-2 mb-2">
-			<span class="font-mac text-xs font-bold text-ink dark:text-next-white">{ host.Label }</span>
-			<span class="font-terminal text-[10px] text-ink-muted/40 dark:text-next-subtle/40">{ host.Detail }</span>
+		<!-- Real node name + role/provider/arch -->
+		<div class="mb-2">
+			<span class="font-mac text-xs font-bold text-ink dark:text-next-white block truncate">{ host.Name }</span>
+			<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">
+				{ host.Label }
+				if host.Detail != "" {
+					{ " · " }
+					{ host.Detail }
+				}
+			</span>
 		</div>
-		<!-- Resource bars -->
+		<!-- Resource bars (capacity-aware) -->
 		<div class="space-y-1 mb-2">
 			<div class="flex items-center gap-2">
 				<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60 w-8">CPU</span>
@@ -386,12 +392,7 @@ templ nodeCard(host obs.Host, selfNS string) {
 					<div
 						data-cpu-bar
 						class="h-full bg-accent-gold dark:bg-next-teal transition-all duration-500"
-						style={ fmt.Sprintf("width: %.0f%%", func() float64 {
-							if host.CPU <= 0 { return 0 }
-							pct := (host.CPU / 4.0) * 100
-							if pct > 100 { return 100 }
-							return pct
-						}()) }
+						style={ fmt.Sprintf("width: %.0f%%", cpuBarPct(host)) }
 					></div>
 				</div>
 			</div>
@@ -401,27 +402,28 @@ templ nodeCard(host obs.Host, selfNS string) {
 					<div
 						data-ram-bar
 						class="h-full bg-accent-gold/70 dark:bg-next-teal/70 transition-all duration-500"
-						style={ fmt.Sprintf("width: %.0f%%", func() float64 {
-							if host.RAM <= 0 { return 0 }
-							pct := (host.RAM / 32768.0) * 100
-							if pct > 100 { return 100 }
-							return pct
-						}()) }
+						style={ fmt.Sprintf("width: %.0f%%", ramBarPct(host)) }
 					></div>
 				</div>
 			</div>
 		</div>
-		<!-- Metrics line -->
+		<!-- Metrics line (used / capacity) -->
 		<div data-node-metric class="font-terminal text-[10px] text-accent-gold dark:text-next-teal tabular-nums">
 			if host.CPU > 0 || host.RAM > 0 {
 				if host.CPU > 0 {
 					{ fmt.Sprintf("CPU %.1f", host.CPU) }
+					if host.CPUCores > 0 {
+						{ fmt.Sprintf(" / %.0f", host.CPUCores) }
+					}
 				}
 				if host.RAM > 0 {
 					if host.CPU > 0 {
 						{ " · " }
 					}
 					{ fmt.Sprintf("%.1f GB", host.RAM / 1024) }
+					if host.RAMTotal > 0 {
+						{ fmt.Sprintf(" / %.0f GB", host.RAMTotal / 1024) }
+					}
 				}
 			}
 		</div>

@@ -2,9 +2,10 @@ package obs
 
 import (
 	"context"
+	"time"
 )
 
-// Service represents one live service discovered from SigNoz metrics.
+// Service represents one live service discovered from Prometheus metrics.
 type Service struct {
 	Name      string  `json:"name"`
 	Namespace string  `json:"namespace"`
@@ -27,11 +28,13 @@ type Service struct {
 
 // Host represents a physical or virtual machine node.
 type Host struct {
-	Name     string  `json:"name"`
-	Label    string  `json:"label"`
-	Detail   string  `json:"detail"`
-	CPU      float64 `json:"cpu"`
-	RAM      float64 `json:"ram"`
+	Name     string  `json:"name"`     // real node name
+	Label    string  `json:"label"`    // role: "Control plane" / "Worker"
+	Detail   string  `json:"detail"`   // "OCI Cloud · ARM64"
+	CPU      float64 `json:"cpu"`      // cores used
+	CPUCores float64 `json:"cpuCores"` // total cores (capacity)
+	RAM      float64 `json:"ram"`      // MB used
+	RAMTotal float64 `json:"ramTotal"` // MB total (capacity)
 	LoadAvg  float64 `json:"loadAvg"`
 	IOWait   float64 `json:"ioWait"`
 	Uptime   string  `json:"uptime"`
@@ -47,9 +50,9 @@ type LiveData struct {
 	SelfNamespace string    `json:"selfNamespace"`
 }
 
-// MetricsSnapshot is the platform-native shape of a SigNoz metrics query.
-// SigNozClient builds this once from the v3 API response; BuildServices and
-// BuildHosts consume it. All v3 wire-format types stay private to signoz.go.
+// MetricsSnapshot is the platform-native shape of a Prometheus + K8s API query.
+// PrometheusClient builds this once per refresh; BuildServices and BuildHosts
+// consume it. All Prometheus wire-format types stay private to prometheus.go.
 type MetricsSnapshot struct {
 	Workloads     map[string]WorkloadMetrics // key = "namespace/deployment"
 	Nodes         map[string]NodeMetrics     // key = node name
@@ -76,23 +79,28 @@ type WorkloadMetrics struct {
 
 // NodeMetrics holds the latest values for one cluster node.
 type NodeMetrics struct {
-	CPU    float64
-	RAM    float64 // bytes
-	Uptime float64 // seconds
+	CPU      float64 // cores used
+	RAM      float64 // bytes used
+	CPUCores float64 // capacity (cores)
+	RAMTotal float64 // capacity (bytes)
+	Uptime   float64 // seconds
 }
 
 // NodeInfo describes what we know about a cluster node from the K8s API.
 type NodeInfo struct {
 	IsControlPlane bool
-	Provider       string // e.g. "OCI", "Proxmox", empty if unknown
-	Arch           string // e.g. "ARM64", "AMD64", empty if unknown
+	Provider       string  // e.g. "OCI Cloud", "Edge", empty if unknown
+	Arch           string  // e.g. "ARM64", "AMD64", empty if unknown
+	CPUCores       float64 // capacity (cores)
+	RAMBytes       float64 // capacity (bytes)
+	Created        time.Time
 }
 
 // NodeInfoFunc looks up node metadata from the Kubernetes API.
 // Returns (NodeInfo, true) if found, or (NodeInfo{}, false) if unknown.
 type NodeInfoFunc func(nodeName string) (NodeInfo, bool)
 
-// Client fetches live service data from SigNoz metrics.
+// Client fetches live service data from Prometheus metrics.
 type Client interface {
 	Fetch(ctx context.Context) (LiveData, error)
 }

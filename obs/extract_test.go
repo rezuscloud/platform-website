@@ -8,316 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// ── MetricsSnapshot builder tests ──
-
-func TestNewSnapshot(t *testing.T) {
-	now := time.Now()
-
-	labels := func(ns, deploy, node string) map[string]string {
-		return map[string]string{
-			"k8s_namespace_name":  ns,
-			"k8s.deployment.name": deploy,
-			"k8s_node_name":       node,
-		}
-	}
-	nodeLabels := func(node string) map[string]string {
-		return map[string]string{"k8s.node.name": node}
-	}
-
-	t.Run("extracts workload metrics", func(t *testing.T) {
-		resp := &v3Response{
-			Status: "success",
-			Data: v3DataRoot{Result: []v3Result{
-				{QueryName: queryCPU, Series: []v3Series{
-					{Labels: labels("flux-system", "source-controller", "node-a"),
-						Values: []v3Point{{Timestamp: 1, Value: "0.1"}, {Timestamp: 2, Value: "0.3"}}},
-					{Labels: labels("platform-website", "platform-website", "node-b"),
-						Values: []v3Point{{Timestamp: 1, Value: "0.11"}, {Timestamp: 2, Value: "0.12"}}},
-				}},
-				{QueryName: queryRAM, Series: []v3Series{
-					{Labels: labels("flux-system", "source-controller", "node-a"),
-						Values: []v3Point{{Timestamp: 1, Value: "110100480"}}},
-				}},
-				{QueryName: queryDisk},
-				{QueryName: queryNet},
-				{QueryName: queryNodeCPU},
-				{QueryName: queryNodeRAM},
-				{QueryName: queryNodeUp},
-			}},
-		}
-		snap := newSnapshot(resp, now)
-		wm, ok := snap.Workloads["flux-system/source-controller"]
-		require.True(t, ok)
-		assert.InDelta(t, 0.3, wm.CPU, 0.001, "latest CPU from last point")
-		assert.InDelta(t, 110100480, wm.RAM, 1, "RAM in bytes")
-		assert.Equal(t, "node-a", wm.Host)
-	})
-
-	t.Run("extracts node metrics", func(t *testing.T) {
-		resp := &v3Response{
-			Status: "success",
-			Data: v3DataRoot{Result: []v3Result{
-				{QueryName: queryCPU, Series: []v3Series{
-					{Labels: labels("flux-system", "source-controller", "node-a"),
-						Values: []v3Point{{Timestamp: 1, Value: "0.1"}}},
-				}},
-				{QueryName: queryDisk},
-				{QueryName: queryNet},
-				{QueryName: queryRAM},
-				{QueryName: queryNodeCPU, Series: []v3Series{
-					{Labels: nodeLabels("node-a"), Values: []v3Point{{Timestamp: 1, Value: "0.5"}}},
-					{Labels: nodeLabels("node-b"), Values: []v3Point{{Timestamp: 1, Value: "1.2"}}},
-				}},
-				{QueryName: queryNodeRAM, Series: []v3Series{
-					{Labels: nodeLabels("node-a"), Values: []v3Point{{Timestamp: 1, Value: "4294967296"}}},
-					{Labels: nodeLabels("node-b"), Values: []v3Point{{Timestamp: 1, Value: "8589934592"}}},
-				}},
-				{QueryName: queryNodeUp, Series: []v3Series{
-					{Labels: nodeLabels("node-a"), Values: []v3Point{{Timestamp: 1, Value: "536077"}}},
-				}},
-			}},
-		}
-		snap := newSnapshot(resp, now)
-		assert.Equal(t, 2, len(snap.Nodes))
-		assert.InDelta(t, 0.5, snap.Nodes["node-a"].CPU, 0.001)
-		assert.InDelta(t, 4294967296, snap.Nodes["node-a"].RAM, 1)
-		assert.InDelta(t, 536077, snap.Nodes["node-a"].Uptime, 1)
-	})
-
-	t.Run("counts services per node", func(t *testing.T) {
-		resp := &v3Response{
-			Status: "success",
-			Data: v3DataRoot{Result: []v3Result{
-				{QueryName: queryCPU, Series: []v3Series{
-					{Labels: labels("ns1", "svc1", "node-a"), Values: []v3Point{{Timestamp: 1, Value: "0.1"}}},
-					{Labels: labels("ns2", "svc2", "node-a"), Values: []v3Point{{Timestamp: 1, Value: "0.2"}}},
-					{Labels: labels("ns3", "svc3", "node-b"), Values: []v3Point{{Timestamp: 1, Value: "0.3"}}},
-				}},
-				{QueryName: queryDisk},
-				{QueryName: queryNet},
-				{QueryName: queryRAM},
-				{QueryName: queryNodeCPU},
-				{QueryName: queryNodeRAM},
-				{QueryName: queryNodeUp},
-			}},
-		}
-		snap := newSnapshot(resp, now)
-		assert.Equal(t, 2, snap.NodeSvcCounts["node-a"])
-		assert.Equal(t, 1, snap.NodeSvcCounts["node-b"])
-	})
-
-	t.Run("takes max across pods of same deployment", func(t *testing.T) {
-		resp := &v3Response{
-			Status: "success",
-			Data: v3DataRoot{Result: []v3Result{
-				{QueryName: queryCPU, Series: []v3Series{
-					{Labels: labels("flux-system", "source-controller", "node-a"),
-						Values: []v3Point{{Timestamp: 1, Value: "0.1"}, {Timestamp: 2, Value: "0.3"}}},
-					{Labels: labels("flux-system", "source-controller", "node-b"),
-						Values: []v3Point{{Timestamp: 1, Value: "0.2"}, {Timestamp: 2, Value: "0.5"}}},
-				}},
-				{QueryName: queryDisk},
-				{QueryName: queryNet},
-				{QueryName: queryRAM},
-				{QueryName: queryNodeCPU},
-				{QueryName: queryNodeRAM},
-				{QueryName: queryNodeUp},
-			}},
-		}
-		snap := newSnapshot(resp, now)
-		wm := snap.Workloads["flux-system/source-controller"]
-		assert.InDelta(t, 0.5, wm.CPU, 0.001)
-	})
-
-	t.Run("clamps CPU > 100 to zero", func(t *testing.T) {
-		resp := &v3Response{
-			Status: "success",
-			Data: v3DataRoot{Result: []v3Result{
-				{QueryName: queryCPU, Series: []v3Series{
-					{Labels: labels("flux-system", "source-controller", "node-a"),
-						Values: []v3Point{{Timestamp: 1, Value: "150"}}},
-				}},
-				{QueryName: queryRAM, Series: []v3Series{
-					{Labels: labels("flux-system", "source-controller", "node-a"),
-						Values: []v3Point{{Timestamp: 1, Value: "110100480"}}},
-				}},
-				{QueryName: queryDisk},
-				{QueryName: queryNet},
-				{QueryName: queryNodeCPU},
-				{QueryName: queryNodeRAM},
-				{QueryName: queryNodeUp},
-			}},
-		}
-		snap := newSnapshot(resp, now)
-		wm := snap.Workloads["flux-system/source-controller"]
-		assert.Equal(t, 0.0, wm.CPU, "corrupted CPU >100 should be clamped")
-	})
-
-	t.Run("generates sparkline history", func(t *testing.T) {
-		resp := &v3Response{
-			Status: "success",
-			Data: v3DataRoot{Result: []v3Result{
-				{QueryName: queryCPU, Series: []v3Series{
-					{Labels: labels("flux-system", "source-controller", "node-a"),
-						Values: []v3Point{
-							{Timestamp: 1, Value: "0.1"},
-							{Timestamp: 2, Value: "0.3"},
-							{Timestamp: 3, Value: "0.2"},
-							{Timestamp: 4, Value: "0.4"},
-						}},
-				}},
-				{QueryName: queryDisk},
-				{QueryName: queryNet},
-				{QueryName: queryRAM},
-				{QueryName: queryNodeCPU},
-				{QueryName: queryNodeRAM},
-				{QueryName: queryNodeUp},
-			}},
-		}
-		snap := newSnapshot(resp, now)
-		wm := snap.Workloads["flux-system/source-controller"]
-		assert.Equal(t, 4, len(wm.CPUHist))
-		assert.InDelta(t, 0.1, wm.CPUHist[0], 0.001)
-		assert.InDelta(t, 0.4, wm.CPUHist[3], 0.001)
-	})
-
-	t.Run("skips entries with missing namespace", func(t *testing.T) {
-		resp := &v3Response{
-			Status: "success",
-			Data: v3DataRoot{Result: []v3Result{
-				{QueryName: queryCPU, Series: []v3Series{
-					{Labels: map[string]string{"k8s.deployment.name": "myapp"},
-						Values: []v3Point{{Timestamp: 1, Value: "0.5"}}},
-				}},
-				{QueryName: queryDisk},
-				{QueryName: queryNet},
-				{QueryName: queryRAM},
-				{QueryName: queryNodeCPU},
-				{QueryName: queryNodeRAM},
-				{QueryName: queryNodeUp},
-			}},
-		}
-		snap := newSnapshot(resp, now)
-		assert.Empty(t, snap.Workloads)
-	})
-
-	t.Run("falls back to statefulset name", func(t *testing.T) {
-		resp := &v3Response{
-			Status: "success",
-			Data: v3DataRoot{Result: []v3Result{
-				{QueryName: queryCPU, Series: []v3Series{
-					{Labels: map[string]string{
-						"k8s_namespace_name":   "signoz",
-						"k8s.statefulset.name": "clickhouse",
-						"k8s_node_name":        "node-a",
-					}, Values: []v3Point{{Timestamp: 1, Value: "3.5"}}},
-				}},
-				{QueryName: queryDisk},
-				{QueryName: queryNet},
-				{QueryName: queryRAM},
-				{QueryName: queryNodeCPU},
-				{QueryName: queryNodeRAM},
-				{QueryName: queryNodeUp},
-			}},
-		}
-		snap := newSnapshot(resp, now)
-		wm, ok := snap.Workloads["signoz/clickhouse"]
-		require.True(t, ok)
-		assert.InDelta(t, 3.5, wm.CPU, 0.001)
-	})
-
-	t.Run("duplicates single point for sparkline", func(t *testing.T) {
-		resp := &v3Response{
-			Status: "success",
-			Data: v3DataRoot{Result: []v3Result{
-				{QueryName: queryCPU, Series: []v3Series{
-					{Labels: labels("flux-system", "source-controller", "node-a"),
-						Values: []v3Point{{Timestamp: 1, Value: "0.5"}}},
-				}},
-				{QueryName: queryDisk},
-				{QueryName: queryNet},
-				{QueryName: queryRAM},
-				{QueryName: queryNodeCPU},
-				{QueryName: queryNodeRAM},
-				{QueryName: queryNodeUp},
-			}},
-		}
-		snap := newSnapshot(resp, now)
-		wm := snap.Workloads["flux-system/source-controller"]
-		assert.Equal(t, 2, len(wm.CPUHist), "single value should be duplicated for sparkline")
-		assert.InDelta(t, 0.5, wm.CPUHist[0], 0.001)
-	})
-}
-
-func TestLatestByWorkload(t *testing.T) {
-	labels := func(ns, deploy, node string) map[string]string {
-		return map[string]string{
-			"k8s_namespace_name":  ns,
-			"k8s.deployment.name": deploy,
-			"k8s_node_name":       node,
-		}
-	}
-
-	t.Run("takes max across pods of same deployment", func(t *testing.T) {
-		series := []v3Series{
-			{Labels: labels("flux-system", "source-controller", "node-a"),
-				Values: []v3Point{{Timestamp: 1, Value: "0.1"}, {Timestamp: 2, Value: "0.3"}}},
-			{Labels: labels("flux-system", "source-controller", "node-b"),
-				Values: []v3Point{{Timestamp: 1, Value: "0.2"}, {Timestamp: 2, Value: "0.5"}}},
-		}
-		result := latestByWorkload(series)
-		assert.InDelta(t, 0.5, result["flux-system/source-controller"], 0.001)
-	})
-
-	t.Run("skips entries with missing deployment name", func(t *testing.T) {
-		series := []v3Series{
-			{Labels: map[string]string{"k8s_namespace_name": "flux-system"},
-				Values: []v3Point{{Timestamp: 1, Value: "0.5"}}},
-		}
-		result := latestByWorkload(series)
-		assert.Empty(t, result)
-	})
-
-	t.Run("skips empty series", func(t *testing.T) {
-		series := []v3Series{
-			{Labels: labels("flux-system", "source-controller", "node-a"), Values: []v3Point{}},
-		}
-		result := latestByWorkload(series)
-		assert.Empty(t, result)
-	})
-
-	t.Run("skips unparseable values", func(t *testing.T) {
-		series := []v3Series{
-			{Labels: labels("flux-system", "source-controller", "node-a"),
-				Values: []v3Point{{Timestamp: 1, Value: "notanumber"}}},
-		}
-		result := latestByWorkload(series)
-		assert.Empty(t, result)
-	})
-}
-
-func TestLatestByNode(t *testing.T) {
-	t.Run("extracts latest value per node", func(t *testing.T) {
-		series := []v3Series{
-			{Labels: map[string]string{"k8s.node.name": "node-a"},
-				Values: []v3Point{{Timestamp: 1, Value: "0.5"}, {Timestamp: 2, Value: "0.6"}}},
-			{Labels: map[string]string{"k8s.node.name": "node-b"},
-				Values: []v3Point{{Timestamp: 1, Value: "1.2"}, {Timestamp: 2, Value: "1.3"}}},
-		}
-		result := latestByNode(series)
-		assert.InDelta(t, 0.6, result["node-a"], 0.001)
-		assert.InDelta(t, 1.3, result["node-b"], 0.001)
-	})
-
-	t.Run("skips missing node name", func(t *testing.T) {
-		series := []v3Series{
-			{Labels: map[string]string{}, Values: []v3Point{{Timestamp: 1, Value: "0.5"}}},
-		}
-		result := latestByNode(series)
-		assert.Empty(t, result)
-	})
-}
-
 func TestBuildServices(t *testing.T) {
 	t.Run("filters services with all-zero metrics", func(t *testing.T) {
 		snap := MetricsSnapshot{
@@ -344,8 +34,8 @@ func TestBuildServices(t *testing.T) {
 	t.Run("sorts by category order then name", func(t *testing.T) {
 		snap := MetricsSnapshot{
 			Workloads: map[string]WorkloadMetrics{
-				"signoz/alertmanager": {
-					Namespace: "signoz", Name: "alertmanager", Host: "node-a", CPU: 0.1,
+				"monitoring/alertmanager": {
+					Namespace: "monitoring", Name: "alertmanager", Host: "node-a", CPU: 0.1,
 				},
 				"flux-system/source-controller": {
 					Namespace: "flux-system", Name: "source-controller", Host: "node-a", CPU: 0.2,
@@ -354,7 +44,7 @@ func TestBuildServices(t *testing.T) {
 		}
 		services := BuildServices(snap, time.Now())
 		require.Len(t, services, 2)
-		// deployment (flux-system) comes before observability (signoz)
+		// deployment (flux-system) comes before observability (monitoring)
 		assert.Equal(t, "source-controller", services[0].Name)
 		assert.Equal(t, "alertmanager", services[1].Name)
 	})
@@ -372,22 +62,35 @@ func TestBuildServices(t *testing.T) {
 		require.Len(t, services, 1)
 		assert.InDelta(t, 105.0, services[0].RAM, 1.0)
 	})
+
+	t.Run("emits sparkline history points", func(t *testing.T) {
+		snap := MetricsSnapshot{
+			Workloads: map[string]WorkloadMetrics{
+				"flux-system/source-controller": {
+					Namespace: "flux-system", Name: "source-controller", CPU: 0.3,
+					CPUHist: []float64{0.1, 0.3, 0.2, 0.4},
+				},
+			},
+		}
+		services := BuildServices(snap, time.Now())
+		require.Len(t, services, 1)
+		assert.NotEmpty(t, services[0].CPUHist)
+	})
 }
 
 func TestBuildHosts(t *testing.T) {
-	t.Run("labels control-plane nodes as Cloud", func(t *testing.T) {
+	t.Run("hostname fallback labels control-plane nodes", func(t *testing.T) {
 		snap := MetricsSnapshot{
 			Nodes: map[string]NodeMetrics{
-				"talosoci-control-plane-abc": {CPU: 0.5, RAM: 4294967296},
+				"talos-oci-c-control-plane-abc": {CPU: 0.5, RAM: 4294967296},
 			},
 		}
 		hosts := BuildHosts(snap, nil)
 		require.Len(t, hosts, 1)
-		assert.Equal(t, "Cloud", hosts[0].Label)
-		assert.Equal(t, "Control plane", hosts[0].Detail)
+		assert.Equal(t, "Control plane", hosts[0].Label)
 	})
 
-	t.Run("labels worker nodes as Edge", func(t *testing.T) {
+	t.Run("hostname fallback labels other nodes as Worker", func(t *testing.T) {
 		snap := MetricsSnapshot{
 			Nodes: map[string]NodeMetrics{
 				"talosedge-xyz": {CPU: 1.2, RAM: 8589934592},
@@ -395,8 +98,7 @@ func TestBuildHosts(t *testing.T) {
 		}
 		hosts := BuildHosts(snap, nil)
 		require.Len(t, hosts, 1)
-		assert.Equal(t, "Edge", hosts[0].Label)
-		assert.Equal(t, "Worker node", hosts[0].Detail)
+		assert.Equal(t, "Worker", hosts[0].Label)
 	})
 
 	t.Run("computes uptime from node metrics", func(t *testing.T) {
@@ -426,35 +128,110 @@ func TestBuildHosts(t *testing.T) {
 		assert.Equal(t, 3, hostMap["node-a"].SvcCount)
 		assert.Equal(t, 1, hostMap["node-b"].SvcCount)
 	})
-}
 
-func TestBuildHosts_WithNodeInfo(t *testing.T) {
-	info := func(name string) (NodeInfo, bool) {
-		return NodeInfo{
-			IsControlPlane: name == "talos-oci-c-ultimate-parakeet",
-			Provider:       "OCI Cloud",
-			Arch:           "ARM64",
-		}, true
-	}
-
-	t.Run("uses k8s node info for labeling", func(t *testing.T) {
+	t.Run("control plane sorts before worker", func(t *testing.T) {
 		snap := MetricsSnapshot{
 			Nodes: map[string]NodeMetrics{
-				"talos-oci-c-ultimate-parakeet": {CPU: 0.5},
-				"talos-os-w-logical-mule":       {CPU: 1.2},
+				"worker-z":  {CPU: 1},
+				"control-1": {CPU: 1},
+			},
+		}
+		hosts := BuildHosts(snap, nil)
+		require.Len(t, hosts, 2)
+		assert.Equal(t, "control-1", hosts[0].Name)
+	})
+}
+
+func TestBuildHosts_WithTopology(t *testing.T) {
+	info := func(name string) (NodeInfo, bool) {
+		switch name {
+		case "talos-oci-c-rapid-gator":
+			return NodeInfo{
+				IsControlPlane: true,
+				Provider:       "OCI Cloud",
+				Arch:           "ARM64",
+				CPUCores:       4,
+				RAMBytes:       25116016640,
+			}, true
+		case "talos-os-w-lasting-phoenix":
+			return NodeInfo{
+				IsControlPlane: false,
+				Provider:       "Cloud",
+				Arch:           "AMD64",
+				CPUCores:       16,
+				RAMBytes:       33629507584,
+			}, true
+		}
+		return NodeInfo{}, false
+	}
+
+	t.Run("uses k8s topology for role, provider, arch, capacity", func(t *testing.T) {
+		snap := MetricsSnapshot{
+			Nodes: map[string]NodeMetrics{
+				"talos-oci-c-rapid-gator":    {CPU: 0.5, RAM: 4.3e9},
+				"talos-os-w-lasting-phoenix": {CPU: 1.2, RAM: 3.0e9},
 			},
 		}
 		hosts := BuildHosts(snap, info)
 		require.Len(t, hosts, 2)
 
-		// Control plane sorts first
-		assert.Equal(t, "talos-oci-c-ultimate-parakeet", hosts[0].Name)
-		assert.Equal(t, "OCI Cloud", hosts[0].Label)
-		assert.Contains(t, hosts[0].Detail, "Control plane")
+		// Control plane sorts first.
+		assert.Equal(t, "talos-oci-c-rapid-gator", hosts[0].Name)
+		assert.Equal(t, "Control plane", hosts[0].Label)
+		assert.Contains(t, hosts[0].Detail, "OCI Cloud")
 		assert.Contains(t, hosts[0].Detail, "ARM64")
+		assert.InDelta(t, 4, hosts[0].CPUCores, 0.001)
 
-		assert.Equal(t, "talos-os-w-logical-mule", hosts[1].Name)
-		assert.Equal(t, "OCI Cloud", hosts[1].Label)
-		assert.Contains(t, hosts[1].Detail, "Worker node")
+		assert.Equal(t, "talos-os-w-lasting-phoenix", hosts[1].Name)
+		assert.Equal(t, "Worker", hosts[1].Label)
+		assert.Contains(t, hosts[1].Detail, "Cloud")
+		assert.InDelta(t, 16, hosts[1].CPUCores, 0.001)
+	})
+}
+
+// ── K8s topology parsing helpers ──
+
+func TestParseCores(t *testing.T) {
+	assert.InDelta(t, 4, parseCores("4"), 0.001)
+	assert.InDelta(t, 1.6, parseCores("1600m"), 0.001)
+	assert.InDelta(t, 0, parseCores(""), 0.001)
+	assert.InDelta(t, 0, parseCores("nope"), 0.001)
+}
+
+func TestParseBytes(t *testing.T) {
+	assert.InDelta(t, 25116016640, parseBytes("25116016640"), 1)
+	assert.InDelta(t, 25165824000, parseBytes("24576000Ki"), 1)
+	assert.InDelta(t, 0, parseBytes(""), 0)
+}
+
+func TestProviderFromID(t *testing.T) {
+	assert.Equal(t, "OCI Cloud", providerFromID("ocid1.instance.oc1.phx.abcd", ""))
+	assert.Equal(t, "Edge", providerFromID("metal://edge-node", ""))
+	assert.Equal(t, "OCI Cloud", providerFromID("", "talos-oci-c-foo"))
+	assert.Equal(t, "Edge", providerFromID("", "talosedge-bar"))
+	assert.Equal(t, "Cloud", providerFromID("", "talos-os-w-baz"))
+	assert.Equal(t, "", providerFromID("", "random-name"))
+}
+
+func TestArchLabel(t *testing.T) {
+	assert.Equal(t, "ARM64", archLabel("arm64"))
+	assert.Equal(t, "ARM64", archLabel("aarch64"))
+	assert.Equal(t, "AMD64", archLabel("amd64"))
+	assert.Equal(t, "AMD64", archLabel("x86_64"))
+}
+
+func TestResolveWorkload(t *testing.T) {
+	rs := map[string]string{"default/myapp-abc": "myapp"}
+
+	t.Run("replicaset resolves to deployment via rs map", func(t *testing.T) {
+		got := resolveWorkload([]ownerRef{{Kind: "ReplicaSet", Name: "myapp-abc"}}, "default", rs)
+		assert.Equal(t, "myapp", got)
+	})
+	t.Run("statefulset owner is the workload name", func(t *testing.T) {
+		got := resolveWorkload([]ownerRef{{Kind: "StatefulSet", Name: "clickhouse"}}, "signoz", nil)
+		assert.Equal(t, "clickhouse", got)
+	})
+	t.Run("bare pod returns empty", func(t *testing.T) {
+		assert.Equal(t, "", resolveWorkload(nil, "default", nil))
 	})
 }

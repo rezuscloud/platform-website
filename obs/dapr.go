@@ -10,6 +10,9 @@ import (
 	"time"
 )
 
+// LoadSecretsFromDapr pulls optional config from the Dapr secret store.
+// Currently only PROMETHEUS_URL is loaded (when the sidecar is present); the
+// kube-prometheus-stack service is used by default otherwise.
 func LoadSecretsFromDapr() {
 	port := os.Getenv("DAPR_HTTP_PORT")
 	if port == "" {
@@ -29,7 +32,7 @@ func LoadSecretsFromDapr() {
 	resp.Body.Close()
 
 	secretReq, _ := http.NewRequestWithContext(ctx, http.MethodGet,
-		"http://localhost:"+port+"/v1.0/secrets/kubernetes-secret-store/signoz-api-credentials", nil)
+		"http://localhost:"+port+"/v1.0/secrets/kubernetes-secret-store/observability-config", nil)
 	secretResp, err := client.Do(secretReq)
 	if err != nil {
 		log.Printf("dapr: secrets fetch failed: %v", err)
@@ -49,11 +52,8 @@ func LoadSecretsFromDapr() {
 		return
 	}
 
-	if u, ok := secrets["SIGNOZ_URL"]; ok && u != "" {
-		os.Setenv("SIGNOZ_URL", u)
+	if u, ok := secrets["PROMETHEUS_URL"]; ok && u != "" {
+		os.Setenv("PROMETHEUS_URL", u)
 	}
-	if k, ok := secrets["SIGNOZ_API_KEY"]; ok && k != "" {
-		os.Setenv("SIGNOZ_API_KEY", k)
-	}
-	log.Printf("dapr: loaded SIGNOZ credentials from kubernetes-secret-store")
+	log.Printf("dapr: loaded observability config from kubernetes-secret-store")
 }
