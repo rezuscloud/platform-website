@@ -64,7 +64,7 @@ func render(c *fiber.Ctx, component templ.Component) error {
 }
 
 // Home renders the full landing page.
-// Falls back to mock data when SigNoz returns empty results.
+// Falls back to mock data when the live source returns empty results.
 func Home(c *fiber.Ctx) error {
 	data, _ := liveClient.Fetch(c.Context())
 	if len(data.Hosts) == 0 && len(data.Services) == 0 {

@@ -69,24 +69,21 @@ func main() {
 		return c.SendStatus(fiber.StatusNoContent)
 	})
 
-	// Wire SigNoz client — try Dapr secrets first, fall back to env vars
+	// Wire Prometheus client (native kube-prometheus-stack metrics). The
+	// kube-prometheus-stack service is used by default; PROMETHEUS_URL overrides.
 	obs.LoadSecretsFromDapr()
-	if signoz := obs.NewSigNozClientFromEnv(); signoz != nil {
-		handlers.SetLiveClient(signoz)
-		signozURL := os.Getenv("SIGNOZ_URL")
-		log.Printf("Live section using SigNoz metrics from %s", signozURL)
+	prom := obs.NewPrometheusClientFromEnv()
+	handlers.SetLiveClient(prom)
+	log.Printf("Live section using Prometheus metrics from %s", prom.URL())
 
-		// Startup health check: warn early if SigNoz is unreachable
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		if _, err := signoz.Fetch(ctx); err != nil {
-			log.Printf("WARNING: SigNoz health check failed (%s): %v", signozURL, err)
-		} else {
-			log.Printf("SigNoz health check OK (%s)", signozURL)
-		}
-		cancel()
+	// Startup health check: warn early if Prometheus is unreachable.
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	if _, err := prom.Fetch(ctx); err != nil {
+		log.Printf("WARNING: Prometheus health check failed: %v", err)
 	} else {
-		log.Println("SIGNOZ_URL/SIGNOZ_API_KEY not set, live section using mock data")
+		log.Printf("Prometheus health check OK")
 	}
+	cancel()
 	handlers.InitSections()
 
 	addr := ":3000"
