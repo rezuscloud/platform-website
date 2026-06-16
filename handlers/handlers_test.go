@@ -27,6 +27,37 @@ func TestHomeHandler(t *testing.T) {
 	assert.Equal(t, "text/html; charset=utf-8", resp.Header.Get("Content-Type"))
 }
 
+func TestHTMLResponsesAreNeverCached(t *testing.T) {
+	// HTML must always revalidate against the origin so a browser never serves
+	// a pre-deploy page (no ETag/Last-Modified is sent, so no-cache == fresh).
+	// See fix/html-no-cache; regression guard for the stale-page bug.
+	app := setupApp()
+
+	cases := []struct {
+		name string
+		path string
+	}{
+		{"home", "/"},
+		{"section-hero", "/sections/hero"},
+		{"not-found", "/this-route-does-not-exist"},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest("GET", tc.path, nil)
+			resp, err := app.Test(req, -1)
+			require.NoError(t, err)
+			defer resp.Body.Close()
+
+			ct := resp.Header.Get("Content-Type")
+			require.True(t, strings.HasPrefix(ct, "text/html"),
+				"%s: expected HTML, got %q", tc.name, ct)
+			assert.Equal(t, "no-cache", resp.Header.Get("Cache-Control"),
+				"%s: HTML must not be cached across deploys", tc.name)
+		})
+	}
+}
+
 func TestHomeHandlerContainsExpectedContent(t *testing.T) {
 	app := setupApp()
 

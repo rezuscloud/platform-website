@@ -58,8 +58,14 @@ func SetLiveClient(c obs.Client) {
 }
 
 // Render adapts a templ.Component to a Fiber response.
+//
+// HTML responses use Cache-Control: no-cache so browsers always revalidate
+// against the origin after a deploy. Without it (and with no ETag/Last-Modified
+// on these responses) a browser can hold a pre-deploy page across deploys.
+// Static assets keep their own long cache via app.Static in main.go.
 func render(c *fiber.Ctx, component templ.Component) error {
 	c.Set("Content-Type", "text/html; charset=utf-8")
+	c.Set("Cache-Control", "no-cache")
 	return component.Render(c.Context(), c.Response().BodyWriter())
 }
 
