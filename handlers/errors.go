@@ -13,6 +13,7 @@ func ErrorHandler(c *fiber.Ctx, err error) error {
 
 	c.Status(code)
 	c.Set("Content-Type", "text/html; charset=utf-8")
+	c.Set("Cache-Control", "no-cache")
 
 	switch code {
 	case fiber.StatusNotFound:
