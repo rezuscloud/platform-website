@@ -19,8 +19,6 @@ import (
 )
 
 func main() {
-	meterProvider, tracerProvider := obs.InitTelemetry()
-
 	app := handlers.SetupApp()
 
 	// Initialize documentation store
@@ -29,7 +27,6 @@ func main() {
 	// Middleware chain (applied before routes because SetupApp registers routes first,
 	// but Fiber processes middleware in registration order per request)
 	app.Use(recover.New())
-	app.Use(obs.OTelFiberMiddleware(meterProvider, tracerProvider))
 	app.Use(middleware.SecurityHeaders)
 	app.Use(logger.New())
 	app.Use(compress.New())
@@ -90,7 +87,6 @@ func main() {
 	log.Printf("Starting server on %s", addr)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
-		obs.ShutdownTelemetry(context.Background())
 		log.Fatalf("Failed to create listener: %v", err)
 	}
 	log.Fatal(app.Listener(ln))
