@@ -217,27 +217,27 @@ templ Nav(activeNav string) {
 							<rect x="8" y="22" width="16" height="2" rx="0.5"></rect>
 						</svg>
 					</div>
-					<span class="text-lg font-bold font-mac text-ink dark:text-next-white tracking-wide">Rezus<span class="text-accent-gold dark:text-next-teal">Cloud</span></span>
+					<span class="text-lg font-bold font-mac text-ink dark:text-next-white tracking-wide">Rezus<span class="text-accent-gold-text dark:text-next-teal-text">Cloud</span></span>
 				</div>
 				if activeNav == "docs" {
 					<!-- Docs page: static nav, Docs highlighted -->
 					<div class="hidden md:flex items-center gap-1 text-sm font-mac">
-						<a href="/#hero" class="px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Home</a>
-						<a href="/#architecture" class="px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Architecture</a>
-						<a href="/#features" class="px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Features</a>
-						<a href="/#getstarted" class="px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Get Started</a>
+						<a href="/#hero" class="px-3 py-2 text-ink-muted dark:text-next-subtle-text hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Home</a>
+						<a href="/#architecture" class="px-3 py-2 text-ink-muted dark:text-next-subtle-text hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Architecture</a>
+						<a href="/#features" class="px-3 py-2 text-ink-muted dark:text-next-subtle-text hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Features</a>
+						<a href="/#getstarted" class="px-3 py-2 text-ink-muted dark:text-next-subtle-text hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Get Started</a>
 						<span class="mx-1 text-rule dark:text-next-mid">|</span>
 						<a href="/docs" class="px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light">Docs</a>
 					</div>
 				} else {
 					<!-- Home page: scroll-driven active state via Alpine -->
 					<div class="hidden md:flex items-center gap-1 text-sm font-mac">
-						<a href="/#hero" x-bind:class="$store.scroll.active === 'hero' ? 'px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light' : 'px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'">Home</a>
-						<a href="/#architecture" x-bind:class="$store.scroll.active === 'architecture' ? 'px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light' : 'px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'">Architecture</a>
-						<a href="/#features" x-bind:class="$store.scroll.active === 'features' ? 'px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light' : 'px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'">Features</a>
-						<a href="/#getstarted" x-bind:class="$store.scroll.active === 'getstarted' ? 'px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light' : 'px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'">Get Started</a>
+						<a href="/#hero" x-bind:class="$store.scroll.active === 'hero' ? 'px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light' : 'px-3 py-2 text-ink-muted dark:text-next-subtle-text hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'">Home</a>
+						<a href="/#architecture" x-bind:class="$store.scroll.active === 'architecture' ? 'px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light' : 'px-3 py-2 text-ink-muted dark:text-next-subtle-text hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'">Architecture</a>
+						<a href="/#features" x-bind:class="$store.scroll.active === 'features' ? 'px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light' : 'px-3 py-2 text-ink-muted dark:text-next-subtle-text hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'">Features</a>
+						<a href="/#getstarted" x-bind:class="$store.scroll.active === 'getstarted' ? 'px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light' : 'px-3 py-2 text-ink-muted dark:text-next-subtle-text hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120'">Get Started</a>
 						<span class="mx-1 text-rule dark:text-next-mid">|</span>
-						<a href="/docs" class="px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid hover:text-accent-gold dark:hover:text-next-teal transition-colors duration-120">Docs</a>
+						<a href="/docs" class="px-3 py-2 text-ink-muted dark:text-next-subtle-text hover:bg-paper dark:hover:bg-next-mid hover:text-accent-gold-text dark:hover:text-next-teal-text transition-colors duration-120">Docs</a>
 					</div>
 				}
 				<div class="flex items-center gap-3">
@@ -269,15 +269,15 @@ templ Nav(activeNav string) {
 				class="md:hidden pb-4"
 			>
 				<div class="flex flex-col gap-1 text-sm font-mac">
-					<a href="/#hero" @click="mobileOpen = false" class="block px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Home</a>
-					<a href="/#architecture" @click="mobileOpen = false" class="block px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Architecture</a>
-					<a href="/#features" @click="mobileOpen = false" class="block px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Features</a>
-					<a href="/#getstarted" @click="mobileOpen = false" class="block px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Get Started</a>
+					<a href="/#hero" @click="mobileOpen = false" class="block px-3 py-2 text-ink-muted dark:text-next-subtle-text hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Home</a>
+					<a href="/#architecture" @click="mobileOpen = false" class="block px-3 py-2 text-ink-muted dark:text-next-subtle-text hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Architecture</a>
+					<a href="/#features" @click="mobileOpen = false" class="block px-3 py-2 text-ink-muted dark:text-next-subtle-text hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Features</a>
+					<a href="/#getstarted" @click="mobileOpen = false" class="block px-3 py-2 text-ink-muted dark:text-next-subtle-text hover:bg-paper dark:hover:bg-next-mid transition-colors duration-120">Get Started</a>
 					<hr class="border-rule dark:border-next-mid my-1"/>
 					if activeNav == "docs" {
 						<a href="/docs" @click="mobileOpen = false" class="block px-3 py-2 text-ink dark:text-next-black bg-paper dark:bg-next-light">Docs</a>
 					} else {
-						<a href="/docs" @click="mobileOpen = false" class="block px-3 py-2 text-ink-muted dark:text-next-subtle hover:bg-paper dark:hover:bg-next-mid hover:text-accent-gold dark:hover:text-next-teal transition-colors duration-120">Docs</a>
+						<a href="/docs" @click="mobileOpen = false" class="block px-3 py-2 text-ink-muted dark:text-next-subtle-text hover:bg-paper dark:hover:bg-next-mid hover:text-accent-gold-text dark:hover:text-next-teal-text transition-colors duration-120">Docs</a>
 					}
 				</div>
 			</div>
@@ -314,30 +314,30 @@ templ Footer() {
 								<rect x="8" y="22" width="16" height="2" rx="0.5"></rect>
 							</svg>
 						</div>
-						<span class="text-lg font-bold font-mac text-ink dark:text-next-white tracking-wide">Rezus<span class="text-accent-gold dark:text-next-teal">Cloud</span></span>
+						<span class="text-lg font-bold font-mac text-ink dark:text-next-white tracking-wide">Rezus<span class="text-accent-gold-text dark:text-next-teal-text">Cloud</span></span>
 					</div>
-					<p class="text-sm text-ink-muted dark:text-next-subtle font-mac-body">
+					<p class="text-sm text-ink-muted dark:text-next-subtle-text font-mac-body">
 						Infrastructure belongs to the person who needs it.
 					</p>
 				</div>
 				<div>
-					<h3 class="font-semibold mb-3 font-mac text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle">Platform</h3>
-					<ul class="space-y-2 text-sm font-mac-body text-ink-muted dark:text-next-subtle">
-						<li><a href="/#features" class="hover:text-accent-gold dark:hover:text-next-white transition-colors">Features</a></li>
-						<li><a href="/#architecture" class="hover:text-accent-gold dark:hover:text-next-white transition-colors">Architecture</a></li>
+					<h3 class="font-semibold mb-3 font-mac text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle-text">Platform</h3>
+					<ul class="space-y-2 text-sm font-mac-body text-ink-muted dark:text-next-subtle-text">
+						<li><a href="/#features" class="hover:text-accent-gold-text dark:hover:text-next-white transition-colors">Features</a></li>
+						<li><a href="/#architecture" class="hover:text-accent-gold-text dark:hover:text-next-white transition-colors">Architecture</a></li>
 					</ul>
 				</div>
 				<div>
-					<h3 class="font-semibold mb-3 font-mac text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle">Explore</h3>
-					<ul class="space-y-2 text-sm font-mac-body text-ink-muted dark:text-next-subtle">
-						<li><a href="/#getstarted" class="hover:text-accent-gold dark:hover:text-next-white transition-colors">Get Started</a></li>
-						<li><a href="/#live" class="hover:text-accent-gold dark:hover:text-next-white transition-colors">Live Platform</a></li>
-						<li><a href="/privacy" class="hover:text-accent-gold dark:hover:text-next-white transition-colors">Privacy</a></li>
+					<h3 class="font-semibold mb-3 font-mac text-xs uppercase tracking-wider text-ink-muted dark:text-next-subtle-text">Explore</h3>
+					<ul class="space-y-2 text-sm font-mac-body text-ink-muted dark:text-next-subtle-text">
+						<li><a href="/#getstarted" class="hover:text-accent-gold-text dark:hover:text-next-white transition-colors">Get Started</a></li>
+						<li><a href="/#live" class="hover:text-accent-gold-text dark:hover:text-next-white transition-colors">Live Platform</a></li>
+						<li><a href="/privacy" class="hover:text-accent-gold-text dark:hover:text-next-white transition-colors">Privacy</a></li>
 					</ul>
 				</div>
 			</div>
-			<div class="mt-8 pt-8 border-t border-rule dark:border-next-mid text-center text-xs text-ink-muted dark:text-next-subtle font-mac-mono">
-				<p>MODEL RC-001 // SERIAL: OPEN-SOURCE // <span class="text-accent-gold dark:text-next-teal">Built with Go, templ, HTMX, Alpine.js, Tailwind CSS</span></p>
+			<div class="mt-8 pt-8 border-t border-rule dark:border-next-mid text-center text-xs text-ink-muted dark:text-next-subtle-text font-mac-mono">
+				<p>MODEL RC-001 // SERIAL: OPEN-SOURCE // <span class="text-accent-gold-text dark:text-next-teal-text">Built with Go, templ, HTMX, Alpine.js, Tailwind CSS</span></p>
 			</div>
 		</div>
 	</footer>

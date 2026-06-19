@@ -6,14 +6,14 @@ templ UseCases() {
 			<div class="text-center mb-10">
 				<div class="ds-accent-bar ds-accent-bar-md mx-auto mb-4"></div>
 				<h2 class="text-3xl sm:text-4xl font-bold mb-4 font-mac text-ink dark:text-next-white">What Will You Build?</h2>
-				<p class="text-lg text-ink-muted dark:text-next-subtle max-w-2xl mx-auto font-mac-body">
+				<p class="text-lg text-ink-muted dark:text-next-subtle-text max-w-2xl mx-auto font-mac-body">
 					From a home server to a distributed training cluster. Same platform, same git push.
 				</p>
 			</div>
 			<!-- Tech strip (merged from TechStack) -->
 			<div class="max-w-4xl mx-auto mb-12">
 				<div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-5">
-					<span class="text-xs font-bold font-mac uppercase tracking-widest text-ink-muted dark:text-next-subtle whitespace-nowrap">Built with</span>
+					<span class="text-xs font-bold font-mac uppercase tracking-widest text-ink-muted dark:text-next-subtle-text whitespace-nowrap">Built with</span>
 					<div class="w-8 h-px bg-rule dark:bg-next-mid shrink-0 hidden sm:block"></div>
 					<div class="flex flex-wrap gap-2">
 						@techBadge("Talos Linux")
@@ -94,12 +94,12 @@ templ useCaseCard(title string, description string, items []UseCaseItem, icon te
 		</div>
 		<div>
 			<h3 class="text-xl font-bold mb-1 font-mac text-ink dark:text-next-white">{ title }</h3>
-			<p class="text-sm text-ink-muted dark:text-next-subtle mb-3 font-mac-body">{ description }</p>
+			<p class="text-sm text-ink-muted dark:text-next-subtle-text mb-3 font-mac-body">{ description }</p>
 			<ul class="space-y-1.5">
 				for _, item := range items {
 					<li class="flex items-start gap-2 text-sm">
 						<span class="mt-1.5 ds-accent-dot ds-accent-dot-sm shrink-0"></span>
-						<span class="font-mac-body"><span class="font-medium text-ink dark:text-next-white">{ item.Title }</span> <span class="text-ink-muted dark:text-next-subtle">· { item.Description }</span></span>
+						<span class="font-mac-body"><span class="font-medium text-ink dark:text-next-white">{ item.Title }</span> <span class="text-ink-muted dark:text-next-subtle-text">· { item.Description }</span></span>
 					</li>
 				}
 			</ul>
