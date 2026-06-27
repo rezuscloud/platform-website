@@ -14,6 +14,7 @@ func SetupApp() *fiber.App {
 	})
 
 	app.Get("/", Home)
+	app.Get("/privacy", Privacy)
 	app.Get("/sections/:name", Section)
 	app.Get("/docs", DocsIndex)
 	app.Get("/docs/*", DocsPage)
