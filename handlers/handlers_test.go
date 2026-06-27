@@ -58,6 +58,27 @@ func TestHTMLResponsesAreNeverCached(t *testing.T) {
 	}
 }
 
+func TestPrivacyNotice(t *testing.T) {
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/privacy", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, "text/html; charset=utf-8", resp.Header.Get("Content-Type"))
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+	html := string(body)
+
+	// Compliance: the site sets no cookies, so the notice must state it plainly.
+	assert.Contains(t, html, "no cookies")
+	assert.Contains(t, html, "no analytics")
+	assert.Equal(t, 0, strings.Count(html, "Set-Cookie"))
+}
+
 func TestHomeHandlerContainsExpectedContent(t *testing.T) {
 	app := setupApp()
 
