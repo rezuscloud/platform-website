@@ -79,6 +79,12 @@ func Home(c *fiber.Ctx) error {
 	return render(c, pages.Home(data))
 }
 
+// Privacy renders the privacy notice. The site collects no user data, so this
+// is a plain declaration, not a consent flow.
+func Privacy(c *fiber.Ctx) error {
+	return render(c, pages.Privacy())
+}
+
 // Section renders an individual section for HTMX partial swaps.
 // All sections — static and dynamic — go through the same code path.
 func Section(c *fiber.Ctx) error {

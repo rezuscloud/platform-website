@@ -1,0 +1,68 @@
+package pages
+
+import "github.com/rezuscloud/platform-website/views"
+
+// Privacy renders the privacy notice. The site collects no user data, so this
+// is a plain declaration of that fact, not a consent flow.
+templ Privacy() {
+	@views.Layout("Privacy | RezusCloud", "") {
+		<section class="min-h-screen bg-paper dark:bg-next-black pt-14">
+			<div class="border-b border-rule dark:border-next-mid bg-surface-strong dark:bg-next-dark">
+				<div class="mx-auto max-w-3xl px-4 sm:px-6 py-2">
+					<nav class="text-xs font-silkscreen text-ink-muted dark:text-next-subtle" aria-label="Breadcrumb">
+						<a href="/" class="hover:text-accent-gold dark:hover:text-next-teal transition-colors">Home</a>
+						<span class="mx-2 text-rule dark:text-next-mid">/</span>
+						<span class="text-ink dark:text-next-white">Privacy</span>
+					</nav>
+				</div>
+			</div>
+			<div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-16">
+				<span class="ds-section-badge">
+					<span>MODEL RC-001</span>
+					<span class="ds-section-badge-sep">{ "//" }</span>
+					<span>PRIVACY</span>
+				</span>
+				<h1 class="mt-6 font-mac text-3xl sm:text-4xl font-bold tracking-tight text-ink dark:text-next-white">We do not collect your data.</h1>
+				<p class="mt-6 text-base sm:text-lg text-ink dark:text-next-white leading-relaxed">
+					This website has no analytics, no trackers, no advertising pixels, and no cookies. It does not fingerprint your browser, sell attention, or phone home to a third party. There is nothing to consent to, so there is no banner.
+				</p>
+				<div class="mt-12 space-y-10">
+					<div>
+						<h2 class="font-mac text-lg font-bold text-ink dark:text-next-white">What this site stores</h2>
+						<p class="mt-3 text-sm text-ink-muted dark:text-next-subtle leading-relaxed">
+							<span>One thing, locally in your browser: your theme preference (</span>
+							<span class="font-mac-mono text-ink dark:text-next-white">light</span>
+							<span>or</span>
+							<span class="font-mac-mono text-ink dark:text-next-white">dark</span>
+							<span>), so the page does not flash the wrong theme on load. It never leaves your device. Clearing site data removes it.</span>
+						</p>
+					</div>
+					<div>
+						<h2 class="font-mac text-lg font-bold text-ink dark:text-next-white">What this site sets</h2>
+						<p class="mt-3 text-sm text-ink-muted dark:text-next-subtle leading-relaxed">No cookies. No local or session storage beyond the theme preference above. Every asset (fonts, styles, scripts) is served from this domain, not a CDN that could observe you.</p>
+					</div>
+					<div>
+						<h2 class="font-mac text-lg font-bold text-ink dark:text-next-white">Server logs</h2>
+						<p class="mt-3 text-sm text-ink-muted dark:text-next-subtle leading-relaxed">To keep the service running, the server logs standard request metadata (time, path, connection source) to its own stdout for operational debugging. These logs stay inside our infrastructure, are not shipped to a third party, and are not used to build a profile of you.</p>
+					</div>
+					<div>
+						<h2 class="font-mac text-lg font-bold text-ink dark:text-next-white">The Live Platform section</h2>
+						<p class="mt-3 text-sm text-ink-muted dark:text-next-subtle leading-relaxed">The live grid shows the real state of the cluster that hosts this site (node names, resource usage). That is our infrastructure, not yours. It contains no data about visitors.</p>
+					</div>
+				</div>
+				<div class="mt-16 pt-8 border-t border-rule dark:border-next-mid">
+					<p class="text-sm text-ink-muted dark:text-next-subtle leading-relaxed">
+						<span>RezusCloud is open source. The code that serves this page is auditable at </span>
+						<a
+							href="https://github.com/rezuscloud/platform-website"
+							class="text-ink dark:text-next-white underline underline-offset-2 hover:text-accent-gold dark:hover:text-next-teal transition-colors"
+							target="_blank"
+							rel="noopener noreferrer"
+						>github.com/rezuscloud/platform-website</a>
+						<span>. If this notice ever stops matching the code, that is the bug to file.</span>
+					</p>
+				</div>
+			</div>
+		</section>
+	}
+}
