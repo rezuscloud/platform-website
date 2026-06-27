@@ -8,9 +8,7 @@ package pages
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import (
-	"github.com/rezuscloud/platform-website/views"
-)
+import "github.com/rezuscloud/platform-website/views"
 
 // Privacy renders the privacy notice. The site collects no user data, so this
 // is a plain declaration of that fact, not a consent flow.
@@ -54,7 +52,7 @@ func Privacy() templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs("//")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/privacy.templ`, Line: 24, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/pages/privacy.templ`, Line: 22, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
