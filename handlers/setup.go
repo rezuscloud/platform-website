@@ -20,6 +20,7 @@ func SetupApp() *fiber.App {
 	app.Get("/docs/*", DocsPage)
 	app.Get("/api/version", APIVersion)
 	app.Get("/api/live/stream", LiveSSE)
+	app.Get("/api/live/history", LiveServiceHistory)
 
 	return app
 }

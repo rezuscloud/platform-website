@@ -33,6 +33,14 @@ func TestSendSnapshotSuccess(t *testing.T) {
 	assert.Contains(t, output, `"hosts"`)
 	assert.Contains(t, output, `"services"`)
 	assert.Contains(t, output, `"hasMetrics":false`)
+
+	// Regression: the tick ships scalars only. Sparkline history must NOT be on
+	// the wire (it is ~90% of the payload and only rendered for an open panel;
+	// fetched on demand via GET /api/live/history). See perf/live.
+	for _, hist := range []string{`"cpuHist"`, `"ramHist"`, `"netHist"`, `"diskHist"`} {
+		assert.NotContains(t, output, hist,
+			"SSE tick must not carry sparkline history")
+	}
 }
 
 func TestSendSnapshotError(t *testing.T) {
