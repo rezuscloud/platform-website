@@ -30,47 +30,23 @@ func TestSetLiveClient(t *testing.T) {
 func TestDefaultMockData(t *testing.T) {
 	data := obs.DefaultMockData()
 
-	t.Run("has services", func(t *testing.T) {
-		assert.NotEmpty(t, data.Services)
+	t.Run("reports no live metrics", func(t *testing.T) {
+		assert.False(t, data.HasMetrics, "fallback must not claim live metrics")
 	})
 
-	t.Run("services have names from the cluster", func(t *testing.T) {
-		names := make(map[string]bool)
-		for _, svc := range data.Services {
-			names[svc.Name] = true
-		}
-		assert.True(t, names["source-controller"])
-		assert.True(t, names["platform-website"])
-		assert.True(t, names["cilium-operator"])
+	t.Run("fabricates no hosts", func(t *testing.T) {
+		// The fallback must not invent a cluster. The site's /privacy notice
+		// promises the live grid shows real infrastructure, so on failure the
+		// fallback surfaces "topology unavailable" rather than decoy nodes.
+		assert.Empty(t, data.Hosts, "fallback must not fabricate nodes")
 	})
 
-	t.Run("services have CPU and RAM", func(t *testing.T) {
-		for _, svc := range data.Services {
-			if svc.Status == "healthy" && svc.CPU > 0 || svc.RAM > 0 {
-				assert.GreaterOrEqual(t, svc.CPU, float64(0), "Service %s", svc.Name)
-				assert.GreaterOrEqual(t, svc.RAM, float64(0), "Service %s", svc.Name)
-			}
-		}
+	t.Run("fabricates no services", func(t *testing.T) {
+		assert.Empty(t, data.Services, "fallback must not fabricate services")
 	})
 
-	t.Run("services have categories", func(t *testing.T) {
-		for _, svc := range data.Services {
-			assert.NotEmpty(t, svc.Category, "Service %s", svc.Name)
-		}
-	})
-
-	t.Run("hosts are present", func(t *testing.T) {
-		assert.GreaterOrEqual(t, len(data.Hosts), 2)
-		names := make(map[string]bool)
-		for _, h := range data.Hosts {
-			names[h.Name] = true
-		}
-		assert.True(t, names["talos-oci-c-rapid-gator"])
-		assert.True(t, names["talos-edge-w-known-foal"])
-	})
-
-	t.Run("has no live metrics in mock mode", func(t *testing.T) {
-		assert.False(t, data.HasMetrics)
+	t.Run("carries a timestamp", func(t *testing.T) {
+		assert.NotZero(t, data.Timestamp)
 	})
 }
 
