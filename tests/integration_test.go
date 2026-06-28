@@ -12,9 +12,13 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/rezuscloud/platform-website/handlers"
+	"github.com/rezuscloud/platform-website/obs"
 )
 
 func setupIntegrationApp() *fiber.App {
+	// Inject a populated sample so structure tests can assert rendering.
+	// The production fallback (obs.DefaultMockData) is deliberately empty.
+	handlers.SetLiveClient(&obs.MockClient{Data: sampleLiveData()})
 	return handlers.SetupApp()
 }
 
