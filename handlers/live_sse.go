@@ -71,7 +71,9 @@ func sendSnapshot(w *bufio.Writer) bool {
 		data = obs.DefaultMockData()
 	}
 
-	payload, err := json.Marshal(data)
+	// Ship scalars only on the tick: sparkline history is ~90% of the payload
+	// and is fetched on demand when a detail panel opens (GET /api/live/history).
+	payload, err := json.Marshal(data.ScalarSnapshot())
 	if err != nil {
 		log.Printf("SSE marshal error: %v", err)
 		fmt.Fprint(w, ": keepalive\n\n")

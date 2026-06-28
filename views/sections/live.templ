@@ -159,21 +159,13 @@ templ Live(data obs.LiveData) {
 							if (self.selected) {
 								var svc = idx[self.selected.key];
 								if (svc) {
-									self.selected = {
-										key: self.selected.key,
-										name: svc.name,
-										host: svc.host,
-										detail: svc.namespace || "",
-										cpu: svc.cpu,
-										ram: svc.ram,
-										netKB: svc.netKB || 0,
-										diskMB: svc.diskMB || 0,
-										cpuHist: svc.cpuHist,
-										ramHist: svc.ramHist,
-										netHist: svc.netHist,
-										diskHist: svc.diskHist,
-									};
-									self.updateCharts(svc);
+									// Scalars (the panel header numbers) update live from the tick.
+									// Sparkline history is NOT in the tick: it is fetched on demand
+									// by startHistoryPoll while the panel is open.
+									self.selected.cpu = svc.cpu;
+									self.selected.ram = svc.ram;
+									self.selected.netKB = svc.netKB || 0;
+									self.selected.diskMB = svc.diskMB || 0;
 								}
 							}
 						});
@@ -237,30 +229,20 @@ templ Live(data obs.LiveData) {
 								});
 						}
 						// Deselect any open service detail
+						this.stopHistoryPoll();
 						this.deselectAll();
 						this.selected = null;
 					},
 
-					selectService(
-						key,
-						name,
-						host,
-						ns,
-						cpu,
-						ram,
-						netKB,
-						diskMB,
-						cpuHist,
-						ramHist,
-						netHist,
-						diskHist,
-					) {
+					selectService(key, name, host, ns, cpu, ram, netKB, diskMB) {
 						if (this.selected && this.selected.key === key) {
 							this.deselectAll();
 							this.selected = null;
+							this.stopHistoryPoll();
 							return;
 						}
 						this.deselectAll();
+						this.stopHistoryPoll();
 						this.selected = {
 							key: key,
 							name: name,
@@ -270,10 +252,6 @@ templ Live(data obs.LiveData) {
 							ram: ram,
 							netKB: netKB,
 							diskMB: diskMB,
-							cpuHist: cpuHist,
-							ramHist: ramHist,
-							netHist: netHist,
-							diskHist: diskHist,
 						};
 						var detailEl = document.querySelector(
 							'[data-detail-key="' + key + '"]',
@@ -292,7 +270,53 @@ templ Live(data obs.LiveData) {
 							);
 							svcEl.setAttribute("aria-expanded", "true");
 						}
-						this.updateCharts(this.selected);
+						// Sparkline history is fetched on demand (not carried on the tick):
+						// render immediately, then refresh while the panel stays open.
+						this.startHistoryPoll(key);
+					},
+
+					startHistoryPoll(key) {
+						this.stopHistoryPoll();
+						var self = this;
+						var fetchHist = function () {
+							// key shape: "namespace/name@host"
+							var at = key.split("@");
+							var host = at.length > 1 ? at[1] : "";
+							var slash = at[0].split("/");
+							var ns = slash.length > 0 ? slash[0] : "";
+							var name = slash.length > 1 ? slash[1] : "";
+							fetch(
+								"/api/live/history?namespace=" +
+									encodeURIComponent(ns) +
+									"&name=" +
+									encodeURIComponent(name) +
+									"&host=" +
+									encodeURIComponent(host),
+							)
+								.then(function (r) {
+									return r.ok ? r.json() : null;
+								})
+								.then(function (h) {
+									if (h)
+										self.updateCharts({
+											key: key,
+											cpuHist: h.cpuHist,
+											ramHist: h.ramHist,
+											netHist: h.netHist,
+											diskHist: h.diskHist,
+										});
+								})
+								.catch(function () {});
+						};
+						fetchHist();
+						this._historyTimer = setInterval(fetchHist, 30000);
+					},
+
+					stopHistoryPoll() {
+						if (this._historyTimer) {
+							clearInterval(this._historyTimer);
+							this._historyTimer = null;
+						}
 					},
 
 					deselectAll() {
@@ -493,11 +517,10 @@ templ serviceBox(svc obs.Service, highlight bool) {
 			data-svc-key={ key }
 			aria-expanded="false"
 			title={ fmt.Sprintf("%s/%s on %s", svc.Namespace, svc.Name, svc.Host) }
-			@click={ fmt.Sprintf("selectService('%s', '%s', '%s', '%s', %v, %v, %v, %v, `%s`, `%s`, `%s`, `%s`)",
+			@click={ fmt.Sprintf("selectService('%s', '%s', '%s', '%s', %v, %v, %v, %v)",
 				key,
 				svc.Name, svc.Host, svc.Namespace,
-				svc.CPU, svc.RAM, svc.NetKB, svc.DiskMB,
-				svc.CPUHist, svc.RAMHist, svc.NetHist, svc.DiskHist) }
+				svc.CPU, svc.RAM, svc.NetKB, svc.DiskMB) }
 		>
 			<div class="flex items-center gap-1">
 				if svc.Status == "healthy" || svc.Status == "running" {
