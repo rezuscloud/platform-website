@@ -28,12 +28,8 @@ func init() {
 func InitSections() {
 	sectionRegistry = map[string]SectionHandler{
 		"hero":         func(_ context.Context) templ.Component { return sections.Hero() },
-		"challenge":    func(_ context.Context) templ.Component { return sections.Challenge() },
 		"architecture": func(_ context.Context) templ.Component { return sections.Architecture() },
 		"features":     func(_ context.Context) templ.Component { return sections.Features() },
-		"networking":   func(_ context.Context) templ.Component { return sections.Networking() },
-		"comparison":   func(_ context.Context) templ.Component { return sections.Comparison() },
-		"usecases":     func(_ context.Context) templ.Component { return sections.UseCases() },
 		"getstarted":   func(_ context.Context) templ.Component { return sections.GetStarted() },
 		"live": func(ctx context.Context) templ.Component {
 			data, _ := liveClient.Fetch(ctx)
