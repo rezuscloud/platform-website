@@ -50,6 +50,87 @@ type LiveData struct {
 	SelfNamespace string    `json:"selfNamespace"`
 }
 
+// ScalarService is the lightweight service shape carried on every SSE tick
+// and rendered into the initial page HTML: live metrics only, no sparkline
+// history. Sparkline history is fetched on demand when a detail panel is opened
+// (GET /api/live/history). Stripping it from the tick and first paint removes
+// ~90% of the per-tick payload and ~32% of the live section's HTML: history was
+// shipped for every service on every tick, yet only rendered for the one panel
+// a user has open at a time.
+type ScalarService struct {
+	Name      string  `json:"name"`
+	Namespace string  `json:"namespace"`
+	Category  string  `json:"category"`
+	Host      string  `json:"host"`
+	Status    string  `json:"status"`
+	Detail    string  `json:"detail,omitempty"`
+	CPU       float64 `json:"cpu"`
+	RAM       float64 `json:"ram"`
+	NetKB     float64 `json:"netKB"`
+	DiskMB    float64 `json:"diskMB"`
+	LoadAvg   float64 `json:"loadAvg,omitempty"`
+	IOWait    float64 `json:"ioWait,omitempty"`
+	Uptime    string  `json:"uptime,omitempty"`
+}
+
+// ScalarLiveData is the SSE tick payload: hosts + scalar services, no history.
+type ScalarLiveData struct {
+	Hosts         []Host          `json:"hosts"`
+	Services      []ScalarService `json:"services"`
+	HasMetrics    bool            `json:"hasMetrics"`
+	Timestamp     int64           `json:"timestamp"`
+	SelfNamespace string          `json:"selfNamespace"`
+}
+
+// ScalarSnapshot returns the SSE tick view of the data: scalars only. Sparkline
+// history stays in the underlying Service records (served on demand) and never
+// crosses the SSE wire.
+func (d LiveData) ScalarSnapshot() ScalarLiveData {
+	svcs := make([]ScalarService, len(d.Services))
+	for i, s := range d.Services {
+		svcs[i] = ScalarService{
+			Name: s.Name, Namespace: s.Namespace, Category: s.Category, Host: s.Host,
+			Status: s.Status, Detail: s.Detail, CPU: s.CPU, RAM: s.RAM, NetKB: s.NetKB,
+			DiskMB: s.DiskMB, LoadAvg: s.LoadAvg, IOWait: s.IOWait, Uptime: s.Uptime,
+		}
+	}
+	return ScalarLiveData{
+		Hosts:         d.Hosts,
+		Services:      svcs,
+		HasMetrics:    d.HasMetrics,
+		Timestamp:     d.Timestamp,
+		SelfNamespace: d.SelfNamespace,
+	}
+}
+
+// ServiceHistory is the on-demand sparkline payload for one service, returned by
+// GET /api/live/history. Only the four polyline point strings are included.
+type ServiceHistory struct {
+	Namespace string `json:"namespace"`
+	Name      string `json:"name"`
+	Host      string `json:"host"`
+	CPUHist   string `json:"cpuHist,omitempty"`
+	RAMHist   string `json:"ramHist,omitempty"`
+	NetHist   string `json:"netHist,omitempty"`
+	DiskHist  string `json:"diskHist,omitempty"`
+}
+
+// HistoryFor returns the sparkline history for a single service, identified by
+// namespace/name@host. Returns the history and true if found, or empty/false
+// otherwise (e.g. the service is gone or no metrics are available). It scans the
+// already-fetched, cached data, so it adds no Prometheus load.
+func (d LiveData) HistoryFor(namespace, name, host string) (ServiceHistory, bool) {
+	for _, svc := range d.Services {
+		if svc.Namespace == namespace && svc.Name == name && svc.Host == host {
+			return ServiceHistory{
+				Namespace: svc.Namespace, Name: svc.Name, Host: svc.Host,
+				CPUHist: svc.CPUHist, RAMHist: svc.RAMHist, NetHist: svc.NetHist, DiskHist: svc.DiskHist,
+			}, true
+		}
+	}
+	return ServiceHistory{}, false
+}
+
 // MetricsSnapshot is the platform-native shape of a Prometheus + K8s API query.
 // PrometheusClient builds this once per refresh; BuildServices and BuildHosts
 // consume it. All Prometheus wire-format types stay private to prometheus.go.
