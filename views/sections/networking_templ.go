@@ -57,7 +57,7 @@ func Networking() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</ul></div><!-- Right: network topology --><div class=\"lg:col-span-3 lg:pt-8\"><div class=\"text-xs font-semibold text-ink-muted dark:text-next-subtle mb-6 uppercase tracking-wider font-mac\">Your Network</div><div class=\"grid grid-cols-2 gap-4 mb-8\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</ul></div><!-- Right: network topology --><div class=\"lg:col-span-3 lg:pt-8\"><div class=\"text-xs font-semibold text-ink-muted dark:text-next-subtle-text mb-6 uppercase tracking-wider font-mac\">Your Network</div><div class=\"grid grid-cols-2 gap-4 mb-8\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -77,7 +77,7 @@ func Networking() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"flex items-center gap-2\"><span class=\"ds-accent-dot shrink-0\"></span> <span class=\"text-sm text-ink-muted dark:text-next-subtle font-mac-body\">All connected through encrypted tunnels</span></div></div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><div class=\"flex items-center gap-2\"><span class=\"ds-accent-dot shrink-0\"></span> <span class=\"text-sm text-ink-muted dark:text-next-subtle-text font-mac-body\">All connected through encrypted tunnels</span></div></div></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

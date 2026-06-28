@@ -35,31 +35,31 @@ templ Features() {
 			</div>
 			<!-- Capabilities -->
 			<div class="mt-16 pt-8 border-t border-rule/50 dark:border-next-mid/30 max-w-3xl mx-auto">
-				<h3 class="text-xs font-bold mb-5 font-mac uppercase tracking-widest text-ink-muted dark:text-next-subtle">Built in</h3>
+				<h3 class="text-xs font-bold mb-5 font-mac uppercase tracking-widest text-ink-muted dark:text-next-subtle-text">Built in</h3>
 				<ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-3">
 					<li class="flex items-start gap-2.5 font-mac-body">
 						<span class="mt-1.5 ds-accent-dot ds-accent-dot-sm shrink-0"></span>
-						<span class="text-sm text-ink dark:text-next-white"><span class="font-medium">Multi-tenant by design</span> <span class="text-ink-muted dark:text-next-subtle">Run as many independent Kubernetes clusters as you need, each on its own machines. Isolation by Tenant, not by namespace.</span></span>
+						<span class="text-sm text-ink dark:text-next-white"><span class="font-medium">Multi-tenant by design</span> <span class="text-ink-muted dark:text-next-subtle-text">Run as many independent Kubernetes clusters as you need, each on its own machines. Isolation by Tenant, not by namespace.</span></span>
 					</li>
 					<li class="flex items-start gap-2.5 font-mac-body">
 						<span class="mt-1.5 ds-accent-dot ds-accent-dot-sm shrink-0"></span>
-						<span class="text-sm text-ink dark:text-next-white"><span class="font-medium">Pluggable providers</span> <span class="text-ink-muted dark:text-next-subtle">Provision machines on Hetzner, AWS, OCI, bare metal (PXE/Redfish), or anything you can IP-reach. All outbound.</span></span>
+						<span class="text-sm text-ink dark:text-next-white"><span class="font-medium">Pluggable providers</span> <span class="text-ink-muted dark:text-next-subtle-text">Provision machines on Hetzner, AWS, OCI, bare metal (PXE/Redfish), or anything you can IP-reach. All outbound.</span></span>
 					</li>
 					<li class="flex items-start gap-2.5 font-mac-body">
 						<span class="mt-1.5 ds-accent-dot ds-accent-dot-sm shrink-0"></span>
-						<span class="text-sm text-ink dark:text-next-white"><span class="font-medium">Full Talos lifecycle</span> <span class="text-ink-muted dark:text-next-subtle">Generate complete Talos configs for init, control plane, and worker nodes. Patch and upgrade with one command.</span></span>
+						<span class="text-sm text-ink dark:text-next-white"><span class="font-medium">Full Talos lifecycle</span> <span class="text-ink-muted dark:text-next-subtle-text">Generate complete Talos configs for init, control plane, and worker nodes. Patch and upgrade with one command.</span></span>
 					</li>
 					<li class="flex items-start gap-2.5 font-mac-body">
 						<span class="mt-1.5 ds-accent-dot ds-accent-dot-sm shrink-0"></span>
-						<span class="text-sm text-ink dark:text-next-white"><span class="font-medium">RBAC + Audit</span> <span class="text-ink-muted dark:text-next-subtle">view / edit / admin roles, per-user API tokens, and a middleware-captured audit log with filtered search and retention.</span></span>
+						<span class="text-sm text-ink dark:text-next-white"><span class="font-medium">RBAC + Audit</span> <span class="text-ink-muted dark:text-next-subtle-text">view / edit / admin roles, per-user API tokens, and a middleware-captured audit log with filtered search and retention.</span></span>
 					</li>
 					<li class="flex items-start gap-2.5 font-mac-body">
 						<span class="mt-1.5 ds-accent-dot ds-accent-dot-sm shrink-0"></span>
-						<span class="text-sm text-ink dark:text-next-white"><span class="font-medium">Backup and restore</span> <span class="text-ink-muted dark:text-next-subtle">Database snapshots and resource exports, with retention policies, dry-run restore, and a dashboard for the whole lifecycle.</span></span>
+						<span class="text-sm text-ink dark:text-next-white"><span class="font-medium">Backup and restore</span> <span class="text-ink-muted dark:text-next-subtle-text">Database snapshots and resource exports, with retention policies, dry-run restore, and a dashboard for the whole lifecycle.</span></span>
 					</li>
 					<li class="flex items-start gap-2.5 font-mac-body">
 						<span class="mt-1.5 ds-accent-dot ds-accent-dot-sm shrink-0"></span>
-						<span class="text-sm text-ink dark:text-next-white"><span class="font-medium">Outbound-only networking</span> <span class="text-ink-muted dark:text-next-subtle">Machines and providers connect to you. Works behind NAT, IPv6-only, CGNAT. No inbound ports to open.</span></span>
+						<span class="text-sm text-ink dark:text-next-white"><span class="font-medium">Outbound-only networking</span> <span class="text-ink-muted dark:text-next-subtle-text">Machines and providers connect to you. Works behind NAT, IPv6-only, CGNAT. No inbound ports to open.</span></span>
 					</li>
 				</ul>
 			</div>
@@ -74,7 +74,7 @@ templ featureItem(title string, description string, icon templ.Component) {
 		</div>
 		<div>
 			<h3 class="text-lg font-bold font-mac text-ink dark:text-next-white">{ title }</h3>
-			<p class="text-sm text-ink-muted dark:text-next-subtle leading-relaxed font-mac-body mt-1">{ description }</p>
+			<p class="text-sm text-ink-muted dark:text-next-subtle-text leading-relaxed font-mac-body mt-1">{ description }</p>
 		</div>
 	</div>
 }

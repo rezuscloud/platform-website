@@ -29,7 +29,7 @@ func Challenge() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"challenge\" data-reveal class=\"py-20 sm:py-32 bg-ink dark:bg-next-dark relative overflow-hidden\"><!-- Subtle diagonal hash texture --><div class=\"absolute inset-0 opacity-[0.03] dark:opacity-[0.02]\" aria-hidden=\"true\" style=\"background-image: repeating-linear-gradient(45deg, oklch(99.5% 0.004 85) 0px, oklch(99.5% 0.004 85) 1px, transparent 1px, transparent 12px);\"></div><div class=\"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative\"><div class=\"text-center mb-10\"><span class=\"inline-block px-3 py-1 text-xs font-mac uppercase tracking-widest text-accent-gold dark:text-next-teal border border-accent-gold dark:border-next-teal mb-6\">The Mainframe Era // Then vs Now</span><h2 class=\"text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tighter leading-[0.9] mb-6 font-mac text-paper dark:text-next-white\">The Mainframe<br>Moment</h2><p class=\"text-lg sm:text-xl text-rule dark:text-next-subtle max-w-2xl mx-auto font-mac-body leading-relaxed\">In the 1970s, computers were room-sized machines owned by a handful of corporations. Companies rented time on them. When people proposed putting a computer on every desk, the industry said it was absurd.</p><p class=\"text-lg sm:text-xl text-rule dark:text-next-subtle max-w-2xl mx-auto font-mac-body leading-relaxed mt-4\">Today, cloud providers own the machines again. They rent you compute by the minute.</p></div><div class=\"max-w-3xl mx-auto mb-12 overflow-x-auto\"><div class=\"border border-rule/30 dark:border-next-mid/30 overflow-hidden\"><table class=\"w-full text-left font-mac-body\"><thead><tr class=\"border-b border-rule/30 dark:border-next-mid/30\"><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-paper/85 dark:text-next-subtle font-semibold font-mac\">Then (1970s)</th><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-accent-gold dark:text-next-teal font-semibold font-mac\">Now</th></tr></thead> <tbody class=\"divide-y divide-rule/20 dark:divide-next-mid/20\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"challenge\" data-reveal class=\"py-20 sm:py-32 bg-ink dark:bg-next-dark relative overflow-hidden\"><!-- Subtle diagonal hash texture --><div class=\"absolute inset-0 opacity-[0.03] dark:opacity-[0.02]\" aria-hidden=\"true\" style=\"background-image: repeating-linear-gradient(45deg, oklch(99.5% 0.004 85) 0px, oklch(99.5% 0.004 85) 1px, transparent 1px, transparent 12px);\"></div><div class=\"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative\"><div class=\"text-center mb-10\"><span class=\"inline-block px-3 py-1 text-xs font-mac uppercase tracking-widest text-accent-gold-text dark:text-next-teal-text border border-accent-gold dark:border-next-teal mb-6\">The Mainframe Era // Then vs Now</span><h2 class=\"text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tighter leading-[0.9] mb-6 font-mac text-paper dark:text-next-white\">The Mainframe<br>Moment</h2><p class=\"text-lg sm:text-xl text-rule dark:text-next-subtle-text max-w-2xl mx-auto font-mac-body leading-relaxed\">In the 1970s, computers were room-sized machines owned by a handful of corporations. Companies rented time on them. When people proposed putting a computer on every desk, the industry said it was absurd.</p><p class=\"text-lg sm:text-xl text-rule dark:text-next-subtle-text max-w-2xl mx-auto font-mac-body leading-relaxed mt-4\">Today, cloud providers own the machines again. They rent you compute by the minute.</p></div><div class=\"max-w-3xl mx-auto mb-12 overflow-x-auto\"><div class=\"border border-rule/30 dark:border-next-mid/30 overflow-hidden\"><table class=\"w-full text-left font-mac-body\"><thead><tr class=\"border-b border-rule/30 dark:border-next-mid/30\"><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-paper/85 dark:text-next-subtle-text font-semibold font-mac\">Then (1970s)</th><th class=\"py-3 px-4 sm:px-6 text-xs uppercase tracking-wider text-accent-gold-text dark:text-next-teal-text font-semibold font-mac\">Now</th></tr></thead> <tbody class=\"divide-y divide-rule/20 dark:divide-next-mid/20\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -53,7 +53,7 @@ func Challenge() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</tbody></table></div></div><div class=\"text-center max-w-3xl mx-auto\"><p class=\"text-2xl sm:text-3xl font-bold font-mac text-accent-gold dark:text-next-teal leading-snug\">The Personal Computer changed everything.<br><span class=\"text-paper dark:text-next-subtle\">The Personal Cloud will too.</span></p></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</tbody></table></div></div><div class=\"text-center max-w-3xl mx-auto\"><p class=\"text-2xl sm:text-3xl font-bold font-mac text-accent-gold-text dark:text-next-teal-text leading-snug\">The Personal Computer changed everything.<br><span class=\"text-paper dark:text-next-subtle-text\">The Personal Cloud will too.</span></p></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -82,14 +82,14 @@ func challengeRow(then string, now string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-paper/5 dark:hover:bg-next-white/5 transition-colors duration-120\"><td class=\"py-4 px-4 sm:px-6 text-paper/75 dark:text-next-subtle font-mac-body\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<tr class=\"hover:bg-paper/5 dark:hover:bg-next-white/5 transition-colors duration-120\"><td class=\"py-4 px-4 sm:px-6 text-paper/75 dark:text-next-subtle-text font-mac-body\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(then)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 56, Col: 88}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/challenge.templ`, Line: 56, Col: 93}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
