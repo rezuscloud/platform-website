@@ -5,6 +5,28 @@
 
 @source "../views/**/*.templ";
 
+/*
+ * Text-role accent variants.
+ *
+ * The base accent tokens (next-teal L0.60, accent-gold L0.78, next-subtle
+ * L0.72) are tuned for FILLS and fail WCAG AA when used as text. These
+ * variants keep the same hue at a higher lightness so accent TEXT clears 4.5:1
+ * without changing the brand identity of fills/borders:
+ *   next-teal-text   L0.75  -> 4.62:1 on next-black
+ *   next-subtle-text L0.78  -> 4.83:1 on next-black
+ *   accent-gold-text L0.55  -> 12.68:1 on paper, 6.09:1 on surface-strong (lightest
+ *     bg). Bright accent-gold (L0.78) stays for fills; this deeper amber is the
+ *     text-role treatment. Gold text never sits on the dark terminal (prompts
+ *     keep accent-gold there, which passes on dark).
+ *
+ * Upstream these into design-system/css/theme.css as a follow-up.
+ */
+@theme {
+	--color-next-teal-text: oklch(75% 0.08 170);
+	--color-next-subtle-text: oklch(78% 0.012 85);
+	--color-accent-gold-text: oklch(55% 0.13 75);
+}
+
 /* Font face declarations */
 @font-face {
 	font-family: "Silkscreen";
@@ -338,11 +360,11 @@
 	color: var(--color-next-white);
 }
 @utility ds-section-badge-sep {
-	color: var(--color-accent-gold);
+	color: var(--color-accent-gold-text);
 	margin: 0 0.125rem;
 }
 .dark .ds-section-badge-sep {
-	color: var(--color-next-teal);
+	color: var(--color-next-teal-text);
 }
 
 /* Alert Banner — semantic system alerts */

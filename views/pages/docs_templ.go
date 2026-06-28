@@ -35,7 +35,7 @@ func docsSearch() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"relative\"><label for=\"docs-search\" class=\"sr-only\">Search documentation</label> <svg class=\"absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted dark:text-next-subtle pointer-events-none\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z\"></path></svg> <input id=\"docs-search\" type=\"search\" placeholder=\"Search docs...\" class=\"w-full pl-10 pr-3 py-2 text-sm bg-paper dark:bg-next-dark border border-rule dark:border-next-mid text-ink dark:text-next-white placeholder:text-ink-muted dark:placeholder:text-next-subtle focus:outline-none focus:border-accent-gold dark:focus:border-next-teal\" @input=\"\n\t\t\t\tconst q = $event.target.value.toLowerCase();\n\t\t\t\t$el.closest('nav').querySelectorAll('[data-doc-link]').forEach(el => {\n\t\t\t\t\tconst text = (el.dataset.title || '').toLowerCase();\n\t\t\t\t\tconst parent = el.closest('[data-doc-group]');\n\t\t\t\t\tif (parent) parent.style.display = (!q || text.includes(q)) ? '' : 'none';\n\t\t\t\t});\n\t\t\t\"></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"relative\"><label for=\"docs-search\" class=\"sr-only\">Search documentation</label> <svg class=\"absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted dark:text-next-subtle-text pointer-events-none\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z\"></path></svg> <input id=\"docs-search\" type=\"search\" placeholder=\"Search docs...\" class=\"w-full pl-10 pr-3 py-2 text-sm bg-paper dark:bg-next-dark border border-rule dark:border-next-mid text-ink dark:text-next-white placeholder:text-ink-muted dark:placeholder:text-next-subtle-text focus:outline-none focus:border-accent-gold dark:focus:border-next-teal\" @input=\"\n\t\t\t\tconst q = $event.target.value.toLowerCase();\n\t\t\t\t$el.closest('nav').querySelectorAll('[data-doc-link]').forEach(el => {\n\t\t\t\t\tconst text = (el.dataset.title || '').toLowerCase();\n\t\t\t\t\tconst parent = el.closest('[data-doc-group]');\n\t\t\t\t\tif (parent) parent.style.display = (!q || text.includes(q)) ? '' : 'none';\n\t\t\t\t});\n\t\t\t\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -78,7 +78,7 @@ func docsSidebar(activeKey string, store *docs.Store) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		for _, cat := range store.Categories() {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div data-doc-group><p class=\"font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-2 px-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div data-doc-group><p class=\"font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle-text mb-2 px-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -127,7 +127,7 @@ func docsSidebar(activeKey string, store *docs.Store) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" class=\"block py-1.5 px-3 text-sm font-semibold text-accent-gold dark:text-next-teal bg-surface-strong dark:bg-next-dark\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" class=\"block py-1.5 px-3 text-sm font-semibold text-accent-gold-text dark:text-next-teal-text bg-surface-strong dark:bg-next-dark\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -171,7 +171,7 @@ func docsSidebar(activeKey string, store *docs.Store) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"block py-1.5 px-3 text-sm text-ink-muted dark:text-next-subtle hover:text-ink dark:hover:text-next-white hover:bg-surface dark:hover:bg-next-dark transition-colors\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"block py-1.5 px-3 text-sm text-ink-muted dark:text-next-subtle-text hover:text-ink dark:hover:text-next-white hover:bg-surface dark:hover:bg-next-dark transition-colors\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -229,12 +229,12 @@ func docsMobileNav(activeKey string, store *docs.Store) templ.Component {
 			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"lg:hidden\" x-data=\"{ open: false }\"><button @click=\"open = !open\" class=\"flex items-center gap-2 text-sm font-silkscreen text-ink-muted dark:text-next-subtle hover:text-accent-gold dark:hover:text-next-teal transition-colors\" :aria-expanded=\"open\"><svg class=\"w-4 h-4\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M4 6h16M4 12h16M4 18h16\"></path></svg> <span x-text=\"open ? 'Close navigation' : 'Navigation'\">Navigation</span></button><nav x-show=\"open\" x-cloak x-transition:enter=\"transition ease-out duration-200\" x-transition:enter-start=\"opacity-0 -translate-y-2\" x-transition:enter-end=\"opacity-100 translate-y-0\" x-transition:leave=\"transition ease-in duration-150\" x-transition:leave-start=\"opacity-100 translate-y-0\" x-transition:leave-end=\"opacity-0 -translate-y-2\" class=\"mt-4 border border-rule dark:border-next-mid p-4 max-h-[60vh] overflow-y-auto\" aria-label=\"Documentation navigation\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div class=\"lg:hidden\" x-data=\"{ open: false }\"><button @click=\"open = !open\" class=\"flex items-center gap-2 text-sm font-silkscreen text-ink-muted dark:text-next-subtle-text hover:text-accent-gold-text dark:hover:text-next-teal-text transition-colors\" :aria-expanded=\"open\"><svg class=\"w-4 h-4\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M4 6h16M4 12h16M4 18h16\"></path></svg> <span x-text=\"open ? 'Close navigation' : 'Navigation'\">Navigation</span></button><nav x-show=\"open\" x-cloak x-transition:enter=\"transition ease-out duration-200\" x-transition:enter-start=\"opacity-0 -translate-y-2\" x-transition:enter-end=\"opacity-100 translate-y-0\" x-transition:leave=\"transition ease-in duration-150\" x-transition:leave-start=\"opacity-100 translate-y-0\" x-transition:leave-end=\"opacity-0 -translate-y-2\" class=\"mt-4 border border-rule dark:border-next-mid p-4 max-h-[60vh] overflow-y-auto\" aria-label=\"Documentation navigation\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, cat := range store.Categories() {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<p class=\"font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-1 px-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<p class=\"font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle-text mb-1 px-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -270,7 +270,7 @@ func docsMobileNav(activeKey string, store *docs.Store) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" class=\"block py-1 px-2 text-sm font-semibold text-accent-gold dark:text-next-teal\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" class=\"block py-1 px-2 text-sm font-semibold text-accent-gold-text dark:text-next-teal-text\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -301,7 +301,7 @@ func docsMobileNav(activeKey string, store *docs.Store) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\" class=\"block py-1 px-2 text-sm text-ink-muted dark:text-next-subtle hover:text-ink dark:hover:text-next-white\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\" class=\"block py-1 px-2 text-sm text-ink-muted dark:text-next-subtle-text hover:text-ink dark:hover:text-next-white\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -360,7 +360,7 @@ func docsRightTOC(headings []docs.Heading) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(headings) > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<aside class=\"hidden xl:block w-[14rem] flex-shrink-0\" aria-label=\"On this page\"><nav class=\"sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto py-6 pl-4\"><p class=\"font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-3\">On this page</p><ul class=\"space-y-1 text-sm\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<aside class=\"hidden xl:block w-[14rem] flex-shrink-0\" aria-label=\"On this page\"><nav class=\"sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto py-6 pl-4\"><p class=\"font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle-text mb-3\">On this page</p><ul class=\"space-y-1 text-sm\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -397,7 +397,7 @@ func docsRightTOC(headings []docs.Heading) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" class=\"block py-0.5 text-ink-muted dark:text-next-subtle hover:text-ink dark:hover:text-next-white transition-colors break-words\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" class=\"block py-0.5 text-ink-muted dark:text-next-subtle-text hover:text-ink dark:hover:text-next-white transition-colors break-words\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -461,7 +461,7 @@ func docsEditLink(githubURL string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\" class=\"inline-flex items-center gap-1.5 text-xs font-silkscreen text-ink-muted dark:text-next-subtle hover:text-accent-gold dark:hover:text-next-teal transition-colors\" target=\"_blank\" rel=\"noopener noreferrer\"><svg class=\"w-3.5 h-3.5\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10\"></path></svg> Edit this page</a>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\" class=\"inline-flex items-center gap-1.5 text-xs font-silkscreen text-ink-muted dark:text-next-subtle-text hover:text-accent-gold-text dark:hover:text-next-teal-text transition-colors\" target=\"_blank\" rel=\"noopener noreferrer\"><svg class=\"w-3.5 h-3.5\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10\"></path></svg> Edit this page</a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -511,7 +511,7 @@ func docsPrevNext(prev *docs.Doc, next *docs.Doc) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" class=\"group flex flex-col items-start max-w-[45%]\"><span class=\"text-[10px] font-silkscreen uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-1\">Previous</span> <span class=\"text-sm text-ink dark:text-next-white group-hover:text-accent-gold dark:group-hover:text-next-teal transition-colors\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" class=\"group flex flex-col items-start max-w-[45%]\"><span class=\"text-[10px] font-silkscreen uppercase tracking-wider text-ink-muted dark:text-next-subtle-text mb-1\">Previous</span> <span class=\"text-sm text-ink dark:text-next-white group-hover:text-accent-gold-text dark:group-hover:text-next-teal-text transition-colors\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -548,7 +548,7 @@ func docsPrevNext(prev *docs.Doc, next *docs.Doc) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" class=\"group flex flex-col items-end text-right max-w-[45%]\"><span class=\"text-[10px] font-silkscreen uppercase tracking-wider text-ink-muted dark:text-next-subtle mb-1\">Next</span> <span class=\"text-sm text-ink dark:text-next-white group-hover:text-accent-gold dark:group-hover:text-next-teal transition-colors\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" class=\"group flex flex-col items-end text-right max-w-[45%]\"><span class=\"text-[10px] font-silkscreen uppercase tracking-wider text-ink-muted dark:text-next-subtle-text mb-1\">Next</span> <span class=\"text-sm text-ink dark:text-next-white group-hover:text-accent-gold-text dark:group-hover:text-next-teal-text transition-colors\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -609,7 +609,7 @@ func DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next 
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<section class=\"min-h-screen bg-paper dark:bg-next-black pt-14\"><!-- Breadcrumb --><div class=\"border-b border-rule dark:border-next-mid bg-surface-strong dark:bg-next-dark\"><div class=\"mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-8 py-2\"><nav class=\"text-xs font-silkscreen text-ink-muted dark:text-next-subtle\" aria-label=\"Breadcrumb\"><a href=\"/docs\" class=\"hover:text-accent-gold dark:hover:text-next-teal transition-colors\">Documentation</a> <span class=\"mx-2 text-rule dark:text-next-mid\">/</span> <a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<section class=\"min-h-screen bg-paper dark:bg-next-black pt-14\"><!-- Breadcrumb --><div class=\"border-b border-rule dark:border-next-mid bg-surface-strong dark:bg-next-dark\"><div class=\"mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-8 py-2\"><nav class=\"text-xs font-silkscreen text-ink-muted dark:text-next-subtle-text\" aria-label=\"Breadcrumb\"><a href=\"/docs\" class=\"hover:text-accent-gold-text dark:hover:text-next-teal-text transition-colors\">Documentation</a> <span class=\"mx-2 text-rule dark:text-next-mid\">/</span> <a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -622,7 +622,7 @@ func DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\" class=\"hover:text-accent-gold dark:hover:text-next-teal transition-colors\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "\" class=\"hover:text-accent-gold-text dark:hover:text-next-teal-text transition-colors\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -677,7 +677,7 @@ func DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</h1><!-- Rendered markdown content --><article class=\"prose prose-neutral dark:prose-invert max-w-none prose-headings:font-silkscreen prose-headings:tracking-tight prose-headings:scroll-mt-20 prose-h1:text-2xl prose-h1:mt-0 prose-h2:text-xl prose-h3:text-lg prose-a:text-accent-gold dark:prose-a:text-next-teal prose-code:font-terminal prose-code:text-sm prose-code:before:content-none prose-code:after:content-none prose-pre:bg-next-black dark:prose-pre:bg-next-dark prose-pre:border prose-pre:border-rule dark:prose-pre:border-next-mid prose-pre:p-4 prose-th:text-left prose-th:font-silkscreen prose-th:text-xs prose-img:border prose-img:border-rule dark:prose-img:border-next-mid\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</h1><!-- Rendered markdown content --><article class=\"prose prose-neutral dark:prose-invert max-w-none prose-headings:font-silkscreen prose-headings:tracking-tight prose-headings:scroll-mt-20 prose-h1:text-2xl prose-h1:mt-0 prose-h2:text-xl prose-h3:text-lg prose-a:text-accent-gold-text dark:prose-a:text-next-teal-text prose-code:font-terminal prose-code:text-sm prose-code:before:content-none prose-code:after:content-none prose-pre:bg-next-black dark:prose-pre:bg-next-dark prose-pre:border prose-pre:border-rule dark:prose-pre:border-next-mid prose-pre:p-4 prose-th:text-left prose-th:font-silkscreen prose-th:text-xs prose-img:border prose-img:border-rule dark:prose-img:border-next-mid\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

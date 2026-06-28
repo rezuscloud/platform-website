@@ -22,15 +22,15 @@ templ AI() {
 						<span class="w-2.5 h-2.5 border border-ink-muted dark:hidden" style="background:oklch(55% 0.15 25)"></span>
 						<span class="w-2.5 h-2.5 border border-ink-muted dark:hidden" style="background:oklch(75% 0.15 90)"></span>
 						<span class="w-2.5 h-2.5 border border-ink-muted dark:hidden" style="background:oklch(55% 0.15 150)"></span>
-						<span class="ml-2 text-[10px] uppercase tracking-wider font-mac text-ink-muted dark:text-next-subtle">rezus.cloud</span>
+						<span class="ml-2 text-[10px] uppercase tracking-wider font-mac text-ink-muted dark:text-next-subtle-text">rezus.cloud</span>
 					</div>
 					<div class="p-4 font-mac-mono text-sm">
-						<p data-line class="ds-terminal-text"><span class="text-accent-gold dark:text-next-teal">$</span> kubectl get pods -l app=llamacpp</p>
+						<p data-line class="ds-terminal-text"><span class="text-accent-gold dark:text-next-teal-text">$</span> kubectl get pods -l app=llamacpp</p>
 						<p data-line class="ds-terminal-text">llamacpp-7d9f4b Running 1/1 edge-node</p>
-						<p data-line class="ds-terminal-text mt-1"><span class="text-accent-gold dark:text-next-teal">$</span> curl <span class="text-accent-gold dark:text-next-teal">https://</span>llamacpp.rezus.cloud/v1/chat/completions</p>
+						<p data-line class="ds-terminal-text mt-1"><span class="text-accent-gold dark:text-next-teal-text">$</span> curl <span class="text-accent-gold dark:text-next-teal-text">https://</span>llamacpp.rezus.cloud/v1/chat/completions</p>
 						<p data-line class="ds-terminal-text pl-4">-d @request.json</p>
 						<p data-line class="text-positive dark:text-positive-next mt-2">200 OK // 5.2 tok/s // Vulkan iGPU // streaming</p>
-						<p data-line class="ds-terminal-text"><span class="text-accent-gold dark:text-next-teal">$</span> <span class="animate-blink">_</span></p>
+						<p data-line class="ds-terminal-text"><span class="text-accent-gold dark:text-next-teal-text">$</span> <span class="animate-blink">_</span></p>
 					</div>
 				</div>
 			</div>
@@ -76,8 +76,8 @@ templ AI() {
 						</svg>
 					</div>
 					<div>
-						<span class="text-lg font-bold font-mac text-ink dark:text-next-white group-hover:text-accent-gold dark:group-hover:text-next-teal transition-colors">Open AI Playground</span>
-						<p class="text-sm text-ink-muted dark:text-next-subtle font-mac-body mt-1">Live inference running on-cluster. Qwen3.5 and Granite models on AMD Barcelo iGPU.</p>
+						<span class="text-lg font-bold font-mac text-ink dark:text-next-white group-hover:text-accent-gold-text dark:group-hover:text-next-teal-text transition-colors">Open AI Playground</span>
+						<p class="text-sm text-ink-muted dark:text-next-subtle-text font-mac-body mt-1">Live inference running on-cluster. Qwen3.5 and Granite models on AMD Barcelo iGPU.</p>
 					</div>
 				</a>
 			</div>
@@ -92,7 +92,7 @@ templ aiCap(title string, description string, icon templ.Component) {
 		</div>
 		<div>
 			<h3 class="text-lg font-bold font-mac text-ink dark:text-next-white">{ title }</h3>
-			<p class="text-sm text-ink-muted dark:text-next-subtle leading-relaxed font-mac-body mt-1">{ description }</p>
+			<p class="text-sm text-ink-muted dark:text-next-subtle-text leading-relaxed font-mac-body mt-1">{ description }</p>
 		</div>
 	</div>
 }

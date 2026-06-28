@@ -21,15 +21,15 @@ templ Live(data obs.LiveData) {
 				<h2 class="font-mac text-2xl sm:text-3xl font-bold text-ink dark:text-next-white tracking-tight">Live Platform</h2>
 				<div class="flex items-center gap-1.5">
 					<span class="inline-block ds-accent-dot ds-status-positive animate-pulse" aria-hidden="true"></span>
-					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle uppercase tracking-wider">Live</span>
+					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle-text uppercase tracking-wider">Live</span>
 				</div>
 			</div>
-			<p class="font-mac-body text-sm text-ink-muted dark:text-next-subtle mb-6">This website, its CI pipeline, observability stack, and all development tools run on the platform you see below. Self-hosted, self-monitored.</p>
+			<p class="font-mac-body text-sm text-ink-muted dark:text-next-subtle-text mb-6">This website, its CI pipeline, observability stack, and all development tools run on the platform you see below. Self-hosted, self-monitored.</p>
 			<div
 				class="ds-alert ds-alert-info mb-6"
 				x-show="!connected && !initial.hasMetrics"
 			>
-				<span class="font-mac-mono text-xs text-ink-muted dark:text-next-subtle">Showing platform topology. Metrics are live when Prometheus is connected.</span>
+				<span class="font-mac-mono text-xs text-ink-muted dark:text-next-subtle-text">Showing platform topology. Metrics are live when Prometheus is connected.</span>
 			</div>
 			<!-- Connection lost banner -->
 			<div
@@ -41,7 +41,7 @@ templ Live(data obs.LiveData) {
 				<span class="font-mac-mono text-xs text-negative dark:text-negative-next">Connection lost or data stale. Showing last known state.</span>
 			</div>
 			<!-- SSE freshness -->
-			<div class="font-terminal text-xs text-ink-muted dark:text-next-subtle mb-6" x-show="connected" x-cloak aria-live="polite">
+			<div class="font-terminal text-xs text-ink-muted dark:text-next-subtle-text mb-6" x-show="connected" x-cloak aria-live="polite">
 				<span x-text="'Updated ' + lastUpdateAgo + 's ago'"></span>
 				<span class="mx-2">·</span>
 				<span x-text="hostCount + ' nodes, ' + serviceCount + ' services'"></span>
@@ -49,7 +49,7 @@ templ Live(data obs.LiveData) {
 			<!-- ═══ Layer 1: Node Summary Strip ═══ -->
 			if len(data.Hosts) > 0 {
 				<div class="mb-6">
-					<div class="font-terminal text-[10px] text-accent-gold dark:text-next-teal uppercase tracking-[0.15em] mb-2">Nodes</div>
+					<div class="font-terminal text-[10px] text-accent-gold-text dark:text-next-teal-text uppercase tracking-[0.15em] mb-2">Nodes</div>
 					<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))">
 						for _, host := range data.Hosts {
 							@nodeCard(host, data.SelfNamespace)
@@ -60,10 +60,10 @@ templ Live(data obs.LiveData) {
 				<div class="flex items-center gap-4 mb-4">
 					<div class="flex items-center gap-1">
 						<span class="inline-block ds-status-positive" aria-hidden="true"></span>
-						<span class="font-terminal text-[10px] text-ink-muted/70 dark:text-next-subtle/70">Running</span>
+						<span class="font-terminal text-[10px] text-ink-muted/70 dark:text-next-subtle-text/70">Running</span>
 					</div>
 					<div class="flex items-center gap-1">
-						<span class="font-terminal text-[10px] text-ink-muted/70 dark:text-next-subtle/70">Click a node to filter, click a service to inspect metrics</span>
+						<span class="font-terminal text-[10px] text-ink-muted/70 dark:text-next-subtle-text/70">Click a node to filter, click a service to inspect metrics</span>
 					</div>
 				</div>
 				<!-- ═══ Layer 2: Service Grid ═══ -->
@@ -346,7 +346,7 @@ templ Live(data obs.LiveData) {
 									"font-terminal text-[10px] text-ink dark:text-next-white tabular-nums leading-none";
 							} else {
 								met.innerHTML =
-									'<span class="text-ink-muted/50 dark:text-next-subtle/50">' +
+									'<span class="text-ink-muted/50 dark:text-next-subtle-text/50">' +
 									(svc.name || "") +
 									"</span>";
 							}
@@ -376,7 +376,7 @@ templ nodeCard(host obs.Host, selfNS string) {
 		<!-- Real node name + role/provider/arch -->
 		<div class="mb-2">
 			<span class="font-mac text-xs font-bold text-ink dark:text-next-white block truncate">{ host.Name }</span>
-			<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60">
+			<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle-text/60">
 				{ host.Label }
 				if host.Detail != "" {
 					{ " · " }
@@ -387,7 +387,7 @@ templ nodeCard(host obs.Host, selfNS string) {
 		<!-- Resource bars (capacity-aware) -->
 		<div class="space-y-1 mb-2">
 			<div class="flex items-center gap-2">
-				<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60 w-8">CPU</span>
+				<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle-text/60 w-8">CPU</span>
 				<div class="flex-1 h-1.5 bg-ink/10 dark:bg-next-mid/40">
 					<div
 						data-cpu-bar
@@ -397,7 +397,7 @@ templ nodeCard(host obs.Host, selfNS string) {
 				</div>
 			</div>
 			<div class="flex items-center gap-2">
-				<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle/60 w-8">RAM</span>
+				<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle-text/60 w-8">RAM</span>
 				<div class="flex-1 h-1.5 bg-ink/10 dark:bg-next-mid/40">
 					<div
 						data-ram-bar
@@ -408,7 +408,7 @@ templ nodeCard(host obs.Host, selfNS string) {
 			</div>
 		</div>
 		<!-- Metrics line (used / capacity) -->
-		<div data-node-metric class="font-terminal text-[10px] text-accent-gold dark:text-next-teal tabular-nums">
+		<div data-node-metric class="font-terminal text-[10px] text-accent-gold-text dark:text-next-teal-text tabular-nums">
 			if host.CPU > 0 || host.RAM > 0 {
 				if host.CPU > 0 {
 					{ fmt.Sprintf("CPU %.1f", host.CPU) }
@@ -429,12 +429,12 @@ templ nodeCard(host obs.Host, selfNS string) {
 		</div>
 		<!-- Service count + uptime -->
 		<div class="flex items-center justify-between mt-1.5">
-			<span data-node-svcs class="font-terminal text-[10px] text-ink-muted/50 dark:text-next-subtle/50">
+			<span data-node-svcs class="font-terminal text-[10px] text-ink-muted/50 dark:text-next-subtle-text/50">
 				if host.SvcCount > 0 {
 					{ fmt.Sprintf("%d services", host.SvcCount) }
 				}
 			</span>
-			<span class="font-terminal text-[10px] text-ink-muted/50 dark:text-next-subtle/50">
+			<span class="font-terminal text-[10px] text-ink-muted/50 dark:text-next-subtle-text/50">
 				if host.Uptime != "" {
 					{ host.Uptime }
 				}
@@ -454,10 +454,10 @@ templ serviceCategoryRow(cat string, hosts []obs.Host, services []obs.Service, s
 		<div class="border-t border-ink/15 dark:border-next-mid/50 first:border-t-0">
 			<!-- Category header -->
 			<div class="px-3 py-2 bg-paper/50 dark:bg-next-dark/50 border-b border-ink/10 dark:border-next-mid/30">
-				<span class="font-terminal text-[10px] text-accent-gold dark:text-next-teal uppercase tracking-[0.15em]">
+				<span class="font-terminal text-[10px] text-accent-gold-text dark:text-next-teal-text uppercase tracking-[0.15em]">
 					{ obs.CategoryLabel(cat) }
 				</span>
-				<span class="font-terminal text-[10px] text-ink-muted/40 dark:text-next-subtle/40 ml-2">
+				<span class="font-terminal text-[10px] text-ink-muted/40 dark:text-next-subtle-text/40 ml-2">
 					{ fmt.Sprintf("%d", len(catSvcs)) }
 				</span>
 			</div>
@@ -517,12 +517,12 @@ templ serviceBox(svc obs.Service, highlight bool) {
 							{ fmt.Sprintf("%.0fM", svc.RAM) }
 						}
 					} else {
-						<span class="text-ink-muted/50 dark:text-next-subtle/50">{ svc.Name }</span>
+						<span class="text-ink-muted/50 dark:text-next-subtle-text/50">{ svc.Name }</span>
 					}
 				</span>
 			</div>
 			<!-- Host tag below metrics -->
-			<div class="font-terminal text-[9px] text-ink-muted/30 dark:text-next-subtle/30 mt-0.5 truncate">{ shortHost(svc.Host) }</div>
+			<div class="font-terminal text-[9px] text-ink-muted/30 dark:text-next-subtle-text/30 mt-0.5 truncate">{ shortHost(svc.Host) }</div>
 		</button>
 	</div>
 }
@@ -533,31 +533,31 @@ templ detailPanel(svc obs.Service) {
 		<div class="border border-accent-gold/30 dark:border-next-teal/30 bg-accent-gold/5 dark:bg-next-teal/5 px-4 py-3">
 			<div class="flex items-center gap-2 mb-2">
 				<span class="font-mac text-xs font-bold text-ink dark:text-next-white" x-text="selected ? selected.name : ''"></span>
-				<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle" x-text="selected ? selected.host + ' \u00b7 ' + selected.detail : ''"></span>
+				<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle-text" x-text="selected ? selected.host + ' \u00b7 ' + selected.detail : ''"></span>
 			</div>
 			<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
 				<div>
-					<span class="font-terminal text-[10px] text-accent-gold dark:text-next-teal block mb-0.5" x-text="selected ? selected.cpu.toFixed(3) + ' CPU cores' : ''"></span>
+					<span class="font-terminal text-[10px] text-accent-gold-text dark:text-next-teal-text block mb-0.5" x-text="selected ? selected.cpu.toFixed(3) + ' CPU cores' : ''"></span>
 					<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none" aria-label="CPU usage history">
-						<polyline x-data-hist-cpu points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-accent-gold dark:text-next-teal"></polyline>
+						<polyline x-data-hist-cpu points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-accent-gold-text dark:text-next-teal-text"></polyline>
 					</svg>
 				</div>
 				<div>
-					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? selected.ram.toFixed(0) + ' MB RAM' : ''"></span>
+					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle-text block mb-0.5" x-text="selected ? selected.ram.toFixed(0) + ' MB RAM' : ''"></span>
 					<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none" aria-label="RAM usage history">
-						<polyline x-data-hist-ram points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
+						<polyline x-data-hist-ram points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle-text"></polyline>
 					</svg>
 				</div>
 				<div>
-					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? (selected.netKB >= 1024 ? (selected.netKB / 1024).toFixed(1) + ' MB/s' : selected.netKB.toFixed(0) + ' KB/s') + ' Net' : ''"></span>
+					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle-text block mb-0.5" x-text="selected ? (selected.netKB >= 1024 ? (selected.netKB / 1024).toFixed(1) + ' MB/s' : selected.netKB.toFixed(0) + ' KB/s') + ' Net' : ''"></span>
 					<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none" aria-label="Network usage history">
-						<polyline x-data-hist-net points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
+						<polyline x-data-hist-net points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle-text"></polyline>
 					</svg>
 				</div>
 				<div>
-					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle block mb-0.5" x-text="selected ? (selected.diskMB >= 1024 ? (selected.diskMB / 1024).toFixed(1) + ' GB' : selected.diskMB.toFixed(0) + ' MB') + ' Disk' : ''"></span>
+					<span class="font-terminal text-[10px] text-ink-muted dark:text-next-subtle-text block mb-0.5" x-text="selected ? (selected.diskMB >= 1024 ? (selected.diskMB / 1024).toFixed(1) + ' GB' : selected.diskMB.toFixed(0) + ' MB') + ' Disk' : ''"></span>
 					<svg viewBox="0 0 120 24" class="w-full h-6" preserveAspectRatio="none" aria-label="Disk usage history">
-						<polyline x-data-hist-disk points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle"></polyline>
+						<polyline x-data-hist-disk points="" fill="none" stroke="currentColor" stroke-width="1.5" class="text-ink-muted dark:text-next-subtle-text"></polyline>
 					</svg>
 				</div>
 			</div>
