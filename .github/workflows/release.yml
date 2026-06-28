@@ -132,15 +132,6 @@ jobs:
 
       - uses: anchore/sbom-action/download-syft@v0
 
-      - name: Generate Repository Intelligence Graph (RIG)
-        uses: rezuscloud/llm-wiki/.github/actions/repo-map@792d3404060b4b201ef78ba4396fdc33cc6eb47f
-        with:
-          language: go
-          repo-path: .
-          output-file: repo-map.json
-          focus-package-prefixes: |
-            github.com/rezuscloud/platform-website
-
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v7
         with:
