@@ -31,7 +31,7 @@ colors:
 typography:
   display:
     fontFamily: "Silkscreen, system-ui, sans-serif"
-    fontWeight: 800
+    fontWeight: 700
     fontSize: "clamp(3rem, 8vw, 6rem)"
     lineHeight: 0.88
     letterSpacing: "-0.05em"
@@ -150,7 +150,7 @@ For the brand strategy, storytelling context, and anti-references behind this vi
 - CRT overlay: scanline pattern at 2px intervals with slow vertical scroll animation.
 - Bitmap typography: Silkscreen for headings, labels, and nav. system-ui for body. VT323 for terminals.
 - All animations respect `prefers-reduced-motion`. FOUC prevention via inline script.
-- 5 sections: Hero, Architecture, Live Platform, Features, Get Started.
+- 5 composed home sections: Hero, Architecture, Live Platform, Features, Get Started (see views/pages/home.templ). 4 further section templates (Challenge, Networking, Comparison, UseCases) exist as standalone HTMX partials served at /sections/<name> and are registered in handlers/pages.go, but are not part of the home narrative.
 - Live Platform: collapsible category-first grid with SSE real-time metrics. Self-namespace category auto-expands.
 - Progressive disclosure: Live section categories collapsed by default, expand on click.
 
@@ -207,7 +207,7 @@ Two complete palettes, each with warm-tinted neutrals and one saturated accent. 
 
 ### Hierarchy
 
-- **Display** (800 weight, text-5xl to text-8xl, leading-[0.88], tracking-tighter): Hero headline only. "YOUR PERSONAL CLOUD" as the single most prominent element on the page.
+- **Display** (700 weight, text-5xl to text-8xl, leading-[0.88], tracking-tighter): Hero headline only. "YOUR PERSONAL CLOUD" as the single most prominent element on the page.
 - **Headline** (700 weight, text-2xl to text-4xl, tracking-tight): Section headings ("How It Works", "Live Platform", "What You Get", "Start Your Cloud", "Your Machine Room"). Centered for all sections except hero.
 - **Title** (700 weight, text-lg, leading-snug): Feature names ("No Platform Tax", "Private by Design"), sub-section headings.
 - **Body** (400 weight, text-sm to text-lg, leading-relaxed): Paragraph copy, descriptions, feature details. Max line length 65-75ch.
@@ -247,7 +247,7 @@ NeXT mode uses a 2px 3D bevel system. The bevels simulate the chunky, period-aut
 
 ### Navigation
 
-Fixed top bar, z-50. `surface-strong` (light) / `next-dark` (dark) background. 1px bottom border (`rule` / `next-mid`). Logo: icon square (32x32) + "Rezus" in ink/next-white + "Cloud" in accent-gold/next-teal. Desktop links: Silkscreen label weight, uppercase, 4 items (Home, Architecture, Features, Get Started). Active state: pill background (paper/next-light). Hover: surface/next-mid background. Mobile: hamburger menu with slide-down panel (200ms ease-out). IntersectionObserver tracks active section via scroll position.
+Fixed top bar, z-50. `surface-strong` (light) / `next-dark` (dark) background. 1px bottom border (`rule` / `next-mid`). Logo: icon square (32x32) + "Rezus" in ink/next-white + "Cloud" in accent-gold/next-teal. Desktop links: Silkscreen label weight, uppercase, 5 items (Home, Architecture, Features, Get Started, Docs). Active state: pill background (paper/next-light). Hover: surface/next-mid background. Mobile: hamburger menu with slide-down panel (200ms ease-out). IntersectionObserver tracks active section via scroll position.
 
 ### CTA Button
 
