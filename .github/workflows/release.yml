@@ -133,7 +133,7 @@ jobs:
       - uses: anchore/sbom-action/download-syft@v0
 
       - name: Generate Repository Intelligence Graph (RIG)
-        uses: tibrezus/llm-wiki/.github/actions/repo-map@65d77b4130dcda5afd14de582380d340851336a1
+        uses: tibrezus/llm-wiki/.github/actions/repo-map@968cca2ba78f5cee1d53ec62c97c2693b180a26d
         with:
           language: go
 
