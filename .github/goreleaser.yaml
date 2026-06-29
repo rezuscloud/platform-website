@@ -73,3 +73,5 @@ release:
   github:
     owner: rezuscloud
     name: platform-website
+  extra_files:
+    - repo-map.json
