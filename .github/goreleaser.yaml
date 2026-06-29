@@ -74,4 +74,4 @@ release:
     owner: rezuscloud
     name: platform-website
   extra_files:
-    - repo-map.json
+    - from: repo-map.json
