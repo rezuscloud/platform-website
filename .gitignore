@@ -32,3 +32,4 @@ tmp/
 
 # Fetched documentation (legacy, no longer used)
 docs/external/
+repo-map.json
