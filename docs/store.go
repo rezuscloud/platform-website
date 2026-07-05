@@ -34,20 +34,28 @@ type Doc struct {
 }
 
 // categoryOrder defines the sidebar display order for categories.
+// Follows the Diátaxis framework: Tutorials → How-to → Reference → Concepts.
 var categoryOrder = map[string]int{
-	"":                1,
-	"getting-started": 2,
-	"concepts":        3,
-	"reference":       4,
-	"integrations":    5,
+	"":           1,
+	"tutorials":  2,
+	"how-to":     3,
+	"reference":  4,
+	"concepts":   5,
+	"operations": 6,
+	"adr":        7,
 }
 
 // categoryDisplayNames maps directory names to sidebar headings.
 var categoryDisplayNames = map[string]string{
-	"":                "Overview",
+	"":           "Overview",
+	"tutorials":  "Tutorials",
+	"how-to":     "How-to Guides",
+	"reference":  "Reference",
+	"concepts":   "Concepts",
+	"operations": "Operations",
+	"adr":        "Architecture Decisions",
+	// Legacy mappings (for backward compatibility with older doc trees).
 	"getting-started": "Getting Started",
-	"concepts":        "Concepts",
-	"reference":       "Reference",
 	"integrations":    "Integrations",
 }
 
