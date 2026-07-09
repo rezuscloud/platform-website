@@ -43,6 +43,8 @@ dockers_v2:
     extra_files:
       - assets
       - docs/external
+      - docs/what-is-rezuscloud.md
+      - docs/contributing
     labels:
       org.opencontainers.image.title: RezusCloud Platform Website
       org.opencontainers.image.description: RezusCloud Personal Cloud website

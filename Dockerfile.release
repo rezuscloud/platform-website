@@ -7,6 +7,8 @@ WORKDIR /app
 COPY ${TARGETPLATFORM}/platform-website /app/server
 COPY assets /app/assets
 COPY docs/external /app/docs/external
+COPY docs/what-is-rezuscloud.md /app/docs/
+COPY docs/contributing /app/docs/contributing
 
 EXPOSE 3000
 

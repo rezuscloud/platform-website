@@ -54,6 +54,14 @@ func DocsIndex(c *fiber.Ctx) error {
 // DocsPage renders a single documentation page.
 // Accepts paths like /docs/getting-started/install or /docs/concepts/architecture.
 func DocsPage(c *fiber.Ctx) error {
+	// Check for a redirect (renamed/moved docs) before anything else —
+	// redirects don't depend on the docs store being loaded.
+	if docPath := c.Params("*"); docPath != "" {
+		if newPath := docs.Redirect(docPath); newPath != "" {
+			return c.Redirect("/docs/"+newPath, http.StatusMovedPermanently)
+		}
+	}
+
 	if DocsStore == nil {
 		return c.Status(http.StatusNotFound).SendString("Documentation not available")
 	}

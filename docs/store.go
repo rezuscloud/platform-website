@@ -66,6 +66,24 @@ func CategoryDisplayName(cat string) string {
 	return strings.Title(cat)
 }
 
+// DocRedirects maps old doc paths (without .md) to new paths (without .md).
+// Used when docs are renamed or moved during reorganizations so old URLs
+// redirect (301) instead of 404.
+var DocRedirects = map[string]string{
+	// Diátaxis reorg (PR #169) — getting-started/ → tutorials/ + concepts/
+	"getting-started/index":              "tutorials/install-and-first-cluster",
+	"getting-started/multi-cluster":      "concepts/multi-cluster",
+	"getting-started/what-is-rezuscloud": "what-is-rezuscloud",
+	"getting-started/install":            "tutorials/install-and-first-cluster",
+	// integrations/ → how-to/
+	"integrations/home-assistant": "how-to/integrate-home-assistant",
+}
+
+// Redirect returns the new path for a renamed doc, or "" if no redirect exists.
+func Redirect(oldPath string) string {
+	return DocRedirects[oldPath]
+}
+
 // Store reads and caches documentation from the filesystem.
 type Store struct {
 	mu sync.RWMutex
