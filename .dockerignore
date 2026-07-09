@@ -5,6 +5,6 @@ node_modules/
 .github/
 Makefile
 .gitignore
-# Markdown files (but allow docs/external/ which is fetched at CI time)
-*.md
-!docs/external/**
+# Root-level markdown (README, etc.) — don't copy into the image.
+# In-tree docs under docs/ ARE needed at runtime (served by the docs store).
+/*.md

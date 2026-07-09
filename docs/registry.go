@@ -2,7 +2,7 @@ package docs
 
 // RepoConfig defines a source repository for GitHub links.
 // The actual documentation content lives in the website's /docs folder,
-// organized by topic (getting-started, concepts, reference, adr).
+// organized by topic (tutorials, concepts, reference, adr).
 type RepoConfig struct {
 	// Name is the GitHub repository name under rezuscloud.
 	Name string

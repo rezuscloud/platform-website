@@ -33,4 +33,4 @@ This page is the website's high-level introduction. For everything technical, us
 - **Implementation context** — the [RezusCloud wiki](https://github.com/rezuscloud/llm-wiki) for how the pieces fit together across repos (entities, concepts, guides).
 - **Live demo** — the RezusCloud management plane running at [demo.rezus.cloud](https://demo.rezus.cloud) (login: `admin` / `changeme`).
 
-<!-- source: platform-website:docs/getting-started/what-is-rezuscloud.md -->
+<!-- source: platform-website:docs/what-is-rezuscloud.md -->

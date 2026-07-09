@@ -11,7 +11,7 @@ import (
 
 // Doc represents a single rendered documentation page.
 type Doc struct {
-	// Path is the relative path from the docs root (e.g. "getting-started/install.md").
+	// Path is the relative path from the docs root (e.g. "what-is-rezuscloud.md").
 	Path string
 
 	// Title is extracted from the first H1 in the markdown.
@@ -20,7 +20,7 @@ type Doc struct {
 	// HTML is the rendered markdown content.
 	HTML string
 
-	// Category is the top-level directory (e.g. "getting-started", "concepts").
+	// Category is the top-level directory (e.g. "tutorials", "concepts").
 	Category string
 
 	// CategoryOrder controls sidebar display order. Lower = first.
@@ -55,8 +55,7 @@ var categoryDisplayNames = map[string]string{
 	"operations": "Operations",
 	"adr":        "Architecture Decisions",
 	// Legacy mappings (for backward compatibility with older doc trees).
-	"getting-started": "Getting Started",
-	"integrations":    "Integrations",
+	"integrations": "Integrations",
 }
 
 // CategoryDisplayName returns the display name for a category directory.
@@ -71,7 +70,7 @@ func CategoryDisplayName(cat string) string {
 type Store struct {
 	mu sync.RWMutex
 
-	// docs maps path → Doc (e.g. "getting-started/install.md" → Doc)
+	// docs maps path → Doc (e.g. "what-is-rezuscloud.md" → Doc)
 	docs map[string]Doc
 
 	// orderedPaths is a sorted list of all doc paths.
@@ -85,9 +84,7 @@ type Store struct {
 // basePath should contain category directories with markdown files:
 //
 //	basePath/
-//	  getting-started/
-//	    install.md
-//	    what-is-rezuscloud.md
+//	  what-is-rezuscloud.md
 //	  concepts/
 //	    architecture.md
 //	  reference/
@@ -166,7 +163,7 @@ func shouldIndex(relPath string) bool {
 // addDoc indexes a single markdown file.
 //
 // Path conventions:
-//   - in-tree files (e.g. "getting-started/what-is-rezuscloud.md") are served
+//   - in-tree files (e.g. "what-is-rezuscloud.md") are served
 //     at their natural path with no source attribution unless the file
 //     carries an explicit <!-- source: repo:path --> comment.
 //   - files under external/<repo>/... are fetched from the named repo by

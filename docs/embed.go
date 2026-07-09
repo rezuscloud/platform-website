@@ -20,7 +20,7 @@ func GetDocFS() fs.FS {
 	}
 
 	// Default: docs/ directory containing website-authored documentation.
-	// Organized by topic: getting-started/, concepts/, reference/, adr/
+	// Organized by topic: tutorials/, concepts/, reference/, adr/
 	defaultPath := filepath.Join("docs")
 	if info, err := os.Stat(defaultPath); err == nil && info.IsDir() {
 		return os.DirFS(defaultPath)

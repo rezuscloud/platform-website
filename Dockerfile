@@ -24,7 +24,6 @@ ARG BUILD_TIME=unknown
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN if [ ! -f "docs/getting-started/what-is-rezuscloud.md" ]; then bash scripts/fetch-docs.sh; fi
 RUN templ generate
 COPY --from=tailwind /app/assets/styles.css ./assets/styles.css
 RUN test -n "${TARGETARCH}" && CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
