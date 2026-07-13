@@ -1,6 +1,6 @@
 package views
 
-templ Layout(title string, activeNav string) {
+templ Layout(title string, activeNav string, canonicalURL ...string) {
 	<!DOCTYPE html>
 	<html
 		lang="en"
@@ -13,7 +13,11 @@ templ Layout(title string, activeNav string) {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<meta name="description" content="RezusCloud: The Personal Cloud. Own your infrastructure like you own your computer. Open source, self-managed, fully private."/>
 			<meta name="theme-color" content="#C48A1A"/>
-			<link rel="canonical" href="https://rezus.cloud/"/>
+			if len(canonicalURL) > 0 && canonicalURL[0] != "" {
+				<link rel="canonical" href={ canonicalURL[0] }/>
+			} else {
+				<link rel="canonical" href="https://rezus.cloud/"/>
+			}
 			<meta property="og:title" content="Your Personal Cloud | RezusCloud"/>
 			<meta property="og:description" content="RezusCloud: The Personal Cloud. Own your infrastructure like you own your computer. Open source, self-managed, fully private."/>
 			<meta property="og:site_name" content="RezusCloud"/>
