@@ -152,6 +152,9 @@ jobs:
       - name: Free port 3000
         run: sudo fuser -k 3000/tcp 2>/dev/null || true
 
+      - name: Fetch docs
+        run: bash scripts/fetch-docs.sh
+
       - name: Build container
         run: |
           docker rm -f platform-website 2>/dev/null || true
