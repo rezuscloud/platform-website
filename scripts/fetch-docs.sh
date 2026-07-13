@@ -1,53 +1,76 @@
 #!/usr/bin/env bash
-# fetch-docs.sh - Fetch documentation from configured repositories into docs/external/
+# fetch-docs.sh - Fetch rezuscloud documentation for multiple release versions.
 #
-# Uses `gh api` for authenticated downloads (works for private repos).
-# Falls back to unauthenticated git clone for public repos.
+# Produces docs/versions/ with:
+#   - One directory per retained release tag (deduplicated by minor version)
+#   - A docs/versions/next/ directory for unreleased main-branch docs
+#   - A docs/versions/manifest.json describing the available versions
+#
+# Retention policy (lib-versions.sh select_versions): for each minor version
+# line (major.minor), keep only the latest release. This is the Kubernetes/Helm
+# docs model. See lib-versions.sh for details.
+#
+# Backward compatibility: also copies the latest version's docs to
+# docs/external/rezuscloud/ so the current (pre-versioning) Store keeps working
+# until the versioned Store (#110) lands.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-TARGET_DIR="$SCRIPT_DIR/../docs/external"
+source "$SCRIPT_DIR/lib-versions.sh"
 
-# Ensure clean state
+ORG="rezuscloud"
+REPO="rezuscloud"
+DOCS_PATH="docs"
+NEXT_BRANCH="main"
+
+DOCS_ROOT="$SCRIPT_DIR/../docs"
+TARGET_DIR="$DOCS_ROOT/versions"
+EXTERNAL_DIR="$DOCS_ROOT/external"
+
+# Clean state — idempotent re-runs
 rm -rf "$TARGET_DIR"
+rm -rf "$EXTERNAL_DIR"
 mkdir -p "$TARGET_DIR"
 
-# List of repos to fetch docs from (name:docs_path:branch)
-# Source-of-truth: product docs live in rezuscloud/rezuscloud.
-# In-tree platform-website/docs/ pages are served directly and are not
-# re-fetched from this repo.
-REPOS=(
-    "rezuscloud:docs:main"
-)
+# ---------------------------------------------------------------------------
+# fetch_version_docs downloads a tarball of <org>/<repo> at <ref>, extracts
+# the docs/ directory, and copies it to <dest>. Returns 0 on success.
+# Uses gh api (authenticated) first, falls back to git clone (public repos).
+# ---------------------------------------------------------------------------
+fetch_version_docs() {
+    local ref="$1" dest="$2"
 
-# Download docs via GitHub tarball API (authenticated via gh CLI)
-# Usage: fetch_via_gh org repo branch docs_path dest
-fetch_via_gh() {
-    local org="$1" repo="$2" branch="$3" docs_path="$4" dest="$5"
+    if command -v gh &>/dev/null && gh auth status &>/dev/null 2>&1; then
+        _fetch_via_gh_tarball "$ref" "$dest" && return 0
+    fi
 
-    local tmpdir
+    _fetch_via_git_clone "$ref" "$dest"
+}
+
+_fetch_via_gh_tarball() {
+    local ref="$1" dest="$2"
+    local tmpdir tarball extracted
+
     tmpdir=$(mktemp -d)
-    local tarball="$tmpdir/repo.tar.gz"
+    tarball="$tmpdir/repo.tar.gz"
 
-    # Download tarball via gh api (authenticated)
-    if ! gh api "repos/${org}/${repo}/tarball/${branch}" > "$tarball" 2>/dev/null; then
+    if ! gh api "repos/${ORG}/${REPO}/tarball/${ref}" > "$tarball" 2>/dev/null; then
         rm -rf "$tmpdir"
         return 1
     fi
 
-    # Extract only the docs/ directory
     mkdir -p "$tmpdir/extract"
     tar -xzf "$tarball" -C "$tmpdir/extract" 2>/dev/null || {
         rm -rf "$tmpdir"
         return 1
     }
 
-    # Find the extracted directory (gh tarballs have a prefix like rezuscloud-repo-hash/)
-    local extracted
+    # gh tarballs have a prefix like rezuscloud-repo-<hash>/
     extracted=$(find "$tmpdir/extract" -maxdepth 1 -type d | tail -1)
 
-    if [ -d "${extracted}/${docs_path}" ]; then
-        cp -r "${extracted}/${docs_path}/." "$dest/"
+    if [ -d "${extracted}/${DOCS_PATH}" ]; then
+        mkdir -p "$dest"
+        cp -r "${extracted}/${DOCS_PATH}/." "$dest/"
         rm -rf "$tmpdir"
         return 0
     fi
@@ -56,42 +79,114 @@ fetch_via_gh() {
     return 1
 }
 
-for entry in "${REPOS[@]}"; do
-    IFS=':' read -r repo docs_path branch <<< "$entry"
-    echo "Fetching docs from rezuscloud/$repo ($docs_path/)..."
+_fetch_via_git_clone() {
+    local ref="$1" dest="$2"
+    local tmpdir
 
-    dest="$TARGET_DIR/$repo"
-    mkdir -p "$dest"
-
-    # Try authenticated download via gh CLI first
-    if command -v gh &>/dev/null && gh auth status &>/dev/null 2>&1; then
-        if fetch_via_gh "rezuscloud" "$repo" "$branch" "$docs_path" "$dest"; then
-            count=$(find "$dest" -name '*.md' | wc -l)
-            echo "  ✓ Fetched $count markdown files via gh"
-            continue
-        fi
-        echo "  gh download incomplete, trying git clone..."
-    fi
-
-    # Fallback: git clone (works for public repos without auth)
     tmpdir=$(mktemp -d)
-    if git clone --depth 1 --branch "$branch" "https://github.com/rezuscloud/$repo.git" "$tmpdir/repo" 2>/dev/null; then
-        if [ -d "$tmpdir/repo/$docs_path" ]; then
-            cp -r "$tmpdir/repo/$docs_path/." "$dest/"
-            count=$(find "$dest" -name '*.md' | wc -l)
-            echo "  ✓ Fetched $count markdown files"
-        else
-            echo "  ⚠ No $docs_path/ directory found"
+    if git clone --depth 1 --branch "$ref" "https://github.com/${ORG}/${REPO}.git" "$tmpdir/repo" 2>/dev/null; then
+        if [ -d "$tmpdir/repo/$DOCS_PATH" ]; then
+            mkdir -p "$dest"
+            cp -r "$tmpdir/repo/$DOCS_PATH/." "$dest/"
+            rm -rf "$tmpdir"
+            return 0
         fi
-    else
-        echo "  ⚠ Could not fetch $repo docs, skipping"
     fi
-    rm -rf "$tmpdir"
-done
 
-# Ensure at least one file exists
-if [ -z "$(find "$TARGET_DIR" -type f)" ]; then
-    echo "# Documentation" > "$TARGET_DIR/README.md"
+    rm -rf "$tmpdir"
+    return 1
+}
+
+# ---------------------------------------------------------------------------
+# 1. Query all release tags + creation dates.
+# ---------------------------------------------------------------------------
+if ! command -v jq &>/dev/null; then
+    echo "ERROR: jq is required for multi-version doc fetching" >&2
+    exit 1
 fi
 
-echo "Done. Docs available in $TARGET_DIR/"
+echo "Querying releases from ${ORG}/${REPO}..."
+ALL_RELEASES=$(gh release list --repo "${ORG}/${REPO}" --json tagName,createdAt --limit 500 2>/dev/null | \
+    jq -r '.[] | "\(.createdAt)\t\(.tagName)"' || echo "")
+
+if [ -z "$ALL_RELEASES" ]; then
+    echo "  No releases found (or gh not authenticated). Fetching next only."
+fi
+
+# ---------------------------------------------------------------------------
+# 2. Select versions: dedup by minor version, keep latest of each.
+# ---------------------------------------------------------------------------
+ALL_TAGS=$(echo "$ALL_RELEASES" | cut -f2)
+SELECTED=""
+if [ -n "$ALL_TAGS" ]; then
+    SELECTED=$(echo "$ALL_TAGS" | select_versions)
+fi
+
+# ---------------------------------------------------------------------------
+# 3. Fetch each selected version's docs.
+# ---------------------------------------------------------------------------
+MANIFEST_ARGS=()
+LATEST_TAG=""
+LATEST_DATE=""
+LATEST_MINOR=""
+
+while IFS= read -r tag; do
+    [ -z "$tag" ] && continue
+
+    # Look up the release date for this tag
+    date=$(echo "$ALL_RELEASES" | grep -P "\t${tag}$" | cut -f1)
+    minor=$(extract_minor_key "$tag") || minor=""
+
+    echo "Fetching docs for ${tag} (minor ${minor})..."
+    if fetch_version_docs "$tag" "$TARGET_DIR/$tag"; then
+        count=$(find "$TARGET_DIR/$tag" -name '*.md' | wc -l)
+        echo "  ✓ ${tag}: ${count} markdown files"
+        MANIFEST_ARGS+=("$tag" "$minor" "$date")
+        # First selected tag is the latest (select_versions sorts newest-first)
+        if [ -z "$LATEST_TAG" ]; then
+            LATEST_TAG="$tag"
+            LATEST_DATE="$date"
+            LATEST_MINOR="$minor"
+        fi
+    else
+        echo "  ⚠ Could not fetch ${tag}, skipping"
+    fi
+done <<< "$SELECTED"
+
+# ---------------------------------------------------------------------------
+# 4. Fetch next (unreleased main branch).
+# ---------------------------------------------------------------------------
+echo "Fetching docs for next (${NEXT_BRANCH})..."
+if fetch_version_docs "$NEXT_BRANCH" "$TARGET_DIR/next"; then
+    count=$(find "$TARGET_DIR/next" -name '*.md' | wc -l)
+    echo "  ✓ next: ${count} markdown files"
+    MANIFEST_ARGS+=("--" "next")
+else
+    echo "  ⚠ Could not fetch next, versioned docs will not include unreleased"
+fi
+
+# ---------------------------------------------------------------------------
+# 5. Write manifest.
+# ---------------------------------------------------------------------------
+if [ ${#MANIFEST_ARGS[@]} -gt 0 ]; then
+    write_manifest "$TARGET_DIR/manifest.json" "${MANIFEST_ARGS[@]}"
+    echo "  ✓ Manifest written: $(cat "$TARGET_DIR/manifest.json" | jq -r '.latest') latest"
+else
+    # Fallback: no versions at all — write an empty manifest
+    echo '{"latest":"","next":"","versions":[]}' > "$TARGET_DIR/manifest.json"
+    echo "  ⚠ No versions fetched, wrote empty manifest"
+fi
+
+# ---------------------------------------------------------------------------
+# 6. Backward compatibility: copy latest version to docs/external/rezuscloud/.
+#    The current (pre-versioning) Store strips external/<repo>/ and serves
+#    these at their natural path. This keeps the live site working until the
+#    versioned Store (#110) lands.
+# ---------------------------------------------------------------------------
+if [ -n "$LATEST_TAG" ]; then
+    mkdir -p "$EXTERNAL_DIR/rezuscloud"
+    cp -r "$TARGET_DIR/$LATEST_TAG/." "$EXTERNAL_DIR/rezuscloud/"
+    echo "  ✓ Backward-compat: latest (${LATEST_TAG}) copied to docs/external/rezuscloud/"
+fi
+
+echo "Done. Versioned docs in ${TARGET_DIR}/"
