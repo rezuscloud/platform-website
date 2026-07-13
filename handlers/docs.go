@@ -170,7 +170,7 @@ func DocsPage(c *fiber.Ctx) error {
 	}
 
 	versionPrefix := versionPrefixForURL(requestedVersion)
-	return render(c, pages.DocsDetailPage(doc, headings, prev, next, DocsStore, resolvedVersion, versionPrefix))
+	return render(c, pages.DocsDetailPage(doc, headings, prev, next, DocsStore, resolvedVersion, versionPrefix, requestedVersion, docPath))
 }
 
 // versionNotFound renders a 404 for an unrecognized version.

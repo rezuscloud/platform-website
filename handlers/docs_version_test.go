@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"io"
 	"net/http/httptest"
 	"testing"
 	"testing/fstest"
@@ -222,4 +223,63 @@ func TestParseVersionPrefix(t *testing.T) {
 			assert.Equal(t, tt.rest, r)
 		})
 	}
+}
+
+func TestDocsVersion_SwitcherRenders(t *testing.T) {
+	setupVersionedDocsStore(t)
+	app := setupApp()
+
+	req := httptest.NewRequest("GET", "/docs/latest/tutorials/hello", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+	assert.Contains(t, html, `id="version-select"`, "version switcher should render")
+	assert.Contains(t, html, "v1.0.0", "switcher should list latest version")
+	assert.Contains(t, html, "v0.9.0", "switcher should list older version")
+	assert.Contains(t, html, "next (unreleased)", "switcher should label next")
+}
+
+func TestDocsVersion_CanonicalLink(t *testing.T) {
+	setupVersionedDocsStore(t)
+	app := setupApp()
+
+	// Versioned page should have canonical pointing to /docs/latest/
+	req := httptest.NewRequest("GET", "/docs/v1.0.0/tutorials/hello", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+
+	html := string(body)
+	assert.Contains(t, html, `rel="canonical"`, "canonical link should be present")
+	assert.Contains(t, html, `https://rezus.cloud/docs/latest/tutorials/hello`,
+		"canonical should point to latest version")
+}
+
+func TestDocsVersion_SwitcherNotOnLegacyStore(t *testing.T) {
+	// Legacy store (no manifest) should not render the switcher
+	DocsStore = nil
+	fsys := fstest.MapFS{
+		"tutorials/hello.md": {Data: []byte("# Hello\n"), Mode: 0644},
+	}
+	store, err := docs.NewEmbeddedStore(fsys)
+	require.NoError(t, err)
+	DocsStore = store
+
+	app := setupApp()
+	req := httptest.NewRequest("GET", "/docs/tutorials/hello", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	body, _ := io.ReadAll(resp.Body)
+	assert.NotContains(t, string(body), `id="version-select"`,
+		"switcher should not render on legacy store")
 }
