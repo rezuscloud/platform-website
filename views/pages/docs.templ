@@ -30,22 +30,23 @@ templ docsSearch() {
 }
 
 // docsSidebar renders a unified sidebar organized by topic category.
-templ docsSidebar(activeKey string, store *docs.Store) {
+// versionPrefix is prepended to all doc links (e.g. "latest/", "v0.0.1-106/", or "").
+templ docsSidebar(activeKey string, store *docs.Store, version string, versionPrefix string) {
 	<aside class="hidden lg:block w-[18rem] flex-shrink-0" aria-label="Documentation navigation">
 		<nav class="sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto px-4 py-6">
 			@docsSearch()
 			<div class="mt-4 space-y-6">
-				for _, cat := range store.Categories() {
+				for _, cat := range store.Categories(version) {
 					<div data-doc-group>
 						<p class="font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle-text mb-2 px-2">
 							{ docs.CategoryDisplayName(cat) }
 						</p>
 						<ul>
-							for _, d := range store.DocsByCategory()[cat] {
+							for _, d := range store.DocsByCategory(version)[cat] {
 								<li>
 									if d.Path == activeKey {
 										<a
-											href={ "/docs/" + trimExt(d.Path) }
+											href={ "/docs/" + versionPrefix + trimExt(d.Path) }
 											data-doc-link
 											data-title={ d.Title }
 											class="block py-1.5 px-3 text-sm font-semibold text-accent-gold-text dark:text-next-teal-text bg-surface-strong dark:bg-next-dark"
@@ -54,7 +55,7 @@ templ docsSidebar(activeKey string, store *docs.Store) {
 										</a>
 									} else {
 										<a
-											href={ "/docs/" + trimExt(d.Path) }
+											href={ "/docs/" + versionPrefix + trimExt(d.Path) }
 											data-doc-link
 											data-title={ d.Title }
 											class="block py-1.5 px-3 text-sm text-ink-muted dark:text-next-subtle-text hover:text-ink dark:hover:text-next-white hover:bg-surface dark:hover:bg-next-dark transition-colors"
@@ -73,7 +74,7 @@ templ docsSidebar(activeKey string, store *docs.Store) {
 }
 
 // docsMobileNav renders a collapsible mobile navigation drawer.
-templ docsMobileNav(activeKey string, store *docs.Store) {
+templ docsMobileNav(activeKey string, store *docs.Store, version string, versionPrefix string) {
 	<div class="lg:hidden" x-data="{ open: false }">
 		<button
 			@click="open = !open"
@@ -97,19 +98,19 @@ templ docsMobileNav(activeKey string, store *docs.Store) {
 			class="mt-4 border border-rule dark:border-next-mid p-4 max-h-[60vh] overflow-y-auto"
 			aria-label="Documentation navigation"
 		>
-			for _, cat := range store.Categories() {
+			for _, cat := range store.Categories(version) {
 				<p class="font-silkscreen text-[10px] uppercase tracking-wider text-ink-muted dark:text-next-subtle-text mb-1 px-2">
 					{ docs.CategoryDisplayName(cat) }
 				</p>
 				<ul class="mb-3">
-					for _, d := range store.DocsByCategory()[cat] {
+					for _, d := range store.DocsByCategory(version)[cat] {
 						<li>
 							if d.Path == activeKey {
-								<a href={ "/docs/" + trimExt(d.Path) } class="block py-1 px-2 text-sm font-semibold text-accent-gold-text dark:text-next-teal-text">
+								<a href={ "/docs/" + versionPrefix + trimExt(d.Path) } class="block py-1 px-2 text-sm font-semibold text-accent-gold-text dark:text-next-teal-text">
 									{ d.Title }
 								</a>
 							} else {
-								<a href={ "/docs/" + trimExt(d.Path) } class="block py-1 px-2 text-sm text-ink-muted dark:text-next-subtle-text hover:text-ink dark:hover:text-next-white">
+								<a href={ "/docs/" + versionPrefix + trimExt(d.Path) } class="block py-1 px-2 text-sm text-ink-muted dark:text-next-subtle-text hover:text-ink dark:hover:text-next-white">
 									{ d.Title }
 								</a>
 							}
@@ -164,12 +165,12 @@ templ docsEditLink(githubURL string) {
 }
 
 // docsPrevNext renders prev/next page navigation at the bottom of content.
-templ docsPrevNext(prev *docs.Doc, next *docs.Doc) {
+templ docsPrevNext(prev *docs.Doc, next *docs.Doc, versionPrefix string) {
 	if prev != nil || next != nil {
 		<nav class="flex items-center justify-between mt-12 pt-6 border-t border-rule dark:border-next-mid" aria-label="Pagination">
 			if prev != nil {
 				<a
-					href={ "/docs/" + trimExt(prev.Path) }
+					href={ "/docs/" + versionPrefix + trimExt(prev.Path) }
 					class="group flex flex-col items-start max-w-[45%]"
 				>
 					<span class="text-[10px] font-silkscreen uppercase tracking-wider text-ink-muted dark:text-next-subtle-text mb-1">Previous</span>
@@ -182,7 +183,7 @@ templ docsPrevNext(prev *docs.Doc, next *docs.Doc) {
 			}
 			if next != nil {
 				<a
-					href={ "/docs/" + trimExt(next.Path) }
+					href={ "/docs/" + versionPrefix + trimExt(next.Path) }
 					class="group flex flex-col items-end text-right max-w-[45%]"
 				>
 					<span class="text-[10px] font-silkscreen uppercase tracking-wider text-ink-muted dark:text-next-subtle-text mb-1">Next</span>
@@ -196,7 +197,9 @@ templ docsPrevNext(prev *docs.Doc, next *docs.Doc) {
 }
 
 // DocsDetailPage renders a single documentation page with the standard three-column layout.
-templ DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next *docs.Doc, store *docs.Store) {
+// version is the resolved version key (e.g. "v0.0.1-106"); versionPrefix is the URL
+// prefix for links (e.g. "latest/", "v0.0.1-106/", or "" for unversioned).
+templ DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next *docs.Doc, store *docs.Store, version string, versionPrefix string) {
 	@views.Layout(doc.Title+" | RezusCloud Documentation", "docs") {
 		<section class="min-h-screen bg-paper dark:bg-next-black pt-14">
 			<!-- Breadcrumb -->
@@ -205,7 +208,7 @@ templ DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next
 					<nav class="text-xs font-silkscreen text-ink-muted dark:text-next-subtle-text" aria-label="Breadcrumb">
 						<a href="/docs" class="hover:text-accent-gold-text dark:hover:text-next-teal-text transition-colors">Documentation</a>
 						<span class="mx-2 text-rule dark:text-next-mid">/</span>
-						<a href={ "/docs/" + doc.Category } class="hover:text-accent-gold-text dark:hover:text-next-teal-text transition-colors">
+						<a href={ "/docs/" + versionPrefix + doc.Category } class="hover:text-accent-gold-text dark:hover:text-next-teal-text transition-colors">
 							{ docs.CategoryDisplayName(doc.Category) }
 						</a>
 						<span class="mx-2 text-rule dark:text-next-mid">/</span>
@@ -216,11 +219,11 @@ templ DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next
 			<!-- Three-column layout -->
 			<div class="mx-auto max-w-[90rem] px-0 lg:grid lg:grid-cols-[18rem_minmax(0,1fr)_14rem] xl:grid-cols-[18rem_minmax(0,1fr)_14rem]">
 				<!-- Left sidebar (desktop) -->
-				@docsSidebar(doc.Path, store)
+				@docsSidebar(doc.Path, store, version, versionPrefix)
 				<!-- Content -->
 				<main class="min-w-0 px-4 sm:px-6 lg:px-8 py-8">
 					<!-- Mobile nav toggle -->
-					@docsMobileNav(doc.Path, store)
+					@docsMobileNav(doc.Path, store, version, versionPrefix)
 					<!-- Page title -->
 					<h1 class="font-silkscreen text-2xl sm:text-3xl text-ink dark:text-next-white tracking-tight mb-6">
 						{ doc.Title }
@@ -261,7 +264,7 @@ templ DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next
 						@docsEditLink(doc.GitHubEditURL)
 					</div>
 					<!-- Prev/Next -->
-					@docsPrevNext(prev, next)
+					@docsPrevNext(prev, next, versionPrefix)
 				</main>
 				<!-- Right TOC (desktop) -->
 				@docsRightTOC(headings)
