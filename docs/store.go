@@ -169,9 +169,17 @@ func (s *Store) loadFromFS(fsys fs.FS) error {
 // shouldIndex reports whether a markdown file should be exposed in the docs UI.
 // ADRs are kept in the repos as decision records but are not surfaced as
 // end-user documentation.
+//
+// The versions/ subtree contains multi-version docs managed by fetch-docs.sh
+// and read by the versioned Store (#110). Until the versioned Store is
+// implemented, the legacy Store must not index these — they would collide
+// with the backward-compat docs/external/ copies.
 func shouldIndex(relPath string) bool {
 	for _, seg := range strings.Split(relPath, "/") {
 		if seg == "adr" {
+			return false
+		}
+		if seg == "versions" {
 			return false
 		}
 	}

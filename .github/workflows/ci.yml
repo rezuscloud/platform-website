@@ -35,6 +35,9 @@ jobs:
       - name: Format check (Go)
         run: test -z "$(gofmt -l .)"
 
+      - name: Run shell unit tests (fetch-docs version selection)
+        run: bash scripts/fetch-docs.test.sh
+
       - name: Vet
         run: go vet ./...
 
