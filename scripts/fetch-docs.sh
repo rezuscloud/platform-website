@@ -107,10 +107,23 @@ fi
 
 echo "Querying releases from ${ORG}/${REPO}..."
 ALL_RELEASES=$(gh release list --repo "${ORG}/${REPO}" --json tagName,createdAt --limit 500 2>/dev/null | \
-    jq -r '.[] | "\(.createdAt)\t\(.tagName)"' || echo "")
+    jq -r '.[] | "\(.createdAt)\t\(.tagName)"' 2>/dev/null || echo "")
 
 if [ -z "$ALL_RELEASES" ]; then
-    echo "  No releases found (or gh not authenticated). Fetching next only."
+    echo "  gh release list failed (cross-repo auth or network). Falling back to git ls-remote..."
+    # Fallback: list tags via git ls-remote (works for public repos without auth).
+    # No release dates available in this path.
+    TAGS_RAW=$(git ls-remote --tags "https://github.com/${ORG}/${REPO}.git" 2>/dev/null | \
+        grep -oP 'refs/tags/\Kv\d+\.\d+\.[^^]+$' || echo "")
+    if [ -n "$TAGS_RAW" ]; then
+        # Format as empty-date\ttag to match gh release list format
+        ALL_RELEASES=$(echo "$TAGS_RAW" | while IFS= read -r tag; do
+            printf '\t%s\n' "$tag"
+        done)
+        echo "  Found $(echo "$ALL_RELEASES" | wc -l) tags via git ls-remote"
+    else
+        echo "  No tags found via git ls-remote either. Fetching next only."
+    fi
 fi
 
 # ---------------------------------------------------------------------------
