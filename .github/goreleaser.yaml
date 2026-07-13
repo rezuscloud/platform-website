@@ -42,7 +42,7 @@ dockers_v2:
       - latest
     extra_files:
       - assets
-      - docs/external
+      - docs/versions
       - docs/what-is-rezuscloud.md
       - docs/contributing
     labels:
