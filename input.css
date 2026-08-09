@@ -234,6 +234,15 @@
 	background-size: 24px 24px;
 }
 
+/* NeXT mode: drop the Mac cream barber-pole so the dual-era contract holds.
+   The base rule paints an opaque gradient via the `background` shorthand,
+   which hides the templ-level `dark:bg-next-mid`. Restoring a flat next-mid
+   title bar also fixes the title-label contrast (next-subtle-text on
+   next-mid >= 4.5:1). See issue #95. */
+.dark .mac-title-bar-animated {
+	background: var(--color-next-mid);
+}
+
 /* ===== Mac custom cursor (retro arrow) ===== */
 
 .mac-cursor {
