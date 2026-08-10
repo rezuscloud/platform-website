@@ -42,8 +42,7 @@ dockers_v2:
       - latest
     extra_files:
       - assets
-      - docs/versions
-      - docs/what-is-rezuscloud.md
+      - docs/external
       - docs/contributing
     labels:
       org.opencontainers.image.title: RezusCloud Platform Website
