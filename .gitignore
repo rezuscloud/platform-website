@@ -30,7 +30,6 @@ Thumbs.db
 # Air live reload
 tmp/
 
-# Fetched documentation (build artifacts — produced by scripts/fetch-docs.sh)
+# Fetched documentation (project wikis, produced by scripts/fetch-docs.sh)
 docs/external/
-docs/versions/
 repo-map.json
