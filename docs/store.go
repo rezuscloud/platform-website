@@ -42,30 +42,33 @@ type Doc struct {
 //
 // "" is Overview (root-level pages such as the product introduction).
 var allowedCategories = map[string]bool{
-	"":          true,
-	"tutorials": true,
-	"how-to":    true,
-	"reference": true,
-	"concepts":  true,
+	"":           true,
+	"tutorials":  true,
+	"how-to":     true,
+	"reference":  true,
+	"concepts":   true,
+	"operations": true,
 }
 
 // categoryOrder defines the sidebar display order, following Diátaxis:
 // Overview → Tutorials → How-to → Reference → Concepts.
 var categoryOrder = map[string]int{
-	"":          1,
-	"tutorials": 2,
-	"how-to":    3,
-	"reference": 4,
-	"concepts":  5,
+	"":           1,
+	"tutorials":  2,
+	"how-to":     3,
+	"reference":  4,
+	"concepts":   5,
+	"operations": 6,
 }
 
 // categoryDisplayNames maps categories to sidebar headings.
 var categoryDisplayNames = map[string]string{
-	"":          "Overview",
-	"tutorials": "Tutorials",
-	"how-to":    "How-to Guides",
-	"reference": "Reference",
-	"concepts":  "Concepts",
+	"":           "Overview",
+	"tutorials":  "Tutorials",
+	"how-to":     "How-to Guides",
+	"reference":  "Reference",
+	"concepts":   "Concepts",
+	"operations": "Operations",
 }
 
 // CategoryDisplayName returns the display name for a category directory.
