@@ -193,6 +193,10 @@ func buildDoc(relPath string, data []byte, repoName, sourcePath string) Doc {
 	htmlContent, err := Render(data)
 	if err != nil {
 		htmlContent = "<p>Failed to render document.</p>"
+	} else {
+		// The template renders doc.Title as the page <h1>; drop the duplicate
+		// H1 that the markdown source carries so titles don't render twice.
+		htmlContent = stripFirstH1(htmlContent)
 	}
 
 	githubURL := ""

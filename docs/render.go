@@ -134,6 +134,25 @@ func stripTags(s string) string {
 	return strings.TrimSpace(b.String())
 }
 
+// stripFirstH1 removes the first <h1>…</h1> block from rendered HTML.
+// The page template renders doc.Title as the page-level <h1>; the markdown
+// source repeats that same heading, so drop it to avoid the title showing
+// twice. If the source has no H1 (title fell back to the filename), this is
+// a no-op. Only the first H1 is removed — later H1s are left untouched.
+func stripFirstH1(html string) string {
+	open := strings.Index(html, "<h1")
+	if open == -1 {
+		return html
+	}
+	const closeTag = "</h1>"
+	closeIdx := strings.Index(html[open:], closeTag)
+	if closeIdx == -1 {
+		return html
+	}
+	end := open + closeIdx + len(closeTag)
+	return html[:open] + html[end:]
+}
+
 // Render converts markdown source to HTML with heading anchor IDs.
 func Render(source []byte) (string, error) {
 	var buf bytes.Buffer
