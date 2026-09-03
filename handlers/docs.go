@@ -76,6 +76,13 @@ func DocsPage(c *fiber.Ctx) error {
 
 	doc, found := DocsStore.Get(lookupPath)
 	if !found {
+		// Category roots (/docs/how-to) have no index page — the breadcrumb
+		// links them, so redirect to the section's first doc in sidebar order.
+		// 302, not 301: the mapping is derived ("first doc of category") and
+		// shifts as pages are added, so it must not be cached as permanent.
+		if first, ok := DocsStore.FirstDocInCategory(strings.TrimSuffix(docPath, "/")); ok {
+			return c.Redirect("/docs/"+trimExt(first), http.StatusFound)
+		}
 		return c.Status(http.StatusNotFound).SendString("Document not found")
 	}
 

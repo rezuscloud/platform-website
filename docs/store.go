@@ -303,6 +303,23 @@ func (s *Store) DocsByCategory() map[string][]Doc {
 	return result
 }
 
+// FirstDocInCategory returns the path of the first doc in cat, in sidebar
+// display order (category order, then path). ok is false when cat is empty
+// (root is handled by DocsIndex) or has no docs. Backs the category-root
+// redirect: /docs/<category> has no index page, so it jumps to the section's
+// first page.
+func (s *Store) FirstDocInCategory(cat string) (string, bool) {
+	if cat == "" {
+		return "", false
+	}
+	for _, d := range s.AllDocs() {
+		if d.Category == cat {
+			return d.Path, true
+		}
+	}
+	return "", false
+}
+
 // DocCount returns the total number of docs.
 func (s *Store) DocCount() int {
 	s.mu.RLock()
