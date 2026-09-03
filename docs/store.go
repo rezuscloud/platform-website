@@ -128,7 +128,13 @@ func NewEmbeddedStore(fsys fs.FS) (*Store, error) {
 }
 
 func (s *Store) loadFromFS(fsys fs.FS) error {
-	return fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
+	type pendingDoc struct {
+		path string
+		doc  Doc
+	}
+	var pending []pendingDoc
+
+	err := fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() || !strings.HasSuffix(path, ".md") {
 			return nil
 		}
@@ -139,9 +145,43 @@ func (s *Store) loadFromFS(fsys fs.FS) error {
 		if rerr != nil {
 			return nil
 		}
-		s.addDoc(path, data)
+
+		// Strip the external/<repo>/ prefix fetched by scripts/fetch-docs.sh;
+		// the served path is repo-relative and the repo drives the GitHub links.
+		repoName, relPath := "", path
+		if parts := strings.SplitN(path, "/", 3); len(parts) == 3 && parts[0] == "external" {
+			repoName = parts[1]
+			relPath = parts[2]
+		}
+
+		category := ""
+		if idx := strings.Index(relPath, "/"); idx >= 0 {
+			category = relPath[:idx]
+		}
+		// Authoritative gate: only the Diátaxis categories are served.
+		if !allowedCategories[category] {
+			return nil
+		}
+
+		pending = append(pending, pendingDoc{relPath, buildDoc(relPath, data, repoName)})
 		return nil
 	})
+	if err != nil {
+		return err
+	}
+
+	// Index every doc first, then heal links — cross-references (including
+	// across wikis, which walk order would order arbitrarily) must all resolve.
+	for _, p := range pending {
+		s.docs[p.path] = p.doc
+	}
+	s.rebuildIndex()
+	for _, p := range pending {
+		p.doc.HTML = s.rewriteLinks(p.doc.HTML, p.path)
+		s.docs[p.path] = p.doc
+	}
+	s.rebuildIndex()
+	return nil
 }
 
 // shouldIndex is a fast pre-filter that drops wiki/repository meta pages before
@@ -155,34 +195,9 @@ func shouldIndex(relPath string) bool {
 	return true
 }
 
-// addDoc indexes a markdown file. Files under external/<repo>/... are fetched
-// from that repo's wiki; the prefix is stripped from the served path and the
-// repo is recorded as the source for GitHub view/edit links.
-func (s *Store) addDoc(relPath string, data []byte) {
-	repoName, sourcePath := "", relPath
-	if parts := strings.SplitN(relPath, "/", 3); len(parts) == 3 && parts[0] == "external" {
-		repoName = parts[1]
-		sourcePath = parts[2]
-		relPath = parts[2]
-	}
-
-	category := ""
-	if idx := strings.Index(relPath, "/"); idx >= 0 {
-		category = relPath[:idx]
-	}
-
-	// Authoritative gate: only the Diátaxis categories are served.
-	if !allowedCategories[category] {
-		return
-	}
-
-	s.docs[relPath] = buildDoc(relPath, data, repoName, sourcePath)
-	s.rebuildIndex()
-}
-
 // buildDoc constructs a Doc from markdown data, extracting the title, rendering
 // HTML, and computing GitHub URLs.
-func buildDoc(relPath string, data []byte, repoName, sourcePath string) Doc {
+func buildDoc(relPath string, data []byte, repoName string) Doc {
 	title := ExtractTitle(data)
 	if title == "" {
 		base := strings.TrimSuffix(filepath.Base(relPath), ".md")
@@ -210,8 +225,8 @@ func buildDoc(relPath string, data []byte, repoName, sourcePath string) Doc {
 				githubURL = repo.GitHubBaseURL()
 				githubEditURL = repo.GitHubEditURL()
 			} else {
-				githubURL = repo.GitHubBaseURL() + "/" + sourcePath
-				githubEditURL = repo.GitHubEditURL() + "/" + sourcePath
+				githubURL = repo.GitHubBaseURL() + "/" + relPath
+				githubEditURL = repo.GitHubEditURL() + "/" + relPath
 			}
 		}
 	}

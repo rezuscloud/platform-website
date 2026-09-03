@@ -40,7 +40,7 @@ func TestBuildDoc_DropsDuplicateTitleHeading(t *testing.T) {
 	// Simulates a wiki page whose markdown starts with an H1: the template
 	// renders doc.Title as the page <h1>, so the article body must not repeat it.
 	src := []byte("# Documentation Standards\n\nStatus: adopted.\n\n## 1. Sections\n")
-	doc := buildDoc("documentation-standards.md", src, "rezuscloud", "documentation-standards.md")
+	doc := buildDoc("documentation-standards.md", src, "rezuscloud")
 
 	if doc.Title != "Documentation Standards" {
 		t.Fatalf("title = %q, want %q", doc.Title, "Documentation Standards")
@@ -57,7 +57,7 @@ func TestBuildDoc_FallbackTitleKeepsNoH1(t *testing.T) {
 	// A page without an H1 falls back to a filename-derived title and its
 	// HTML is untouched (nothing to strip).
 	src := []byte("Just some prose.\n")
-	doc := buildDoc("some-page.md", src, "", "some-page.md")
+	doc := buildDoc("some-page.md", src, "")
 
 	if doc.Title != "some page" {
 		t.Fatalf("title = %q, want %q", doc.Title, "some page")
