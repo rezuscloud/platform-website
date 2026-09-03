@@ -18,6 +18,19 @@ next time a release image is built (push to `master`): the docs are baked in at
 build time, not fetched at runtime, so a wiki edit on its own does not roll a
 new image.
 
+## Link authoring convention
+
+Link to other docs with **site-canonical paths** — `/docs/tutorials/...`,
+`/docs/concepts/...`. They work everywhere: internal on this site, and readers
+coming from GitHub land on the rendered docs instead of raw markdown.
+
+The store also heals the wiki-native styles at render time: GitHub-wiki deep
+links (`https://github.com/rezuscloud/<repo>/wiki/<path>.md`) and repo- or
+page-relative `*.md` targets are rewritten to the clean on-site URL whenever
+the target is a served doc (honoring the redirect map). Targets that are not
+served — ADR blob links, filtered categories — and non-doc links are left
+untouched. Prefer canonical paths; healing is a safety net, not an invitation.
+
 ## Why wikis
 
 A wiki is a single HEAD of user-facing docs. Because it contains no ADRs and no
