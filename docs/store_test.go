@@ -3,6 +3,7 @@ package docs
 import (
 	"strings"
 	"testing"
+	"testing/fstest"
 )
 
 func TestStripFirstH1(t *testing.T) {
@@ -63,5 +64,32 @@ func TestBuildDoc_FallbackTitleKeepsNoH1(t *testing.T) {
 	}
 	if !strings.Contains(doc.HTML, "Just some prose.") {
 		t.Fatalf("body content lost: %q", doc.HTML)
+	}
+}
+
+func TestFirstDocInCategory(t *testing.T) {
+	fsys := fstest.MapFS{
+		"external/rezuscloud/how-to/deploy-on-oci.md":                {Data: []byte("# B\n")},
+		"external/rezuscloud/how-to/add-bare-metal-node.md":          {Data: []byte("# A\n")},
+		"external/rezuscloud/tutorials/install-and-first-cluster.md": {Data: []byte("# C\n")},
+		// Not an allowed category — never indexed, so never a root.
+		"external/rezuscloud/adr/0001-what-rezuscloud-is.md": {Data: []byte("# D\n")},
+	}
+	s, err := NewEmbeddedStore(fsys)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if got, ok := s.FirstDocInCategory("how-to"); !ok || got != "how-to/add-bare-metal-node.md" {
+		t.Fatalf("FirstDocInCategory(how-to) = %q, %v; want first by path sort, true", got, ok)
+	}
+	if _, ok := s.FirstDocInCategory("adr"); ok {
+		t.Fatal("non-allowed category must have no docs, ok=false")
+	}
+	if _, ok := s.FirstDocInCategory(""); ok {
+		t.Fatal("empty category must be false (root handled by DocsIndex)")
+	}
+	if _, ok := s.FirstDocInCategory("nonexistent"); ok {
+		t.Fatal("unknown category must be false")
 	}
 }
