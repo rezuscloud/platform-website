@@ -37,18 +37,19 @@ func SetupDocs() {
 	DocsStore = store
 }
 
-// DocsIndex redirects to the first available doc page.
+// DocsIndex redirects to the docs landing page (the pinned product intro,
+// falling back to the first indexed page).
 func DocsIndex(c *fiber.Ctx) error {
 	if DocsStore == nil {
 		return c.Status(http.StatusNotFound).SendString("Documentation not available")
 	}
 
-	allDocs := DocsStore.AllDocs()
-	if len(allDocs) == 0 {
+	landing := DocsStore.LandingPath()
+	if landing == "" {
 		return c.Status(http.StatusNotFound).SendString("No documentation available")
 	}
 
-	return c.Redirect("/docs/"+trimExt(allDocs[0].Path), http.StatusMovedPermanently)
+	return c.Redirect("/docs/"+trimExt(landing), http.StatusMovedPermanently)
 }
 
 // DocsPage renders a single documentation page.
