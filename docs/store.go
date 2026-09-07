@@ -291,6 +291,34 @@ func (s *Store) AllDocs() []Doc {
 	return result
 }
 
+// landingPageCandidates lists preferred landing pages in priority order (paths
+// as served, without .md appended). GET /docs redirects to the first candidate
+// present in the store, so the docs entry point is the product intro rather
+// than whichever page sorts first.
+var landingPageCandidates = []string{
+	"what-is-rezuscloud",
+}
+
+// LandingPath returns the path /docs should redirect to: the first preferred
+// landing page present in the store, else the first indexed page (previous
+// behaviour), else "" when the store is empty.
+func (s *Store) LandingPath() string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	for _, cand := range landingPageCandidates {
+		if _, ok := s.docs[cand]; ok {
+			return cand
+		}
+		if _, ok := s.docs[cand+".md"]; ok {
+			return cand
+		}
+	}
+	for _, p := range s.orderedPaths {
+		return strings.TrimSuffix(p, ".md")
+	}
+	return ""
+}
+
 // Categories returns categories in display order.
 func (s *Store) Categories() []string {
 	docs := s.AllDocs()

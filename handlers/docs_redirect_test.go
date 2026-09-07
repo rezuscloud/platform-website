@@ -3,9 +3,12 @@ package handlers
 import (
 	"net/http/httptest"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/rezuscloud/platform-website/docs"
 )
 
 func TestDocsRedirect_RenamedPaths(t *testing.T) {
@@ -65,4 +68,28 @@ func TestDocsRedirect_ValidDocNotRedirected(t *testing.T) {
 
 	assert.NotEqual(t, 301, resp.StatusCode, "valid docs must not redirect")
 	assert.NotEqual(t, 302, resp.StatusCode, "valid docs must not redirect")
+}
+
+func TestDocsIndex_LandsOnProductIntro(t *testing.T) {
+	// Swap in a store with the landing candidate present, plus an
+	// alphabetically-earlier page that would win the old first-page behaviour.
+	old := DocsStore
+	t.Cleanup(func() { DocsStore = old })
+
+	mapfs := fstest.MapFS{
+		"external/platform-website/documentation-standards.md": &fstest.MapFile{Data: []byte("# Documentation standards\n")},
+		"external/platform-website/what-is-rezuscloud.md":      &fstest.MapFile{Data: []byte("# What is Rezus.cloud\n")},
+	}
+	store, err := docs.NewEmbeddedStore(mapfs)
+	require.NoError(t, err)
+	DocsStore = store
+
+	app := setupApp()
+	req := httptest.NewRequest("GET", "/docs", nil)
+	resp, err := app.Test(req, -1)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	assert.Equal(t, 301, resp.StatusCode)
+	assert.Equal(t, "/docs/what-is-rezuscloud", resp.Header.Get("Location"))
 }
