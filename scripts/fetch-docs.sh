@@ -16,6 +16,12 @@ TARGET_DIR="$SCRIPT_DIR/../docs/external"
 rm -rf "$TARGET_DIR"
 mkdir -p "$TARGET_DIR"
 
+# Internal-documentation guard (rezuscloud#214): these contributor-facing
+# pages must never reach the public docs site, even if re-added to a wiki.
+EXCLUDE=(
+    "documentation-standards.md"
+)
+
 # Wikis to fetch (repo base name → its <name>.wiki.git)
 WIKIS=(
     "rezuscloud"
@@ -31,9 +37,12 @@ for name in "${WIKIS[@]}"; do
     url="https://github.com/rezuscloud/${name}.wiki.git"
 
     if git clone --depth 1 "$url" "$tmpdir/wiki" 2>/dev/null; then
-        # Copy wiki contents (excluding the .git dir)
+        # Copy wiki contents (excluding the .git dir and internal pages)
         cp -r "$tmpdir/wiki/." "$dest/"
         rm -rf "$dest/.git"
+        for ex in "${EXCLUDE[@]}"; do
+            find "$dest" -name "$ex" -delete
+        done
         count=$(find "$dest" -name '*.md' | wc -l)
         echo "  ✓ Fetched $count markdown files"
     else
