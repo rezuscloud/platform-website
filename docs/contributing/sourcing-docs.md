@@ -40,8 +40,8 @@ line of defense: only `tutorials/`, `how-to/`, `reference/`, `concepts/`, `opera
 and root-level pages (e.g. the product intro, documentation standards) are
 served — everything else is ignored.
 
-ADRs stay co-located with the code in each repo's `docs/adr/` (deeply
-cross-referenced; co-versioned with the implementation).
+ADRs and archived decision history stay out of the wikis entirely (internal
+documentation) — co-versioned with the implementation, never fetched here.
 
 ## Diátaxis taxonomy
 

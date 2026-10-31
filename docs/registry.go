@@ -19,8 +19,8 @@ type RepoConfig struct {
 //
 // Source-of-truth policy: user-facing documentation is authored in the project
 // wikis and fetched at build time (see scripts/fetch-docs.sh). The repositories
-// carry only ADRs and repo-level context (CONTEXT.md, PRODUCT.md, …), which are
-// never served here. Because the wikis contain only user docs — no ADRs, no
+// carry no user-facing documentation — internal decision records and repo-level
+// context live outside the public wikis and are never served here. Because the wikis contain only user docs — no ADRs, no
 // archived decision history — internal content cannot leak onto the public docs
 // site regardless of what a repo adds later (the store's Diátaxis allowlist is
 // the second line of defense).

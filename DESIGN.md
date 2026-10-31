@@ -139,7 +139,7 @@ The system is defiant, precise, and nostalgic. Every element earns its place. No
 
 Five sections tell the story: an asymmetric hero with a boot-sequence terminal, three clean architecture columns, a self-observing live platform grid, four core promises with a Machine Room closer, and an actionable Get Started with GitHub CTA. The page rhythm is left-anchored hero, then centered symmetry through the remaining sections.
 
-For the brand strategy, storytelling context, and anti-references behind this visual system, see PRODUCT.md. For domain terminology (Personal Cloud, Machine Room, Golden Path, Builder), see CONTEXT.md.
+The brand strategy, storytelling context, anti-references, and domain terminology behind this visual system are maintained in the internal documentation.
 
 **Key Characteristics:**
 - Zero border-radius everywhere. Every corner is a right angle.
@@ -308,7 +308,7 @@ Category-first CSS grid (`gap-x-6 gap-y-0`). Hosts as columns, categories as row
 - **Do** collapse live section categories by default. Progressive disclosure reduces cognitive load from 65 service boxes to ~10 category rows.
 - **Do** add "THIS SITE" label to the self-referencing service box. It proves the dogfooding story.
 - **Do** provide actionable CTAs. GitHub star button and "Watch It Live" link, not "Coming soon" placeholders.
-- **Do** reference CONTEXT.md for domain terminology when writing copy.
+- **Do** keep domain terminology (Personal Cloud, Machine Room, Golden Path, Builder) consistent when writing copy.
 
 ### Don't:
 - **Don't** use rounded corners anywhere. No `rounded-*` classes. No `border-radius` in CSS.
@@ -326,4 +326,4 @@ Category-first CSS grid (`gap-x-6 gap-y-0`). Hosts as columns, categories as row
 - **Don't** create platforms designed for procurement committees and sold via sales calls. This platform gives engineers enterprise capabilities directly.
 - **Don't** use trust logos, monthly pricing tables, or "Get Started Free" CTAs. This is not a subscription product.
 
-For brand-level anti-references (what this product is NOT), see PRODUCT.md.
+Brand-level anti-references (what this product is NOT) are maintained in the internal documentation.
