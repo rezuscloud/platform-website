@@ -80,7 +80,7 @@ templ Live(data obs.LiveData) {
 					</div>
 				</div>
 				for _, cat := range sol.Categories {
-					<div class="mb-5">
+					<div data-category-group class="mb-5">
 						<div class="flex items-baseline gap-2 mb-2">
 							<span class="font-terminal text-[10px] text-accent-gold-text dark:text-next-teal-text uppercase tracking-[0.15em]">{ cat.Label }</span>
 							<span class="font-terminal text-[10px] text-ink-muted/40 dark:text-next-subtle-text/40">{ obs.CategoryCountLabel(cat) }</span>

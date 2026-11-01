@@ -105,7 +105,7 @@ func Live(data obs.LiveData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for _, cat := range sol.Categories {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"mb-5\"><div class=\"flex items-baseline gap-2 mb-2\"><span class=\"font-terminal text-[10px] text-accent-gold-text dark:text-next-teal-text uppercase tracking-[0.15em]\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div data-category-group class=\"mb-5\"><div class=\"flex items-baseline gap-2 mb-2\"><span class=\"font-terminal text-[10px] text-accent-gold-text dark:text-next-teal-text uppercase tracking-[0.15em]\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
