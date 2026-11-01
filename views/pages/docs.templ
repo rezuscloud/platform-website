@@ -228,19 +228,7 @@ templ DocsDetailPage(doc docs.Doc, headings []docs.Heading, prev *docs.Doc, next
 					</h1>
 					<!-- Rendered markdown content -->
 					<article
-						class="prose prose-neutral dark:prose-invert max-w-none
-						prose-headings:font-silkscreen prose-headings:tracking-tight
-						prose-headings:scroll-mt-20
-						prose-h1:text-2xl prose-h1:mt-0
-						prose-h2:text-xl
-						prose-h3:text-lg
-						prose-a:text-accent-gold-text dark:prose-a:text-next-teal-text
-						prose-code:font-terminal prose-code:text-sm
-						prose-code:before:content-none prose-code:after:content-none
-						prose-pre:bg-next-black dark:prose-pre:bg-next-dark prose-pre:border prose-pre:border-rule dark:prose-pre:border-next-mid prose-pre:p-4
-						prose-th:text-left prose-th:font-silkscreen prose-th:text-xs
-						prose-img:border prose-img:border-rule dark:prose-img:border-next-mid
-					"
+						class="prose prose-neutral dark:prose-invert max-w-none prose-headings:font-silkscreen prose-headings:tracking-tight prose-headings:scroll-mt-20 prose-h1:text-2xl prose-h1:mt-0 prose-h2:text-xl prose-h3:text-lg prose-a:text-accent-gold-text dark:prose-a:text-next-teal-text prose-code:font-terminal prose-code:text-sm prose-code:before:content-none prose-code:after:content-none prose-pre:bg-next-black dark:prose-pre:bg-next-dark prose-pre:border prose-pre:border-rule dark:prose-pre:border-next-mid prose-pre:p-4 prose-th:text-left prose-th:font-silkscreen prose-th:text-xs prose-img:border prose-img:border-rule dark:prose-img:border-next-mid"
 					>
 						@templ.Raw(doc.HTML)
 					</article>
