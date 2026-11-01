@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"sync"
 
 	"github.com/a-h/templ"
 	"github.com/gofiber/fiber/v2"
@@ -46,10 +47,38 @@ func InitSections() {
 // Defaults to mock if InitSections hasn't been called.
 var liveClient obs.Client = &obs.MockClient{Data: obs.DefaultMockData()}
 
+// lastGoodClient wraps an obs.Client and serves the last successful,
+// non-empty snapshot when the inner client errors or returns an empty
+// fetch. A "Live" section must degrade to stale data, not to nothing:
+// under transient Prometheus/K8s API pressure an empty result would blank
+// the whole section (nodes, metrics and all) for a page load or an SSE tick.
+type lastGoodClient struct {
+	inner obs.Client
+	mu    sync.RWMutex
+	last  obs.LiveData
+	have  bool
+}
+
+func (l *lastGoodClient) Fetch(ctx context.Context) (obs.LiveData, error) {
+	data, err := l.inner.Fetch(ctx)
+	if err == nil && (len(data.Hosts) > 0 || len(data.Services) > 0) {
+		l.mu.Lock()
+		l.last, l.have = data, true
+		l.mu.Unlock()
+		return data, nil
+	}
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	if l.have {
+		return l.last, nil
+	}
+	return data, err
+}
+
 // SetLiveClient configures the data source for the live section.
 func SetLiveClient(c obs.Client) {
 	if c != nil {
-		liveClient = c
+		liveClient = &lastGoodClient{inner: c}
 	}
 }
 
