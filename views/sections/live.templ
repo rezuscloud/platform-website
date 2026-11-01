@@ -7,13 +7,14 @@ import (
 )
 
 templ Live(data obs.LiveData) {
+	{{ solutions := obs.BuildSolutions(data) }}
 	<section
 		id="live"
 		class="py-16 sm:py-24 bg-surface-strong dark:bg-next-black"
 		x-data="liveMatrix()"
 		x-init="init()"
 		role="region"
-		aria-label="Live platform observability"
+		aria-label="Live platform topology"
 	>
 		<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 			<!-- Header -->
@@ -41,39 +42,39 @@ templ Live(data obs.LiveData) {
 				<span class="font-mac-mono text-xs text-negative dark:text-negative-next">Connection lost or data stale. Showing last known state.</span>
 			</div>
 			<!-- SSE freshness -->
-			<div class="font-terminal text-xs text-ink-muted dark:text-next-subtle-text mb-6" x-show="connected" x-cloak aria-live="polite">
+			<div class="font-terminal text-xs text-ink-muted dark:text-next-subtle-text mb-8" x-show="connected" x-cloak aria-live="polite">
 				<span x-text="'Updated ' + lastUpdateAgo + 's ago'"></span>
 				<span class="mx-2">·</span>
-				<span x-text="hostCount + ' nodes, ' + serviceCount + ' services'"></span>
+				<span x-text="hostCount + ' nodes · ' + serviceCount + ' instances'"></span>
 			</div>
-			<!-- ═══ Layer 1: Node Summary Strip ═══ -->
-			if len(data.Hosts) > 0 {
-				<div class="mb-6">
-					<div class="font-terminal text-[10px] text-accent-gold-text dark:text-next-teal-text uppercase tracking-[0.15em] mb-2">Nodes</div>
-					<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))">
-						for _, host := range data.Hosts {
-							@nodeCard(host, data.SelfNamespace)
-						}
+			<!-- ═══ Two-solution tree ═══ -->
+			for _, sol := range solutions {
+				<!-- Solution bar -->
+				<div class="border border-accent-gold/40 dark:border-next-teal/40 bg-paper dark:bg-next-dark px-4 py-3 mb-4">
+					<div class="flex flex-wrap items-baseline gap-x-3">
+						<h3 class="font-mac text-sm font-bold text-ink dark:text-next-white">SOLUTION · { sol.Title }</h3>
+						<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle-text">
+							{ sol.Subtitle } · { fmt.Sprintf("%d categories · %d workloads · %d instances", len(sol.Categories), sol.Workloads, sol.Instances) }
+						</span>
 					</div>
 				</div>
-				<!-- Legend -->
-				<div class="flex items-center gap-4 mb-4">
-					<div class="flex items-center gap-1">
-						<span class="inline-block ds-status-positive" aria-hidden="true"></span>
-						<span class="font-terminal text-[10px] text-ink-muted/70 dark:text-next-subtle-text/70">Running</span>
+				for _, cat := range sol.Categories {
+					<div class="mb-5">
+						<div class="flex items-baseline gap-2 mb-2">
+							<span class="font-terminal text-[10px] text-accent-gold-text dark:text-next-teal-text uppercase tracking-[0.15em]">{ cat.Label }</span>
+							<span class="font-terminal text-[10px] text-ink-muted/40 dark:text-next-subtle-text/40">{ obs.CategoryCountLabel(cat) }</span>
+						</div>
+						<div class="grid gap-2" style="grid-template-columns: repeat(auto-fill, minmax(230px, 1fr))">
+							for _, block := range cat.Blocks {
+								@workloadBlock(block, data.SelfNamespace)
+							}
+						</div>
 					</div>
-					<div class="flex items-center gap-1">
-						<span class="font-terminal text-[10px] text-ink-muted/70 dark:text-next-subtle-text/70">Click a node to filter, click a service to inspect metrics</span>
-					</div>
-				</div>
-				<!-- ═══ Layer 2: Service Grid ═══ -->
-				<div class="border border-ink/15 dark:border-next-mid/50">
-					<!-- Category tabs -->
-					for _, cat := range obs.CategoryOrder {
-						@serviceCategoryRow(cat, data.Hosts, data.Services, data.SelfNamespace)
-					}
-				</div>
+				}
 			}
+			<p class="font-terminal text-xs text-ink-muted/60 dark:text-next-subtle-text/60">
+				Every resource is unique — grouped by category into two solutions. Blocks are deployments, pods are facts. Click an instance to inspect metrics.
+			</p>
 		</div>
 		<script>
 			function liveMatrix() {
@@ -120,48 +121,9 @@ templ Live(data obs.LiveData) {
 									if (svc) self.updateBox(el, svc);
 								});
 
-							if (data.hosts) {
-								data.hosts.forEach(function (host) {
-									// Update node card metrics
-									var card = document.querySelector(
-										'[data-node-card="' + host.name + '"]',
-									);
-									if (card) {
-										var met = card.querySelector("[data-node-metric]");
-										if (met) {
-											var parts = [];
-											if (host.cpu > 0)
-												parts.push("CPU " + host.cpu.toFixed(1));
-											if (host.ram > 0)
-												parts.push((host.ram / 1024).toFixed(1) + " GB");
-											met.textContent = parts.join(" · ");
-										}
-										var cpuBar = card.querySelector("[data-cpu-bar]");
-										if (cpuBar && host.cpu > 0) {
-											var cap = host.cpuCores > 0 ? host.cpuCores : 4;
-											cpuBar.style.width =
-												Math.min((host.cpu / cap) * 100, 100) + "%";
-										}
-										var ramBar = card.querySelector("[data-ram-bar]");
-										if (ramBar && host.ram > 0) {
-											var cap = host.ramTotal > 0 ? host.ramTotal : 32768;
-											ramBar.style.width =
-												Math.min((host.ram / cap) * 100, 100) + "%";
-										}
-										var svcEl = card.querySelector("[data-node-svcs]");
-										if (svcEl && host.svcCount > 0) {
-											svcEl.textContent = host.svcCount + " services";
-										}
-									}
-								});
-							}
-
 							if (self.selected) {
 								var svc = idx[self.selected.key];
 								if (svc) {
-									// Scalars (the panel header numbers) update live from the tick.
-									// Sparkline history is NOT in the tick: it is fetched on demand
-									// by startHistoryPoll while the panel is open.
 									self.selected.cpu = svc.cpu;
 									self.selected.ram = svc.ram;
 									self.selected.netKB = svc.netKB || 0;
@@ -179,59 +141,6 @@ templ Live(data obs.LiveData) {
 								self.stale = ago >= 30;
 							}
 						}, 1000);
-					},
-
-					toggleHostFilter(name) {
-						if (this.activeHost === name) {
-							this.activeHost = null;
-						} else {
-							this.activeHost = name;
-						}
-						// Update node card active states
-						document
-							.querySelectorAll("[data-node-card]")
-							.forEach(function (card) {
-								var cardHost = card.getAttribute("data-node-card");
-								if (cardHost === name) {
-									card.classList.toggle("ring-1", true);
-									card.classList.toggle("ring-accent-gold", true);
-									card.classList.toggle("dark:ring-next-teal", true);
-								} else {
-									card.classList.remove(
-										"ring-1",
-										"ring-accent-gold",
-										"dark:ring-next-teal",
-									);
-								}
-							});
-						// Filter service rows by host
-						var self = this;
-						document.querySelectorAll("[data-svc-host]").forEach(function (el) {
-							if (!self.activeHost) {
-								el.style.display = "";
-							} else {
-								el.style.display =
-									el.getAttribute("data-svc-host") === self.activeHost
-										? ""
-										: "none";
-							}
-						});
-						// Show/hide "all" state on node card
-						if (!this.activeHost) {
-							document
-								.querySelectorAll("[data-node-card]")
-								.forEach(function (card) {
-									card.classList.remove(
-										"ring-1",
-										"ring-accent-gold",
-										"dark:ring-next-teal",
-									);
-								});
-						}
-						// Deselect any open service detail
-						this.stopHistoryPoll();
-						this.deselectAll();
-						this.selected = null;
 					},
 
 					selectService(key, name, host, ns, cpu, ram, netKB, diskMB) {
@@ -270,8 +179,6 @@ templ Live(data obs.LiveData) {
 							);
 							svcEl.setAttribute("aria-expanded", "true");
 						}
-						// Sparkline history is fetched on demand (not carried on the tick):
-						// render immediately, then refresh while the panel stays open.
 						this.startHistoryPoll(key);
 					},
 
@@ -279,7 +186,6 @@ templ Live(data obs.LiveData) {
 						this.stopHistoryPoll();
 						var self = this;
 						var fetchHist = function () {
-							// key shape: "namespace/name@host"
 							var at = key.split("@");
 							var host = at.length > 1 ? at[1] : "";
 							var slash = at[0].split("/");
@@ -389,124 +295,31 @@ templ Live(data obs.LiveData) {
 	</section>
 }
 
-templ nodeCard(host obs.Host, selfNS string) {
-	<button
-		class="text-left border border-ink/15 dark:border-next-mid/50 bg-paper dark:bg-next-dark p-3 hover:border-accent-gold/60 dark:hover:border-next-teal/60 focus-visible:outline-2 focus-visible:outline-accent-gold dark:focus-visible:outline-next-teal focus-visible:outline-offset-1 transition-colors cursor-pointer"
-		data-node-card={ host.Name }
-		aria-pressed="false"
-		title={ fmt.Sprintf("Filter services on %s", host.Name) }
-		@click={ fmt.Sprintf("toggleHostFilter('%s')", host.Name) }
-	>
-		<!-- Real node name + role/provider/arch -->
-		<div class="mb-2">
-			<span class="font-mac text-xs font-bold text-ink dark:text-next-white block truncate">{ host.Name }</span>
-			<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle-text/60">
-				{ host.Label }
-				if host.Detail != "" {
-					{ " · " }
-					{ host.Detail }
-				}
+templ workloadBlock(block obs.WorkloadBlock, selfNS string) {
+	<div class="border border-ink/25 dark:border-next-mid/70 bg-paper dark:bg-next-dark p-2">
+		<!-- Block header: workload name + replica count -->
+		<div class="flex items-center justify-between mb-1.5">
+			<span class="font-terminal text-[11px] text-ink dark:text-next-white truncate" title={ block.Namespace + "/" + block.Name }>{ block.Name }</span>
+			<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle-text/60 shrink-0 tabular-nums">
+				{ fmt.Sprintf("×%d", len(block.Instances)) }
 			</span>
 		</div>
-		<!-- Resource bars (capacity-aware) -->
-		<div class="space-y-1 mb-2">
-			<div class="flex items-center gap-2">
-				<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle-text/60 w-8">CPU</span>
-				<div class="flex-1 h-1.5 bg-ink/10 dark:bg-next-mid/40">
-					<div
-						data-cpu-bar
-						class="h-full bg-accent-gold dark:bg-next-teal transition-all duration-500"
-						style={ fmt.Sprintf("width: %.0f%%", cpuBarPct(host)) }
-					></div>
-				</div>
-			</div>
-			<div class="flex items-center gap-2">
-				<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle-text/60 w-8">RAM</span>
-				<div class="flex-1 h-1.5 bg-ink/10 dark:bg-next-mid/40">
-					<div
-						data-ram-bar
-						class="h-full bg-accent-gold/70 dark:bg-next-teal/70 transition-all duration-500"
-						style={ fmt.Sprintf("width: %.0f%%", ramBarPct(host)) }
-					></div>
-				</div>
-			</div>
-		</div>
-		<!-- Metrics line (used / capacity) -->
-		<div data-node-metric class="font-terminal text-[10px] text-accent-gold-text dark:text-next-teal-text tabular-nums">
-			if host.CPU > 0 || host.RAM > 0 {
-				if host.CPU > 0 {
-					{ fmt.Sprintf("CPU %.1f", host.CPU) }
-					if host.CPUCores > 0 {
-						{ fmt.Sprintf(" / %.0f", host.CPUCores) }
-					}
-				}
-				if host.RAM > 0 {
-					if host.CPU > 0 {
-						{ " · " }
-					}
-					{ fmt.Sprintf("%.1f GB", host.RAM / 1024) }
-					if host.RAMTotal > 0 {
-						{ fmt.Sprintf(" / %.0f GB", host.RAMTotal / 1024) }
-					}
-				}
+		<!-- Instances: one chip per host, live-updated by the same SSE keys -->
+		<div class="grid gap-1">
+			for _, svc := range block.Instances {
+				@instanceChip(svc, svc.Name == "platform-website" && !contains(svc.Namespace, "-pr"))
 			}
 		</div>
-		<!-- Service count + uptime -->
-		<div class="flex items-center justify-between mt-1.5">
-			<span data-node-svcs class="font-terminal text-[10px] text-ink-muted/50 dark:text-next-subtle-text/50">
-				if host.SvcCount > 0 {
-					{ fmt.Sprintf("%d services", host.SvcCount) }
-				}
-			</span>
-			<span class="font-terminal text-[10px] text-ink-muted/50 dark:text-next-subtle-text/50">
-				if host.Uptime != "" {
-					{ host.Uptime }
-				}
-			</span>
-		</div>
-	</button>
-}
-
-templ serviceCategoryRow(cat string, hosts []obs.Host, services []obs.Service, selfNS string) {
-	{{ var catSvcs []obs.Service }}
-	for _, svc := range services {
-		if obs.CategoryForNamespace(svc.Namespace) == cat {
-			{{ catSvcs = append(catSvcs, svc) }}
+		<!-- Detail panels -->
+		for _, svc := range block.Instances {
+			@detailPanel(svc)
 		}
-	}
-	if len(catSvcs) > 0 {
-		<div class="border-t border-ink/15 dark:border-next-mid/50 first:border-t-0">
-			<!-- Category header -->
-			<div class="px-3 py-2 bg-paper/50 dark:bg-next-dark/50 border-b border-ink/10 dark:border-next-mid/30">
-				<span class="font-terminal text-[10px] text-accent-gold-text dark:text-next-teal-text uppercase tracking-[0.15em]">
-					{ obs.CategoryLabel(cat) }
-				</span>
-				<span class="font-terminal text-[10px] text-ink-muted/40 dark:text-next-subtle-text/40 ml-2">
-					{ fmt.Sprintf("%d", len(catSvcs)) }
-				</span>
-			</div>
-			<!-- Service boxes in a flat grid -->
-			<div class="p-3">
-				<div class="grid gap-1.5" style="grid-template-columns: repeat(auto-fill, minmax(140px, 1fr))">
-					for _, svc := range catSvcs {
-						@serviceBox(svc, svc.Name == "platform-website" && !contains(svc.Namespace, "-pr"))
-					}
-				</div>
-				<!-- Detail panels -->
-				for _, svc := range catSvcs {
-					@detailPanel(svc)
-				}
-			</div>
-		</div>
-	}
+	</div>
 }
 
-templ serviceBox(svc obs.Service, highlight bool) {
+templ instanceChip(svc obs.Service, highlight bool) {
 	{{ key := svc.Namespace + "/" + svc.Name + "@" + svc.Host }}
-	<div
-		data-svc-host={ svc.Host }
-		class="inline-block"
-	>
+	<div data-svc-host={ svc.Host } class="block">
 		<button
 			if highlight {
 				class="w-full text-left px-1.5 py-1 border border-accent-gold/40 dark:border-next-teal/40 bg-accent-gold/10 dark:bg-next-teal/10 hover:border-accent-gold/60 dark:hover:border-next-teal/60 focus-visible:outline-2 focus-visible:outline-accent-gold dark:focus-visible:outline-next-teal focus-visible:outline-offset-1 transition-colors cursor-pointer"
@@ -544,7 +357,6 @@ templ serviceBox(svc obs.Service, highlight bool) {
 					}
 				</span>
 			</div>
-			<!-- Host tag below metrics -->
 			<div class="font-terminal text-[9px] text-ink-muted/30 dark:text-next-subtle-text/30 mt-0.5 truncate">{ shortHost(svc.Host) }</div>
 		</button>
 	</div>

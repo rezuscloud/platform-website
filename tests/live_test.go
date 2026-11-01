@@ -36,23 +36,30 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.Contains(t, html, "/api/live/stream")
 	})
 
-	// Matrix structure tests
-	t.Run("has host columns with headers", func(t *testing.T) {
+	// Two-solution structure tests
+	t.Run("has two solution bars", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		// Host headers (from mock data)
-		assert.Contains(t, html, "Cloud")
-		assert.Contains(t, html, "Edge")
+		assert.Contains(t, html, "SOLUTION · INFRASTRUCTURE")
+		assert.Contains(t, html, "SOLUTION · SOFTWARE")
+		assert.Contains(t, html, "7 workloads")
+		assert.Contains(t, html, "3 workloads")
 	})
 
-	t.Run("has 5 category groups", func(t *testing.T) {
+	t.Run("categories grouped under solutions", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "Development")
-		assert.Contains(t, html, "Deployment")
-		assert.Contains(t, html, "Runtime")
+		// infrastructure categories present in the sample data
+		assert.Contains(t, html, "Network")
 		assert.Contains(t, html, "Observability")
-		assert.Contains(t, html, "Data")
+		assert.Contains(t, html, "Secrets")
+		assert.Contains(t, html, "Delivery")
+		// software categories present in the sample data
+		assert.Contains(t, html, "Code")
+		assert.Contains(t, html, "Web")
+		// legacy flat categories must be gone
+		assert.NotContains(t, html, ">Development<")
+		assert.NotContains(t, html, ">Runtime<")
 	})
 
 	t.Run("service rows have clickable cells", func(t *testing.T) {
