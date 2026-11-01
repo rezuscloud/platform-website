@@ -143,42 +143,42 @@ templ Live(data obs.LiveData) {
 								});
 
 							if (data.hosts) {
-						data.hosts.forEach(function (host) {
-							// Update node card metrics
-							var card = document.querySelector(
-								'[data-node-card="' + host.name + '"]',
-							);
-							if (card) {
-								var met = card.querySelector("[data-node-metric]");
-								if (met) {
-									var parts = [];
-									if (host.cpu > 0)
-										parts.push("CPU " + host.cpu.toFixed(1));
-									if (host.ram > 0)
-										parts.push((host.ram / 1024).toFixed(1) + " GB");
-									met.textContent = parts.join(" · ");
-								}
-								var cpuBar = card.querySelector("[data-cpu-bar]");
-								if (cpuBar && host.cpu > 0) {
-									var cap = host.cpuCores > 0 ? host.cpuCores : 4;
-									cpuBar.style.width =
-										Math.min((host.cpu / cap) * 100, 100) + "%";
-								}
-								var ramBar = card.querySelector("[data-ram-bar]");
-								if (ramBar && host.ram > 0) {
-									var cap = host.ramTotal > 0 ? host.ramTotal : 32768;
-									ramBar.style.width =
-										Math.min((host.ram / cap) * 100, 100) + "%";
-								}
-								var svcEl = card.querySelector("[data-node-svcs]");
-								if (svcEl && host.svcCount > 0) {
-									svcEl.textContent = host.svcCount + " services";
-								}
+								data.hosts.forEach(function (host) {
+									// Update node card metrics
+									var card = document.querySelector(
+										'[data-node-card="' + host.name + '"]',
+									);
+									if (card) {
+										var met = card.querySelector("[data-node-metric]");
+										if (met) {
+											var parts = [];
+											if (host.cpu > 0)
+												parts.push("CPU " + host.cpu.toFixed(1));
+											if (host.ram > 0)
+												parts.push((host.ram / 1024).toFixed(1) + " GB");
+											met.textContent = parts.join(" · ");
+										}
+										var cpuBar = card.querySelector("[data-cpu-bar]");
+										if (cpuBar && host.cpu > 0) {
+											var cap = host.cpuCores > 0 ? host.cpuCores : 4;
+											cpuBar.style.width =
+												Math.min((host.cpu / cap) * 100, 100) + "%";
+										}
+										var ramBar = card.querySelector("[data-ram-bar]");
+										if (ramBar && host.ram > 0) {
+											var cap = host.ramTotal > 0 ? host.ramTotal : 32768;
+											ramBar.style.width =
+												Math.min((host.ram / cap) * 100, 100) + "%";
+										}
+										var svcEl = card.querySelector("[data-node-svcs]");
+										if (svcEl && host.svcCount > 0) {
+											svcEl.textContent = host.svcCount + " services";
+										}
+									}
+								});
 							}
-						});
-					}
 
-					if (self.selected) {
+							if (self.selected) {
 								var svc = idx[self.selected.key];
 								if (svc) {
 									self.selected.cpu = svc.cpu;
@@ -201,44 +201,44 @@ templ Live(data obs.LiveData) {
 					},
 
 					toggleHostFilter(name) {
-					if (this.activeHost === name) {
-						this.activeHost = null;
-					} else {
-						this.activeHost = name;
-				}
-					document
-						.querySelectorAll("[data-node-card]")
-						.forEach(function (card) {
-							var cardHost = card.getAttribute("data-node-card");
-							if (cardHost === name) {
-								card.classList.toggle("ring-1", true);
-								card.classList.toggle("ring-accent-gold", true);
-								card.classList.toggle("dark:ring-next-teal", true);
+						if (this.activeHost === name) {
+							this.activeHost = null;
+						} else {
+							this.activeHost = name;
+						}
+						document
+							.querySelectorAll("[data-node-card]")
+							.forEach(function (card) {
+								var cardHost = card.getAttribute("data-node-card");
+								if (cardHost === name) {
+									card.classList.toggle("ring-1", true);
+									card.classList.toggle("ring-accent-gold", true);
+									card.classList.toggle("dark:ring-next-teal", true);
+								} else {
+									card.classList.remove(
+										"ring-1",
+										"ring-accent-gold",
+										"dark:ring-next-teal",
+									);
+								}
+							});
+						var self = this;
+						document.querySelectorAll("[data-svc-host]").forEach(function (el) {
+							if (!self.activeHost) {
+								el.style.display = "";
 							} else {
-								card.classList.remove(
-									"ring-1",
-									"ring-accent-gold",
-									"dark:ring-next-teal",
-								);
+								el.style.display =
+									el.getAttribute("data-svc-host") === self.activeHost
+										? ""
+										: "none";
 							}
 						});
-					var self = this;
-					document.querySelectorAll("[data-svc-host]").forEach(function (el) {
-						if (!self.activeHost) {
-							el.style.display = "";
-						} else {
-							el.style.display =
-								el.getAttribute("data-svc-host") === self.activeHost
-									? ""
-									: "none";
-						}
-					});
-					this.stopHistoryPoll();
-					this.deselectAll();
-					this.selected = null;
-			},
+						this.stopHistoryPoll();
+						this.deselectAll();
+						this.selected = null;
+					},
 
-				selectService(key, name, host, ns, cpu, ram, netKB, diskMB) {
+					selectService(key, name, host, ns, cpu, ram, netKB, diskMB) {
 						if (this.selected && this.selected.key === key) {
 							this.deselectAll();
 							this.selected = null;
@@ -435,16 +435,16 @@ templ nodeCard(host obs.Host, selfNS string) {
 				if host.CPU > 0 {
 					{ fmt.Sprintf("CPU %.1f", host.CPU) }
 					if host.CPUCores > 0 {
-					{ fmt.Sprintf(" / %.0f", host.CPUCores) }
+						{ fmt.Sprintf(" / %.0f", host.CPUCores) }
 					}
 				}
 				if host.RAM > 0 {
 					if host.CPU > 0 {
-					{ " · " }
+						{ " · " }
 					}
 					{ fmt.Sprintf("%.1f GB", host.RAM/1024) }
 					if host.RAMTotal > 0 {
-					{ fmt.Sprintf(" / %.0f GB", host.RAMTotal/1024) }
+						{ fmt.Sprintf(" / %.0f GB", host.RAMTotal/1024) }
 					}
 				}
 			}
