@@ -47,6 +47,27 @@ templ Live(data obs.LiveData) {
 				<span class="mx-2">·</span>
 				<span x-text="hostCount + ' nodes · ' + serviceCount + ' instances'"></span>
 			</div>
+			<!-- ═══ Layer 1: Node Summary Strip ═══ -->
+			if len(data.Hosts) > 0 {
+				<div class="mb-8">
+					<div class="font-terminal text-[10px] text-accent-gold-text dark:text-next-teal-text uppercase tracking-[0.15em] mb-2">Nodes</div>
+					<div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))">
+						for _, host := range data.Hosts {
+							@nodeCard(host, data.SelfNamespace)
+						}
+					</div>
+					<!-- Legend -->
+					<div class="flex items-center gap-4 mb-0">
+						<div class="flex items-center gap-1">
+							<span class="inline-block ds-status-positive" aria-hidden="true"></span>
+							<span class="font-terminal text-[10px] text-ink-muted/70 dark:text-next-subtle-text/70">Running</span>
+						</div>
+						<div class="flex items-center gap-1">
+							<span class="font-terminal text-[10px] text-ink-muted/70 dark:text-next-subtle-text/70">Click a node to filter instances by machine, click an instance to inspect metrics</span>
+						</div>
+					</div>
+				</div>
+			}
 			<!-- ═══ Two-solution tree ═══ -->
 			for _, sol := range solutions {
 				<!-- Solution bar -->
@@ -121,7 +142,43 @@ templ Live(data obs.LiveData) {
 									if (svc) self.updateBox(el, svc);
 								});
 
-							if (self.selected) {
+							if (data.hosts) {
+						data.hosts.forEach(function (host) {
+							// Update node card metrics
+							var card = document.querySelector(
+								'[data-node-card="' + host.name + '"]',
+							);
+							if (card) {
+								var met = card.querySelector("[data-node-metric]");
+								if (met) {
+									var parts = [];
+									if (host.cpu > 0)
+										parts.push("CPU " + host.cpu.toFixed(1));
+									if (host.ram > 0)
+										parts.push((host.ram / 1024).toFixed(1) + " GB");
+									met.textContent = parts.join(" · ");
+								}
+								var cpuBar = card.querySelector("[data-cpu-bar]");
+								if (cpuBar && host.cpu > 0) {
+									var cap = host.cpuCores > 0 ? host.cpuCores : 4;
+									cpuBar.style.width =
+										Math.min((host.cpu / cap) * 100, 100) + "%";
+								}
+								var ramBar = card.querySelector("[data-ram-bar]");
+								if (ramBar && host.ram > 0) {
+									var cap = host.ramTotal > 0 ? host.ramTotal : 32768;
+									ramBar.style.width =
+										Math.min((host.ram / cap) * 100, 100) + "%";
+								}
+								var svcEl = card.querySelector("[data-node-svcs]");
+								if (svcEl && host.svcCount > 0) {
+									svcEl.textContent = host.svcCount + " services";
+								}
+							}
+						});
+					}
+
+					if (self.selected) {
 								var svc = idx[self.selected.key];
 								if (svc) {
 									self.selected.cpu = svc.cpu;
@@ -143,7 +200,45 @@ templ Live(data obs.LiveData) {
 						}, 1000);
 					},
 
-					selectService(key, name, host, ns, cpu, ram, netKB, diskMB) {
+					toggleHostFilter(name) {
+					if (this.activeHost === name) {
+						this.activeHost = null;
+					} else {
+						this.activeHost = name;
+				}
+					document
+						.querySelectorAll("[data-node-card]")
+						.forEach(function (card) {
+							var cardHost = card.getAttribute("data-node-card");
+							if (cardHost === name) {
+								card.classList.toggle("ring-1", true);
+								card.classList.toggle("ring-accent-gold", true);
+								card.classList.toggle("dark:ring-next-teal", true);
+							} else {
+								card.classList.remove(
+									"ring-1",
+									"ring-accent-gold",
+									"dark:ring-next-teal",
+								);
+							}
+						});
+					var self = this;
+					document.querySelectorAll("[data-svc-host]").forEach(function (el) {
+						if (!self.activeHost) {
+							el.style.display = "";
+						} else {
+							el.style.display =
+								el.getAttribute("data-svc-host") === self.activeHost
+									? ""
+									: "none";
+						}
+					});
+					this.stopHistoryPoll();
+					this.deselectAll();
+					this.selected = null;
+			},
+
+				selectService(key, name, host, ns, cpu, ram, netKB, diskMB) {
 						if (this.selected && this.selected.key === key) {
 							this.deselectAll();
 							this.selected = null;
@@ -293,6 +388,80 @@ templ Live(data obs.LiveData) {
 			}
 		</script>
 	</section>
+}
+
+templ nodeCard(host obs.Host, selfNS string) {
+	<button
+		class="text-left border border-ink/15 dark:border-next-mid/50 bg-paper dark:bg-next-dark p-3 hover:border-accent-gold/60 dark:hover:border-next-teal/60 focus-visible:outline-2 focus-visible:outline-accent-gold dark:focus-visible:outline-next-teal focus-visible:outline-offset-1 transition-colors cursor-pointer"
+		data-node-card={ host.Name }
+		aria-pressed="false"
+		title={ fmt.Sprintf("Filter instances on %s", host.Name) }
+		@click={ fmt.Sprintf("toggleHostFilter('%s')", host.Name) }
+	>
+		<div class="mb-2">
+			<span class="font-mac text-xs font-bold text-ink dark:text-next-white block truncate">{ host.Name }</span>
+			<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle-text/60">
+				{ host.Label }
+				if host.Detail != "" {
+					{ " · " }
+					{ host.Detail }
+				}
+			</span>
+		</div>
+		<div class="space-y-1 mb-2">
+			<div class="flex items-center gap-2">
+				<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle-text/60 w-8">CPU</span>
+				<div class="flex-1 h-1.5 bg-ink/10 dark:bg-next-mid/40">
+					<div
+						data-cpu-bar
+						class="h-full bg-accent-gold dark:bg-next-teal transition-all duration-500"
+						style={ fmt.Sprintf("width: %.0f%%", cpuBarPct(host)) }
+					></div>
+				</div>
+			</div>
+			<div class="flex items-center gap-2">
+				<span class="font-terminal text-[10px] text-ink-muted/60 dark:text-next-subtle-text/60 w-8">RAM</span>
+				<div class="flex-1 h-1.5 bg-ink/10 dark:bg-next-mid/40">
+					<div
+						data-ram-bar
+						class="h-full bg-accent-gold/70 dark:bg-next-teal/70 transition-all duration-500"
+						style={ fmt.Sprintf("width: %.0f%%", ramBarPct(host)) }
+					></div>
+				</div>
+			</div>
+		</div>
+		<div data-node-metric class="font-terminal text-[10px] text-accent-gold-text dark:text-next-teal-text tabular-nums">
+			if host.CPU > 0 || host.RAM > 0 {
+				if host.CPU > 0 {
+					{ fmt.Sprintf("CPU %.1f", host.CPU) }
+					if host.CPUCores > 0 {
+					{ fmt.Sprintf(" / %.0f", host.CPUCores) }
+					}
+				}
+				if host.RAM > 0 {
+					if host.CPU > 0 {
+					{ " · " }
+					}
+					{ fmt.Sprintf("%.1f GB", host.RAM/1024) }
+					if host.RAMTotal > 0 {
+					{ fmt.Sprintf(" / %.0f GB", host.RAMTotal/1024) }
+					}
+				}
+			}
+		</div>
+		<div class="flex items-center justify-between mt-1.5">
+			<span data-node-svcs class="font-terminal text-[10px] text-ink-muted/50 dark:text-next-subtle-text/50">
+				if host.SvcCount > 0 {
+					{ fmt.Sprintf("%d services", host.SvcCount) }
+				}
+			</span>
+			<span class="font-terminal text-[10px] text-ink-muted/50 dark:text-next-subtle-text/50">
+				if host.Uptime != "" {
+					{ host.Uptime }
+				}
+			</span>
+		</div>
+	</button>
 }
 
 templ workloadBlock(block obs.WorkloadBlock, selfNS string) {

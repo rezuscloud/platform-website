@@ -37,6 +37,14 @@ func TestLiveSectionHTML(t *testing.T) {
 	})
 
 	// Two-solution structure tests
+	t.Run("has node cards with host labels", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "OCI Cloud")
+		assert.Contains(t, html, "Edge")
+		assert.Contains(t, html, "data-node-card")
+	})
+
 	t.Run("has two solution bars", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
