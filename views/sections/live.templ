@@ -552,7 +552,7 @@ templ serviceBox(svc obs.Service, highlight bool) {
 
 templ detailPanel(svc obs.Service) {
 	{{ key := svc.Namespace + "/" + svc.Name + "@" + svc.Host }}
-	<div data-detail-key={ key } style="display:none" aria-hidden="true" class="mt-1">
+	<div data-detail-key={ key } style="display: none" aria-hidden="true" class="mt-1">
 		<div class="border border-accent-gold/30 dark:border-next-teal/30 bg-accent-gold/5 dark:bg-next-teal/5 px-4 py-3">
 			<div class="flex items-center gap-2 mb-2">
 				<span class="font-mac text-xs font-bold text-ink dark:text-next-white" x-text="selected ? selected.name : ''"></span>

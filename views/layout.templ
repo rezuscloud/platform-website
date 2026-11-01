@@ -117,7 +117,7 @@ templ Layout(title string, activeNav string, canonicalURL ...string) {
 		</head>
 		<body class="bg-paper dark:bg-next-black text-ink dark:text-next-white font-mac-body mac-cursor" x-data="{ dotShift: '0px 0px' }" x-effect="$watch('$store.theme.dark', () => { dotShift = '0px 0px' })" @mousemove.throttle.150ms="dotShift = ((window.innerWidth / 2 - $event.clientX) / window.innerWidth * 6) + 'px ' + ((window.innerHeight / 2 - $event.clientY) / window.innerHeight * 6) + 'px'">
 			<!-- CRT flicker overlay for theme toggle -->
-			<div id="crt-overlay" class="fixed inset-0 z-[99999] pointer-events-none bg-white" style="opacity:0;transition:opacity 0.06s step-end;" aria-hidden="true"></div>
+			<div id="crt-overlay" class="fixed inset-0 z-[99999] pointer-events-none bg-white" style="opacity: 0; transition: opacity 0.06s step-end" aria-hidden="true"></div>
 			<!-- NeXT mode CRT scanline overlay -->
 			<div class="fixed inset-0 pointer-events-none z-[9999] hidden dark:block next-scanlines" aria-hidden="true"></div>
 			<a href="#hero" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:px-3 focus:py-2 focus:bg-accent-gold focus:text-ink focus:font-mac focus:text-sm focus:border focus:border-ink">Skip to content</a>
@@ -215,10 +215,10 @@ templ Nav(activeNav string) {
 			<div class="flex items-center justify-between h-14">
 				<div class="flex items-center gap-3">
 					<div class="w-8 h-8 bg-accent-gold dark:bg-next-teal-hi flex items-center justify-center border border-ink dark:next-raised">
-						<svg class="w-5 h-5 text-ink dark:text-next-white" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
-							<rect x="4" y="6" width="24" height="14" rx="1"></rect>
-							<rect x="12" y="20" width="8" height="2"></rect>
-							<rect x="8" y="22" width="16" height="2" rx="0.5"></rect>
+						<svg class="w-5 h-5 text-ink dark:text-next-white" viewBox="0 0 48 48" fill="currentColor" aria-hidden="true">
+							<path d="M13.5 42 L20.5 41.2 M5.5 45.6 L10.5 45" fill="none" stroke="currentColor" stroke-width="2.5"></path>
+							<path d="M9 30 L16 29 L14 37 L7 38 Z M18.5 29 L27 28 L25 35.5 L16.5 36.5 Z M29.5 27.5 L43 26 L41 34 L27.5 35.5 Z"></path>
+							<path d="M10 26 A7 7 0 0 1 15.5 13.5 A8.5 8.5 0 0 1 30.5 12.5 A7 7 0 0 1 37 24.5 L37.5 26 Z"></path>
 						</svg>
 					</div>
 					<span class="text-lg font-bold font-mac text-ink dark:text-next-white tracking-wide">Rezus<span class="text-accent-gold-text dark:text-next-teal-text">Cloud</span></span>

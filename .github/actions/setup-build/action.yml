@@ -34,7 +34,9 @@ runs:
 
     - name: Install templ
       shell: bash
-      run: go install github.com/a-h/templ/cmd/templ@latest
+      run: go install "github.com/a-h/templ/cmd/templ@$(awk '/a-h\/templ v/{print $2}' go.mod)"
+      # Pinned to the module's templ runtime: @latest emits code the pinned
+      # runtime cannot compile (NewAttributeExpression). Master broke on this.
 
     - name: Install npm dependencies
       shell: bash
