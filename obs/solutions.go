@@ -104,7 +104,7 @@ var categoryLabels = map[string]string{
 }
 
 var solutionMeta = map[string][2]string{
-	"infrastructure": {"INFRASTRUCTURE", "the cloud itself"},
+	"infrastructure": {"INFRASTRUCTURE", "standardized cluster core"},
 	"software":       {"SOFTWARE", "everything running on top"},
 }
 
