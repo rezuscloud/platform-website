@@ -50,19 +50,19 @@ func TestLiveSectionHTML(t *testing.T) {
 		require.NoError(t, err)
 		assert.Contains(t, html, "SOLUTION · INFRASTRUCTURE")
 		assert.Contains(t, html, "SOLUTION · SOFTWARE")
-		assert.Contains(t, html, "7 workloads")
 		assert.Contains(t, html, "3 workloads")
+		assert.Contains(t, html, "7 workloads")
 	})
 
 	t.Run("categories grouped under solutions", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		// infrastructure categories present in the sample data
-		assert.Contains(t, html, "Network")
-		assert.Contains(t, html, "Observability")
+		// infrastructure categories: standardized cluster core
+		assert.Contains(t, html, "Network · CNI")
 		assert.Contains(t, html, "Secrets")
+		// software categories: platform services + purposes
+		assert.Contains(t, html, "Observability")
 		assert.Contains(t, html, "Delivery")
-		// software categories present in the sample data
 		assert.Contains(t, html, "Code")
 		assert.Contains(t, html, "Web")
 		// legacy flat categories must be gone

@@ -46,14 +46,3 @@ func ramBarPct(host obs.Host) float64 {
 	return p
 }
 
-// instanceCPUPct returns the per-instance CPU bar width: cores relative to a
-// 1-core visual cap, clamped to 100%.
-func instanceCPUPct(svc obs.Service) float64 {
-	if svc.CPU <= 0 {
-		return 0
-	}
-	if svc.CPU > 1 {
-		return 100
-	}
-	return svc.CPU * 100
-}

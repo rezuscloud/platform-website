@@ -32,32 +32,32 @@ type Solution struct {
 // namespaceClass maps a namespace to its (solution, category) pair.
 // Namespaces absent from the map fall back to infrastructure/delivery.
 var namespaceClass = map[string][2]string{
-	// infrastructure — the cloud itself
+	// infrastructure — standardized cluster core (CNI, CSI, DNS, secrets)
 	"kube-system":         {"infrastructure", "network"},
 	"gateway-system":      {"infrastructure", "network"},
 	"juicefs-csi":         {"infrastructure", "storage"},
 	"juicefs-system":      {"infrastructure", "storage"},
 	"juicefs-operator":    {"infrastructure", "storage"},
-	"cnpg-system":         {"infrastructure", "storage"},
 	"tikv-system":         {"infrastructure", "storage"}, // legacy juicefs metadata ns
 	"local-path-storage":  {"infrastructure", "storage"},
+	"snapshot-controller": {"infrastructure", "storage"}, // kubernetes-csi external-snapshotter
+	"cilium-secrets":      {"infrastructure", "secrets"},
 	"cert-manager":        {"infrastructure", "secrets"},
 	"external-secrets":    {"infrastructure", "secrets"},
-	"cilium-secrets":      {"infrastructure", "secrets"},
-	"external-dns":        {"infrastructure", "dns"},
-	"signoz":              {"infrastructure", "observability"},
-	"monitoring":          {"infrastructure", "observability"},
-	"obi":                 {"infrastructure", "observability"},
-	"telegraf":            {"infrastructure", "observability"},
-	"velero":              {"infrastructure", "backup"},
-	"snapshot-controller": {"infrastructure", "backup"},
-	"flux-system":         {"infrastructure", "delivery"},
-	"vela-system":         {"infrastructure", "delivery"},
-	"dapr-system":         {"infrastructure", "delivery"},
-	"keda":                {"infrastructure", "delivery"},
-	"reloader":            {"infrastructure", "delivery"},
 
-	// software — running on top
+	// software — everything running on top of the cluster
+	"external-dns":     {"software", "dns"},
+	"signoz":           {"software", "observability"},
+	"monitoring":       {"software", "observability"},
+	"obi":              {"software", "observability"},
+	"telegraf":         {"software", "observability"},
+	"velero":           {"software", "backup"},
+	"flux-system":      {"software", "delivery"},
+	"vela-system":      {"software", "delivery"},
+	"dapr-system":      {"software", "delivery"},
+	"keda":             {"software", "delivery"},
+	"reloader":         {"software", "delivery"},
+	"cnpg-system":      {"software", "data"},
 	"authentik":        {"software", "identity"},
 	"forgejo":          {"software", "code"},
 	"forgejo-runner":   {"software", "code"},
@@ -78,14 +78,13 @@ var namespaceClass = map[string][2]string{
 
 // nameClass overrides the namespace mapping for specific workload names.
 var nameClass = map[string][2]string{
-	"metrics-server":                           {"infrastructure", "observability"},
-	"cilium-operator":                          {"infrastructure", "network"},
-	"coredns-managed":                          {"infrastructure", "network"},
-	"hubble-relay":                             {"infrastructure", "network"},
-	"cloudnative-pg":                           {"infrastructure", "storage"},
-	"plugin-barman-cloud":                      {"infrastructure", "storage"},
+	"coredns-managed": {"infrastructure", "dns"}, // cluster DNS: standardized core
+	"cilium-operator": {"infrastructure", "network"},
+	"hubble-relay":    {"infrastructure", "network"},
+	// metrics stack serves the HPA/metrics APIs but is a platform service
+	"metrics-server": {"software", "observability"},
+	"kube-prometheus-stack-kube-state-metrics": {"software", "observability"},
 	"local-path-provisioner":                   {"infrastructure", "storage"},
-	"kube-prometheus-stack-kube-state-metrics": {"infrastructure", "observability"},
 }
 
 // solutionOrder fixes the rendering order of solutions.
@@ -93,20 +92,20 @@ var solutionOrder = []string{"infrastructure", "software"}
 
 // categoryOrder fixes the rendering order of categories within a solution.
 var categoryOrder = map[string][]string{
-	"infrastructure": {"network", "storage", "secrets", "dns", "observability", "backup", "delivery"},
-	"software":       {"identity", "code", "files", "search", "ai", "automation", "web"},
+	"infrastructure": {"network", "storage", "dns", "secrets"},
+	"software":       {"identity", "code", "files", "search", "ai", "automation", "web", "data", "observability", "backup", "delivery"},
 }
 
 var categoryLabels = map[string]string{
-	"network": "Network", "storage": "Storage", "secrets": "Secrets", "dns": "DNS",
-	"observability": "Observability", "backup": "Backup", "delivery": "Delivery",
+	"network": "Network · CNI", "storage": "Storage · CSI", "dns": "DNS", "secrets": "Secrets",
+	"observability": "Observability", "backup": "Backup", "delivery": "Delivery", "data": "Data",
 	"identity": "Identity", "code": "Code", "files": "Files", "search": "Search",
 	"ai": "AI", "automation": "Automation", "web": "Web",
 }
 
 var solutionMeta = map[string][2]string{
 	"infrastructure": {"INFRASTRUCTURE", "the cloud itself"},
-	"software":       {"SOFTWARE", "running on top"},
+	"software":       {"SOFTWARE", "everything running on top"},
 }
 
 // Classify returns the solution and category for a workload. The name wins
@@ -118,7 +117,7 @@ func Classify(namespace, name string) (solution, category string) {
 	if c, ok := namespaceClass[namespace]; ok {
 		return c[0], c[1]
 	}
-	return "infrastructure", "delivery"
+	return "software", "delivery"
 }
 
 // BuildSolutions groups the live services into the two-solution tree: every

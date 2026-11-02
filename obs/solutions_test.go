@@ -8,10 +8,14 @@ func TestClassify(t *testing.T) {
 	}{
 		{"authentik", "authentik-server", "software", "identity"},
 		{"kube-system", "cilium-operator", "infrastructure", "network"},
-		{"kube-system", "metrics-server", "infrastructure", "observability"}, // name wins over namespace
+		{"kube-system", "coredns-managed", "infrastructure", "dns"},      // name wins over namespace
+		{"kube-system", "metrics-server", "software", "observability"},  // platform service, not core
 		{"forgejo", "forgejo", "software", "code"},
-		{"unknown-namespace", "whatever", "infrastructure", "delivery"}, // default
-		{"velero", "velero", "infrastructure", "backup"},
+		{"unknown-namespace", "whatever", "software", "delivery"}, // default
+		{"velero", "velero", "software", "backup"},
+		{"flux-system", "helm-controller", "software", "delivery"},
+		{"snapshot-controller", "snapshot-controller", "infrastructure", "storage"}, // kubernetes-csi
+		{"cnpg-system", "cloudnative-pg", "software", "data"},
 		{"platform-website", "platform-website", "software", "web"},
 	}
 	for _, c := range cases {
@@ -42,7 +46,7 @@ func TestBuildSolutionsGroupsPerHostInstances(t *testing.T) {
 		t.Fatalf("order = %s,%s want infrastructure,software", infra.ID, software.ID)
 	}
 
-	// infrastructure: network (1 workload/1 instance) before storage (1/3)
+	// infrastructure: network (1 workload/1 instance) then storage (1/3)
 	if len(infra.Categories) < 2 || infra.Categories[0].ID != "network" || infra.Categories[1].ID != "storage" {
 		t.Fatalf("infra categories = %+v", infra.Categories)
 	}

@@ -384,11 +384,6 @@ templ Live(data obs.LiveData) {
 					updateBox(el, svc) {
 						var dot = el.querySelector("[data-dot]");
 						if (dot) dot.className = this.dotClass(svc.status);
-						var bar = el.querySelector("[data-cpu-bar]");
-						if (bar) {
-							bar.style.width =
-								Math.min(svc.cpu > 0 ? svc.cpu : 0, 1) * 100 + "%";
-						}
 						var met = el.querySelector("[data-metric]");
 						if (met) {
 							var parts = [];
@@ -556,14 +551,6 @@ templ instanceChip(svc obs.Service, highlight bool) {
 				</span>
 			</div>
 			<div class="font-terminal text-[9px] text-ink-muted/30 dark:text-next-subtle-text/30 mt-0.5 truncate">{ shortHost(svc.Host) }</div>
-			<!-- Resource usage bar: CPU cores relative to a 1-core visual cap -->
-			<div class="mt-1 h-1 bg-ink/10 dark:bg-next-mid/40">
-				<div
-					data-cpu-bar
-					class="h-full bg-accent-gold dark:bg-next-teal transition-all duration-500"
-					style={ fmt.Sprintf("width: %.0f%%", instanceCPUPct(svc)) }
-				></div>
-			</div>
 		</button>
 	</div>
 }
