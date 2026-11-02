@@ -8,8 +8,8 @@ func TestClassify(t *testing.T) {
 	}{
 		{"authentik", "authentik-server", "software", "identity"},
 		{"kube-system", "cilium-operator", "infrastructure", "network"},
-		{"kube-system", "coredns-managed", "infrastructure", "dns"},      // name wins over namespace
-		{"kube-system", "metrics-server", "software", "observability"},  // platform service, not core
+		{"kube-system", "coredns-managed", "infrastructure", "dns"},    // name wins over namespace
+		{"kube-system", "metrics-server", "software", "observability"}, // platform service, not core
 		{"forgejo", "forgejo", "software", "code"},
 		{"unknown-namespace", "whatever", "software", "delivery"}, // default
 		{"velero", "velero", "software", "backup"},

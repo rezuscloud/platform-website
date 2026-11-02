@@ -45,4 +45,3 @@ func ramBarPct(host obs.Host) float64 {
 	}
 	return p
 }
-
