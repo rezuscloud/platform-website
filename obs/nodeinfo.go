@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -46,6 +47,12 @@ type k8sTopology struct {
 	baseURL string
 	token   string
 	client  *http.Client
+	// refreshing serialises background refreshes. Without it, every
+	// concurrent Topology() caller spawned its own refresh goroutine while the
+	// cache was expired, producing bursts of ~12 MB pod+replicaset LIST calls
+	// that the kube-apiserver throttles (APF 429); failed refreshes then cached
+	// an empty topology for the whole TTL and the Live section rendered blank.
+	refreshing atomic.Bool
 }
 
 // NewK8sTopology creates a topology provider that queries the in-cluster
@@ -89,13 +96,18 @@ func NewK8sTopology() *k8sTopology {
 	return kt
 }
 
-// Topology returns the cached cluster topology, refreshing async when stale.
+// Topology returns the cached topology, refreshing in the background when
+// stale. Exactly one refresh runs at a time; while it is in flight the cached
+// (possibly stale) topology is served, so bursts of callers never fan out into
+// duplicate API-server LOADs.
 func (kt *k8sTopology) Topology() ClusterTopology {
 	kt.mu.RLock()
-	defer kt.mu.RUnlock()
+	stale := time.Now().After(kt.expires)
+	kt.mu.RUnlock()
 
-	if time.Now().After(kt.expires) {
+	if stale && kt.refreshing.CompareAndSwap(false, true) {
 		go func() {
+			defer kt.refreshing.Store(false)
 			ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 			defer cancel()
 			if err := kt.refresh(ctx); err != nil {
@@ -103,6 +115,8 @@ func (kt *k8sTopology) Topology() ClusterTopology {
 			}
 		}()
 	}
+	kt.mu.RLock()
+	defer kt.mu.RUnlock()
 	return kt.topo
 }
 
@@ -124,14 +138,23 @@ func (kt *k8sTopology) refresh(ctx context.Context) error {
 	}
 	pods, err := kt.fetchPodTopology(ctx)
 	if err != nil {
-		// Topology without pod ownership still degrades gracefully.
+		// Topology without pod ownership still degrades gracefully, but a
+		// failure (api-server 429 / deadline) must NOT cache an empty pod map:
+		// that blanks the Live section for the whole TTL. Keep the previous pod
+		// map and retry soon instead.
 		log.Printf("topology: fetch pod ownership failed: %v", err)
-		pods = map[string]PodInfo{}
+		kt.mu.RLock()
+		pods = kt.topo.Pods
+		kt.mu.RUnlock()
 	}
 
 	kt.mu.Lock()
 	kt.topo = ClusterTopology{Nodes: nodes, Pods: pods}
-	kt.expires = time.Now().Add(kt.ttl)
+	if err != nil {
+		kt.expires = time.Now().Add(30 * time.Second) // retry soon, keep serving stale pods
+	} else {
+		kt.expires = time.Now().Add(kt.ttl)
+	}
 	kt.mu.Unlock()
 
 	log.Printf("topology: refreshed %d nodes, %d pods", len(nodes), len(pods))
