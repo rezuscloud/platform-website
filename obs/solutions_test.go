@@ -6,17 +6,31 @@ func TestClassify(t *testing.T) {
 	cases := []struct {
 		ns, name, wantSol, wantCat string
 	}{
-		{"authentik", "authentik-server", "software", "identity"},
-		{"kube-system", "cilium-operator", "infrastructure", "network"},
-		{"kube-system", "coredns-managed", "infrastructure", "dns"},    // name wins over namespace
-		{"kube-system", "metrics-server", "software", "observability"}, // platform service, not core
-		{"forgejo", "forgejo", "software", "code"},
-		{"unknown-namespace", "whatever", "software", "delivery"}, // default
-		{"velero", "velero", "software", "backup"},
-		{"flux-system", "helm-controller", "software", "delivery"},
-		{"snapshot-controller", "snapshot-controller", "infrastructure", "storage"}, // kubernetes-csi
-		{"cnpg-system", "cloudnative-pg", "software", "data"},
-		{"platform-website", "platform-website", "software", "web"},
+		// Tier 1 · Substrate
+		{"kube-system", "cilium-operator", "substrate", "network"}, // name wins over namespace
+		{"kube-system", "coredns-managed", "substrate", "dns"},     // name wins over namespace
+		{"kube-system", "metrics-server", "substrate", "compute"},  // resource-metrics API feeds scheduling/HPA
+		{"kube-system", "kube-apiserver", "substrate", "compute"},
+		{"gateway-system", "gateway-api", "substrate", "traffic"}, // row C
+		{"juicefs-csi", "juicefs-csi-node", "substrate", "storage"},
+		{"snapshot-controller", "snapshot-controller", "substrate", "storage"}, // kubernetes-csi
+		{"external-dns", "external-dns", "substrate", "dns"},
+		// Tier 2 · Guarantees
+		{"authentik", "authentik-server", "guarantees", "identity"},        // row G
+		{"cert-manager", "cert-manager", "guarantees", "secrets"},          // row H
+		{"external-secrets", "external-secrets", "guarantees", "secrets"},  // row H
+		{"velero", "velero", "guarantees", "backup"},                       // row K
+		{"signoz", "signoz-otel-collector", "guarantees", "observability"}, // row J
+		// Tier 3 · Planes
+		{"rezuscloud", "rezuscloud", "planes", "consumption"},     // row L
+		{"flux-system", "helm-controller", "planes", "lifecycle"}, // row M
+		{"harmostes", "harmostes", "planes", "lifecycle"},         // row M
+		// Hosted workloads
+		{"forgejo", "forgejo", "workloads", "code"},
+		{"cnpg-system", "cloudnative-pg", "workloads", "data"},
+		{"platform-website", "platform-website", "workloads", "web"},
+		{"dapr-system", "dapr-sidecar", "workloads", "runtime"},
+		{"unknown-namespace", "whatever", "workloads", "apps"}, // default
 	}
 	for _, c := range cases {
 		sol, cat := Classify(c.ns, c.name)
@@ -38,60 +52,71 @@ func TestBuildSolutionsGroupsPerHostInstances(t *testing.T) {
 	}}
 	sols := BuildSolutions(data)
 
-	if len(sols) != 2 {
-		t.Fatalf("got %d solutions, want 2", len(sols))
+	// planes has no services → skipped; order is substrate, guarantees, workloads
+	if len(sols) != 3 {
+		t.Fatalf("got %d solutions, want 3", len(sols))
 	}
-	infra, software := sols[0], sols[1]
-	if infra.ID != "infrastructure" || software.ID != "software" {
-		t.Fatalf("order = %s,%s want infrastructure,software", infra.ID, software.ID)
-	}
-
-	// infrastructure: network (1 workload/1 instance) then storage (1/3)
-	if len(infra.Categories) < 2 || infra.Categories[0].ID != "network" || infra.Categories[1].ID != "storage" {
-		t.Fatalf("infra categories = %+v", infra.Categories)
-	}
-	if len(infra.Categories[1].Blocks) != 1 || len(infra.Categories[1].Blocks[0].Instances) != 3 {
-		t.Errorf("storage block should contain 3 instances, got %+v", infra.Categories[1].Blocks)
-	}
-	if infra.Workloads != 2 || infra.Instances != 4 {
-		t.Errorf("infra counts = %d/%d, want 2/4", infra.Workloads, infra.Instances)
+	substrate, guarantees, workloads := sols[0], sols[1], sols[2]
+	if substrate.ID != "substrate" || guarantees.ID != "guarantees" || workloads.ID != "workloads" {
+		t.Fatalf("order = %s,%s,%s want substrate,guarantees,workloads", substrate.ID, guarantees.ID, workloads.ID)
 	}
 
-	// software: identity and code categories; forgejo appears once with 2 hosts
-	var codeCat, idCat *SolutionCategory
-	for i := range software.Categories {
-		switch software.Categories[i].ID {
-		case "code":
-			codeCat = &software.Categories[i]
-		case "identity":
-			idCat = &software.Categories[i]
+	// substrate: network (row B, 1 workload/1 instance) then storage (row D, 1/3)
+	if len(substrate.Categories) < 2 || substrate.Categories[0].ID != "network" || substrate.Categories[1].ID != "storage" {
+		t.Fatalf("substrate categories = %+v", substrate.Categories)
+	}
+	if len(substrate.Categories[1].Blocks) != 1 || len(substrate.Categories[1].Blocks[0].Instances) != 3 {
+		t.Errorf("storage block should contain 3 instances, got %+v", substrate.Categories[1].Blocks)
+	}
+	if substrate.Workloads != 2 || substrate.Instances != 4 {
+		t.Errorf("substrate counts = %d/%d, want 2/4", substrate.Workloads, substrate.Instances)
+	}
+
+	// workloads: code and (empty categories skipped); forgejo appears once with 2 hosts
+	var codeCat *SolutionCategory
+	for i := range workloads.Categories {
+		if workloads.Categories[i].ID == "code" {
+			codeCat = &workloads.Categories[i]
 		}
 	}
-	if codeCat == nil || idCat == nil {
-		t.Fatalf("software categories missing: %+v", software.Categories)
+	if codeCat == nil {
+		t.Fatalf("workloads categories missing code: %+v", workloads.Categories)
 	}
-	if len(codeCat.Blocks) != 1 || codeCat.Blocks[0].Name != "forgejo" || len(codeCat.Blocks[0].Instances) != 2 {
-		t.Errorf("forgejo block = %+v", codeCat.Blocks)
+	if len(codeCat.Blocks) != 1 || len(codeCat.Blocks[0].Instances) != 2 {
+		t.Errorf("code block should contain 1 workload with 2 instances, got %+v", codeCat.Blocks)
 	}
-	if software.Workloads != 2 || software.Instances != 3 {
-		t.Errorf("software counts = %d/%d, want 2/3", software.Workloads, software.Instances)
+	if workloads.Workloads != 1 || workloads.Instances != 2 {
+		t.Errorf("workloads counts = %d/%d, want 1/2", workloads.Workloads, workloads.Instances)
+	}
+
+	// guarantees tier: identity (row G) carries authentik with its single instance
+	if len(guarantees.Categories) != 1 || guarantees.Categories[0].ID != "identity" {
+		t.Fatalf("guarantees categories = %+v", guarantees.Categories)
+	}
+	if guarantees.Workloads != 1 || guarantees.Instances != 1 {
+		t.Errorf("guarantees counts = %d/%d, want 1/1", guarantees.Workloads, guarantees.Instances)
 	}
 }
 
 func TestBuildSolutionsEveryResourceUnique(t *testing.T) {
 	data := LiveData{Services: []Service{
-		{Namespace: "a", Name: "x", Host: "h1"},
-		{Namespace: "a", Name: "x", Host: "h2"},
-		{Namespace: "a", Name: "x", Host: "h3"},
+		{Namespace: "authentik", Name: "authentik-server", Host: "h1", Status: "running"},
+		{Namespace: "authentik", Name: "authentik-server", Host: "h2", Status: "running"},
 	}}
 	sols := BuildSolutions(data)
-	total := 0
+
+	var total int
 	for _, s := range sols {
 		for _, c := range s.Categories {
 			total += len(c.Blocks)
+			for _, b := range c.Blocks {
+				if b.Namespace != "authentik" || b.Name != "authentik-server" {
+					t.Errorf("unexpected block %+v", b)
+				}
+			}
 		}
 	}
 	if total != 1 {
-		t.Errorf("same workload on 3 hosts must yield 1 block, got %d", total)
+		t.Fatalf("same workload split across %d blocks, want exactly 1", total)
 	}
 }

@@ -36,7 +36,7 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.Contains(t, html, "/api/live/stream")
 	})
 
-	// Two-solution structure tests
+	// Blueprint-tier structure tests
 	t.Run("has node cards with host labels", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
@@ -45,25 +45,27 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.Contains(t, html, "data-node-card")
 	})
 
-	t.Run("has two solution bars", func(t *testing.T) {
+	t.Run("has tier bars for the blueprint presentation", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "SOLUTION · INFRASTRUCTURE")
-		assert.Contains(t, html, "SOLUTION · SOFTWARE")
-		assert.Contains(t, html, "3 workloads")
-		assert.Contains(t, html, "7 workloads")
+		assert.Contains(t, html, "TIER 1 · SUBSTRATE")
+		assert.Contains(t, html, "TIER 2 · GUARANTEES")
+		assert.Contains(t, html, "TIER 3 · PLANES")
+		assert.Contains(t, html, "HOSTED WORKLOADS")
 	})
 
-	t.Run("categories grouped under solutions", func(t *testing.T) {
+	t.Run("categories named by blueprint capability class", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		// infrastructure categories: standardized cluster core
-		assert.Contains(t, html, "Network · CNI")
-		assert.Contains(t, html, "Secrets")
-		// software categories: platform services + purposes
-		assert.Contains(t, html, "Observability")
-		assert.Contains(t, html, "Delivery")
-		assert.Contains(t, html, "Code")
+		// substrate capability classes (contract rows)
+		assert.Contains(t, html, "A · Compute &amp; orchestration")
+		assert.Contains(t, html, "B · Network")
+		assert.Contains(t, html, "D · Block storage")
+		// guarantees rows
+		assert.Contains(t, html, "G · Identity &amp; access")
+		assert.Contains(t, html, "J · Observability &amp; measurement")
+		// hosted workload purposes
+		assert.Contains(t, html, "Code &amp; CI")
 		assert.Contains(t, html, "Web")
 		// legacy flat categories must be gone
 		assert.NotContains(t, html, ">Development<")

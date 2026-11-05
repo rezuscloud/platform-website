@@ -25,7 +25,7 @@ templ Live(data obs.LiveData) {
 					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle-text uppercase tracking-wider">Live</span>
 				</div>
 			</div>
-			<p class="font-mac-body text-sm text-ink-muted dark:text-next-subtle-text mb-6">This website, its CI pipeline, observability stack, and all development tools run on the platform you see below. Self-hosted, self-monitored.</p>
+			<p class="font-mac-body text-sm text-ink-muted dark:text-next-subtle-text mb-6">One cloud, shown against the cloud definition contract: the blueprint's three tiers — substrate, guarantees, planes — plus the workloads it serves. This website, its CI pipeline, observability stack, and all development tools run on it. Self-hosted, self-monitored.</p>
 			<div
 				class="ds-alert ds-alert-info mb-6"
 				x-show="!connected && !initial.hasMetrics"
@@ -73,7 +73,7 @@ templ Live(data obs.LiveData) {
 				<!-- Solution bar -->
 				<div class="border border-accent-gold/40 dark:border-next-teal/40 bg-paper dark:bg-next-dark px-4 py-3 mb-4">
 					<div class="flex flex-wrap items-baseline gap-x-3">
-						<h3 class="font-mac text-sm font-bold text-ink dark:text-next-white">SOLUTION · { sol.Title }</h3>
+						<h3 class="font-mac text-sm font-bold text-ink dark:text-next-white">{ sol.Title }</h3>
 						<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle-text">
 							{ sol.Subtitle } · { fmt.Sprintf("%d categories · %d workloads · %d instances", len(sol.Categories), sol.Workloads, sol.Instances) }
 						</span>
@@ -94,7 +94,7 @@ templ Live(data obs.LiveData) {
 				}
 			}
 			<p class="font-terminal text-xs text-ink-muted/60 dark:text-next-subtle-text/60">
-				Every resource is unique — grouped by category into two solutions. Blocks are deployments, pods are facts. Click an instance to inspect metrics.
+				Every resource is unique — grouped by capability class into the blueprint's tiers. Blocks are deployments, pods are facts. Click an instance to inspect metrics.
 			</p>
 		</div>
 		<script>
