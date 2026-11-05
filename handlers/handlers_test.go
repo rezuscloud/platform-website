@@ -92,15 +92,15 @@ func TestHomeHandlerContainsExpectedContent(t *testing.T) {
 
 	html := string(body)
 	assert.Contains(t, html, "RezusCloud")
-	assert.Contains(t, html, ">YOUR</span>")
-	assert.Contains(t, html, ">PERSONAL</span>")
-	assert.Contains(t, html, ">CLOUD</span>")
-	assert.Contains(t, html, "You bring the machines")
+	assert.Contains(t, html, ">THE</span>")
+	assert.Contains(t, html, ">OPEN CLOUD</span>")
+	assert.Contains(t, html, ">MARKETPLACE</span>")
+	assert.Contains(t, html, "Pick a certified blueprint")
 }
 
 func TestSectionHandler(t *testing.T) {
 	sections := []string{
-		"hero", "architecture", "features",
+		"hero", "architecture", "features", "blueprints",
 		"getstarted",
 	}
 
@@ -123,9 +123,10 @@ func TestSectionHandlerContainsContent(t *testing.T) {
 	app := setupApp()
 
 	expectedContent := map[string]string{
-		"hero":         "You bring the machines",
+		"hero":         "Pick a certified blueprint",
 		"features":     "What You Get",
 		"architecture": "How It Works",
+		"blueprints":   "What makes a cloud",
 		"getstarted":   "Start Your Cloud",
 	}
 

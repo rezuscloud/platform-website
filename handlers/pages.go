@@ -31,6 +31,7 @@ func InitSections() {
 		"hero":         func(_ context.Context) templ.Component { return sections.Hero() },
 		"architecture": func(_ context.Context) templ.Component { return sections.Architecture() },
 		"features":     func(_ context.Context) templ.Component { return sections.Features() },
+		"blueprints":   func(_ context.Context) templ.Component { return sections.Blueprints() },
 		"getstarted":   func(_ context.Context) templ.Component { return sections.GetStarted() },
 		"live": func(ctx context.Context) templ.Component {
 			data, _ := liveClient.Fetch(ctx)

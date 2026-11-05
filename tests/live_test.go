@@ -63,17 +63,13 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.NotContains(t, html, "A · Compute")
 	})
 
-	t.Run("explains blueprint and marketplace", func(t *testing.T) {
+	t.Run("is pure proof — no marketplace copy (it lives in the blueprints section)", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "A blueprint, seen running.")
-		assert.Contains(t, html, "Certified before it costs you a node.")
+		assert.Contains(t, html, "A blueprint, seen running")
+		assert.NotContains(t, html, "Certified before it costs you a node.")
+		assert.NotContains(t, html, "llm-wiki")
 	})
-	t.Run("service rows have clickable cells", func(t *testing.T) {
-		cells := doc.Find("[data-svc-key]")
-		assert.GreaterOrEqual(t, cells.Length(), 8, "should have at least 8 clickable service cells")
-	})
-
 	t.Run("cells have status dots", func(t *testing.T) {
 		dots := doc.Find("[data-svc-key] [data-dot]")
 		cells := doc.Find("[data-svc-key]")

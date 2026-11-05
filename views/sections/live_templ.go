@@ -36,7 +36,7 @@ func Live(data obs.LiveData) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		solutions := obs.BuildSolutions(data)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"live\" class=\"py-16 sm:py-24 bg-surface-strong dark:bg-next-black\" x-data=\"liveMatrix()\" x-init=\"init()\" role=\"region\" aria-label=\"Live platform topology\"><div class=\"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8\"><!-- Header --><div class=\"flex items-center gap-3 mb-4\"><h2 class=\"font-mac text-3xl sm:text-4xl font-bold text-ink dark:text-next-white tracking-tight\">Live Platform</h2><div class=\"flex items-center gap-1.5\"><span class=\"inline-block ds-accent-dot ds-status-positive animate-pulse\" aria-hidden=\"true\"></span> <span class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle-text uppercase tracking-wider\">Live</span></div></div><p class=\"font-mac-body text-sm text-ink-muted dark:text-next-subtle-text mb-6\">One cloud, shown against the six contracts that form it — <a href=\"https://github.com/rezuscloud/llm-wiki/wiki/concepts/cloud-contract.md\" class=\"underline decoration-dotted\">the cloud definition contract</a>. This website, its CI pipeline, observability stack, and all development tools run on it. Self-hosted, self-monitored. This is not a dashboard's opinion of a cloud — it is the definition of one.</p><div class=\"ds-alert ds-alert-info mb-6\" x-show=\"!connected && !initial.hasMetrics\"><span class=\"font-mac-mono text-xs text-ink-muted dark:text-next-subtle-text\">Showing platform topology. Metrics are live when Prometheus is connected.</span></div><!-- Connection lost banner --><div class=\"ds-alert ds-alert-negative mb-6\" x-show=\"(!connected || stale) && initial.hasMetrics\" x-cloak role=\"alert\"><span class=\"font-mac-mono text-xs text-negative dark:text-negative-next\">Connection lost or data stale. Showing last known state.</span></div><!-- SSE freshness --><div class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle-text mb-8\" x-show=\"connected\" x-cloak aria-live=\"polite\"><span x-text=\"'Updated ' + lastUpdateAgo + 's ago'\"></span> <span class=\"mx-2\">·</span> <span x-text=\"hostCount + ' nodes · ' + serviceCount + ' instances'\"></span></div><!-- ═══ Layer 1: Node Summary Strip ═══ -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section id=\"live\" class=\"py-16 sm:py-24 bg-surface-strong dark:bg-next-black\" x-data=\"liveMatrix()\" x-init=\"init()\" role=\"region\" aria-label=\"Live platform topology\"><div class=\"max-w-5xl mx-auto px-4 sm:px-6 lg:px-8\"><!-- Header --><div class=\"flex items-center gap-3 mb-4\"><h2 class=\"font-mac text-3xl sm:text-4xl font-bold text-ink dark:text-next-white tracking-tight\">Live Platform</h2><div class=\"flex items-center gap-1.5\"><span class=\"inline-block ds-accent-dot ds-status-positive animate-pulse\" aria-hidden=\"true\"></span> <span class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle-text uppercase tracking-wider\">Live</span></div></div><p class=\"font-mac-body text-sm text-ink-muted dark:text-next-subtle-text mb-6\">A blueprint, seen running — this cluster serves this page. One cloud, shown against the six contracts above. This website, its CI pipeline, observability stack, and all development tools run on it. Self-hosted, self-monitored.</p><div class=\"ds-alert ds-alert-info mb-6\" x-show=\"!connected && !initial.hasMetrics\"><span class=\"font-mac-mono text-xs text-ink-muted dark:text-next-subtle-text\">Showing platform topology. Metrics are live when Prometheus is connected.</span></div><!-- Connection lost banner --><div class=\"ds-alert ds-alert-negative mb-6\" x-show=\"(!connected || stale) && initial.hasMetrics\" x-cloak role=\"alert\"><span class=\"font-mac-mono text-xs text-negative dark:text-negative-next\">Connection lost or data stale. Showing last known state.</span></div><!-- SSE freshness --><div class=\"font-terminal text-xs text-ink-muted dark:text-next-subtle-text mb-8\" x-show=\"connected\" x-cloak aria-live=\"polite\"><span x-text=\"'Updated ' + lastUpdateAgo + 's ago'\"></span> <span class=\"mx-2\">·</span> <span x-text=\"hostCount + ' nodes · ' + serviceCount + ' instances'\"></span></div><!-- ═══ Layer 1: Node Summary Strip ═══ -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -115,7 +115,7 @@ func Live(data obs.LiveData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<!-- Explanation panel: what the groups mean (blueprint) and what becomes possible (marketplace) --><div class=\"border border-accent-gold/60 dark:border-next-teal/60 bg-paper dark:bg-next-dark px-5 py-6 sm:px-8 sm:py-8 mt-10 mb-6\"><div class=\"grid gap-8 md:grid-cols-2\"><div><h3 class=\"font-mac text-base font-bold text-ink dark:text-next-white mb-3\">A blueprint, seen running.</h3><p class=\"font-mac-body text-sm text-ink-muted dark:text-next-subtle-text leading-relaxed\">The cloud above is what a Rezus.cloud blueprint looks like on a live cluster: one whole cloud — all six contracts — expressed as data instead of operated by hand. Every block is a capability class filled by a product choice; swap the product, render the blueprint again, and the contracts still hold. The parts are choices, the guarantees are not.</p></div><div><h3 class=\"font-mac text-base font-bold text-ink dark:text-next-white mb-3\">Certified before it costs you a node.</h3><p class=\"font-mac-body text-sm text-ink-muted dark:text-next-subtle-text leading-relaxed\">Blueprints can be published, forked, and deployed on your own hardware or a rented environment. Before anything is provisioned, your environment is measured — a signed report of what your network, storage, and identity options actually support — and matched against what the blueprint requires. When it fits, the blueprint ships with its conformance tests already executed green. Rezus.cloud is becoming the marketplace for these: not charts, not operators — whole clouds, certified, composable, and proven to run where you want them.</p></div></div></div><p class=\"font-terminal text-xs text-ink-muted/60 dark:text-next-subtle-text/60\">Every resource is unique — grouped by the six contracts that form the cloud. Blocks are deployments, pods are facts. Click an instance to inspect metrics.</p></div><script>\n\t\t\tfunction liveMatrix() {\n\t\t\t\treturn {\n\t\t\t\t\tconnected: false,\n\t\t\t\t\tlastUpdate: 0,\n\t\t\t\t\tlastUpdateAgo: \"\",\n\t\t\t\t\tstale: false,\n\t\t\t\t\thostCount: 0,\n\t\t\t\t\tserviceCount: 0,\n\t\t\t\t\tselected: null,\n\t\t\t\t\tactiveHost: null,\n\t\t\t\t\tinitial: { hasMetrics: false },\n\n\t\t\t\t\tinit() {\n\t\t\t\t\t\tvar self = this;\n\t\t\t\t\t\tvar es = new EventSource(\"/api/live/stream\");\n\t\t\t\t\t\tes.addEventListener(\"update\", function (e) {\n\t\t\t\t\t\t\tvar data;\n\t\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\t\tdata = JSON.parse(e.data);\n\t\t\t\t\t\t\t} catch (ex) {\n\t\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tself.connected = true;\n\t\t\t\t\t\t\tself.stale = false;\n\t\t\t\t\t\t\tself.lastUpdate = Date.now();\n\t\t\t\t\t\t\tself.hostCount = data.hosts ? data.hosts.length : 0;\n\t\t\t\t\t\t\tself.serviceCount = data.services ? data.services.length : 0;\n\t\t\t\t\t\t\tself.initial.hasMetrics = data.hasMetrics || false;\n\n\t\t\t\t\t\t\tvar idx = {};\n\t\t\t\t\t\t\tif (data.services) {\n\t\t\t\t\t\t\t\tdata.services.forEach(function (svc) {\n\t\t\t\t\t\t\t\t\tvar k = svc.namespace + \"/\" + svc.name + \"@\" + svc.host;\n\t\t\t\t\t\t\t\t\tidx[k] = svc;\n\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tdocument\n\t\t\t\t\t\t\t\t.querySelectorAll(\"[data-svc-key]\")\n\t\t\t\t\t\t\t\t.forEach(function (el) {\n\t\t\t\t\t\t\t\t\tvar svc = idx[el.getAttribute(\"data-svc-key\")];\n\t\t\t\t\t\t\t\t\tif (svc) self.updateBox(el, svc);\n\t\t\t\t\t\t\t\t});\n\n\t\t\t\t\t\t\tif (data.hosts) {\n\t\t\t\t\t\t\t\tdata.hosts.forEach(function (host) {\n\t\t\t\t\t\t\t\t\t// Update node card metrics\n\t\t\t\t\t\t\t\t\tvar card = document.querySelector(\n\t\t\t\t\t\t\t\t\t\t'[data-node-card=\"' + host.name + '\"]',\n\t\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\t\tif (card) {\n\t\t\t\t\t\t\t\t\t\tvar met = card.querySelector(\"[data-node-metric]\");\n\t\t\t\t\t\t\t\t\t\tif (met) {\n\t\t\t\t\t\t\t\t\t\t\tvar parts = [];\n\t\t\t\t\t\t\t\t\t\t\tif (host.cpu > 0)\n\t\t\t\t\t\t\t\t\t\t\t\tparts.push(\"CPU \" + host.cpu.toFixed(1));\n\t\t\t\t\t\t\t\t\t\t\tif (host.ram > 0)\n\t\t\t\t\t\t\t\t\t\t\t\tparts.push((host.ram / 1024).toFixed(1) + \" GB\");\n\t\t\t\t\t\t\t\t\t\t\tmet.textContent = parts.join(\" · \");\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\tvar cpuBar = card.querySelector(\"[data-cpu-bar]\");\n\t\t\t\t\t\t\t\t\t\tif (cpuBar && host.cpu > 0) {\n\t\t\t\t\t\t\t\t\t\t\tvar cap = host.cpuCores > 0 ? host.cpuCores : 4;\n\t\t\t\t\t\t\t\t\t\t\tcpuBar.style.width =\n\t\t\t\t\t\t\t\t\t\t\t\tMath.min((host.cpu / cap) * 100, 100) + \"%\";\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\tvar ramBar = card.querySelector(\"[data-ram-bar]\");\n\t\t\t\t\t\t\t\t\t\tif (ramBar && host.ram > 0) {\n\t\t\t\t\t\t\t\t\t\t\tvar cap = host.ramTotal > 0 ? host.ramTotal : 32768;\n\t\t\t\t\t\t\t\t\t\t\tramBar.style.width =\n\t\t\t\t\t\t\t\t\t\t\t\tMath.min((host.ram / cap) * 100, 100) + \"%\";\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\tvar svcEl = card.querySelector(\"[data-node-svcs]\");\n\t\t\t\t\t\t\t\t\t\tif (svcEl && host.svcCount > 0) {\n\t\t\t\t\t\t\t\t\t\t\tsvcEl.textContent = host.svcCount + \" services\";\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tif (self.selected) {\n\t\t\t\t\t\t\t\tvar svc = idx[self.selected.key];\n\t\t\t\t\t\t\t\tif (svc) {\n\t\t\t\t\t\t\t\t\tself.selected.cpu = svc.cpu;\n\t\t\t\t\t\t\t\t\tself.selected.ram = svc.ram;\n\t\t\t\t\t\t\t\t\tself.selected.netKB = svc.netKB || 0;\n\t\t\t\t\t\t\t\t\tself.selected.diskMB = svc.diskMB || 0;\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t\tes.onerror = function () {\n\t\t\t\t\t\t\tself.connected = false;\n\t\t\t\t\t\t};\n\t\t\t\t\t\tsetInterval(function () {\n\t\t\t\t\t\t\tif (self.lastUpdate > 0) {\n\t\t\t\t\t\t\t\tvar ago = Math.floor((Date.now() - self.lastUpdate) / 1000);\n\t\t\t\t\t\t\t\tself.lastUpdateAgo = ago;\n\t\t\t\t\t\t\t\tself.stale = ago >= 30;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}, 1000);\n\t\t\t\t\t},\n\n\t\t\t\t\ttoggleHostFilter(name) {\n\t\t\t\t\t\tif (this.activeHost === name) {\n\t\t\t\t\t\t\tthis.activeHost = null;\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tthis.activeHost = name;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tdocument\n\t\t\t\t\t\t\t.querySelectorAll(\"[data-node-card]\")\n\t\t\t\t\t\t\t.forEach(function (card) {\n\t\t\t\t\t\t\t\tvar cardHost = card.getAttribute(\"data-node-card\");\n\t\t\t\t\t\t\t\tif (cardHost === name) {\n\t\t\t\t\t\t\t\t\tcard.classList.toggle(\"ring-1\", true);\n\t\t\t\t\t\t\t\t\tcard.classList.toggle(\"ring-accent-gold\", true);\n\t\t\t\t\t\t\t\t\tcard.classList.toggle(\"dark:ring-next-teal\", true);\n\t\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\t\tcard.classList.remove(\n\t\t\t\t\t\t\t\t\t\t\"ring-1\",\n\t\t\t\t\t\t\t\t\t\t\"ring-accent-gold\",\n\t\t\t\t\t\t\t\t\t\t\"dark:ring-next-teal\",\n\t\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\tvar active = this.activeHost;\n\t\t\t\t\t\t// Filter instance chips by host\n\t\t\t\t\t\tdocument.querySelectorAll(\"[data-svc-host]\").forEach(function (el) {\n\t\t\t\t\t\t\tel.style.display =\n\t\t\t\t\t\t\t\t!active || el.getAttribute(\"data-svc-host\") === active\n\t\t\t\t\t\t\t\t\t? \"\"\n\t\t\t\t\t\t\t\t\t: \"none\";\n\t\t\t\t\t\t});\n\t\t\t\t\t\t// Dynamic blocks: hide blocks with no instances on this node,\n\t\t\t\t\t\t// re-count the badge as visible/total\n\t\t\t\t\t\tdocument\n\t\t\t\t\t\t\t.querySelectorAll(\"[data-workload-block]\")\n\t\t\t\t\t\t\t.forEach(function (block) {\n\t\t\t\t\t\t\t\tvar chips = block.querySelectorAll(\"[data-svc-host]\");\n\t\t\t\t\t\t\t\tvar visible = 0;\n\t\t\t\t\t\t\t\tvar total = 0;\n\t\t\t\t\t\t\t\tchips.forEach(function (c) {\n\t\t\t\t\t\t\t\t\ttotal++;\n\t\t\t\t\t\t\t\t\tif (c.style.display !== \"none\") visible++;\n\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\tblock.style.display = visible === 0 ? \"none\" : \"\";\n\t\t\t\t\t\t\t\tvar badge = block.querySelector(\"[data-block-count]\");\n\t\t\t\t\t\t\t\tif (badge)\n\t\t\t\t\t\t\t\t\tbadge.textContent =\n\t\t\t\t\t\t\t\t\t\t\"×\" + visible + (total > visible ? \"/\" + total : \"\");\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t// Dynamic categories: hide groups left empty\n\t\t\t\t\t\tdocument\n\t\t\t\t\t\t\t.querySelectorAll(\"[data-category-group]\")\n\t\t\t\t\t\t\t.forEach(function (g) {\n\t\t\t\t\t\t\t\tvar any = g.querySelector(\n\t\t\t\t\t\t\t\t\t'[data-workload-block]:not([style*=\"display: none\"])',\n\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\tg.style.display = any ? \"\" : \"none\";\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\tthis.stopHistoryPoll();\n\t\t\t\t\t\tthis.deselectAll();\n\t\t\t\t\t\tthis.selected = null;\n\t\t\t\t\t},\n\n\t\t\t\t\tselectService(key, name, host, ns, cpu, ram, netKB, diskMB) {\n\t\t\t\t\t\tif (this.selected && this.selected.key === key) {\n\t\t\t\t\t\t\tthis.deselectAll();\n\t\t\t\t\t\t\tthis.selected = null;\n\t\t\t\t\t\t\tthis.stopHistoryPoll();\n\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tthis.deselectAll();\n\t\t\t\t\t\tthis.stopHistoryPoll();\n\t\t\t\t\t\tthis.selected = {\n\t\t\t\t\t\t\tkey: key,\n\t\t\t\t\t\t\tname: name,\n\t\t\t\t\t\t\thost: host,\n\t\t\t\t\t\t\tdetail: ns,\n\t\t\t\t\t\t\tcpu: cpu,\n\t\t\t\t\t\t\tram: ram,\n\t\t\t\t\t\t\tnetKB: netKB,\n\t\t\t\t\t\t\tdiskMB: diskMB,\n\t\t\t\t\t\t};\n\t\t\t\t\t\tvar detailEl = document.querySelector(\n\t\t\t\t\t\t\t'[data-detail-key=\"' + key + '\"]',\n\t\t\t\t\t\t);\n\t\t\t\t\t\tif (detailEl) {\n\t\t\t\t\t\t\tdetailEl.style.display = \"\";\n\t\t\t\t\t\t\tdetailEl.setAttribute(\"aria-hidden\", \"false\");\n\t\t\t\t\t\t}\n\t\t\t\t\t\tvar svcEl = document.querySelector('[data-svc-row=\"' + key + '\"]');\n\t\t\t\t\t\tif (svcEl) {\n\t\t\t\t\t\t\tsvcEl.classList.add(\n\t\t\t\t\t\t\t\t\"border-accent-gold/60\",\n\t\t\t\t\t\t\t\t\"dark:border-next-teal/60\",\n\t\t\t\t\t\t\t\t\"bg-accent-gold/10\",\n\t\t\t\t\t\t\t\t\"dark:bg-next-teal/10\",\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tsvcEl.setAttribute(\"aria-expanded\", \"true\");\n\t\t\t\t\t\t}\n\t\t\t\t\t\tthis.startHistoryPoll(key);\n\t\t\t\t\t},\n\n\t\t\t\t\tstartHistoryPoll(key) {\n\t\t\t\t\t\tthis.stopHistoryPoll();\n\t\t\t\t\t\tvar self = this;\n\t\t\t\t\t\tvar fetchHist = function () {\n\t\t\t\t\t\t\tvar at = key.split(\"@\");\n\t\t\t\t\t\t\tvar host = at.length > 1 ? at[1] : \"\";\n\t\t\t\t\t\t\tvar slash = at[0].split(\"/\");\n\t\t\t\t\t\t\tvar ns = slash.length > 0 ? slash[0] : \"\";\n\t\t\t\t\t\t\tvar name = slash.length > 1 ? slash[1] : \"\";\n\t\t\t\t\t\t\tfetch(\n\t\t\t\t\t\t\t\t\"/api/live/history?namespace=\" +\n\t\t\t\t\t\t\t\t\tencodeURIComponent(ns) +\n\t\t\t\t\t\t\t\t\t\"&name=\" +\n\t\t\t\t\t\t\t\t\tencodeURIComponent(name) +\n\t\t\t\t\t\t\t\t\t\"&host=\" +\n\t\t\t\t\t\t\t\t\tencodeURIComponent(host),\n\t\t\t\t\t\t\t)\n\t\t\t\t\t\t\t\t.then(function (r) {\n\t\t\t\t\t\t\t\t\treturn r.ok ? r.json() : null;\n\t\t\t\t\t\t\t\t})\n\t\t\t\t\t\t\t\t.then(function (h) {\n\t\t\t\t\t\t\t\t\tif (h)\n\t\t\t\t\t\t\t\t\t\tself.updateCharts({\n\t\t\t\t\t\t\t\t\t\t\tkey: key,\n\t\t\t\t\t\t\t\t\t\t\tcpuHist: h.cpuHist,\n\t\t\t\t\t\t\t\t\t\t\tramHist: h.ramHist,\n\t\t\t\t\t\t\t\t\t\t\tnetHist: h.netHist,\n\t\t\t\t\t\t\t\t\t\t\tdiskHist: h.diskHist,\n\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t})\n\t\t\t\t\t\t\t\t.catch(function () {});\n\t\t\t\t\t\t};\n\t\t\t\t\t\tfetchHist();\n\t\t\t\t\t\tthis._historyTimer = setInterval(fetchHist, 30000);\n\t\t\t\t\t},\n\n\t\t\t\t\tstopHistoryPoll() {\n\t\t\t\t\t\tif (this._historyTimer) {\n\t\t\t\t\t\t\tclearInterval(this._historyTimer);\n\t\t\t\t\t\t\tthis._historyTimer = null;\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\n\t\t\t\t\tdeselectAll() {\n\t\t\t\t\t\tdocument\n\t\t\t\t\t\t\t.querySelectorAll(\"[data-detail-key]\")\n\t\t\t\t\t\t\t.forEach(function (el) {\n\t\t\t\t\t\t\t\tel.style.display = \"none\";\n\t\t\t\t\t\t\t\tel.setAttribute(\"aria-hidden\", \"true\");\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\tdocument.querySelectorAll(\"[data-svc-row]\").forEach(function (el) {\n\t\t\t\t\t\t\tel.classList.remove(\n\t\t\t\t\t\t\t\t\"border-accent-gold/60\",\n\t\t\t\t\t\t\t\t\"dark:border-next-teal/60\",\n\t\t\t\t\t\t\t\t\"bg-accent-gold/10\",\n\t\t\t\t\t\t\t\t\"dark:bg-next-teal/10\",\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tel.setAttribute(\"aria-expanded\", \"false\");\n\t\t\t\t\t\t});\n\t\t\t\t\t},\n\n\t\t\t\t\tupdateCharts(svc) {\n\t\t\t\t\t\tvar row = document.querySelector(\n\t\t\t\t\t\t\t'[data-detail-key=\"' + svc.key + '\"]',\n\t\t\t\t\t\t);\n\t\t\t\t\t\tif (!row) return;\n\t\t\t\t\t\tvar cpuLine = row.querySelector(\"[x-data-hist-cpu]\");\n\t\t\t\t\t\tvar ramLine = row.querySelector(\"[x-data-hist-ram]\");\n\t\t\t\t\t\tvar netLine = row.querySelector(\"[x-data-hist-net]\");\n\t\t\t\t\t\tvar diskLine = row.querySelector(\"[x-data-hist-disk]\");\n\t\t\t\t\t\tif (cpuLine && svc.cpuHist)\n\t\t\t\t\t\t\tcpuLine.setAttribute(\"points\", svc.cpuHist);\n\t\t\t\t\t\tif (ramLine && svc.ramHist)\n\t\t\t\t\t\t\tramLine.setAttribute(\"points\", svc.ramHist);\n\t\t\t\t\t\tif (netLine && svc.netHist)\n\t\t\t\t\t\t\tnetLine.setAttribute(\"points\", svc.netHist);\n\t\t\t\t\t\tif (diskLine && svc.diskHist)\n\t\t\t\t\t\t\tdiskLine.setAttribute(\"points\", svc.diskHist);\n\t\t\t\t\t},\n\n\t\t\t\t\tupdateBox(el, svc) {\n\t\t\t\t\t\tvar dot = el.querySelector(\"[data-dot]\");\n\t\t\t\t\t\tif (dot) dot.className = this.dotClass(svc.status);\n\t\t\t\t\t\tvar met = el.querySelector(\"[data-metric]\");\n\t\t\t\t\t\tif (met) {\n\t\t\t\t\t\t\tvar parts = [];\n\t\t\t\t\t\t\tif (svc.cpu > 0) parts.push(svc.cpu.toFixed(3));\n\t\t\t\t\t\t\tif (svc.ram > 0) parts.push(svc.ram.toFixed(0) + \"M\");\n\t\t\t\t\t\t\tif (parts.length > 0) {\n\t\t\t\t\t\t\t\tmet.textContent = parts.join(\" \\u00b7 \");\n\t\t\t\t\t\t\t\tmet.className =\n\t\t\t\t\t\t\t\t\t\"font-terminal text-[10px] text-ink dark:text-next-white tabular-nums leading-none\";\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\tmet.innerHTML =\n\t\t\t\t\t\t\t\t\t'<span class=\"text-ink-muted/50 dark:text-next-subtle-text/50\">' +\n\t\t\t\t\t\t\t\t\t(svc.name || \"\") +\n\t\t\t\t\t\t\t\t\t\"</span>\";\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\n\t\t\t\t\tdotClass(status) {\n\t\t\t\t\t\tvar b = \"inline-block ds-accent-dot ds-accent-dot-sm shrink-0\";\n\t\t\t\t\t\tif (status === \"healthy\" || status === \"running\")\n\t\t\t\t\t\t\treturn b + \" ds-status-positive\";\n\t\t\t\t\t\treturn b + \" ds-status-neutral\";\n\t\t\t\t\t},\n\t\t\t\t};\n\t\t\t}\n\t\t</script></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<p class=\"font-terminal text-xs text-ink-muted/60 dark:text-next-subtle-text/60\">Every resource is unique — grouped by the six contracts that form the cloud. Blocks are deployments, pods are facts. Click an instance to inspect metrics.</p></div><script>\n\t\t\tfunction liveMatrix() {\n\t\t\t\treturn {\n\t\t\t\t\tconnected: false,\n\t\t\t\t\tlastUpdate: 0,\n\t\t\t\t\tlastUpdateAgo: \"\",\n\t\t\t\t\tstale: false,\n\t\t\t\t\thostCount: 0,\n\t\t\t\t\tserviceCount: 0,\n\t\t\t\t\tselected: null,\n\t\t\t\t\tactiveHost: null,\n\t\t\t\t\tinitial: { hasMetrics: false },\n\n\t\t\t\t\tinit() {\n\t\t\t\t\t\tvar self = this;\n\t\t\t\t\t\tvar es = new EventSource(\"/api/live/stream\");\n\t\t\t\t\t\tes.addEventListener(\"update\", function (e) {\n\t\t\t\t\t\t\tvar data;\n\t\t\t\t\t\t\ttry {\n\t\t\t\t\t\t\t\tdata = JSON.parse(e.data);\n\t\t\t\t\t\t\t} catch (ex) {\n\t\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\tself.connected = true;\n\t\t\t\t\t\t\tself.stale = false;\n\t\t\t\t\t\t\tself.lastUpdate = Date.now();\n\t\t\t\t\t\t\tself.hostCount = data.hosts ? data.hosts.length : 0;\n\t\t\t\t\t\t\tself.serviceCount = data.services ? data.services.length : 0;\n\t\t\t\t\t\t\tself.initial.hasMetrics = data.hasMetrics || false;\n\n\t\t\t\t\t\t\tvar idx = {};\n\t\t\t\t\t\t\tif (data.services) {\n\t\t\t\t\t\t\t\tdata.services.forEach(function (svc) {\n\t\t\t\t\t\t\t\t\tvar k = svc.namespace + \"/\" + svc.name + \"@\" + svc.host;\n\t\t\t\t\t\t\t\t\tidx[k] = svc;\n\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tdocument\n\t\t\t\t\t\t\t\t.querySelectorAll(\"[data-svc-key]\")\n\t\t\t\t\t\t\t\t.forEach(function (el) {\n\t\t\t\t\t\t\t\t\tvar svc = idx[el.getAttribute(\"data-svc-key\")];\n\t\t\t\t\t\t\t\t\tif (svc) self.updateBox(el, svc);\n\t\t\t\t\t\t\t\t});\n\n\t\t\t\t\t\t\tif (data.hosts) {\n\t\t\t\t\t\t\t\tdata.hosts.forEach(function (host) {\n\t\t\t\t\t\t\t\t\t// Update node card metrics\n\t\t\t\t\t\t\t\t\tvar card = document.querySelector(\n\t\t\t\t\t\t\t\t\t\t'[data-node-card=\"' + host.name + '\"]',\n\t\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\t\tif (card) {\n\t\t\t\t\t\t\t\t\t\tvar met = card.querySelector(\"[data-node-metric]\");\n\t\t\t\t\t\t\t\t\t\tif (met) {\n\t\t\t\t\t\t\t\t\t\t\tvar parts = [];\n\t\t\t\t\t\t\t\t\t\t\tif (host.cpu > 0)\n\t\t\t\t\t\t\t\t\t\t\t\tparts.push(\"CPU \" + host.cpu.toFixed(1));\n\t\t\t\t\t\t\t\t\t\t\tif (host.ram > 0)\n\t\t\t\t\t\t\t\t\t\t\t\tparts.push((host.ram / 1024).toFixed(1) + \" GB\");\n\t\t\t\t\t\t\t\t\t\t\tmet.textContent = parts.join(\" · \");\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\tvar cpuBar = card.querySelector(\"[data-cpu-bar]\");\n\t\t\t\t\t\t\t\t\t\tif (cpuBar && host.cpu > 0) {\n\t\t\t\t\t\t\t\t\t\t\tvar cap = host.cpuCores > 0 ? host.cpuCores : 4;\n\t\t\t\t\t\t\t\t\t\t\tcpuBar.style.width =\n\t\t\t\t\t\t\t\t\t\t\t\tMath.min((host.cpu / cap) * 100, 100) + \"%\";\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\tvar ramBar = card.querySelector(\"[data-ram-bar]\");\n\t\t\t\t\t\t\t\t\t\tif (ramBar && host.ram > 0) {\n\t\t\t\t\t\t\t\t\t\t\tvar cap = host.ramTotal > 0 ? host.ramTotal : 32768;\n\t\t\t\t\t\t\t\t\t\t\tramBar.style.width =\n\t\t\t\t\t\t\t\t\t\t\t\tMath.min((host.ram / cap) * 100, 100) + \"%\";\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t\tvar svcEl = card.querySelector(\"[data-node-svcs]\");\n\t\t\t\t\t\t\t\t\t\tif (svcEl && host.svcCount > 0) {\n\t\t\t\t\t\t\t\t\t\t\tsvcEl.textContent = host.svcCount + \" services\";\n\t\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t}\n\n\t\t\t\t\t\t\tif (self.selected) {\n\t\t\t\t\t\t\t\tvar svc = idx[self.selected.key];\n\t\t\t\t\t\t\t\tif (svc) {\n\t\t\t\t\t\t\t\t\tself.selected.cpu = svc.cpu;\n\t\t\t\t\t\t\t\t\tself.selected.ram = svc.ram;\n\t\t\t\t\t\t\t\t\tself.selected.netKB = svc.netKB || 0;\n\t\t\t\t\t\t\t\t\tself.selected.diskMB = svc.diskMB || 0;\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t\tes.onerror = function () {\n\t\t\t\t\t\t\tself.connected = false;\n\t\t\t\t\t\t};\n\t\t\t\t\t\tsetInterval(function () {\n\t\t\t\t\t\t\tif (self.lastUpdate > 0) {\n\t\t\t\t\t\t\t\tvar ago = Math.floor((Date.now() - self.lastUpdate) / 1000);\n\t\t\t\t\t\t\t\tself.lastUpdateAgo = ago;\n\t\t\t\t\t\t\t\tself.stale = ago >= 30;\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}, 1000);\n\t\t\t\t\t},\n\n\t\t\t\t\ttoggleHostFilter(name) {\n\t\t\t\t\t\tif (this.activeHost === name) {\n\t\t\t\t\t\t\tthis.activeHost = null;\n\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\tthis.activeHost = name;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tdocument\n\t\t\t\t\t\t\t.querySelectorAll(\"[data-node-card]\")\n\t\t\t\t\t\t\t.forEach(function (card) {\n\t\t\t\t\t\t\t\tvar cardHost = card.getAttribute(\"data-node-card\");\n\t\t\t\t\t\t\t\tif (cardHost === name) {\n\t\t\t\t\t\t\t\t\tcard.classList.toggle(\"ring-1\", true);\n\t\t\t\t\t\t\t\t\tcard.classList.toggle(\"ring-accent-gold\", true);\n\t\t\t\t\t\t\t\t\tcard.classList.toggle(\"dark:ring-next-teal\", true);\n\t\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\t\tcard.classList.remove(\n\t\t\t\t\t\t\t\t\t\t\"ring-1\",\n\t\t\t\t\t\t\t\t\t\t\"ring-accent-gold\",\n\t\t\t\t\t\t\t\t\t\t\"dark:ring-next-teal\",\n\t\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\tvar active = this.activeHost;\n\t\t\t\t\t\t// Filter instance chips by host\n\t\t\t\t\t\tdocument.querySelectorAll(\"[data-svc-host]\").forEach(function (el) {\n\t\t\t\t\t\t\tel.style.display =\n\t\t\t\t\t\t\t\t!active || el.getAttribute(\"data-svc-host\") === active\n\t\t\t\t\t\t\t\t\t? \"\"\n\t\t\t\t\t\t\t\t\t: \"none\";\n\t\t\t\t\t\t});\n\t\t\t\t\t\t// Dynamic blocks: hide blocks with no instances on this node,\n\t\t\t\t\t\t// re-count the badge as visible/total\n\t\t\t\t\t\tdocument\n\t\t\t\t\t\t\t.querySelectorAll(\"[data-workload-block]\")\n\t\t\t\t\t\t\t.forEach(function (block) {\n\t\t\t\t\t\t\t\tvar chips = block.querySelectorAll(\"[data-svc-host]\");\n\t\t\t\t\t\t\t\tvar visible = 0;\n\t\t\t\t\t\t\t\tvar total = 0;\n\t\t\t\t\t\t\t\tchips.forEach(function (c) {\n\t\t\t\t\t\t\t\t\ttotal++;\n\t\t\t\t\t\t\t\t\tif (c.style.display !== \"none\") visible++;\n\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\tblock.style.display = visible === 0 ? \"none\" : \"\";\n\t\t\t\t\t\t\t\tvar badge = block.querySelector(\"[data-block-count]\");\n\t\t\t\t\t\t\t\tif (badge)\n\t\t\t\t\t\t\t\t\tbadge.textContent =\n\t\t\t\t\t\t\t\t\t\t\"×\" + visible + (total > visible ? \"/\" + total : \"\");\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\t// Dynamic categories: hide groups left empty\n\t\t\t\t\t\tdocument\n\t\t\t\t\t\t\t.querySelectorAll(\"[data-category-group]\")\n\t\t\t\t\t\t\t.forEach(function (g) {\n\t\t\t\t\t\t\t\tvar any = g.querySelector(\n\t\t\t\t\t\t\t\t\t'[data-workload-block]:not([style*=\"display: none\"])',\n\t\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\t\tg.style.display = any ? \"\" : \"none\";\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\tthis.stopHistoryPoll();\n\t\t\t\t\t\tthis.deselectAll();\n\t\t\t\t\t\tthis.selected = null;\n\t\t\t\t\t},\n\n\t\t\t\t\tselectService(key, name, host, ns, cpu, ram, netKB, diskMB) {\n\t\t\t\t\t\tif (this.selected && this.selected.key === key) {\n\t\t\t\t\t\t\tthis.deselectAll();\n\t\t\t\t\t\t\tthis.selected = null;\n\t\t\t\t\t\t\tthis.stopHistoryPoll();\n\t\t\t\t\t\t\treturn;\n\t\t\t\t\t\t}\n\t\t\t\t\t\tthis.deselectAll();\n\t\t\t\t\t\tthis.stopHistoryPoll();\n\t\t\t\t\t\tthis.selected = {\n\t\t\t\t\t\t\tkey: key,\n\t\t\t\t\t\t\tname: name,\n\t\t\t\t\t\t\thost: host,\n\t\t\t\t\t\t\tdetail: ns,\n\t\t\t\t\t\t\tcpu: cpu,\n\t\t\t\t\t\t\tram: ram,\n\t\t\t\t\t\t\tnetKB: netKB,\n\t\t\t\t\t\t\tdiskMB: diskMB,\n\t\t\t\t\t\t};\n\t\t\t\t\t\tvar detailEl = document.querySelector(\n\t\t\t\t\t\t\t'[data-detail-key=\"' + key + '\"]',\n\t\t\t\t\t\t);\n\t\t\t\t\t\tif (detailEl) {\n\t\t\t\t\t\t\tdetailEl.style.display = \"\";\n\t\t\t\t\t\t\tdetailEl.setAttribute(\"aria-hidden\", \"false\");\n\t\t\t\t\t\t}\n\t\t\t\t\t\tvar svcEl = document.querySelector('[data-svc-row=\"' + key + '\"]');\n\t\t\t\t\t\tif (svcEl) {\n\t\t\t\t\t\t\tsvcEl.classList.add(\n\t\t\t\t\t\t\t\t\"border-accent-gold/60\",\n\t\t\t\t\t\t\t\t\"dark:border-next-teal/60\",\n\t\t\t\t\t\t\t\t\"bg-accent-gold/10\",\n\t\t\t\t\t\t\t\t\"dark:bg-next-teal/10\",\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tsvcEl.setAttribute(\"aria-expanded\", \"true\");\n\t\t\t\t\t\t}\n\t\t\t\t\t\tthis.startHistoryPoll(key);\n\t\t\t\t\t},\n\n\t\t\t\t\tstartHistoryPoll(key) {\n\t\t\t\t\t\tthis.stopHistoryPoll();\n\t\t\t\t\t\tvar self = this;\n\t\t\t\t\t\tvar fetchHist = function () {\n\t\t\t\t\t\t\tvar at = key.split(\"@\");\n\t\t\t\t\t\t\tvar host = at.length > 1 ? at[1] : \"\";\n\t\t\t\t\t\t\tvar slash = at[0].split(\"/\");\n\t\t\t\t\t\t\tvar ns = slash.length > 0 ? slash[0] : \"\";\n\t\t\t\t\t\t\tvar name = slash.length > 1 ? slash[1] : \"\";\n\t\t\t\t\t\t\tfetch(\n\t\t\t\t\t\t\t\t\"/api/live/history?namespace=\" +\n\t\t\t\t\t\t\t\t\tencodeURIComponent(ns) +\n\t\t\t\t\t\t\t\t\t\"&name=\" +\n\t\t\t\t\t\t\t\t\tencodeURIComponent(name) +\n\t\t\t\t\t\t\t\t\t\"&host=\" +\n\t\t\t\t\t\t\t\t\tencodeURIComponent(host),\n\t\t\t\t\t\t\t)\n\t\t\t\t\t\t\t\t.then(function (r) {\n\t\t\t\t\t\t\t\t\treturn r.ok ? r.json() : null;\n\t\t\t\t\t\t\t\t})\n\t\t\t\t\t\t\t\t.then(function (h) {\n\t\t\t\t\t\t\t\t\tif (h)\n\t\t\t\t\t\t\t\t\t\tself.updateCharts({\n\t\t\t\t\t\t\t\t\t\t\tkey: key,\n\t\t\t\t\t\t\t\t\t\t\tcpuHist: h.cpuHist,\n\t\t\t\t\t\t\t\t\t\t\tramHist: h.ramHist,\n\t\t\t\t\t\t\t\t\t\t\tnetHist: h.netHist,\n\t\t\t\t\t\t\t\t\t\t\tdiskHist: h.diskHist,\n\t\t\t\t\t\t\t\t\t\t});\n\t\t\t\t\t\t\t\t})\n\t\t\t\t\t\t\t\t.catch(function () {});\n\t\t\t\t\t\t};\n\t\t\t\t\t\tfetchHist();\n\t\t\t\t\t\tthis._historyTimer = setInterval(fetchHist, 30000);\n\t\t\t\t\t},\n\n\t\t\t\t\tstopHistoryPoll() {\n\t\t\t\t\t\tif (this._historyTimer) {\n\t\t\t\t\t\t\tclearInterval(this._historyTimer);\n\t\t\t\t\t\t\tthis._historyTimer = null;\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\n\t\t\t\t\tdeselectAll() {\n\t\t\t\t\t\tdocument\n\t\t\t\t\t\t\t.querySelectorAll(\"[data-detail-key]\")\n\t\t\t\t\t\t\t.forEach(function (el) {\n\t\t\t\t\t\t\t\tel.style.display = \"none\";\n\t\t\t\t\t\t\t\tel.setAttribute(\"aria-hidden\", \"true\");\n\t\t\t\t\t\t\t});\n\t\t\t\t\t\tdocument.querySelectorAll(\"[data-svc-row]\").forEach(function (el) {\n\t\t\t\t\t\t\tel.classList.remove(\n\t\t\t\t\t\t\t\t\"border-accent-gold/60\",\n\t\t\t\t\t\t\t\t\"dark:border-next-teal/60\",\n\t\t\t\t\t\t\t\t\"bg-accent-gold/10\",\n\t\t\t\t\t\t\t\t\"dark:bg-next-teal/10\",\n\t\t\t\t\t\t\t);\n\t\t\t\t\t\t\tel.setAttribute(\"aria-expanded\", \"false\");\n\t\t\t\t\t\t});\n\t\t\t\t\t},\n\n\t\t\t\t\tupdateCharts(svc) {\n\t\t\t\t\t\tvar row = document.querySelector(\n\t\t\t\t\t\t\t'[data-detail-key=\"' + svc.key + '\"]',\n\t\t\t\t\t\t);\n\t\t\t\t\t\tif (!row) return;\n\t\t\t\t\t\tvar cpuLine = row.querySelector(\"[x-data-hist-cpu]\");\n\t\t\t\t\t\tvar ramLine = row.querySelector(\"[x-data-hist-ram]\");\n\t\t\t\t\t\tvar netLine = row.querySelector(\"[x-data-hist-net]\");\n\t\t\t\t\t\tvar diskLine = row.querySelector(\"[x-data-hist-disk]\");\n\t\t\t\t\t\tif (cpuLine && svc.cpuHist)\n\t\t\t\t\t\t\tcpuLine.setAttribute(\"points\", svc.cpuHist);\n\t\t\t\t\t\tif (ramLine && svc.ramHist)\n\t\t\t\t\t\t\tramLine.setAttribute(\"points\", svc.ramHist);\n\t\t\t\t\t\tif (netLine && svc.netHist)\n\t\t\t\t\t\t\tnetLine.setAttribute(\"points\", svc.netHist);\n\t\t\t\t\t\tif (diskLine && svc.diskHist)\n\t\t\t\t\t\t\tdiskLine.setAttribute(\"points\", svc.diskHist);\n\t\t\t\t\t},\n\n\t\t\t\t\tupdateBox(el, svc) {\n\t\t\t\t\t\tvar dot = el.querySelector(\"[data-dot]\");\n\t\t\t\t\t\tif (dot) dot.className = this.dotClass(svc.status);\n\t\t\t\t\t\tvar met = el.querySelector(\"[data-metric]\");\n\t\t\t\t\t\tif (met) {\n\t\t\t\t\t\t\tvar parts = [];\n\t\t\t\t\t\t\tif (svc.cpu > 0) parts.push(svc.cpu.toFixed(3));\n\t\t\t\t\t\t\tif (svc.ram > 0) parts.push(svc.ram.toFixed(0) + \"M\");\n\t\t\t\t\t\t\tif (parts.length > 0) {\n\t\t\t\t\t\t\t\tmet.textContent = parts.join(\" \\u00b7 \");\n\t\t\t\t\t\t\t\tmet.className =\n\t\t\t\t\t\t\t\t\t\"font-terminal text-[10px] text-ink dark:text-next-white tabular-nums leading-none\";\n\t\t\t\t\t\t\t} else {\n\t\t\t\t\t\t\t\tmet.innerHTML =\n\t\t\t\t\t\t\t\t\t'<span class=\"text-ink-muted/50 dark:text-next-subtle-text/50\">' +\n\t\t\t\t\t\t\t\t\t(svc.name || \"\") +\n\t\t\t\t\t\t\t\t\t\"</span>\";\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t},\n\n\t\t\t\t\tdotClass(status) {\n\t\t\t\t\t\tvar b = \"inline-block ds-accent-dot ds-accent-dot-sm shrink-0\";\n\t\t\t\t\t\tif (status === \"healthy\" || status === \"running\")\n\t\t\t\t\t\t\treturn b + \" ds-status-positive\";\n\t\t\t\t\t\treturn b + \" ds-status-neutral\";\n\t\t\t\t\t},\n\t\t\t\t};\n\t\t\t}\n\t\t</script></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -151,7 +151,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(host.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 427, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 414, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 		if templ_7745c5c3_Err != nil {
@@ -164,7 +164,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("Filter instances on %s", host.Name))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 429, Col: 58}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 416, Col: 58}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 		if templ_7745c5c3_Err != nil {
@@ -177,7 +177,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("toggleHostFilter('%s')", host.Name))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 430, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 417, Col: 59}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 		if templ_7745c5c3_Err != nil {
@@ -190,7 +190,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(host.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 433, Col: 100}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 420, Col: 100}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -203,7 +203,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(host.Label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 435, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 422, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -217,7 +217,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(" · ")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 437, Col: 13}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 424, Col: 13}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -230,7 +230,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(host.Detail)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 438, Col: 18}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 425, Col: 18}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -244,7 +244,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("width: %.0f%%", cpuBarPct(host)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 449, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 436, Col: 59}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -257,7 +257,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("width: %.0f%%", ramBarPct(host)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 459, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 446, Col: 59}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -272,7 +272,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 				var templ_7745c5c3_Var15 string
 				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("CPU %.1f", host.CPU))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 467, Col: 40}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 454, Col: 40}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 				if templ_7745c5c3_Err != nil {
@@ -286,7 +286,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 					var templ_7745c5c3_Var16 string
 					templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf(" / %.0f", host.CPUCores))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 469, Col: 45}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 456, Col: 45}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 					if templ_7745c5c3_Err != nil {
@@ -303,7 +303,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 					var templ_7745c5c3_Var17 string
 					templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(" · ")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 474, Col: 14}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 461, Col: 14}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 					if templ_7745c5c3_Err != nil {
@@ -317,7 +317,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.1f GB", host.RAM/1024))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 476, Col: 44}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 463, Col: 44}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -331,7 +331,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 					var templ_7745c5c3_Var19 string
 					templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf(" / %.0f GB", host.RAMTotal/1024))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 478, Col: 53}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 465, Col: 53}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 					if templ_7745c5c3_Err != nil {
@@ -348,7 +348,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d services", host.SvcCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 486, Col: 48}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 473, Col: 48}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -363,7 +363,7 @@ func nodeCard(host obs.Host, selfNS string) templ.Component {
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(host.Uptime)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 491, Col: 18}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 478, Col: 18}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
@@ -406,7 +406,7 @@ func workloadBlock(block obs.WorkloadBlock, selfNS string) templ.Component {
 		var templ_7745c5c3_Var23 string
 		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.ResolveAttributeValue(block.Namespace + "/" + block.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 502, Col: 124}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 489, Col: 124}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
 		if templ_7745c5c3_Err != nil {
@@ -419,7 +419,7 @@ func workloadBlock(block obs.WorkloadBlock, selfNS string) templ.Component {
 		var templ_7745c5c3_Var24 string
 		templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(block.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 502, Col: 139}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 489, Col: 139}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 		if templ_7745c5c3_Err != nil {
@@ -432,7 +432,7 @@ func workloadBlock(block obs.WorkloadBlock, selfNS string) templ.Component {
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("×%d", len(block.Instances)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 504, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 491, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
@@ -495,7 +495,7 @@ func instanceChip(svc obs.Service, highlight bool) templ.Component {
 		var templ_7745c5c3_Var27 string
 		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.ResolveAttributeValue(svc.Host)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 522, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 509, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var27)
 		if templ_7745c5c3_Err != nil {
@@ -523,7 +523,7 @@ func instanceChip(svc obs.Service, highlight bool) templ.Component {
 		var templ_7745c5c3_Var28 string
 		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.ResolveAttributeValue(key)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 529, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 516, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var28)
 		if templ_7745c5c3_Err != nil {
@@ -536,7 +536,7 @@ func instanceChip(svc obs.Service, highlight bool) templ.Component {
 		var templ_7745c5c3_Var29 string
 		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.ResolveAttributeValue(key)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 530, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 517, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var29)
 		if templ_7745c5c3_Err != nil {
@@ -549,7 +549,7 @@ func instanceChip(svc obs.Service, highlight bool) templ.Component {
 		var templ_7745c5c3_Var30 string
 		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%s/%s on %s", svc.Namespace, svc.Name, svc.Host))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 532, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 519, Col: 72}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var30)
 		if templ_7745c5c3_Err != nil {
@@ -565,7 +565,7 @@ func instanceChip(svc obs.Service, highlight bool) templ.Component {
 			svc.Name, svc.Host, svc.Namespace,
 			svc.CPU, svc.RAM, svc.NetKB, svc.DiskMB))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 536, Col: 44}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 523, Col: 44}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var31)
 		if templ_7745c5c3_Err != nil {
@@ -595,7 +595,7 @@ func instanceChip(svc obs.Service, highlight bool) templ.Component {
 				var templ_7745c5c3_Var32 string
 				templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.3f", svc.CPU))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 547, Col: 37}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 534, Col: 37}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 				if templ_7745c5c3_Err != nil {
@@ -611,7 +611,7 @@ func instanceChip(svc obs.Service, highlight bool) templ.Component {
 					var templ_7745c5c3_Var33 string
 					templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(" · ")
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 551, Col: 16}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 538, Col: 16}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 					if templ_7745c5c3_Err != nil {
@@ -625,7 +625,7 @@ func instanceChip(svc obs.Service, highlight bool) templ.Component {
 				var templ_7745c5c3_Var34 string
 				templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.0fM", svc.RAM))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 553, Col: 38}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 540, Col: 38}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 				if templ_7745c5c3_Err != nil {
@@ -640,7 +640,7 @@ func instanceChip(svc obs.Service, highlight bool) templ.Component {
 			var templ_7745c5c3_Var35 string
 			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(svc.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 556, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 543, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 			if templ_7745c5c3_Err != nil {
@@ -658,7 +658,7 @@ func instanceChip(svc obs.Service, highlight bool) templ.Component {
 		var templ_7745c5c3_Var36 string
 		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(shortHost(svc.Host))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 560, Col: 126}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 547, Col: 126}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 		if templ_7745c5c3_Err != nil {
@@ -701,7 +701,7 @@ func detailPanel(svc obs.Service) templ.Component {
 		var templ_7745c5c3_Var38 string
 		templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.ResolveAttributeValue(key)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 567, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/sections/live.templ`, Line: 554, Col: 27}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var38)
 		if templ_7745c5c3_Err != nil {

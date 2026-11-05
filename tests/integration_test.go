@@ -118,13 +118,34 @@ func TestHomePageHTMLStructure(t *testing.T) {
 	})
 }
 
+func TestBlueprintsSectionHTML(t *testing.T) {
+	app := setupIntegrationApp()
+	doc := getHTMLDoc(t, app, "/")
+
+	t.Run("has marketplace mechanics and the contract", func(t *testing.T) {
+		html, err := doc.Find("#blueprints").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "One Blueprint, Any Environment")
+		assert.Contains(t, html, "Runs Where You Are")
+		assert.Contains(t, html, "Compose Your Own")
+		assert.Contains(t, html, "Certified Before Deploy")
+		assert.Contains(t, html, "What makes a cloud")
+		assert.Contains(t, html, "Consumption")
+		assert.Contains(t, html, "Observability")
+		assert.Contains(t, html, "A cloud is a set of promises, not a program.")
+		// public docs, never the private knowledge base
+		assert.Contains(t, html, "/docs/concepts/cloud-contract")
+		assert.NotContains(t, html, "llm-wiki")
+	})
+}
+
 func TestHomePageSections(t *testing.T) {
 	app := setupIntegrationApp()
 	doc := getHTMLDoc(t, app, "/")
 
 	sections := []string{
-		"hero", "architecture", "live", "features",
-		"getstarted",
+		"hero", "architecture", "features", "blueprints",
+		"live", "getstarted",
 	}
 
 	for _, section := range sections {
@@ -290,7 +311,7 @@ func TestHTMXAttributes(t *testing.T) {
 	})
 
 	t.Run("section endpoints return valid HTML", func(t *testing.T) {
-		sections := []string{"hero", "features", "architecture", "getstarted"}
+		sections := []string{"hero", "features", "architecture", "blueprints", "getstarted"}
 
 		for _, section := range sections {
 			doc := getHTMLDoc(t, app, "/sections/"+section)
@@ -310,7 +331,7 @@ func TestHTMXAttributes(t *testing.T) {
 	})
 
 	t.Run("section endpoints could be used with hx-get", func(t *testing.T) {
-		sections := []string{"hero", "features", "architecture", "getstarted"}
+		sections := []string{"hero", "features", "architecture", "blueprints", "getstarted"}
 
 		for _, section := range sections {
 			doc := getHTMLDoc(t, app, "/sections/"+section)
@@ -531,7 +552,7 @@ func TestDesignSystemZeroRoundedCorners(t *testing.T) {
 	})
 
 	t.Run("no rounded corners on section endpoints", func(t *testing.T) {
-		sections := []string{"hero", "features", "architecture", "getstarted"}
+		sections := []string{"hero", "features", "architecture", "blueprints", "getstarted"}
 
 		for _, section := range sections {
 			req := httptest.NewRequest("GET", "/sections/"+section, nil)
@@ -645,7 +666,7 @@ func TestProgressiveEnhancement(t *testing.T) {
 	doc := getHTMLDoc(t, app, "/")
 
 	t.Run("page works without JavaScript - all content present", func(t *testing.T) {
-		sections := []string{"hero", "architecture", "live", "features", "getstarted"}
+		sections := []string{"hero", "architecture", "features", "blueprints", "live", "getstarted"}
 		for _, section := range sections {
 			assert.Equal(t, 1, doc.Find("#"+section).Length(), "Section %s should exist server-side", section)
 		}
