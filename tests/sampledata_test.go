@@ -27,6 +27,7 @@ func sampleLiveData() obs.LiveData {
 			{Name: "metrics-server", Namespace: "kube-system", Category: "deployment", Host: "talos-oci-c-beloved-kite", Status: "healthy", CPU: 0.05, RAM: 64, Uptime: "8d"},
 			{Name: "authentik-server", Namespace: "authentik", Category: "deployment", Host: "talos-edge-w-frank-antelope", Status: "healthy", CPU: 0.21, RAM: 210, Uptime: "8d"},
 			{Name: "rezuscloud", Namespace: "rezuscloud", Category: "deployment", Host: "talos-oci-c-beloved-kite", Status: "healthy", CPU: 0.3, RAM: 180, Uptime: "4d"},
+			{Name: "velero", Namespace: "velero", Category: "deployment", Host: "talos-edge-w-frank-antelope", Status: "healthy", CPU: 0.08, RAM: 96, Uptime: "8d"},
 			{Name: "prometheus", Namespace: "monitoring", Category: "observability", Host: "talos-edge-w-frank-antelope", Status: "healthy", Uptime: "6h"},
 			{Name: "cert-manager", Namespace: "cert-manager", Category: "deployment", Host: "talos-edge-w-frank-antelope", Status: "healthy", CPU: 0.06, RAM: 73, Uptime: "1d"},
 			{Name: "juicefs-tikv-pd", Namespace: "tikv-system", Category: "data", Host: "talos-edge-w-frank-antelope", Status: "healthy", CPU: 3.82, RAM: 173, Uptime: "8d"},

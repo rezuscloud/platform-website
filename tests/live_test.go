@@ -36,7 +36,7 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.Contains(t, html, "/api/live/stream")
 	})
 
-	// Blueprint-tier structure tests
+	// Six-contract structure tests
 	t.Run("has node cards with host labels", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
@@ -45,31 +45,20 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.Contains(t, html, "data-node-card")
 	})
 
-	t.Run("has tier bars for the blueprint presentation", func(t *testing.T) {
+	t.Run("has the six contract bars", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "TIER 1 · SUBSTRATE")
-		assert.Contains(t, html, "TIER 2 · GUARANTEES")
-		assert.Contains(t, html, "TIER 3 · PLANES")
-		assert.Contains(t, html, "HOSTED WORKLOADS")
-	})
-
-	t.Run("categories named by blueprint capability class", func(t *testing.T) {
-		html, err := doc.Find("#live").Html()
-		require.NoError(t, err)
-		// substrate capability classes (contract rows)
-		assert.Contains(t, html, "A · Compute &amp; orchestration")
-		assert.Contains(t, html, "B · Network")
-		assert.Contains(t, html, "D · Block storage")
-		// guarantees rows
-		assert.Contains(t, html, "G · Identity &amp; access")
-		assert.Contains(t, html, "J · Observability &amp; measurement")
-		// hosted workload purposes
-		assert.Contains(t, html, "Code &amp; CI")
-		assert.Contains(t, html, "Web")
-		// legacy flat categories must be gone
-		assert.NotContains(t, html, ">Development<")
-		assert.NotContains(t, html, ">Runtime<")
+		assert.Contains(t, html, "1 · CONSUMPTION")
+		assert.Contains(t, html, "2 · LIFECYCLE")
+		assert.Contains(t, html, "3 · ABSTRACTION &amp; POOLING")
+		assert.Contains(t, html, "4 · IDENTITY &amp; TENANCY")
+		assert.Contains(t, html, "5 · DURABILITY")
+		assert.Contains(t, html, "6 · OBSERVABILITY &amp; MEASUREMENT")
+		// the old tier/group vocabulary must be gone
+		assert.NotContains(t, html, "TIER 1 · SUBSTRATE")
+		assert.NotContains(t, html, "HOSTED WORKLOADS")
+		// no category middle layer
+		assert.NotContains(t, html, "A · Compute")
 	})
 
 	t.Run("service rows have clickable cells", func(t *testing.T) {

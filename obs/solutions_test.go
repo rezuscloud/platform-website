@@ -4,43 +4,50 @@ import "testing"
 
 func TestClassify(t *testing.T) {
 	cases := []struct {
-		ns, name, wantSol, wantCat string
+		ns, name, want string
 	}{
-		// Tier 1 · Substrate
-		{"kube-system", "cilium-operator", "substrate", "network"}, // name wins over namespace
-		{"kube-system", "coredns-managed", "substrate", "dns"},     // name wins over namespace
-		{"kube-system", "metrics-server", "substrate", "compute"},  // resource-metrics API feeds scheduling/HPA
-		{"kube-system", "kube-apiserver", "substrate", "compute"},
-		{"gateway-system", "gateway-api", "substrate", "traffic"}, // row C
-		{"juicefs-csi", "juicefs-csi-node", "substrate", "storage"},
-		{"snapshot-controller", "snapshot-controller", "substrate", "storage"}, // kubernetes-csi
-		{"external-dns", "external-dns", "substrate", "dns"},
-		// Tier 2 · Guarantees
-		{"authentik", "authentik-server", "guarantees", "identity"},        // row G
-		{"cert-manager", "cert-manager", "guarantees", "secrets"},          // row H
-		{"external-secrets", "external-secrets", "guarantees", "secrets"},  // row H
-		{"velero", "velero", "guarantees", "backup"},                       // row K
-		{"signoz", "signoz-otel-collector", "guarantees", "observability"}, // row J
-		// Tier 3 · Planes
-		{"rezuscloud", "rezuscloud", "planes", "consumption"},     // row L
-		{"flux-system", "helm-controller", "planes", "lifecycle"}, // row M
-		{"harmostes", "harmostes", "planes", "lifecycle"},         // row M
-		// Hosted workloads
-		{"forgejo", "forgejo", "workloads", "code"},
-		{"cnpg-system", "cloudnative-pg", "workloads", "data"},
-		{"platform-website", "platform-website", "workloads", "web"},
-		{"dapr-system", "dapr-sidecar", "workloads", "runtime"},
-		{"unknown-namespace", "whatever", "workloads", "apps"}, // default
+		// 1 · Consumption — the plane and everything it serves
+		{"rezuscloud", "rezuscloud", "consumption"},
+		{"forgejo", "forgejo", "consumption"},
+		{"forgejo", "forgejo-runner", "consumption"},
+		{"opencloud", "opencloud", "consumption"},
+		{"vllm", "vllm", "consumption"},
+		{"platform-website", "platform-website", "consumption"},
+		{"cnpg-system", "cloudnative-pg", "consumption"},
+		{"dapr-system", "dapr-sidecar", "consumption"},
+		{"unknown-namespace", "whatever", "consumption"}, // default: the cloud serves it
+		// 2 · Lifecycle
+		{"flux-system", "helm-controller", "lifecycle"},
+		{"harmostes", "harmostes", "lifecycle"},
+		{"reloader", "reloader", "lifecycle"},
+		// 3 · Abstraction & pooling
+		{"kube-system", "cilium-operator", "pooling"}, // name wins over namespace
+		{"kube-system", "coredns-managed", "pooling"}, // name wins over namespace
+		{"kube-system", "metrics-server", "pooling"},  // resource-metrics feeds scheduling/HPA
+		{"gateway-system", "gateway-api", "pooling"},
+		{"juicefs-csi", "juicefs-csi-node", "pooling"},
+		{"local-path-storage", "local-path-provisioner", "pooling"},
+		{"external-dns", "external-dns", "pooling"},
+		// 4 · Identity & tenancy
+		{"authentik", "authentik-server", "identity"},
+		{"cert-manager", "cert-manager", "identity"},
+		{"external-secrets", "external-secrets", "identity"},
+		// 5 · Durability
+		{"velero", "velero", "durability"},
+		{"snapshot-controller", "snapshot-controller", "durability"}, // CSI volume snapshots
+		// 6 · Observability & measurement
+		{"signoz", "signoz-otel-collector", "observability"},
+		{"monitoring", "prometheus", "observability"},
+		{"monitoring", "kube-prometheus-stack-kube-state-metrics", "observability"}, // name wins
 	}
 	for _, c := range cases {
-		sol, cat := Classify(c.ns, c.name)
-		if sol != c.wantSol || cat != c.wantCat {
-			t.Errorf("Classify(%q,%q) = %s/%s, want %s/%s", c.ns, c.name, sol, cat, c.wantSol, c.wantCat)
+		if got := Classify(c.ns, c.name); got != c.want {
+			t.Errorf("Classify(%q,%q) = %s, want %s", c.ns, c.name, got, c.want)
 		}
 	}
 }
 
-func TestBuildSolutionsGroupsPerHostInstances(t *testing.T) {
+func TestBuildSolutionsGroupsFlatByContract(t *testing.T) {
 	data := LiveData{Services: []Service{
 		{Namespace: "forgejo", Name: "forgejo", Host: "h1", Status: "running"},
 		{Namespace: "forgejo", Name: "forgejo", Host: "h2", Status: "running"},
@@ -49,52 +56,49 @@ func TestBuildSolutionsGroupsPerHostInstances(t *testing.T) {
 		{Namespace: "juicefs-csi", Name: "juicefs-csi-node", Host: "h1", Status: "running"},
 		{Namespace: "juicefs-csi", Name: "juicefs-csi-node", Host: "h2", Status: "running"},
 		{Namespace: "juicefs-csi", Name: "juicefs-csi-node", Host: "h3", Status: "running"},
+		{Namespace: "velero", Name: "velero", Host: "h1", Status: "running"},
 	}}
 	sols := BuildSolutions(data)
 
-	// planes has no services → skipped; order is substrate, guarantees, workloads
-	if len(sols) != 3 {
-		t.Fatalf("got %d solutions, want 3", len(sols))
+	// contracts with content only, in contract-table order
+	var got []string
+	for _, s := range sols {
+		got = append(got, s.ID)
 	}
-	substrate, guarantees, workloads := sols[0], sols[1], sols[2]
-	if substrate.ID != "substrate" || guarantees.ID != "guarantees" || workloads.ID != "workloads" {
-		t.Fatalf("order = %s,%s,%s want substrate,guarantees,workloads", substrate.ID, guarantees.ID, workloads.ID)
+	want := []string{"consumption", "pooling", "identity", "durability"}
+	if len(got) != len(want) {
+		t.Fatalf("order = %v, want %v", got, want)
 	}
-
-	// substrate: network (row B, 1 workload/1 instance) then storage (row D, 1/3)
-	if len(substrate.Categories) < 2 || substrate.Categories[0].ID != "network" || substrate.Categories[1].ID != "storage" {
-		t.Fatalf("substrate categories = %+v", substrate.Categories)
-	}
-	if len(substrate.Categories[1].Blocks) != 1 || len(substrate.Categories[1].Blocks[0].Instances) != 3 {
-		t.Errorf("storage block should contain 3 instances, got %+v", substrate.Categories[1].Blocks)
-	}
-	if substrate.Workloads != 2 || substrate.Instances != 4 {
-		t.Errorf("substrate counts = %d/%d, want 2/4", substrate.Workloads, substrate.Instances)
-	}
-
-	// workloads: code and (empty categories skipped); forgejo appears once with 2 hosts
-	var codeCat *SolutionCategory
-	for i := range workloads.Categories {
-		if workloads.Categories[i].ID == "code" {
-			codeCat = &workloads.Categories[i]
+	for i := range want {
+		if got[i] != want[i] {
+			t.Fatalf("order = %v, want %v", got, want)
 		}
 	}
-	if codeCat == nil {
-		t.Fatalf("workloads categories missing code: %+v", workloads.Categories)
-	}
-	if len(codeCat.Blocks) != 1 || len(codeCat.Blocks[0].Instances) != 2 {
-		t.Errorf("code block should contain 1 workload with 2 instances, got %+v", codeCat.Blocks)
-	}
-	if workloads.Workloads != 1 || workloads.Instances != 2 {
-		t.Errorf("workloads counts = %d/%d, want 1/2", workloads.Workloads, workloads.Instances)
+
+	byID := map[string]Solution{}
+	for _, s := range sols {
+		byID[s.ID] = s
 	}
 
-	// guarantees tier: identity (row G) carries authentik with its single instance
-	if len(guarantees.Categories) != 1 || guarantees.Categories[0].ID != "identity" {
-		t.Fatalf("guarantees categories = %+v", guarantees.Categories)
+	// consumption: forgejo appears once with 2 hosts, flat (no categories)
+	c := byID["consumption"]
+	if len(c.Blocks) != 1 || len(c.Blocks[0].Instances) != 2 {
+		t.Errorf("consumption blocks = %+v, want 1 block with 2 instances", c.Blocks)
 	}
-	if guarantees.Workloads != 1 || guarantees.Instances != 1 {
-		t.Errorf("guarantees counts = %d/%d, want 1/1", guarantees.Workloads, guarantees.Instances)
+	if c.Workloads != 1 || c.Instances != 2 {
+		t.Errorf("consumption counts = %d/%d, want 1/2", c.Workloads, c.Instances)
+	}
+
+	// pooling: cilium (1/1) then juicefs (1/3)
+	p := byID["pooling"]
+	if p.Workloads != 2 || p.Instances != 4 {
+		t.Errorf("pooling counts = %d/%d, want 2/4", p.Workloads, p.Instances)
+	}
+
+	// durability: velero alone
+	d := byID["durability"]
+	if d.Workloads != 1 || d.Instances != 1 {
+		t.Errorf("durability counts = %d/%d, want 1/1", d.Workloads, d.Instances)
 	}
 }
 
@@ -107,12 +111,10 @@ func TestBuildSolutionsEveryResourceUnique(t *testing.T) {
 
 	var total int
 	for _, s := range sols {
-		for _, c := range s.Categories {
-			total += len(c.Blocks)
-			for _, b := range c.Blocks {
-				if b.Namespace != "authentik" || b.Name != "authentik-server" {
-					t.Errorf("unexpected block %+v", b)
-				}
+		for _, b := range s.Blocks {
+			total++
+			if b.Namespace != "authentik" || b.Name != "authentik-server" {
+				t.Errorf("unexpected block %+v", b)
 			}
 		}
 	}
