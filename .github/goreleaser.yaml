@@ -4,7 +4,9 @@ project_name: platform-website
 
 before:
   hooks:
-    - go install github.com/a-h/templ/cmd/templ@latest
+    # Pinned: templ v0.3.1100+ requires go >= 1.26 (runner has 1.25, GOTOOLCHAIN=local).
+    # Keep in sync with the templ version in go.mod.
+    - go install github.com/a-h/templ/cmd/templ@v0.3.1020
     - templ generate
     - npm ci
     - npx @tailwindcss/cli -i input.css -o assets/styles.css --minify
