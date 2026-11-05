@@ -25,7 +25,7 @@ templ Live(data obs.LiveData) {
 					<span class="font-terminal text-xs text-ink-muted dark:text-next-subtle-text uppercase tracking-wider">Live</span>
 				</div>
 			</div>
-			<p class="font-mac-body text-sm text-ink-muted dark:text-next-subtle-text mb-6">One cloud, shown against the six contracts that form it — <a href="https://github.com/rezuscloud/llm-wiki/wiki/concepts/cloud-contract.md" class="underline decoration-dotted">the cloud definition contract</a>. This website, its CI pipeline, observability stack, and all development tools run on it. Self-hosted, self-monitored.</p>
+			<p class="font-mac-body text-sm text-ink-muted dark:text-next-subtle-text mb-6">One cloud, shown against the six contracts that form it — <a href="https://github.com/rezuscloud/llm-wiki/wiki/concepts/cloud-contract.md" class="underline decoration-dotted">the cloud definition contract</a>. This website, its CI pipeline, observability stack, and all development tools run on it. Self-hosted, self-monitored. This is not a dashboard's opinion of a cloud — it is the definition of one.</p>
 			<div
 				class="ds-alert ds-alert-info mb-6"
 				x-show="!connected && !initial.hasMetrics"
@@ -87,6 +87,19 @@ templ Live(data obs.LiveData) {
 					</div>
 				</div>
 			}
+			<!-- Explanation panel: what the groups mean (blueprint) and what becomes possible (marketplace) -->
+			<div class="border border-accent-gold/60 dark:border-next-teal/60 bg-paper dark:bg-next-dark px-5 py-6 sm:px-8 sm:py-8 mt-10 mb-6">
+				<div class="grid gap-8 md:grid-cols-2">
+					<div>
+						<h3 class="font-mac text-base font-bold text-ink dark:text-next-white mb-3">A blueprint, seen running.</h3>
+						<p class="font-mac-body text-sm text-ink-muted dark:text-next-subtle-text leading-relaxed">The cloud above is what a Rezus.cloud blueprint looks like on a live cluster: one whole cloud — all six contracts — expressed as data instead of operated by hand. Every block is a capability class filled by a product choice; swap the product, render the blueprint again, and the contracts still hold. The parts are choices, the guarantees are not.</p>
+					</div>
+					<div>
+						<h3 class="font-mac text-base font-bold text-ink dark:text-next-white mb-3">Certified before it costs you a node.</h3>
+						<p class="font-mac-body text-sm text-ink-muted dark:text-next-subtle-text leading-relaxed">Blueprints can be published, forked, and deployed on your own hardware or a rented environment. Before anything is provisioned, your environment is measured — a signed report of what your network, storage, and identity options actually support — and matched against what the blueprint requires. When it fits, the blueprint ships with its conformance tests already executed green. Rezus.cloud is becoming the marketplace for these: not charts, not operators — whole clouds, certified, composable, and proven to run where you want them.</p>
+					</div>
+				</div>
+			</div>
 			<p class="font-terminal text-xs text-ink-muted/60 dark:text-next-subtle-text/60">
 				Every resource is unique — grouped by the six contracts that form the cloud. Blocks are deployments, pods are facts. Click an instance to inspect metrics.
 			</p>

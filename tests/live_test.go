@@ -48,12 +48,14 @@ func TestLiveSectionHTML(t *testing.T) {
 	t.Run("has the six contract bars", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "1 · CONSUMPTION")
-		assert.Contains(t, html, "2 · LIFECYCLE")
-		assert.Contains(t, html, "3 · ABSTRACTION &amp; POOLING")
-		assert.Contains(t, html, "4 · IDENTITY &amp; TENANCY")
-		assert.Contains(t, html, "5 · DURABILITY")
-		assert.Contains(t, html, "6 · OBSERVABILITY &amp; MEASUREMENT")
+		assert.Contains(t, html, "CONSUMPTION")
+		assert.Contains(t, html, "LIFECYCLE")
+		assert.Contains(t, html, "ABSTRACTION &amp; POOLING")
+		assert.Contains(t, html, "IDENTITY &amp; TENANCY")
+		assert.Contains(t, html, "DURABILITY")
+		assert.Contains(t, html, "OBSERVABILITY &amp; MEASUREMENT")
+		// contract numbers are the contract doc's table numbering, not section furniture
+		assert.NotContains(t, html, "1 · CONSUMPTION")
 		// the old tier/group vocabulary must be gone
 		assert.NotContains(t, html, "TIER 1 · SUBSTRATE")
 		assert.NotContains(t, html, "HOSTED WORKLOADS")
@@ -61,6 +63,12 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.NotContains(t, html, "A · Compute")
 	})
 
+	t.Run("explains blueprint and marketplace", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "A blueprint, seen running.")
+		assert.Contains(t, html, "Certified before it costs you a node.")
+	})
 	t.Run("service rows have clickable cells", func(t *testing.T) {
 		cells := doc.Find("[data-svc-key]")
 		assert.GreaterOrEqual(t, cells.Length(), 8, "should have at least 8 clickable service cells")

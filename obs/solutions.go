@@ -28,15 +28,15 @@ type Solution struct {
 // the cloud definition contract's table.
 var contractOrder = []string{"consumption", "lifecycle", "pooling", "identity", "durability", "observability"}
 
-// contractMeta carries the number, name and the guarantee each contract
-// delivers — one line, straight from the contract.
+// contractMeta carries the name and the guarantee each contract delivers —
+// one line, straight from the contract.
 var contractMeta = map[string][2]string{
-	"consumption":   {"1 · CONSUMPTION", "capacity and services obtained without the operator — self-served"},
-	"lifecycle":     {"2 · LIFECYCLE", "the cloud outlives its parts: nodes die, versions bump, certs expire — it reconciles itself"},
-	"pooling":       {"3 · ABSTRACTION & POOLING", "capability offered as classes, not machines"},
-	"identity":      {"4 · IDENTITY & TENANCY", "who may do what — identity plane, authz, consumer boundaries"},
-	"durability":    {"5 · DURABILITY", "data survives failure, workloads survive node loss"},
-	"observability": {"6 · OBSERVABILITY & MEASUREMENT", "operator and consumer can see the cloud"},
+	"consumption":   {"CONSUMPTION", "capacity and services obtained without the operator — self-served"},
+	"lifecycle":     {"LIFECYCLE", "the cloud outlives its parts: nodes die, versions bump, certs expire — it reconciles itself"},
+	"pooling":       {"ABSTRACTION & POOLING", "capability offered as classes, not machines"},
+	"identity":      {"IDENTITY & TENANCY", "who may do what — identity plane, authz, consumer boundaries"},
+	"durability":    {"DURABILITY", "data survives failure, workloads survive node loss"},
+	"observability": {"OBSERVABILITY & MEASUREMENT", "operator and consumer can see the cloud"},
 }
 
 // namespaceContract maps a namespace to the contract its workload delivers.
