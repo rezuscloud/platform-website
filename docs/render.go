@@ -27,6 +27,11 @@ func init() {
 			extension.TaskList,
 			&mermaid.Extender{
 				RenderMode: mermaid.RenderModeClient,
+				// The extender appends its own loader after the rendered diagrams;
+				// pin it to the same version the docs page loads (see docs.templ).
+				// Unpinned, it loads the latest mermaid and re-initializes mermaid
+				// with default theme after our design-system initialize runs.
+				MermaidURL: "https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js",
 			},
 			highlighting.NewHighlighting(
 				highlighting.WithStyle("monokai"),
