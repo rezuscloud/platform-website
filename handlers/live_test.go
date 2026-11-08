@@ -15,7 +15,13 @@ func TestSetLiveClient(t *testing.T) {
 
 		mock := &obs.MockClient{}
 		SetLiveClient(mock)
-		assert.Equal(t, mock, liveClient)
+		// SetLiveClient wraps for last-good resilience: the inner client
+		// must be the one we set.
+		lg, ok := liveClient.(*lastGoodClient)
+		assert.True(t, ok)
+		if ok {
+			assert.Equal(t, mock, lg.inner)
+		}
 	})
 
 	t.Run("ignores nil", func(t *testing.T) {

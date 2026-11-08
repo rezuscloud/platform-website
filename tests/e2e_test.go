@@ -144,7 +144,7 @@ func TestE2EHTMXSectionLoad(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	assert.Contains(t, bodyText, "PERSONAL",
+	assert.Contains(t, bodyText, "MARKETPLACE",
 		"Section endpoint should contain expected content")
 }
 

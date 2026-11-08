@@ -36,30 +36,40 @@ func TestLiveSectionHTML(t *testing.T) {
 		assert.Contains(t, html, "/api/live/stream")
 	})
 
-	// Matrix structure tests
-	t.Run("has host columns with headers", func(t *testing.T) {
+	// Six-contract structure tests
+	t.Run("has node cards with host labels", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		// Host headers (from mock data)
-		assert.Contains(t, html, "Cloud")
+		assert.Contains(t, html, "OCI Cloud")
 		assert.Contains(t, html, "Edge")
+		assert.Contains(t, html, "data-node-card")
 	})
 
-	t.Run("has 5 category groups", func(t *testing.T) {
+	t.Run("has the six contract bars", func(t *testing.T) {
 		html, err := doc.Find("#live").Html()
 		require.NoError(t, err)
-		assert.Contains(t, html, "Development")
-		assert.Contains(t, html, "Deployment")
-		assert.Contains(t, html, "Runtime")
-		assert.Contains(t, html, "Observability")
-		assert.Contains(t, html, "Data")
+		assert.Contains(t, html, "CONSUMPTION")
+		assert.Contains(t, html, "LIFECYCLE")
+		assert.Contains(t, html, "ABSTRACTION &amp; POOLING")
+		assert.Contains(t, html, "IDENTITY &amp; TENANCY")
+		assert.Contains(t, html, "DURABILITY")
+		assert.Contains(t, html, "OBSERVABILITY &amp; MEASUREMENT")
+		// contract numbers are the contract doc's table numbering, not section furniture
+		assert.NotContains(t, html, "1 · CONSUMPTION")
+		// the old tier/group vocabulary must be gone
+		assert.NotContains(t, html, "TIER 1 · SUBSTRATE")
+		assert.NotContains(t, html, "HOSTED WORKLOADS")
+		// no category middle layer
+		assert.NotContains(t, html, "A · Compute")
 	})
 
-	t.Run("service rows have clickable cells", func(t *testing.T) {
-		cells := doc.Find("[data-svc-key]")
-		assert.GreaterOrEqual(t, cells.Length(), 8, "should have at least 8 clickable service cells")
+	t.Run("is pure proof — no marketplace copy (it lives in the blueprints section)", func(t *testing.T) {
+		html, err := doc.Find("#live").Html()
+		require.NoError(t, err)
+		assert.Contains(t, html, "A blueprint, seen running")
+		assert.NotContains(t, html, "Certified before it costs you a node.")
+		assert.NotContains(t, html, "llm-wiki")
 	})
-
 	t.Run("cells have status dots", func(t *testing.T) {
 		dots := doc.Find("[data-svc-key] [data-dot]")
 		cells := doc.Find("[data-svc-key]")

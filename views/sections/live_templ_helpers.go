@@ -4,7 +4,7 @@
 package sections
 
 import (
-	"math"
+	"strings"
 
 	"github.com/rezuscloud/platform-website/obs"
 )
@@ -19,34 +19,29 @@ func shortHost(name string) string {
 
 // contains checks if substr is in s.
 func contains(s, substr string) bool {
-	for i := 0; i+len(substr) <= len(s); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
-		}
-	}
-	return false
+	return strings.Contains(s, substr)
 }
 
-// cpuBarPct returns the CPU usage bar width (0-100) relative to node capacity.
+// cpuBarPct returns the CPU bar width percent, capacity-aware.
 func cpuBarPct(host obs.Host) float64 {
-	if host.CPU <= 0 {
+	if host.CPUCores <= 0 {
 		return 0
 	}
-	cap := host.CPUCores
-	if cap <= 0 {
-		cap = 4 // legacy fallback when capacity is unknown
+	p := (host.CPU / host.CPUCores) * 100
+	if p > 100 {
+		p = 100
 	}
-	return math.Min((host.CPU/cap)*100, 100)
+	return p
 }
 
-// ramBarPct returns the RAM usage bar width (0-100) relative to node capacity.
+// ramBarPct returns the RAM bar width percent, capacity-aware.
 func ramBarPct(host obs.Host) float64 {
-	if host.RAM <= 0 {
+	if host.RAMTotal <= 0 {
 		return 0
 	}
-	cap := host.RAMTotal
-	if cap <= 0 {
-		cap = 32768 // legacy fallback (MB)
+	p := (host.RAM / host.RAMTotal) * 100
+	if p > 100 {
+		p = 100
 	}
-	return math.Min((host.RAM/cap)*100, 100)
+	return p
 }

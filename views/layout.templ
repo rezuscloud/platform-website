@@ -1,5 +1,7 @@
 package views
 
+import "github.com/rezuscloud/platform-website/version"
+
 templ Layout(title string, activeNav string, canonicalURL ...string) {
 	<!DOCTYPE html>
 	<html
@@ -61,7 +63,7 @@ templ Layout(title string, activeNav string, canonicalURL ...string) {
 					]
 				}
 			</script>
-			<link rel="stylesheet" href="/assets/styles.css"/>
+			<link rel="stylesheet" href={ templ.SafeURL("/assets/styles.css?v=" + version.GitCommit) }/>
 			<link rel="preload" href="/assets/fonts/Silkscreen-Regular.woff2" as="font" type="font/woff2" crossorigin/>
 			<link rel="preload" href="/assets/fonts/VT323-Regular.woff2" as="font" type="font/woff2" crossorigin/>
 			<script>

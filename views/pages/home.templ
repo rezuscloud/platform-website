@@ -7,11 +7,12 @@ import (
 )
 
 templ Home(liveData obs.LiveData) {
-	@views.Layout("Your Personal Cloud | RezusCloud", "") {
+	@views.Layout("The Open Cloud Marketplace | RezusCloud", "") {
 		@sections.Hero()
 		@sections.Architecture()
-		@sections.Live(liveData)
 		@sections.Features()
+		@sections.Blueprints()
+		@sections.Live(liveData)
 		@sections.GetStarted()
 	}
 }
